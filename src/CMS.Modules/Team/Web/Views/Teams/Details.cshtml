@@ -1,38 +1,166 @@
 @model PublicTeamItemDetailDto
+@using CMS.Application.Settings
+@inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
+    ViewData["NavActive"] = "doctors";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var address = string.IsNullOrWhiteSpace(settings.Address)
+        ? "شریعتی، ساختمان کسری، طبقه ۴ واحد ۱۵"
+        : settings.Address;
+    var role = string.IsNullOrWhiteSpace(Model.CategoryName) ? "عضو تیم درمان" : Model.CategoryName;
+    var specialty = string.IsNullOrWhiteSpace(Model.Excerpt) ? role : Model.Excerpt;
+    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
+        ? Url.Content("~/template/assets/images/doctors/dr-hamedani.webp")
+        : Model.CoverImageUrl;
+    var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
+        ? $"پروفایل تخصصی {Model.Title} در {brand}."
+        : Model.Excerpt;
+    var hasBody = !string.IsNullOrWhiteSpace(Model.Body);
 }
 
-<article class="blog-page blog-detail">
-    <p class="blog-back">
-        <a asp-controller="Teams" asp-action="Index">@Localizer["BackToTeams"]</a>
-    </p>
+<section class="page-hero page-hero--doctor-single" aria-labelledby="page-hero-title">
+  <div class="container doctor-single-hero">
+    <div class="doctor-single-hero__copy">
+      <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+        <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+        <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+        <a asp-controller="Teams" asp-action="Index">متخصصان</a>
+        <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+        <span aria-current="page">@Model.Title</span>
+      </nav>
 
-    <header class="blog-page-header">
-        <h1>@Model.Title</h1>
-        <p class="blog-meta">
-            <span>@Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
-            {
-                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
-            }
-            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
-            {
-                <span>· @Localizer["Category"]: @Model.CategoryName</span>
-            }
+      <p class="doctor-single-hero__role reveal">@role</p>
+      <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
+      <p class="doctor-single-hero__specialty reveal">@specialty</p>
+      <p class="page-hero__lead reveal">@lead</p>
+
+      <div class="doctor-single-hero__actions reveal">
+        <button class="btn-primary-custom" type="button" data-booking-open>
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+          </span>
+          رزرو نوبت مشاوره
+        </button>
+        <a class="btn-secondary-custom" href="@telHref">
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </span>
+          <span class="phone-ltr">@phoneDisplay</span>
+        </a>
+      </div>
+    </div>
+
+    <figure class="doctor-single-hero__media reveal">
+      <img
+        src="@cover"
+        width="640"
+        height="800"
+        alt="@Model.Title"
+        loading="eager"
+      >
+    </figure>
+  </div>
+</section>
+
+<section class="doctor-about" aria-labelledby="doctor-about-heading">
+  <div class="container">
+    <div class="doctor-about__layout">
+      <div class="doctor-about__main reveal">
+        <p class="section-kicker">درباره پزشک</p>
+        <h2 class="section-heading" id="doctor-about-heading">معرفی @Model.Title</h2>
+        <div class="doctor-about__body">
+          @if (hasBody)
+          {
+            @Html.Raw(Model.Body)
+          }
+          else
+          {
+            <p>@lead</p>
+          }
+        </div>
+      </div>
+
+      <aside class="doctor-about__aside reveal" aria-label="اطلاعات سریع">
+        <h3 class="doctor-about__aside-title">اطلاعات سریع</h3>
+        <ul class="doctor-quick-list">
+          <li>
+            <span class="doctor-quick-list__label">تخصص</span>
+            <span class="doctor-quick-list__value">@specialty</span>
+          </li>
+          <li>
+            <span class="doctor-quick-list__label">نقش</span>
+            <span class="doctor-quick-list__value">@role</span>
+          </li>
+          @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
+          {
+            <li>
+              <span class="doctor-quick-list__label">نام نمایشی</span>
+              <span class="doctor-quick-list__value">@Model.AuthorDisplayName</span>
+            </li>
+          }
+          <li>
+            <span class="doctor-quick-list__label">ساعات پاسخگویی</span>
+            <span class="doctor-quick-list__value">شنبه تا پنجشنبه · ۹ تا ۲۱</span>
+          </li>
+          <li>
+            <span class="doctor-quick-list__label">آدرس</span>
+            <span class="doctor-quick-list__value">@address</span>
+          </li>
+          <li>
+            <span class="doctor-quick-list__label">تلفن</span>
+            <span class="doctor-quick-list__value"><a class="phone-ltr" href="@telHref">@phoneDisplay</a></span>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="consult-band" id="contact" aria-labelledby="consult-band-heading">
+  <div class="container">
+    <div class="consult-band__panel reveal">
+      <div class="consult-band__copy">
+        <p class="consult-band__kicker">نوبت مشاوره</p>
+        <h2 class="consult-band__title" id="consult-band-heading">
+          آماده‌اید با @Model.Title مشورت کنید؟
+        </h2>
+        <p class="consult-band__lead">
+          برای هماهنگی مشاوره، نوبت رزرو کنید یا مستقیم با کلینیک تماس بگیرید.
         </p>
-        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
-        {
-            <p class="blog-excerpt">@Model.Excerpt</p>
-        }
-    </header>
+        <p class="consult-band__meta">شنبه تا پنجشنبه · ۹ تا ۲۱</p>
+      </div>
 
-    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-    {
-        <figure class="blog-cover">
-            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
-        </figure>
-    }
-
-    <div class="blog-content">@Html.Raw(Model.Body)</div>
-</article>
+      <div class="consult-band__actions">
+        <button class="btn-primary-custom" type="button" data-booking-open>
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+          </span>
+          رزرو نوبت آنلاین
+        </button>
+        <a class="btn-secondary-custom" href="@telHref">
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </span>
+          <span class="phone-ltr">@phoneDisplay</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

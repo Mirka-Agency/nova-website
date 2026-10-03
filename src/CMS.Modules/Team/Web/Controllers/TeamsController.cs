@@ -9,6 +9,7 @@ using Microsoft.FeatureManagement;
 namespace CMS.Modules.Team.Web.Controllers;
 
 [Route("Teams")]
+[Route("doctors")]
 public class TeamsController : Controller
 {
     private readonly IPublicTeamItemQuery _items;
@@ -32,9 +33,10 @@ public class TeamsController : Controller
         if (!await _features.IsEnabledAsync(FeatureNames.Team))
             return NotFound();
 
-        ViewData["Title"] = _localizer["Teams"].Value;
+        ViewData["Title"] = "متخصصان کلینیک";
+        ViewData["NavActive"] = "doctors";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("TeamItems", "مدیریت تیم", "ViewTeam");
-        var result = await _items.ListPublishedPagedAsync(page, 12, cancellationToken);
+        var result = await _items.ListPublishedPagedAsync(page, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;
@@ -53,6 +55,7 @@ public class TeamsController : Controller
             return NotFound();
 
         ViewData["Title"] = item.Title;
+        ViewData["NavActive"] = "doctors";
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;

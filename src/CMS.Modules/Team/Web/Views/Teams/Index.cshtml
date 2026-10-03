@@ -1,68 +1,217 @@
 @model IReadOnlyList<PublicTeamItemSummaryDto>
+@using CMS.Application.Settings
+@inject ISiteSettingsService SiteSettings
 @{
-    ViewData["Title"] = Localizer["Teams"];
+    ViewData["Title"] = "متخصصان کلینیک";
+    ViewData["NavActive"] = "doctors";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var items = Model ?? Array.Empty<PublicTeamItemSummaryDto>();
+    var hasCms = items.Count > 0;
+    var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
 }
 
-<section class="blog-page">
-    <header class="blog-page-header">
-        <h1>@Localizer["Teams"]</h1>
-    </header>
+<section class="page-hero" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">متخصصان</span>
+    </nav>
+    <h1 class="page-hero__title reveal" id="page-hero-title">متخصصان @brand</h1>
+    <p class="page-hero__lead reveal">
+      تیمی متمرکز بر بیماری‌های غدد درون‌ریز؛ جایی که دانش جراحی و نگاه پژوهشی در کنار هم، مسیر درمان هر بیمار را دقیق و انسانی پیش می‌برند.
+    </p>
+    <div class="page-hero__chips reveal" aria-label="تمرکز تیم">
+      <span>جراحی غدد</span>
+      <span>روش‌های کم‌تهاجمی</span>
+      <span>پیگیری تخصصی</span>
+    </div>
+  </div>
+</section>
 
-    @if (Model.Count == 0)
-    {
-        <p class="blog-empty">@Localizer["NoTeams"]</p>
-    }
-    else
-    {
-        <div class="blog-list">
-            @foreach (var post in Model)
-            {
-                <article class="blog-card">
-                    @if (!string.IsNullOrWhiteSpace(post.CoverImageUrl))
-                    {
-                        <a class="blog-card-cover" asp-controller="Teams" asp-action="Details" asp-route-slug="@post.Slug">
-                            <img src="@post.CoverImageUrl" alt="@post.Title" />
-                        </a>
-                    }
-                    <div class="blog-card-body">
-                        <h2>
-                            <a asp-controller="Teams" asp-action="Details" asp-route-slug="@post.Slug">@post.Title</a>
-                        </h2>
-                        <p class="blog-meta">
-                            <span>@Localizer["PublishedOn"]: @post.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-                            @if (!string.IsNullOrWhiteSpace(post.AuthorDisplayName))
-                            {
-                                <span>· @Localizer["Author"]: @post.AuthorDisplayName</span>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(post.CategoryName))
-                            {
-                                <span>· @Localizer["Category"]: @post.CategoryName</span>
-                            }
-                        </p>
-                        @if (!string.IsNullOrWhiteSpace(post.Excerpt))
-                        {
-                            <p class="blog-excerpt">@post.Excerpt</p>
-                        }
-                        <a class="blog-read-more" asp-controller="Teams" asp-action="Details" asp-route-slug="@post.Slug">@Localizer["ReadMore"]</a>
-                    </div>
-                </article>
-            }
-        </div>
+<section class="doctors-overview" aria-labelledby="doctors-overview-heading">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-kicker">متخصصان</p>
+      <h2 class="section-heading" id="doctors-overview-heading">با تیم درمان آشنا شوید</h2>
+      <p class="section-lead">
+        برای مشاهده جزئیات بیشتر، پروفایل هر پزشک را باز کنید.
+      </p>
+    </div>
 
-        @if (ViewBag.TotalPages is int totalPages && totalPages > 1)
+    <div class="doctor-jump">
+      @if (hasCms)
+      {
+        @foreach (var member in items)
         {
-            var currentPage = ViewBag.Page as int? ?? 1;
-            <nav class="blog-pager" aria-label="صفحه‌بندی" style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;">
-                @if (currentPage > 1)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage - 1)">قبلی</a>
-                }
-                <span>صفحه @currentPage از @totalPages</span>
-                @if (currentPage < totalPages)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage + 1)">بعدی</a>
-                }
-            </nav>
+          var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
+          var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
+          var specialty = string.IsNullOrWhiteSpace(member.Excerpt) ? member.Title : member.Excerpt;
+          <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
+            <span class="doctor-jump__avatar">
+              <img src="@cover" width="72" height="72" alt="" loading="lazy">
+            </span>
+            <span class="doctor-jump__body">
+              <span class="doctor-jump__role">@role</span>
+              <span class="doctor-jump__name">@member.Title</span>
+              <span class="doctor-jump__title">@specialty</span>
+            </span>
+            <span class="doctor-jump__action" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+              </svg>
+            </span>
+          </a>
         }
+      }
+      else
+      {
+        <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Index">
+          <span class="doctor-jump__avatar">
+            <img
+              src="~/template/assets/images/doctors/dr-hamedani-portrait.webp"
+              width="72"
+              height="72"
+              alt=""
+              loading="lazy"
+            >
+          </span>
+          <span class="doctor-jump__body">
+            <span class="doctor-jump__role">مدیر @brand</span>
+            <span class="doctor-jump__name">دکتر کاوه همدانی</span>
+            <span class="doctor-jump__title">فلوشیپ جراحی غدد درون‌ریز</span>
+          </span>
+          <span class="doctor-jump__action" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+          </span>
+        </a>
+
+        <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Index">
+          <span class="doctor-jump__avatar">
+            <img
+              src="~/template/assets/images/doctors/dr-takyar.jpeg"
+              width="72"
+              height="72"
+              alt=""
+              loading="lazy"
+            >
+          </span>
+          <span class="doctor-jump__body">
+            <span class="doctor-jump__role">پزشک‌پژوهشگر</span>
+            <span class="doctor-jump__name">دکتر میرعلیرضا تکیار</span>
+            <span class="doctor-jump__title">متخصص بیماری‌های داخلی</span>
+          </span>
+          <span class="doctor-jump__action" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+          </span>
+        </a>
+      }
+    </div>
+
+    @if (hasCms && ViewBag.TotalPages is int totalPages && totalPages > 1)
+    {
+      var currentPage = ViewBag.Page as int? ?? 1;
+      <nav class="doctors-pager reveal" aria-label="صفحه‌بندی متخصصان">
+        @if (currentPage > 1)
+        {
+          <a asp-action="Index" asp-route-page="@(currentPage - 1)">قبلی</a>
+        }
+        <span>صفحه @currentPage از @totalPages</span>
+        @if (currentPage < totalPages)
+        {
+          <a asp-action="Index" asp-route-page="@(currentPage + 1)">بعدی</a>
+        }
+      </nav>
     }
+  </div>
+</section>
+
+<section class="doctors-values" aria-labelledby="doctors-values-heading">
+  <div class="container">
+    <div class="section-header section-header--center reveal">
+      <p class="section-kicker">چرا تیم @brand</p>
+      <h2 class="section-heading" id="doctors-values-heading">ترکیبی از تخصص و همراهی</h2>
+    </div>
+
+    <div class="doctors-values__grid">
+      <article class="doctors-value reveal">
+        <span class="doctors-value__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </span>
+        <h3 class="doctors-value__title">تصمیم مبتنی بر شرایط شما</h3>
+        <p class="doctors-value__text">روش درمان پس از ارزیابی دقیق و متناسب با نیاز هر بیمار انتخاب می‌شود.</p>
+      </article>
+      <article class="doctors-value reveal">
+        <span class="doctors-value__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v5l3 2"/>
+          </svg>
+        </span>
+        <h3 class="doctors-value__title">تخصص متمرکز غدد</h3>
+        <p class="doctors-value__text">تمرکز تیم روی جراحی و بیماری‌های غدد درون‌ریز است، نه خدمات عمومی پراکنده.</p>
+      </article>
+      <article class="doctors-value reveal">
+        <span class="doctors-value__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </span>
+        <h3 class="doctors-value__title">همکاری جراحی و پژوهش</h3>
+        <p class="doctors-value__text">نگاه جراحی و رویکرد پژوهشی در کنار هم، مسیر تشخیص تا پیگیری را کامل می‌کنند.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="consult-band" id="contact" aria-labelledby="consult-band-heading">
+  <div class="container">
+    <div class="consult-band__panel reveal">
+      <div class="consult-band__copy">
+        <p class="consult-band__kicker">نوبت مشاوره</p>
+        <h2 class="consult-band__title" id="consult-band-heading">
+          آماده‌اید مسیر درمان را شروع کنید؟
+        </h2>
+        <p class="consult-band__lead">
+          برای هماهنگی مشاوره با تیم متخصصان، نوبت رزرو کنید یا مستقیم تماس بگیرید.
+        </p>
+        <p class="consult-band__meta">شنبه تا پنجشنبه · ۹ تا ۲۱</p>
+      </div>
+
+      <div class="consult-band__actions">
+        <button class="btn-primary-custom" type="button" data-booking-open>
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+          </span>
+          رزرو نوبت آنلاین
+        </button>
+        <a class="btn-secondary-custom" href="@telHref">
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </span>
+          <span class="phone-ltr">@phoneDisplay</span>
+        </a>
+      </div>
+    </div>
+  </div>
 </section>

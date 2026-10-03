@@ -1,6 +1,22 @@
+@model IReadOnlyList<CMS.Modules.Team.Application.TeamItems.PublicTeamItemSummaryDto>
+@using CMS.Application.Settings
+@using CMS.Modules.Team.Application.TeamItems
+@inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = "درباره ما";
     ViewData["NavActive"] = "about";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var heroLead = string.IsNullOrWhiteSpace(settings.Tagline)
+        ? "درمان تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس؛ با رویکرد بیمارمحور و پیگیری پس از درمان."
+        : settings.Tagline;
+    var teamItems = Model ?? Array.Empty<PublicTeamItemSummaryDto>();
+    var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
 }
 <section class="about-hero" aria-labelledby="page-hero-title">
       <div class="container about-hero__grid">
@@ -10,12 +26,12 @@
             <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
             <span aria-current="page">درباره ما</span>
           </nav>
-          <p class="about-hero__brand reveal">نووا کلینیک</p>
+          <p class="about-hero__brand reveal">@brand</p>
           <h1 class="about-hero__title reveal" id="page-hero-title">
             اولین کلینیک فلوشیپ جراحی غدد درون‌ریز ایران
           </h1>
           <p class="about-hero__lead reveal">
-            درمان تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس؛ با رویکرد بیمارمحور و پیگیری پس از درمان.
+            @heroLead
           </p>
           <div class="about-hero__actions reveal">
             <button class="btn-primary-custom" type="button" data-booking-open>
@@ -44,7 +60,7 @@
               src="~/template/assets/images/home/clinic-care.webp"
               width="900"
               height="1100"
-              alt="فضای تخصصی نووا کلینیک"
+              alt="فضای تخصصی @brand"
               loading="eager"
             >
           </figure>
@@ -58,7 +74,7 @@
           <p class="section-kicker">معرفی</p>
           <h2 class="about-story__heading" id="about-story-heading">درباره کلینیک</h2>
           <p class="about-story__lead">
-            نووا کلینیک با تیمی از پزشکان متخصص، خدمات تشخیصی و درمانی نوین را در حوزه جراحی غدد ارائه می‌دهد.
+            @brand با تیمی از پزشکان متخصص، خدمات تشخیصی و درمانی نوین را در حوزه جراحی غدد ارائه می‌دهد.
           </p>
           <p class="about-story__text">
             این مرکز با بهره‌گیری از تجهیزات پیشرفته، در جراحی تیروئید، پاراتیروئید، آدرنال و پانکراس فعالیت می‌کند و بر توضیح شفاف روند درمان و پیگیری پس از آن تأکید دارد.
@@ -165,7 +181,7 @@
           <div class="about-team__intro">
             <p class="section-kicker">متخصصان</p>
             <h2 class="about-team__heading" id="about-team-heading">تیم درمان</h2>
-            <p class="about-team__lead">پزشکان اصلی نووا؛ مسیر درمان را با تخصص و همراهی شفاف پیش می‌برند.</p>
+            <p class="about-team__lead">پزشکان اصلی @brand؛ مسیر درمان را با تخصص و همراهی شفاف پیش می‌برند.</p>
           </div>
           <a class="about-team__all" asp-controller="Teams" asp-action="Index">
             آرشیو متخصصان
@@ -176,28 +192,51 @@
         </header>
 
         <div class="about-team__grid">
-          <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
-            <div class="about-team__photo">
-              <img src="~/template/assets/images/doctors/dr-hamedani-portrait.webp" width="640" height="800" alt="دکتر کاوه همدانی" loading="lazy">
-            </div>
-            <div class="about-team__info">
-              <span class="about-team__role">مدیر نووا کلینیک</span>
-              <h3 class="about-team__name">دکتر کاوه همدانی</h3>
-              <p class="about-team__title">متخصص جراحی عمومی | فلوشیپ جراحی غدد درون‌ریز</p>
-              <span class="about-team__cta">مشاهده پروفایل</span>
-            </div>
-          </a>
-          <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
-            <div class="about-team__photo">
-              <img src="~/template/assets/images/doctors/dr-takyar.jpeg" width="640" height="800" alt="دکتر میرعلیرضا تکیار" loading="lazy">
-            </div>
-            <div class="about-team__info">
-              <span class="about-team__role">پزشک‌پژوهشگر</span>
-              <h3 class="about-team__name">دکتر میرعلیرضا تکیار</h3>
-              <p class="about-team__title">متخصص بیماری‌های داخلی | پژوهشگر حوزه غدد درون‌ریز و متابولیسم</p>
-              <span class="about-team__cta">مشاهده پروفایل</span>
-            </div>
-          </a>
+          @if (teamItems.Count > 0)
+          {
+            @foreach (var member in teamItems)
+            {
+              var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
+              var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
+              var bio = string.IsNullOrWhiteSpace(member.Excerpt) ? member.Title : member.Excerpt;
+              <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
+                <div class="about-team__photo">
+                  <img src="@cover" width="640" height="800" alt="@member.Title" loading="lazy">
+                </div>
+                <div class="about-team__info">
+                  <span class="about-team__role">@role</span>
+                  <h3 class="about-team__name">@member.Title</h3>
+                  <p class="about-team__title">@bio</p>
+                  <span class="about-team__cta">مشاهده پروفایل</span>
+                </div>
+              </a>
+            }
+          }
+          else
+          {
+            <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
+              <div class="about-team__photo">
+                <img src="~/template/assets/images/doctors/dr-hamedani-portrait.webp" width="640" height="800" alt="دکتر کاوه همدانی" loading="lazy">
+              </div>
+              <div class="about-team__info">
+                <span class="about-team__role">مدیر @brand</span>
+                <h3 class="about-team__name">دکتر کاوه همدانی</h3>
+                <p class="about-team__title">متخصص جراحی عمومی | فلوشیپ جراحی غدد درون‌ریز</p>
+                <span class="about-team__cta">مشاهده پروفایل</span>
+              </div>
+            </a>
+            <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
+              <div class="about-team__photo">
+                <img src="~/template/assets/images/doctors/dr-takyar.jpeg" width="640" height="800" alt="دکتر میرعلیرضا تکیار" loading="lazy">
+              </div>
+              <div class="about-team__info">
+                <span class="about-team__role">پزشک‌پژوهشگر</span>
+                <h3 class="about-team__name">دکتر میرعلیرضا تکیار</h3>
+                <p class="about-team__title">متخصص بیماری‌های داخلی | پژوهشگر حوزه غدد درون‌ریز و متابولیسم</p>
+                <span class="about-team__cta">مشاهده پروفایل</span>
+              </div>
+            </a>
+          }
         </div>
       </div>
     </section>
@@ -206,7 +245,7 @@
       <div class="container">
         <header class="about-why__head reveal">
           <p class="section-kicker">تمایز</p>
-          <h2 class="about-why__heading" id="about-why-heading">چرا نووا</h2>
+          <h2 class="about-why__heading" id="about-why-heading">چرا @brand</h2>
           <p class="about-why__lead">از تشخیص تا پیگیری؛ مسیر مراجعه شفاف و بیمارمحور.</p>
         </header>
 
@@ -338,7 +377,7 @@
             </ul>
           </div>
           <div class="consult-band__side">
-            <a class="consult-band__phone" href="tel:02191093492">
+            <a class="consult-band__phone" href="@telHref">
               <span class="consult-band__phone-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
@@ -346,7 +385,7 @@
               </span>
               <span class="consult-band__phone-text">
                 <span class="consult-band__phone-label">تماس مستقیم</span>
-                <span class="consult-band__phone-number phone-ltr">۰۲۱-۹۱۰۹۳۴۹۲</span>
+                <span class="consult-band__phone-number phone-ltr">@phoneDisplay</span>
               </span>
             </a>
             <div class="consult-band__actions">
