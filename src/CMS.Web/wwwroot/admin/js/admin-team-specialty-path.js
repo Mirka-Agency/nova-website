@@ -18,6 +18,32 @@
     if (empty) empty.hidden = rows().length > 0;
   }
 
+  function wireIconPicker(row, index) {
+    const input = row.querySelector("[data-specialty-path-icon-input]");
+    const picker = row.querySelector("[data-specialty-path-icon-picker]");
+    const preview = row.querySelector("[data-specialty-path-icon-preview]");
+    if (!input || !picker || !preview) return;
+
+    const id = `SpecialtyPathIconUrl_${index}`;
+    const selector = `#${id}`;
+    input.id = id;
+    input.name = `SpecialtyPathItems[${index}].IconUrl`;
+    picker.setAttribute("data-target", selector);
+    preview.setAttribute("data-media-preview-for", selector);
+
+    if (input.value) {
+      let img = preview.querySelector("img");
+      if (!img) {
+        img = document.createElement("img");
+        img.alt = "";
+        preview.appendChild(img);
+      }
+      img.src = input.value;
+    } else {
+      preview.innerHTML = "";
+    }
+  }
+
   function reindex() {
     rows().forEach((row, index) => {
       row.querySelectorAll("[name]").forEach((el) => {
@@ -28,13 +54,15 @@
           name.replace(/SpecialtyPathItems\[[^\]]+\]/, `SpecialtyPathItems[${index}]`)
         );
       });
+      wireIconPicker(row, index);
     });
     setEmptyState();
+    window.AdminMediaPicker?.refreshClearButtons?.();
   }
 
   function rowInputs(row) {
     const title =
-      row.querySelector("[name$='.Title']") || row.querySelector("input");
+      row.querySelector("[name$='.Title']") || row.querySelector("input:not([type='hidden'])");
     const text =
       row.querySelector("[name$='.Text']") || row.querySelector("textarea");
     return { title, text };
@@ -67,5 +95,5 @@
     form.addEventListener("submit", reindex);
   }
 
-  setEmptyState();
+  reindex();
 })();

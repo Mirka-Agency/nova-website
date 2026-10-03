@@ -45,6 +45,8 @@
                 <div class="admin-faq-rows" data-specialty-path-list>
                     @for (var i = 0; i < Model.SpecialtyPathItems.Count; i++)
                     {
+                        var iconId = $"SpecialtyPathIconUrl_{i}";
+                        var iconSelector = $"#{iconId}";
                         <div class="admin-faq-row" data-specialty-path-row>
                             <div class="admin-field admin-faq-field">
                                 <label asp-for="SpecialtyPathItems[i].Title">@Localizer["SpecialtyPathTitle"]</label>
@@ -61,6 +63,33 @@
                                           placeholder="@Localizer["SpecialtyPathTextPlaceholder"]"
                                           maxlength="1000"></textarea>
                                 <span asp-validation-for="SpecialtyPathItems[i].Text" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-field admin-faq-field admin-specialty-path-icon">
+                                <label>@Localizer["SpecialtyPathIcon"]</label>
+                                <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-media-picker
+                                            data-specialty-path-icon-picker
+                                            data-target="@iconSelector">
+                                        <i class="fas fa-images" aria-hidden="true"></i>
+                                        <span>@Localizer["SelectImage"]</span>
+                                    </button>
+                                </div>
+                                <input asp-for="SpecialtyPathItems[i].IconUrl"
+                                       id="@iconId"
+                                       type="hidden"
+                                       data-specialty-path-icon-input />
+                                <p class="admin-hint">@Localizer["SpecialtyPathIconHint"]</p>
+                                <span asp-validation-for="SpecialtyPathItems[i].IconUrl" class="admin-field-error"></span>
+                                <div class="admin-upload-preview admin-specialty-path-icon-preview"
+                                     data-specialty-path-icon-preview
+                                     data-media-preview-for="@iconSelector">
+                                    @if (!string.IsNullOrWhiteSpace(Model.SpecialtyPathItems[i].IconUrl))
+                                    {
+                                        <img src="@Model.SpecialtyPathItems[i].IconUrl" alt="" />
+                                    }
+                                </div>
                             </div>
                             <div class="admin-faq-row-actions">
                                 <button type="button" class="btn btn-text-danger" data-specialty-path-remove>
@@ -99,6 +128,27 @@
                                   rows="3"
                                   placeholder="@Localizer["SpecialtyPathTextPlaceholder"]"
                                   maxlength="1000"></textarea>
+                    </div>
+                    <div class="admin-field admin-faq-field admin-specialty-path-icon">
+                        <label>@Localizer["SpecialtyPathIcon"]</label>
+                        <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-media-picker
+                                    data-specialty-path-icon-picker
+                                    data-target="#SpecialtyPathIconUrl___INDEX__">
+                                <i class="fas fa-images" aria-hidden="true"></i>
+                                <span>@Localizer["SelectImage"]</span>
+                            </button>
+                        </div>
+                        <input name="SpecialtyPathItems[__INDEX__].IconUrl"
+                               id="SpecialtyPathIconUrl___INDEX__"
+                               type="hidden"
+                               data-specialty-path-icon-input />
+                        <p class="admin-hint">@Localizer["SpecialtyPathIconHint"]</p>
+                        <div class="admin-upload-preview admin-specialty-path-icon-preview"
+                             data-specialty-path-icon-preview
+                             data-media-preview-for="#SpecialtyPathIconUrl___INDEX__"></div>
                     </div>
                     <div class="admin-faq-row-actions">
                         <button type="button" class="btn btn-text-danger" data-specialty-path-remove>

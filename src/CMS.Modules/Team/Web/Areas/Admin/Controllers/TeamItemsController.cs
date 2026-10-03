@@ -213,7 +213,12 @@ public class TeamItemsController : Controller
             Excerpt = post.Excerpt,
             Highlights = post.Highlights,
             SpecialtyPathItems = TeamSpecialtyPathJson.Parse(post.SpecialtyPathJson)
-                .Select(x => new TeamSpecialtyPathItemViewModel { Title = x.Title, Text = x.Text })
+                .Select(x => new TeamSpecialtyPathItemViewModel
+                {
+                    Title = x.Title,
+                    Text = x.Text,
+                    IconUrl = x.IconUrl
+                })
                 .ToList(),
             EducationPathItems = TeamEducationPathJson.Parse(post.EducationPathJson)
                 .Select(x => new TeamEducationPathItemViewModel { Year = x.Year, Title = x.Title, Place = x.Place })
@@ -322,7 +327,7 @@ public class TeamItemsController : Controller
 
         var specialtyPathJson = TeamSpecialtyPathJson.Serialize(
             (model.SpecialtyPathItems ?? [])
-                .Select(x => new TeamSpecialtyPathItemDto(x.Title, x.Text)));
+                .Select(x => new TeamSpecialtyPathItemDto(x.Title, x.Text, x.IconUrl)));
         var educationPathJson = TeamEducationPathJson.Serialize(
             (model.EducationPathItems ?? [])
                 .Select(x => new TeamEducationPathItemDto(x.Year, x.Title, x.Place)));

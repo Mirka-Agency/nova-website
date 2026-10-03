@@ -85,9 +85,10 @@
     for (const row of rows) {
       const title = (row.querySelector("[name$='.Title']")?.value || "").trim();
       const text = (row.querySelector("[name$='.Text']")?.value || "").trim();
-      if (!title && !text) continue;
+      const iconUrl = (row.querySelector("[name$='.IconUrl']")?.value || "").trim() || null;
+      if (!title && !text && !iconUrl) continue;
       if (!title || !text) continue;
-      items.push({ title, text });
+      items.push({ title, text, iconUrl });
     }
     return items.length > 0 ? JSON.stringify(items) : null;
   }

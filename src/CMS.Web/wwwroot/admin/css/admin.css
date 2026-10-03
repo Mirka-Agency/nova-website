@@ -1792,6 +1792,16 @@ fieldset.admin-field legend {
   background: transparent;
 }
 
+.admin-specialty-path-icon-preview {
+  max-width: 4.5rem;
+}
+
+.admin-specialty-path-icon-preview img {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
 .admin-ckeditor-source {
   min-height: 320px;
 }

@@ -3,13 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace CMS.Modules.Team.Application.TeamItems;
 
-public sealed record TeamSpecialtyPathItemDto(string Title, string Text);
+public sealed record TeamSpecialtyPathItemDto(string Title, string Text, string? IconUrl = null);
 
 public static class TeamSpecialtyPathJson
 {
     public const int MaxItems = 20;
     public const int MaxTitleLength = 200;
     public const int MaxTextLength = 1000;
+    public const int MaxIconUrlLength = 1000;
     public const int MaxJsonLength = 50_000;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -39,7 +40,8 @@ public static class TeamSpecialtyPathJson
 
             return Normalize(items.Select(x => new TeamSpecialtyPathItemDto(
                 x.Title ?? string.Empty,
-                x.Text ?? string.Empty)));
+                x.Text ?? string.Empty,
+                x.IconUrl)));
         }
         catch (JsonException)
         {
@@ -54,7 +56,12 @@ public static class TeamSpecialtyPathJson
             return null;
 
         return JsonSerializer.Serialize(
-            normalized.Select(x => new ItemPayload { Title = x.Title, Text = x.Text }),
+            normalized.Select(x => new ItemPayload
+            {
+                Title = x.Title,
+                Text = x.Text,
+                IconUrl = x.IconUrl
+            }),
             SerializerOptions);
     }
 
@@ -102,7 +109,8 @@ public static class TeamSpecialtyPathJson
         {
             var title = (item.Title ?? string.Empty).Trim();
             var text = (item.Text ?? string.Empty).Trim();
-            if (title.Length == 0 && text.Length == 0)
+            var iconUrl = (item.IconUrl ?? string.Empty).Trim();
+            if (title.Length == 0 && text.Length == 0 && iconUrl.Length == 0)
                 continue;
             if (title.Length == 0 || text.Length == 0)
             {
@@ -121,6 +129,18 @@ public static class TeamSpecialtyPathJson
                 error = $"توضیح حوزه فعالیت حداکثر {MaxTextLength} نویسه می‌تواند باشد.";
                 return false;
             }
+
+            if (iconUrl.Length > MaxIconUrlLength)
+            {
+                error = $"آدرس آیکون حوزه فعالیت حداکثر {MaxIconUrlLength} نویسه می‌تواند باشد.";
+                return false;
+            }
+
+            if (iconUrl.Length > 0 && !IsValidUrlOrPath(iconUrl))
+            {
+                error = "آیکون حوزه فعالیت باید آدرس مطلق یا مسیر نسبی سایت باشد.";
+                return false;
+            }
         }
 
         return true;
@@ -133,6 +153,7 @@ public static class TeamSpecialtyPathJson
         {
             var title = (item.Title ?? string.Empty).Trim();
             var text = (item.Text ?? string.Empty).Trim();
+            var iconUrl = string.IsNullOrWhiteSpace(item.IconUrl) ? null : item.IconUrl.Trim();
             if (title.Length == 0 || text.Length == 0)
                 continue;
 
@@ -140,8 +161,12 @@ public static class TeamSpecialtyPathJson
                 title = title[..MaxTitleLength];
             if (text.Length > MaxTextLength)
                 text = text[..MaxTextLength];
+            if (iconUrl is { Length: > MaxIconUrlLength })
+                iconUrl = iconUrl[..MaxIconUrlLength];
+            if (iconUrl is not null && !IsValidUrlOrPath(iconUrl))
+                iconUrl = null;
 
-            result.Add(new TeamSpecialtyPathItemDto(title, text));
+            result.Add(new TeamSpecialtyPathItemDto(title, text, iconUrl));
             if (result.Count >= MaxItems)
                 break;
         }
@@ -149,9 +174,19 @@ public static class TeamSpecialtyPathJson
         return result;
     }
 
+    private static bool IsValidUrlOrPath(string value)
+    {
+        if (value.StartsWith('/'))
+            return value.Length > 1;
+
+        return Uri.TryCreate(value, UriKind.Absolute, out var uri)
+               && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+    }
+
     private sealed class ItemPayload
     {
         public string? Title { get; set; }
         public string? Text { get; set; }
+        public string? IconUrl { get; set; }
     }
 }

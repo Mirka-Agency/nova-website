@@ -14,6 +14,7 @@ public sealed class SecurityHeadersMiddleware
         "frame-ancestors 'none'; " +
         "form-action 'self'; " +
         "img-src 'self' data: blob: https:; " +
+        "media-src 'self' https: blob:; " +
         "font-src 'self' data:; " +
         "style-src 'self' 'unsafe-inline'; " +
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com https://www.google.com https://www.gstatic.com https://js.hcaptcha.com; " +

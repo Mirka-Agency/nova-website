@@ -109,6 +109,9 @@ public class TeamSpecialtyPathItemViewModel
 
     [MaxLength(1000, ErrorMessage = "توضیح حوزه فعالیت حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string Text { get; set; } = string.Empty;
+
+    [MaxLength(1000, ErrorMessage = "آدرس آیکون حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string? IconUrl { get; set; }
 }
 
 public class TeamEducationPathItemViewModel

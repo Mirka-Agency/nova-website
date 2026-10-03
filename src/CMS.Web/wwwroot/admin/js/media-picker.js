@@ -585,14 +585,16 @@
     }
   });
 
-  document.querySelectorAll("[data-media-picker]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const selector = btn.getAttribute("data-target");
-      if (selector) open(selector);
-    });
-  });
-
   document.addEventListener("click", (event) => {
+    const pickerBtn = event.target.closest("[data-media-picker][data-target]");
+    if (pickerBtn && !modal.contains(pickerBtn)) {
+      const pickerSelector = pickerBtn.getAttribute("data-target");
+      if (pickerSelector) {
+        open(pickerSelector);
+        return;
+      }
+    }
+
     const clearBtn = event.target.closest("[data-media-clear]");
     if (clearBtn) {
       const selector = clearBtn.getAttribute("data-target");

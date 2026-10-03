@@ -60,12 +60,14 @@
   <data name="Highlights" xml:space="preserve"><value>نکات برجسته</value></data>
   <data name="HighlightsHint" xml:space="preserve"><value>هر خط یک مورد؛ مثلاً نظام پزشکی، فلوشیپ، مجوز. در صفحه اصلی زیر بیو نمایش داده می‌شود.</value></data>
   <data name="SpecialtyPath" xml:space="preserve"><value>حوزه فعالیت</value></data>
-  <data name="SpecialtyPathHint" xml:space="preserve"><value>زمینه‌های اصلی فعالیت پزشک؛ در صفحه پروفایل نمایش داده می‌شود.</value></data>
+  <data name="SpecialtyPathHint" xml:space="preserve"><value>زمینه‌های اصلی فعالیت پزشک؛ برای هر مورد می‌توانید آیکون آپلود کنید یا آیکون پیش‌فرض بماند.</value></data>
   <data name="SpecialtyPathTitle" xml:space="preserve"><value>عنوان</value></data>
   <data name="SpecialtyPathText" xml:space="preserve"><value>توضیح</value></data>
   <data name="SpecialtyPathTitlePlaceholder" xml:space="preserve"><value>مثلاً جراحی تیروئید</value></data>
   <data name="SpecialtyPathTextPlaceholder" xml:space="preserve"><value>توضیح کوتاه این حوزه فعالیت</value></data>
   <data name="SpecialtyPathEmpty" xml:space="preserve"><value>هنوز موردی برای حوزه فعالیت ثبت نشده است.</value></data>
+  <data name="SpecialtyPathIcon" xml:space="preserve"><value>آیکون</value></data>
+  <data name="SpecialtyPathIconHint" xml:space="preserve"><value>اختیاری؛ اگر خالی بماند آیکون پیش‌فرض نمایش داده می‌شود.</value></data>
   <data name="AddSpecialtyPathItem" xml:space="preserve"><value>افزودن مورد</value></data>
   <data name="EducationPath" xml:space="preserve"><value>مسیر تخصصی</value></data>
   <data name="EducationPathHint" xml:space="preserve"><value>تحصیلات و تخصص به‌صورت تایم‌لاین؛ در صفحه پروفایل نمایش داده می‌شود.</value></data>
