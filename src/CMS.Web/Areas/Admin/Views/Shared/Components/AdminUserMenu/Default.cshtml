@@ -1,0 +1,54 @@
+@model CMS.Web.Areas.Admin.ViewModels.AdminUserMenuViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+
+<div class="admin-user-menu" data-admin-user-menu>
+    <button type="button"
+            class="admin-user-menu-trigger"
+            data-admin-user-menu-trigger
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="admin-user-menu-panel">
+        <span class="admin-user-avatar" aria-hidden="true">
+            <img src="@Model.AvatarUrl" alt="" width="36" height="36" />
+            <span class="admin-user-avatar-fallback">@Model.Initials</span>
+        </span>
+        <span class="admin-user-meta">
+            <span class="admin-user-name">@Model.DisplayName</span>
+            @if (!string.Equals(Model.DisplayName, Model.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                <span class="admin-user-email">@Model.Email</span>
+            }
+        </span>
+        <i class="fas fa-chevron-down admin-user-caret" aria-hidden="true"></i>
+    </button>
+
+    <div class="admin-user-menu-panel" id="admin-user-menu-panel" data-admin-user-menu-panel>
+        <div class="admin-user-menu-header">
+            <span class="admin-user-menu-header-name">@Model.DisplayName</span>
+            <span class="admin-user-menu-header-email">@Model.Email</span>
+        </div>
+        <nav class="admin-user-menu-nav" aria-label="@Localizer["AccountMenu"]">
+            <a class="admin-user-menu-item"
+               asp-area="Admin"
+               asp-controller="Account"
+               asp-action="Profile">
+                <i class="fas fa-user-edit" aria-hidden="true"></i>
+                <span>@Localizer["EditProfile"]</span>
+            </a>
+            <a class="admin-user-menu-item"
+               asp-area="Admin"
+               asp-controller="Account"
+               asp-action="ChangePassword">
+                <i class="fas fa-key" aria-hidden="true"></i>
+                <span>@Localizer["ChangePassword"]</span>
+            </a>
+            <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post" class="admin-user-menu-form">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="admin-user-menu-item admin-user-menu-item-danger">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>@Localizer["Logout"]</span>
+                </button>
+            </form>
+        </nav>
+    </div>
+</div>

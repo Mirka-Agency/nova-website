@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Teams" xml:space="preserve"><value>تیم ما</value></data>
+  <data name="NoTeams" xml:space="preserve"><value>هنوز عضوی از تیم منتشر نشده است.</value></data>
+  <data name="BackToTeams" xml:space="preserve"><value>بازگشت به تیم</value></data>
+  <data name="PublishedOn" xml:space="preserve"><value>تاریخ انتشار</value></data>
+  <data name="Category" xml:space="preserve"><value>دسته</value></data>
+  <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
+  <data name="ReadMore" xml:space="preserve"><value>ادامه مطلب</value></data>
+  <data name="Home" xml:space="preserve"><value>خانه</value></data>
+</root>

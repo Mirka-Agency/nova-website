@@ -1,0 +1,97 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> SharedLocalizer
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Modules.Media.Web.MediaAdmin> MediaLocalizer
+<div id="media-library-picker"
+     class="admin-modal"
+     hidden
+     data-uploading-label="@SharedLocalizer["Uploading"]"
+     data-loading-label="@SharedLocalizer["LoadingMedia"]"
+     data-upload-label="@SharedLocalizer["UploadAndSelect"]"
+     data-clear-label="@SharedLocalizer["RemoveImage"]"
+     data-edit-label="@MediaLocalizer["EditImage"]"
+     data-edit-missing-label="@MediaLocalizer["ImageNotInLibrary"]">
+    <div class="admin-modal-backdrop" data-media-picker-close></div>
+    <div class="admin-modal-dialog admin-media-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="media-library-picker-title">
+        <div class="admin-modal-header">
+            <h2 id="media-library-picker-title">@SharedLocalizer["SelectImage"]</h2>
+            <button type="button" class="btn btn-ghost" data-media-picker-close aria-label="@SharedLocalizer["Cancel"]">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="admin-modal-body">
+            <nav class="admin-tabs admin-media-picker-tabs" aria-label="@SharedLocalizer["SelectImage"]">
+                <button type="button" class="admin-tab is-active" data-media-picker-tab="library">@SharedLocalizer["MediaLibraryTab"]</button>
+                <button type="button" class="admin-tab" data-media-picker-tab="upload">@SharedLocalizer["UploadTab"]</button>
+            </nav>
+
+            <div data-media-picker-panel="library">
+                <p class="admin-loading" data-media-picker-loading hidden>
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                    <span>@SharedLocalizer["LoadingMedia"]</span>
+                </p>
+                <p class="admin-lead" data-media-picker-empty hidden>@SharedLocalizer["MediaLibraryEmpty"]</p>
+                <div class="admin-media-picker-grid" data-media-picker-grid></div>
+                <p class="admin-loading admin-media-picker-more" data-media-picker-more hidden aria-live="polite">
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                    <span>@SharedLocalizer["LoadingMedia"]</span>
+                </p>
+            </div>
+
+            <div data-media-picker-panel="upload" hidden>
+                <form class="admin-form" data-media-picker-upload-form method="post" enctype="multipart/form-data" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div class="admin-field">
+                        <label for="media-picker-file">@SharedLocalizer["SelectFile"]</label>
+                        <input id="media-picker-file" name="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required />
+                        <p class="admin-hint">@SharedLocalizer["ImageUploadHint"]</p>
+                    </div>
+                    <div class="admin-field">
+                        <label for="media-picker-title">@SharedLocalizer["Title"]</label>
+                        <input id="media-picker-title" name="title" type="text" maxlength="300" />
+                    </div>
+                    <div class="admin-field-row">
+                        <div class="admin-field">
+                            <label for="media-picker-max-width">@SharedLocalizer["MaxWidth"]</label>
+                            <input id="media-picker-max-width"
+                                   name="maxWidth"
+                                   type="number"
+                                   min="16"
+                                   max="8192"
+                                   step="1"
+                                   placeholder="2560"
+                                   inputmode="numeric" />
+                            <p class="admin-hint">@SharedLocalizer["MaxWidthHint"]</p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="media-picker-quality">@SharedLocalizer["CompressQuality"]</label>
+                            <input id="media-picker-quality"
+                                   name="quality"
+                                   type="number"
+                                   min="40"
+                                   max="100"
+                                   step="1"
+                                   placeholder="82"
+                                   inputmode="numeric" />
+                            <p class="admin-hint">@SharedLocalizer["CompressQualityHint"]</p>
+                        </div>
+                    </div>
+                    <p class="admin-field-error" data-media-picker-upload-error hidden></p>
+                    <p class="admin-loading" data-media-picker-upload-status hidden aria-live="polite">
+                        <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                        <span>@SharedLocalizer["Uploading"]</span>
+                    </p>
+                    <div class="admin-upload-progress" data-media-picker-upload-progress hidden aria-hidden="true">
+                        <span class="admin-upload-progress-bar"></span>
+                    </div>
+                    <div class="admin-actions">
+                        <button type="submit" class="btn btn-primary" data-media-picker-upload-submit>
+                            <i class="fas fa-upload" aria-hidden="true" data-upload-icon></i>
+                            <span data-upload-label>@SharedLocalizer["UploadAndSelect"]</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_MediaImageEditor" />
+<script src="~/admin/js/media-picker.js" asp-append-version="true"></script>

@@ -1,0 +1,49 @@
+@model PublicFormSubmitViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["FieldIdPrefix"] = "field";
+    ViewData["ShowFieldValidation"] = true;
+}
+
+<article class="public-form-page"
+         data-form-key="@Model.Key"
+         data-form-slug="@Model.Slug"
+         data-form-version="@Model.PublishedVersionId"
+         data-form-schema-url="@Model.SchemaUrl">
+    <header class="public-form-header">
+        <h1>@Model.Name</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="public-form-lead">@Model.Description</p>
+        }
+    </header>
+
+    @if (TempData["Success"] is string success)
+    {
+        <p class="public-form-success">@success</p>
+    }
+
+    <form asp-action="Submit"
+          asp-route-slug="@Model.Slug"
+          method="post"
+          enctype="multipart/form-data"
+          class="public-form"
+          data-form-key="@Model.Key"
+          data-submit-behavior="@Model.SubmitBehaviorType">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="public-form-errors"></div>
+
+        <div class="public-form-hp" aria-hidden="true">
+            <label asp-for="Website">@Localizer["HoneypotWebsite"]</label>
+            <input asp-for="Website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <partial name="_PublicFormFields" model="Model" />
+
+        <div class="public-form-actions">
+            <button type="submit" class="btn btn-primary">@(string.IsNullOrWhiteSpace(Model.SubmitButtonText) ? Localizer["Submit"] : Model.SubmitButtonText)</button>
+        </div>
+    </form>
+</article>
+
+<partial name="_PublicFormVisibility" />

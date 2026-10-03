@@ -1,0 +1,60 @@
+@model CMS.Modules.Shop.Application.Orders.OrderDetailDto
+@{
+    ViewData["Title"] = $"سفارش {Model.OrderNumber}";
+}
+
+<h1>سفارش @Model.OrderNumber</h1>
+<p class="blog-meta">وضعیت: @Model.Status — پرداخت: @Model.PaymentStatus</p>
+@if (Model.Status == CMS.Modules.Shop.Domain.Enums.OrderStatus.Pending && Model.PaymentExpiresAtUtc.HasValue)
+{
+    <p class="blog-meta">
+        مهلت پرداخت:
+        <span class="payment-timer"
+              data-expires-utc="@Model.PaymentExpiresAtUtc.Value.ToUniversalTime().ToString("o")"
+              data-expired-label="منقضی‌شده">—</span>
+    </p>
+}
+<p>مبلغ کل: <strong>@Model.TotalAmount.ToString("N0") @Model.Currency</strong></p>
+@if (Model.VatAmount > 0)
+{
+    <p class="blog-meta">مالیات بر ارزش افزوده@(Model.VatPercent.HasValue ? $" ({Model.VatPercent.Value.ToString("0.##")}%)" : ""): @Model.VatAmount.ToString("N0") @Model.Currency</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.ShippingAddress))
+{
+    <p>آدرس: @Model.ShippingAddress @(Model.ShippingCity)</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.ShippingMethodName))
+{
+    <p class="blog-meta">روش ارسال: @Model.ShippingMethodName</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.ShippingEstimatedDelivery))
+{
+    <p class="blog-meta">زمان تقریبی تحویل: @Model.ShippingEstimatedDelivery</p>
+}
+<table class="admin-table">
+    <thead><tr><th>محصول</th><th>تعداد</th><th>قیمت</th></tr></thead>
+    <tbody>
+    @foreach (var line in Model.Lines)
+    {
+        <tr>
+            <td>@line.ProductTitle</td>
+            <td>@line.Quantity</td>
+            <td>@line.LineTotal.ToString("N0")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p>
+    @if (Model.CanCancel)
+    {
+        <form asp-action="CancelOrder" asp-route-id="@Model.Id" method="post" class="admin-inline-form" style="display:inline;" onsubmit="return confirm('سفارش لغو شود؟ موجودی به انبار برمی‌گردد.');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-ghost">لغو سفارش</button>
+        </form>
+    }
+    <a class="btn btn-secondary" asp-action="Orders">بازگشت</a>
+</p>
+
+@section Scripts {
+    <script src="~/admin/js/payment-timer.js" asp-append-version="true"></script>
+}

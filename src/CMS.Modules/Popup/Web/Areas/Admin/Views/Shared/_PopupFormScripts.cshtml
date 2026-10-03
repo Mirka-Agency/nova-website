@@ -1,0 +1,169 @@
+<script>
+(() => {
+  const root = document.querySelector('[data-popup-editor]');
+  if (!root) return;
+
+  const fallbackTitle = root.getAttribute('data-fallback-title') || '';
+  const fallbackBody = root.getAttribute('data-fallback-body') || '';
+  const fallbackCta = root.getAttribute('data-fallback-cta') || '';
+
+  const triggerRadios = root.querySelectorAll('[data-popup-trigger-type]');
+  const timerEl = root.querySelector('[data-popup-trigger-timer]');
+  const scrollEl = root.querySelector('[data-popup-trigger-scroll]');
+  const manualEl = root.querySelector('[data-popup-trigger-manual]');
+  const pageSelect = root.querySelector('[data-popup-page-target]');
+  const pathsEl = root.querySelector('[data-popup-page-paths]');
+  const ctaAction = root.querySelector('[data-cta-action]');
+  const ctaFields = root.querySelector('[data-cta-fields]');
+  const ctaUrl = root.querySelector('[data-cta-url]');
+  const ctaTarget = root.querySelector('[data-cta-target]');
+
+  function selectedTrigger() {
+    const checked = root.querySelector('[data-popup-trigger-type]:checked');
+    return (checked?.value || 'manual').toLowerCase();
+  }
+
+  function syncTrigger() {
+    const value = selectedTrigger();
+    root.querySelectorAll('.popup-trigger-card').forEach((card) => {
+      const input = card.querySelector('[data-popup-trigger-type]');
+      card.classList.toggle('is-selected', !!input?.checked);
+    });
+    if (timerEl) timerEl.hidden = value !== 'timer';
+    if (scrollEl) scrollEl.hidden = value !== 'scroll';
+    if (manualEl) manualEl.hidden = value !== 'manual';
+  }
+
+  function syncPages() {
+    const value = pageSelect?.value || 'All';
+    if (pathsEl) pathsEl.hidden = !(value === 'Include' || value === 'Exclude');
+  }
+
+  function syncCta() {
+    const value = (ctaAction?.value || 'none').trim().toLowerCase();
+    const show = value !== 'none' && value !== '';
+    const isUrl = value === 'url';
+    const isOpenPopup = value === 'open_popup';
+    if (ctaFields) ctaFields.hidden = !show;
+    if (ctaUrl) ctaUrl.hidden = !isUrl;
+    if (ctaTarget) ctaTarget.hidden = !isOpenPopup;
+    refreshPreview();
+  }
+
+  function text(el) {
+    return (el?.value || '').trim();
+  }
+
+  function refreshPreview() {
+    const titleOut = root.querySelector('[data-preview-title-out]');
+    const bodyOut = root.querySelector('[data-preview-body-out]');
+    const imageOut = root.querySelector('[data-preview-image-out]');
+    const htmlOut = root.querySelector('[data-preview-html-out]');
+    const formOut = root.querySelector('[data-preview-form-out]');
+    const ctaOut = root.querySelector('[data-preview-cta-out]');
+    const backdrop = root.querySelector('[data-preview-backdrop]');
+    const closeBtn = root.querySelector('[data-preview-close-btn]');
+
+    const title = text(root.querySelector('[data-preview-title]')) || fallbackTitle;
+    const body = text(root.querySelector('[data-preview-body]')) || fallbackBody;
+    const image = text(root.querySelector('[data-preview-image]'));
+    const formSelect = root.querySelector('[data-preview-form]');
+    const ctaActionValue = (root.querySelector('[data-preview-cta-action]')?.value || 'none').toLowerCase();
+    const ctaText = text(root.querySelector('[data-preview-cta-text]')) || fallbackCta;
+    const showOverlay = root.querySelector('[data-preview-overlay]')?.checked !== false;
+    const showClose = root.querySelector('[data-preview-close]')?.checked !== false;
+
+    if (titleOut) titleOut.textContent = title;
+    if (bodyOut) bodyOut.textContent = body;
+
+    if (imageOut) {
+      if (image) {
+        imageOut.hidden = false;
+        let img = imageOut.querySelector('img');
+        if (!img) {
+          img = document.createElement('img');
+          img.alt = '';
+          imageOut.appendChild(img);
+        }
+        img.src = image;
+      } else {
+        imageOut.hidden = true;
+      }
+    }
+
+    const htmlSource = root.querySelector('[data-preview-html]');
+    if (htmlOut && htmlSource) {
+      const html = htmlSource.value || '';
+      if (html.trim()) {
+        htmlOut.hidden = false;
+        htmlOut.innerHTML = html;
+      } else {
+        htmlOut.hidden = true;
+        htmlOut.innerHTML = '';
+      }
+    }
+
+    if (formOut) formOut.hidden = !(formSelect && formSelect.value);
+
+    if (ctaOut) {
+      if (ctaActionValue === 'none') {
+        ctaOut.hidden = true;
+      } else {
+        ctaOut.hidden = false;
+        ctaOut.textContent = ctaText;
+      }
+    }
+
+    if (backdrop) backdrop.style.opacity = showOverlay ? '1' : '0';
+    if (closeBtn) closeBtn.hidden = !showClose;
+  }
+
+  triggerRadios.forEach((r) => r.addEventListener('change', syncTrigger));
+  root.querySelectorAll('.popup-trigger-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      const radio = card.querySelector('[data-popup-trigger-type]');
+      if (!radio) return;
+      if (!radio.checked) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+      } else {
+        syncTrigger();
+      }
+    });
+  });
+  pageSelect?.addEventListener('change', syncPages);
+  ctaAction?.addEventListener('change', syncCta);
+  ctaAction?.addEventListener('input', syncCta);
+
+  root.querySelector('[data-preview-clear-image]')?.addEventListener('click', () => {
+    const input = root.querySelector('[data-preview-image]');
+    if (input) {
+      input.value = '';
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const box = root.querySelector('[data-preview-image-box]');
+    if (box) box.innerHTML = '';
+    refreshPreview();
+  });
+
+  ['input', 'change'].forEach((evt) => {
+    root.addEventListener(evt, (e) => {
+      if (e.target.matches('[data-preview-title],[data-preview-body],[data-preview-image],[data-preview-form],[data-preview-cta-text],[data-preview-cta-action],[data-preview-overlay],[data-preview-close],[data-preview-html]')) {
+        refreshPreview();
+      }
+    });
+  });
+
+  const imageInput = root.querySelector('[data-preview-image]');
+  if (imageInput) {
+    const observer = new MutationObserver(refreshPreview);
+    observer.observe(imageInput, { attributes: true, attributeFilter: ['value'] });
+    imageInput.addEventListener('change', refreshPreview);
+  }
+
+  syncTrigger();
+  syncPages();
+  syncCta();
+  refreshPreview();
+})();
+</script>

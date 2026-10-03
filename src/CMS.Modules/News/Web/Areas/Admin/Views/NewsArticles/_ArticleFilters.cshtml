@@ -1,0 +1,141 @@
+@model ArticleIndexViewModel
+@using CMS.Modules.News.Domain.Enums
+
+<div class="admin-field">
+    <label for="article-filter-kind">@Localizer["Kind"]</label>
+    <select id="article-filter-kind" name="kind">
+        <option value="">@Localizer["AllKinds"]</option>
+        @foreach (ArticleKind k in Enum.GetValues<ArticleKind>())
+        {
+            var label = k == ArticleKind.Event ? Localizer["EventKind"] : Localizer["NewsKind"];
+            if (Model.Kind == k)
+            {
+                <option value="@k" selected>@label</option>
+            }
+            else
+            {
+                <option value="@k">@label</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-status">@Localizer["Status"]</label>
+    <select id="article-filter-status" name="status">
+        <option value="">@Localizer["AllStatuses"]</option>
+        @foreach (ArticleStatus s in Enum.GetValues<ArticleStatus>())
+        {
+            var label = s == ArticleStatus.Published ? Localizer["Published"] : Localizer["Draft"];
+            if (Model.Status == s)
+            {
+                <option value="@s" selected>@label</option>
+            }
+            else
+            {
+                <option value="@s">@label</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-category">@Localizer["Category"]</label>
+    <select id="article-filter-category" name="categoryId">
+        @foreach (var item in Model.Categories)
+        {
+            if (item.Selected)
+            {
+                <option value="@item.Value" selected>@item.Text</option>
+            }
+            else
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-from">@Localizer["FromDate"]</label>
+    <input id="article-filter-from"
+           type="text"
+           name="from"
+           value="@Model.FromLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-to">@Localizer["ToDate"]</label>
+    <input id="article-filter-to"
+           type="text"
+           name="to"
+           value="@Model.ToLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-event-from">@Localizer["EventFromDate"]</label>
+    <input id="article-filter-event-from"
+           type="text"
+           name="eventFrom"
+           value="@Model.EventFromLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-event-to">@Localizer["EventToDate"]</label>
+    <input id="article-filter-event-to"
+           type="text"
+           name="eventTo"
+           value="@Model.EventToLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="article-filter-sort">@Localizer["Sort"]</label>
+    <select id="article-filter-sort" name="sort">
+        @{
+            var sortOptions = new (string Value, string Key)[]
+            {
+                ("", "SortNewest"),
+                ("oldest", "SortOldest"),
+                ("published", "SortPublished"),
+                ("event_start", "SortEventStart"),
+                ("event_start_desc", "SortEventStartDesc"),
+                ("title", "SortTitle"),
+                ("title_desc", "SortTitleDesc")
+            };
+        }
+        @foreach (var opt in sortOptions)
+        {
+            var selected = string.IsNullOrEmpty(opt.Value)
+                ? string.IsNullOrEmpty(Model.Sort)
+                : string.Equals(Model.Sort, opt.Value, StringComparison.OrdinalIgnoreCase);
+            if (selected)
+            {
+                <option value="@opt.Value" selected>@Localizer[opt.Key]</option>
+            }
+            else
+            {
+                <option value="@opt.Value">@Localizer[opt.Key]</option>
+            }
+        }
+    </select>
+</div>

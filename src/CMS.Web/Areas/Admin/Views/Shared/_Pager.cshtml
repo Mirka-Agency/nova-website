@@ -1,0 +1,37 @@
+@{
+    int currentPage = ViewBag.Page is int p ? p : 1;
+    int totalPages = ViewBag.TotalPages is int tp ? tp : 1;
+    int totalCount = ViewBag.TotalCount is int tc ? tc : 0;
+    var routeValues = new Dictionary<string, string?>();
+    foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
+    {
+        if (string.Equals(key, "page", StringComparison.OrdinalIgnoreCase))
+            continue;
+        routeValues[key] = ViewContext.HttpContext.Request.Query[key];
+    }
+}
+
+@if (totalCount > 0 && totalPages > 1)
+{
+    <nav class="admin-pager" aria-label="صفحه‌بندی">
+        <span class="admin-pager-meta">@totalCount مورد · صفحه @currentPage از @totalPages</span>
+        <div class="admin-pager-links">
+            @if (currentPage > 1)
+            {
+                routeValues["page"] = (currentPage - 1).ToString();
+                <a class="btn btn-secondary" asp-all-route-data="routeValues">
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    <span>قبلی</span>
+                </a>
+            }
+            @if (currentPage < totalPages)
+            {
+                routeValues["page"] = (currentPage + 1).ToString();
+                <a class="btn btn-secondary" asp-all-route-data="routeValues">
+                    <span>بعدی</span>
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                </a>
+            }
+        </div>
+    </nav>
+}

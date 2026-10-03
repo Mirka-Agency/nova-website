@@ -1,0 +1,347 @@
+@model PublicProductDetailDto
+@using System.Globalization
+@using System.Text.Json
+@{
+    ViewData["Title"] = Model.Title;
+    var priceCulture = CultureInfo.GetCultureInfo("fa-IR");
+    string FormatPrice(decimal amount) => amount.ToString("N0", priceCulture);
+    string CurrencyLabel(string? code) =>
+        code?.ToUpperInvariant() switch
+        {
+            "TOMAN" or "IRT" or "TMN" => "تومان",
+            "IRR" => "ریال",
+            _ => code ?? ""
+        };
+    var enableReviews = ViewBag.EnableReviews as bool? ?? false;
+    var images = Model.Images
+        .OrderBy(i => i.SortOrder)
+        .Select(i => (Url: i.Url, Alt: i.AltText ?? Model.Title))
+        .ToList();
+    if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl) &&
+        images.All(i => !string.Equals(i.Url, Model.CoverImageUrl, StringComparison.OrdinalIgnoreCase)))
+    {
+        images.Insert(0, (Model.CoverImageUrl!, Model.Title));
+    }
+
+    var schema = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "Product",
+        ["name"] = Model.Title,
+        ["description"] = Model.ShortDescription ?? Model.Description,
+        ["image"] = images.Select(i => i.Url).ToArray(),
+        ["sku"] = Model.Variations.FirstOrDefault()?.Sku,
+        ["brand"] = string.IsNullOrWhiteSpace(Model.BrandName) ? null : new Dictionary<string, string> { ["@type"] = "Brand", ["name"] = Model.BrandName },
+        ["offers"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "Offer",
+            ["priceCurrency"] = Model.Currency,
+            ["price"] = Model.DisplayPrice,
+            ["availability"] = Model.IsAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        }
+    };
+    if (Model.AverageRating is > 0)
+    {
+        schema["aggregateRating"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "AggregateRating",
+            ["ratingValue"] = Model.AverageRating,
+            ["reviewCount"] = Model.ReviewCount
+        };
+    }
+}
+
+<article class="shop-page shop-detail">
+    <nav class="shop-breadcrumb" aria-label="breadcrumb">
+        <a asp-action="Index">@Localizer["BackToShop"]</a>
+        @if (Model.CanPurchase)
+        {
+            <span class="shop-breadcrumb-sep" aria-hidden="true">/</span>
+            <a asp-controller="Cart" asp-action="Index">@Localizer["Cart"]</a>
+        }
+    </nav>
+
+    @if (TempData["Success"] is string success)
+    {
+        <p class="shop-flash shop-flash--ok" role="status">@success</p>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <p class="shop-flash shop-flash--err" role="alert">@error</p>
+    }
+
+    <div class="shop-detail-layout">
+        <div class="shop-detail-gallery">
+            <div class="shop-detail-main-image">
+                @if (images.Count > 0)
+                {
+                    <img id="shop-main-image" src="@images[0].Url" alt="@images[0].Alt" />
+                }
+                else
+                {
+                    <span class="product-card-placeholder" aria-hidden="true"></span>
+                }
+            </div>
+            @if (images.Count > 1)
+            {
+                <div class="shop-detail-thumbs" role="list">
+                    @foreach (var img in images)
+                    {
+                        <button type="button"
+                                class="shop-detail-thumb"
+                                role="listitem"
+                                data-full="@img.Url"
+                                data-alt="@img.Alt"
+                                aria-label="@img.Alt">
+                            <img src="@img.Url" alt="" />
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="shop-detail-summary">
+            @if (!string.IsNullOrWhiteSpace(Model.BrandName) || !string.IsNullOrWhiteSpace(Model.CategoryName))
+            {
+                <p class="product-card-meta">
+                    @if (!string.IsNullOrWhiteSpace(Model.BrandName)) { <span>@Model.BrandName</span> }
+                    @if (!string.IsNullOrWhiteSpace(Model.BrandName) && !string.IsNullOrWhiteSpace(Model.CategoryName)) { <span> · </span> }
+                    @if (!string.IsNullOrWhiteSpace(Model.CategoryName)) { <span>@Model.CategoryName</span> }
+                </p>
+            }
+
+            <h1 class="shop-detail-title">@Model.Title</h1>
+
+            @if (Model.AverageRating is > 0)
+            {
+                <p class="shop-detail-rating">★ @Model.AverageRating?.ToString("0.0") <span>(@Model.ReviewCount)</span></p>
+            }
+
+            <div class="shop-detail-price-block">
+                @if (Model.ShowPrice)
+                {
+                    <p class="product-card-price">
+                        <span class="product-card-price-value">@FormatPrice(Model.DisplayPrice)</span>
+                        <span class="product-card-price-currency">@CurrencyLabel(Model.Currency)</span>
+                    </p>
+                }
+                <p class="product-card-status @(Model.IsAvailable ? null : "product-card-status--out")">
+                    @(Model.IsAvailable ? Localizer["Available"] : Localizer["Unavailable"])
+                </p>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+            {
+                <p class="shop-detail-short">@Model.ShortDescription</p>
+            }
+
+            @if (Model.CanPurchase && Model.IsAvailable)
+            {
+                var hasVariations = Model.Variations.Count > 0;
+                var defaultVariation = hasVariations
+                    ? Model.Variations.FirstOrDefault(v => v.UnlimitedStock || (v.StockQuantity ?? 0) >= Model.MinimumOrderQuantity)
+                      ?? Model.Variations[0]
+                    : null;
+                var initialUnlimited = defaultVariation?.UnlimitedStock ?? Model.UnlimitedStock;
+                var initialStock = defaultVariation is not null
+                    ? (defaultVariation.StockQuantity ?? 0)
+                    : (Model.StockQuantity ?? 0);
+                var initialInStock = initialUnlimited || initialStock >= Model.MinimumOrderQuantity;
+                var anyInStock = !hasVariations
+                    ? initialInStock
+                    : Model.Variations.Any(v => v.UnlimitedStock || (v.StockQuantity ?? 0) >= Model.MinimumOrderQuantity);
+
+                if (!anyInStock)
+                {
+                    <p class="shop-detail-short">@Localizer["OutOfStock"]</p>
+                }
+                else
+                {
+                    <form asp-controller="Cart" asp-action="Add" method="post" class="shop-buy-form" id="shop-buy-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@Model.Id" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        @if (hasVariations)
+                        {
+                            <div class="shop-buy-field">
+                                <label for="variationId">@Localizer["Variation"]</label>
+                                <select id="variationId" name="variationId" required>
+                                    @foreach (var v in Model.Variations)
+                                    {
+                                        var vStock = v.StockQuantity ?? 0;
+                                        var vInStock = v.UnlimitedStock || vStock >= Model.MinimumOrderQuantity;
+                                        if (vInStock)
+                                        {
+                                            if (defaultVariation?.Id == v.Id)
+                                            {
+                                                <option value="@v.Id"
+                                                        data-unlimited="@(v.UnlimitedStock ? "true" : "false")"
+                                                        data-stock="@vStock"
+                                                        selected>
+                                                    @v.AttributeSummary — @FormatPrice(v.DisplayPrice) @CurrencyLabel(Model.Currency)
+                                                </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@v.Id"
+                                                        data-unlimited="@(v.UnlimitedStock ? "true" : "false")"
+                                                        data-stock="@vStock">
+                                                    @v.AttributeSummary — @FormatPrice(v.DisplayPrice) @CurrencyLabel(Model.Currency)
+                                                </option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="@v.Id"
+                                                    data-unlimited="false"
+                                                    data-stock="@vStock"
+                                                    disabled>
+                                                @v.AttributeSummary — @FormatPrice(v.DisplayPrice) @CurrencyLabel(Model.Currency) (@Localizer["OutOfStock"])
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        }
+                        <div class="shop-buy-row">
+                            <div class="shop-buy-field shop-buy-qty">
+                                <label for="quantity">@Localizer["Quantity"]</label>
+                                @if (initialUnlimited)
+                                {
+                                    <input id="quantity" name="quantity" type="number" value="@Model.MinimumOrderQuantity" min="@Model.MinimumOrderQuantity" />
+                                }
+                                else
+                                {
+                                    <input id="quantity" name="quantity" type="number" value="@Model.MinimumOrderQuantity" min="@Model.MinimumOrderQuantity" max="@initialStock" />
+                                }
+                            </div>
+                            <button type="submit" class="product-card-btn product-card-btn--primary shop-buy-submit" id="shop-buy-submit">@Localizer["AddToCart"]</button>
+                        </div>
+                        <p class="shop-detail-short" id="shop-stock-message" hidden>@Localizer["OutOfStock"]</p>
+                    </form>
+                }
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <section class="shop-detail-description">
+            <h2>@Localizer["Description"]</h2>
+            <div class="blog-content">
+                @Html.Raw(Model.Description)
+            </div>
+        </section>
+    }
+
+    @if (enableReviews)
+    {
+        <section class="shop-reviews">
+            <h2>@Localizer["Reviews"] (@Model.ReviewCount)</h2>
+            @if (Model.Reviews.Count == 0)
+            {
+                <p class="shop-empty">@Localizer["NoReviews"]</p>
+            }
+            else
+            {
+                <ul class="shop-review-list">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <li class="shop-review-item">
+                            <div class="shop-review-head">
+                                <strong>@review.AuthorName</strong>
+                                <span>★ @review.Rating</span>
+                            </div>
+                            <p>@review.Comment</p>
+                            @if (!string.IsNullOrWhiteSpace(review.AdminResponse))
+                            {
+                                <p class="shop-review-reply">@review.AdminResponse</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+
+            <h3>@Localizer["SubmitReview"]</h3>
+            <form asp-action="SubmitReview" asp-route-slug="@Model.Slug" method="post" class="shop-review-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ProductId" value="@Model.Id" />
+                <div class="shop-buy-field">
+                    <label>@Localizer["AuthorName"]</label>
+                    <input name="AuthorName" required maxlength="200" />
+                </div>
+                <div class="shop-buy-field">
+                    <label>@Localizer["Rating"]</label>
+                    <input name="Rating" type="number" min="1" max="5" value="5" />
+                </div>
+                <div class="shop-buy-field">
+                    <label>@Localizer["Comment"]</label>
+                    <textarea name="Comment" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="product-card-btn product-card-btn--primary">@Localizer["SubmitReview"]</button>
+            </form>
+        </section>
+    }
+
+    @await Component.InvokeAsync("Comments", new {
+        targetType = 2,
+        targetId = Model.Id,
+        targetTitle = Model.Title
+    })
+</article>
+
+<script type="application/ld+json">@Html.Raw(JsonSerializer.Serialize(schema))</script>
+@if (images.Count > 1)
+{
+    <script>
+        document.querySelectorAll('.shop-detail-thumb').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var img = document.getElementById('shop-main-image');
+                if (!img) return;
+                img.src = btn.getAttribute('data-full');
+                img.alt = btn.getAttribute('data-alt') || '';
+                document.querySelectorAll('.shop-detail-thumb').forEach(function (b) { b.classList.remove('is-active'); });
+                btn.classList.add('is-active');
+            });
+        });
+        var first = document.querySelector('.shop-detail-thumb');
+        if (first) first.classList.add('is-active');
+    </script>
+}
+@if (Model.CanPurchase && Model.IsAvailable && Model.Variations.Count > 0)
+{
+    <script>
+        (function () {
+            var select = document.getElementById('variationId');
+            var qty = document.getElementById('quantity');
+            var submit = document.getElementById('shop-buy-submit');
+            var message = document.getElementById('shop-stock-message');
+            var minQty = @Model.MinimumOrderQuantity;
+            if (!select || !qty) return;
+
+            function syncStock() {
+                var option = select.options[select.selectedIndex];
+                if (!option) return;
+                var unlimited = option.getAttribute('data-unlimited') === 'true';
+                var stock = parseInt(option.getAttribute('data-stock') || '0', 10);
+                var inStock = unlimited || stock >= minQty;
+
+                if (unlimited) {
+                    qty.removeAttribute('max');
+                } else {
+                    qty.setAttribute('max', String(Math.max(stock, 0)));
+                    if (parseInt(qty.value || '0', 10) > stock) {
+                        qty.value = String(Math.max(Math.min(stock, parseInt(qty.value, 10) || minQty), minQty <= stock ? minQty : 0));
+                    }
+                }
+
+                qty.disabled = !inStock;
+                if (submit) submit.disabled = !inStock;
+                if (message) message.hidden = inStock;
+            }
+
+            select.addEventListener('change', syncStock);
+            syncStock();
+        })();
+    </script>
+}

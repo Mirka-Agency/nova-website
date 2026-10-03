@@ -1,0 +1,100 @@
+<script>
+(function () {
+    function normalize(value) {
+        return (value == null ? '' : String(value)).trim();
+    }
+
+    function readValue(form, fieldKey) {
+        var name = 'Values[' + fieldKey + ']';
+        var nodes = form.querySelectorAll('[name="' + name + '"]');
+        if (!nodes.length) {
+            var byKey = form.querySelector('[data-field-key="' + fieldKey + '"] input, [data-field-key="' + fieldKey + '"] select, [data-field-key="' + fieldKey + '"] textarea');
+            if (!byKey) return '';
+            nodes = [byKey];
+        }
+
+        var type = (nodes[0].type || '').toLowerCase();
+        if (type === 'checkbox') {
+            var checked = [];
+            nodes.forEach(function (n) {
+                if (n.checked) checked.push(n.value);
+            });
+            if (checked.length === 1 && String(checked[0]).toLowerCase() === 'true') return 'true';
+            return checked.join('|');
+        }
+        if (type === 'radio') {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].checked) return nodes[i].value;
+            }
+            return '';
+        }
+        return nodes[0].value || '';
+    }
+
+    function matchCondition(form, condition) {
+        var actual = readValue(form, condition.fieldKey || condition.FieldKey || '');
+        var op = String(condition.operator || condition.Operator || 'equals').toLowerCase();
+        var expected = condition.value != null ? condition.value : condition.Value;
+
+        if (op === 'equals') return normalize(actual).toLowerCase() === normalize(expected).toLowerCase();
+        if (op === 'not_equals') return normalize(actual).toLowerCase() !== normalize(expected).toLowerCase();
+        if (op === 'contains') return normalize(actual).toLowerCase().indexOf(normalize(expected).toLowerCase()) >= 0;
+        if (op === 'is_empty') return normalize(actual) === '';
+        if (op === 'is_not_empty') return normalize(actual) !== '';
+        return false;
+    }
+
+    function isVisible(form, wrapper) {
+        var mode = (wrapper.getAttribute('data-visibility-mode') || 'all').toLowerCase();
+        var raw = wrapper.getAttribute('data-visibility-json');
+        if (!raw) return true;
+        var conditions;
+        try { conditions = JSON.parse(raw); } catch (e) { return true; }
+        if (!conditions || !conditions.length) return true;
+
+        if (mode === 'any') {
+            for (var i = 0; i < conditions.length; i++) {
+                if (matchCondition(form, conditions[i])) return true;
+            }
+            return false;
+        }
+        for (var j = 0; j < conditions.length; j++) {
+            if (!matchCondition(form, conditions[j])) return false;
+        }
+        return true;
+    }
+
+    function setEnabled(wrapper, enabled) {
+        wrapper.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+            if (enabled) el.removeAttribute('disabled');
+            else el.setAttribute('disabled', 'disabled');
+        });
+    }
+
+    function apply(form) {
+        form.querySelectorAll('[data-visibility-mode]').forEach(function (wrapper) {
+            var visible = isVisible(form, wrapper);
+            wrapper.hidden = !visible;
+            wrapper.style.display = visible ? '' : 'none';
+            wrapper.setAttribute('aria-hidden', visible ? 'false' : 'true');
+            setEnabled(wrapper, visible);
+        });
+    }
+
+    function bind(form) {
+        if (!form || form.getAttribute('data-visibility-bound') === '1') return;
+        if (!form.querySelector('[data-visibility-mode]')) return;
+        form.setAttribute('data-visibility-bound', '1');
+        form.addEventListener('change', function () { apply(form); });
+        form.addEventListener('input', function () { apply(form); });
+        apply(form);
+    }
+
+    function boot() {
+        document.querySelectorAll('form.public-form').forEach(bind);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+</script>

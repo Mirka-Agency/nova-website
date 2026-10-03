@@ -1,0 +1,139 @@
+﻿@model IReadOnlyList<MediaListItemViewModel>
+@{
+    ViewData["Title"] = Localizer["MediaLibrary"];
+    ViewData["SearchPlaceholder"] = Localizer["SearchMedia"].Value;
+    var totalCount = ViewBag.TotalCount is int tc ? tc : Model.Count;
+    var hasSearch = !string.IsNullOrWhiteSpace(ViewBag.Search as string);
+    var canManage = ViewBag.CanManage is true;
+}
+
+<div class="admin-toolbar">
+    @if (canManage)
+    {
+        <a class="btn btn-primary" asp-action="Upload"><i class="fas fa-upload" aria-hidden="true"></i><span>@Localizer["UploadMedia"]</span></a>
+    }
+    <partial name="_FilterPanel" />
+</div>
+
+@if (totalCount == 0)
+{
+    <p class="admin-lead">@(hasSearch ? Localizer["NoSearchResults"] : Localizer["NoMedia"])</p>
+    @if (!hasSearch && canManage)
+    {
+        <a class="btn btn-primary" asp-action="Upload"><i class="fas fa-upload" aria-hidden="true"></i><span>@Localizer["UploadMedia"]</span></a>
+    }
+}
+else
+{
+    <div class="media-library" data-media-library data-can-manage="@canManage.ToString().ToLowerInvariant()">
+        <div class="media-library-main">
+            <div class="media-library-grid" role="list">
+                @foreach (var item in Model)
+                {
+                    var label = string.IsNullOrWhiteSpace(item.Title) ? item.FileName : item.Title;
+                    <button type="button"
+                            class="media-library-item"
+                            role="listitem"
+                            data-media-id="@item.Id"
+                            data-media-url="@item.PublicUrl"
+                            data-media-title="@label"
+                            data-media-alt="@(item.AltText ?? "")"
+                            aria-label="@label">
+                        <span class="media-library-thumb">
+                            <img src="@item.ThumbnailPublicUrl" alt="@(item.AltText ?? label)" loading="lazy" />
+                        </span>
+                        <span class="media-library-caption">@label</span>
+                    </button>
+                }
+            </div>
+            <partial name="_Pager" />
+        </div>
+
+        <aside class="media-details-panel" data-media-details hidden>
+            <div class="media-details-header">
+                <h2>@Localizer["AttachmentDetails"]</h2>
+                <button type="button" class="btn btn-ghost" data-media-details-close aria-label="@Localizer["Close"]">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="media-details-preview">
+                <img data-media-preview src="" alt="" />
+            </div>
+            <dl class="media-details-meta">
+                <div><dt>@Localizer["FileName"]</dt><dd data-media-filename>—</dd></div>
+                <div><dt>@Localizer["ContentType"]</dt><dd data-media-type>—</dd></div>
+                <div><dt>@Localizer["Dimensions"]</dt><dd data-media-dimensions>—</dd></div>
+                <div><dt>@Localizer["Size"]</dt><dd data-media-size>—</dd></div>
+                <div data-media-original-size-row hidden><dt>@Localizer["OriginalSize"]</dt><dd data-media-original-size>—</dd></div>
+                <div><dt>@Localizer["CreatedAt"]</dt><dd data-media-created>—</dd></div>
+            </dl>
+
+            <form class="admin-form media-details-form" data-media-details-form>
+                @Html.AntiForgeryToken()
+                <input type="hidden" data-media-id-field />
+                <div class="admin-field">
+                    <label for="media-title">@Localizer["Title"]</label>
+                    <input id="media-title" name="Title" maxlength="300" data-media-field="title" @(canManage ? null : "readonly") />
+                </div>
+                <div class="admin-field">
+                    <label for="media-alt">@Localizer["AltText"]</label>
+                    <input id="media-alt" name="AltText" maxlength="500" data-media-field="altText" @(canManage ? null : "readonly") />
+                </div>
+                <div class="admin-field">
+                    <label for="media-url">@Localizer["FileUrl"]</label>
+                    <div class="media-url-row">
+                        <input id="media-url" type="text" readonly data-media-field="publicUrl" />
+                        <button type="button" class="btn btn-secondary" data-media-copy-url>@Localizer["CopyLink"]</button>
+                    </div>
+                    <p class="admin-hint">@Localizer["OptimizedHint"]</p>
+                </div>
+                <div class="admin-field" data-media-original-url-row hidden>
+                    <label for="media-original-url">@Localizer["OriginalUrl"]</label>
+                    <div class="media-url-row">
+                        <input id="media-original-url" type="text" readonly data-media-field="originalPublicUrl" />
+                        <button type="button" class="btn btn-secondary" data-media-copy-original-url>@Localizer["CopyOriginalLink"]</button>
+                    </div>
+                </div>
+                <div class="admin-field">
+                    <label for="media-caption">@Localizer["Caption"]</label>
+                    <textarea id="media-caption" name="Caption" rows="2" maxlength="1000" data-media-field="caption" @(canManage ? null : "readonly")></textarea>
+                </div>
+                <div class="admin-field">
+                    <label for="media-description">@Localizer["Description"]</label>
+                    <textarea id="media-description" name="Description" rows="4" maxlength="4000" data-media-field="description" @(canManage ? null : "readonly")></textarea>
+                </div>
+                @if (canManage)
+                {
+                    <div class="admin-actions">
+                        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+                        <button type="button" class="btn btn-secondary" data-media-edit-image>@Localizer["EditImage"]</button>
+                        <button type="button" class="btn btn-secondary" data-media-restore-original hidden>@Localizer["RestoreOriginal"]</button>
+                        <button type="button" class="btn btn-text-danger" data-media-delete>@Localizer["Delete"]</button>
+                    </div>
+                }
+                <p class="admin-hint" data-media-status hidden></p>
+            </form>
+        </aside>
+    </div>
+
+    ViewBag.MediaEditorCanManage = canManage;
+    <partial name="_MediaImageEditor" />
+}
+
+@section Scripts {
+    <script>
+        window.MediaLibraryConfig = {
+            detailsUrl: '@Url.Action("Details", "Media", new { area = "Admin" })',
+            contentUrl: '@Url.Action("Content", "Media", new { area = "Admin" })',
+            updateUrl: '@Url.Action("UpdateMetadata", "Media", new { area = "Admin" })',
+            replaceUrl: '@Url.Action("ReplaceImage", "Media", new { area = "Admin" })',
+            restoreUrl: '@Url.Action("RestoreOriginal", "Media", new { area = "Admin" })',
+            deleteUrl: '@Url.Action("Delete", "Media", new { area = "Admin" })',
+            confirmDelete: '@Html.Raw(Localizer["ConfirmDelete"].Value.Replace("'", "\\'"))',
+            confirmRestore: '@Html.Raw(Localizer["ConfirmRestoreOriginal"].Value.Replace("'", "\\'"))',
+            copied: '@Html.Raw(Localizer["LinkCopied"].Value.Replace("'", "\\'"))',
+            saved: '@Html.Raw(Localizer["MediaUpdated"].Value.Replace("'", "\\'"))'
+        };
+    </script>
+    <script src="~/admin/js/media-library.js" asp-append-version="true"></script>
+}

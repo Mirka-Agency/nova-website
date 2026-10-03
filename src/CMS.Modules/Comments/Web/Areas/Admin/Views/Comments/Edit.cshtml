@@ -1,0 +1,57 @@
+@model CommentEditViewModel
+@{
+    ViewData["Title"] = Localizer["EditComment"];
+}
+
+<form asp-action="Edit" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation-summary"></div>
+
+    <div class="admin-field">
+        <label>@Localizer["Target"]</label>
+        <input value="@Model.TargetTitle" readonly />
+    </div>
+    <div class="admin-field">
+        <label>@Localizer["AuthorName"]</label>
+        <input value="@Model.AuthorName" readonly />
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.AuthorEmail))
+    {
+        <div class="admin-field">
+            <label>@Localizer["AuthorEmail"]</label>
+            <input value="@Model.AuthorEmail" readonly />
+        </div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.AuthorPhone))
+    {
+        <div class="admin-field">
+            <label>@Localizer["AuthorPhone"]</label>
+            <input value="@Model.AuthorPhone" readonly />
+        </div>
+    }
+
+    <div class="admin-field">
+        <label asp-for="Body">@Localizer["Body"]</label>
+        <textarea asp-for="Body" rows="6"></textarea>
+        <span asp-validation-for="Body" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="PublishedAtLocal">@Localizer["PublishedAt"]</label>
+        <input asp-for="PublishedAtLocal"
+               data-jdp
+               data-jdp-only-date="false"
+               autocomplete="off" />
+        <span asp-validation-for="PublishedAtLocal" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+        <a class="btn btn-secondary" asp-action="Index" asp-route-targetType="@((int)Model.TargetType)">@Localizer["Cancel"]</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_JalaliDatePickerScripts" />
+}

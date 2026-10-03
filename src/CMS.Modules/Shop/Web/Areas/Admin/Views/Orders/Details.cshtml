@@ -1,0 +1,274 @@
+@model OrderDetailViewModel
+@{
+    ViewData["Title"] = Localizer["OrderDetail"];
+    var statusBadgeClass = Model.Status switch
+    {
+        OrderStatus.Completed => "admin-badge admin-badge-success",
+        OrderStatus.Cancelled => "admin-badge admin-badge-danger",
+        OrderStatus.Pending => "admin-badge admin-badge-muted",
+        _ => "admin-badge admin-badge-muted"
+    };
+    var dash = "?";
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-secondary" asp-action="Index">
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <span>@Localizer["Orders"]</span>
+    </a>
+    <a class="btn btn-secondary" asp-action="PrintShipment" asp-route-id="@Model.Id" target="_blank" rel="noopener">
+        <i class="fas fa-print" aria-hidden="true"></i>
+        <span>@Localizer["PrintShipment"]</span>
+    </a>
+    <a class="btn btn-primary" asp-action="PrintInvoice" asp-route-id="@Model.Id" target="_blank" rel="noopener">
+        <i class="fas fa-file-invoice" aria-hidden="true"></i>
+        <span>@Localizer["PrintInvoice"]</span>
+    </a>
+</div>
+
+@if (TempData["Error"] is string error)
+{
+    <p class="admin-validation">@error</p>
+}
+@if (TempData["Success"] is string success)
+{
+    <p class="admin-hint" style="color: var(--admin-success, #16a34a);">@success</p>
+}
+
+<div class="admin-order-detail">
+    <header class="admin-order-header">
+        <div class="admin-order-header-main">
+            <p class="admin-order-kicker">@Localizer["OrderDetail"]</p>
+            <h1 class="admin-order-number">@Model.OrderNumber</h1>
+            <div class="admin-order-header-meta">
+                <span class="@statusBadgeClass">@Model.StatusDisplay</span>
+                @if (Model.IsWholesale)
+                {
+                    <span class="admin-badge admin-badge-muted">@Localizer["IsWholesale"]</span>
+                }
+                <span class="admin-order-header-date">@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+            </div>
+        </div>
+        <div class="admin-order-header-total">
+            <span class="admin-stat-label">@Localizer["GrandTotal"]</span>
+            <strong class="admin-stat-value admin-stat-value--sm">@Model.TotalDisplay</strong>
+        </div>
+    </header>
+
+    <section class="admin-panel-section admin-panel-section--flush" aria-labelledby="order-specs-title">
+        <div class="admin-panel-section-head">
+            <h2 id="order-specs-title" class="admin-section-title admin-section-title--flush">@Localizer["OrderSpecs"]</h2>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-spec-table">
+                <tbody>
+                <tr>
+                    <th scope="row">@Localizer["OrderNumber"]</th>
+                    <td><span class="admin-mono">@Model.OrderNumber</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["Status"]</th>
+                    <td><span class="@statusBadgeClass">@Model.StatusDisplay</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["CreatedAt"]</th>
+                    <td>@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                </tr>
+                @if (Model.Status == OrderStatus.Pending && Model.PaymentExpiresAtUtc.HasValue)
+                {
+                    <tr>
+                        <th scope="row">@Localizer["PaymentDeadline"]</th>
+                        <td>
+                            <span class="admin-payment-timer"
+                                  data-expires-utc="@Model.PaymentExpiresAtUtc.Value.ToUniversalTime().ToString("o")"
+                                  data-expired-label="@Localizer["PaymentDeadlineExpired"]">?</span>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <th scope="row">@Localizer["CustomerName"]</th>
+                    <td>@Model.CustomerName</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["CustomerEmail"]</th>
+                    <td><span class="admin-mono" dir="ltr">@Model.CustomerEmail</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["CustomerPhone"]</th>
+                    <td><span class="admin-mono" dir="ltr">@(Model.CustomerPhone ?? dash)</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["RecipientName"]</th>
+                    <td>@(Model.RecipientName ?? dash)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["RecipientPhone"]</th>
+                    <td><span class="admin-mono" dir="ltr">@(Model.RecipientPhone ?? dash)</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["ShippingCity"]</th>
+                    <td>@(Model.ShippingCity ?? dash)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["ShippingAddress"]</th>
+                    <td>@(Model.ShippingAddress ?? dash)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["ShippingMethod"]</th>
+                    <td>@(Model.ShippingMethodName ?? dash)</td>
+                </tr>
+                @if (!string.IsNullOrWhiteSpace(Model.ShippingEstimatedDelivery))
+                {
+                    <tr>
+                        <th scope="row">@Localizer["EstimatedDeliveryText"]</th>
+                        <td>@Model.ShippingEstimatedDelivery</td>
+                    </tr>
+                }
+                <tr>
+                    <th scope="row">@Localizer["PaymentStatus"]</th>
+                    <td>@Model.PaymentStatusDisplay</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["PaymentMethod"]</th>
+                    <td>@(Model.PaymentMethodDisplay ?? dash)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["PaymentProvider"]</th>
+                    <td>@(Model.PaymentProvider ?? dash)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["PaymentTransactionId"]</th>
+                    <td><span class="admin-mono" dir="ltr">@(Model.PaymentTransactionId ?? dash)</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["CouponCode"]</th>
+                    <td>@(string.IsNullOrWhiteSpace(Model.CouponCode) ? dash : Model.CouponCode)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["IsWholesale"]</th>
+                    <td>@(Model.IsWholesale ? Localizer["Yes"] : Localizer["No"])</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["Notes"]</th>
+                    <td>@(string.IsNullOrWhiteSpace(Model.Notes) ? dash : Model.Notes)</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["AdminNotes"]</th>
+                    <td>@(string.IsNullOrWhiteSpace(Model.AdminNotes) ? dash : Model.AdminNotes)</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-panel-section" aria-labelledby="order-items-title">
+        <div class="admin-panel-section-head">
+            <h2 id="order-items-title" class="admin-section-title admin-section-title--flush">@Localizer["OrderItems"]</h2>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table admin-order-lines">
+                <thead>
+                <tr>
+                    <th>@Localizer["Product"]</th>
+                    <th>@Localizer["Sku"]</th>
+                    <th class="admin-col-num">@Localizer["Price"]</th>
+                    <th class="admin-col-num">@Localizer["Quantity"]</th>
+                    <th class="admin-col-num">@Localizer["Total"]</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td>@line.ProductTitle</td>
+                        <td><span class="admin-mono" dir="ltr">@(string.IsNullOrWhiteSpace(line.Sku) ? dash : line.Sku)</span></td>
+                        <td class="admin-col-num">@line.UnitPriceDisplay</td>
+                        <td class="admin-col-num">@line.Quantity</td>
+                        <td class="admin-col-num">@line.LineTotalDisplay</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="4">@Localizer["Subtotal"]</th>
+                    <td class="admin-col-num">@Model.SubtotalDisplay</td>
+                </tr>
+                <tr>
+                    <th colspan="4">@Localizer["ShippingAmount"]</th>
+                    <td class="admin-col-num">@Model.ShippingAmountDisplay</td>
+                </tr>
+                <tr>
+                    <th colspan="4">@Localizer["DiscountAmount"]</th>
+                    <td class="admin-col-num">@Model.DiscountAmountDisplay</td>
+                </tr>
+                @if (Model.VatAmountDisplay is not null)
+                {
+                    <tr>
+                        <th colspan="4">
+                            @Localizer["VatAmount"]
+                            @if (Model.VatPercent.HasValue)
+                            {
+                                <span class="admin-meta">(@Model.VatPercent.Value.ToString("0.##")%)</span>
+                            }
+                        </th>
+                        <td class="admin-col-num">@Model.VatAmountDisplay</td>
+                    </tr>
+                }
+                <tr class="admin-order-lines-total">
+                    <th colspan="4">@Localizer["GrandTotal"]</th>
+                    <td class="admin-col-num">@Model.TotalDisplay</td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-panel-section" aria-labelledby="order-status-title">
+        <div class="admin-panel-section-head">
+            <h2 id="order-status-title" class="admin-section-title admin-section-title--flush">@Localizer["ChangeStatus"]</h2>
+        </div>
+        <form asp-action="ChangeStatus" method="post" class="admin-form admin-form-narrow admin-order-status-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="admin-field">
+                <label for="status">@Localizer["Status"]</label>
+                <select id="status" name="status" asp-items="Model.StatusOptions"></select>
+            </div>
+            <div class="admin-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    <span>@Localizer["Save"]</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    @if (Model.CanConfirmBankTransfer)
+    {
+        <section class="admin-panel-section" aria-labelledby="bank-confirm-title">
+            <div class="admin-panel-section-head">
+                <h2 id="bank-confirm-title" class="admin-section-title admin-section-title--flush">@Localizer["ConfirmBankTransfer"]</h2>
+            </div>
+            <form asp-action="ConfirmBankTransfer" method="post" class="admin-form admin-form-narrow">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <p class="admin-hint">@Localizer["ConfirmBankTransferHint"]</p>
+                <div class="admin-field">
+                    <label for="transactionReference">@Localizer["BankTransferReference"]</label>
+                    <input id="transactionReference" name="transactionReference" maxlength="200" dir="ltr" />
+                    <p class="admin-hint">@Localizer["BankTransferReferenceHint"]</p>
+                </div>
+                <div class="admin-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                        <span>@Localizer["ConfirmBankTransfer"]</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/admin/js/payment-timer.js" asp-append-version="true"></script>
+}

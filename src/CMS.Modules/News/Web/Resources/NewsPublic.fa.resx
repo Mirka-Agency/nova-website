@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="News" xml:space="preserve"><value>رویدادها و اخبار</value></data>
+  <data name="NoPosts" xml:space="preserve"><value>هنوز خبر یا رویدادی منتشر نشده است.</value></data>
+  <data name="BackToNews" xml:space="preserve"><value>بازگشت به رویدادها و اخبار</value></data>
+  <data name="PublishedOn" xml:space="preserve"><value>تاریخ انتشار</value></data>
+  <data name="Category" xml:space="preserve"><value>دسته</value></data>
+  <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
+  <data name="ReadMore" xml:space="preserve"><value>ادامه مطلب</value></data>
+  <data name="Home" xml:space="preserve"><value>خانه</value></data>
+  <data name="Kind" xml:space="preserve"><value>نوع</value></data>
+  <data name="NewsKind" xml:space="preserve"><value>خبر</value></data>
+  <data name="EventKind" xml:space="preserve"><value>رویداد</value></data>
+  <data name="EventStart" xml:space="preserve"><value>شروع رویداد</value></data>
+  <data name="EventEnd" xml:space="preserve"><value>پایان رویداد</value></data>
+  <data name="Location" xml:space="preserve"><value>محل برگزاری</value></data>
+  <data name="Venue" xml:space="preserve"><value>محل</value></data>
+</root>

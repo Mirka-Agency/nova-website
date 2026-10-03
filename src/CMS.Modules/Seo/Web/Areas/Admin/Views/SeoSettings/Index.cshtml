@@ -1,0 +1,63 @@
+@model SeoSettingsViewModel
+@{
+    ViewData["Title"] = Localizer["SeoSettings"];
+}
+
+<form method="post" class="admin-form" style="max-width: 40rem;">
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <fieldset class="admin-fieldset">
+        <legend>@Localizer["OrganizationSection"]</legend>
+        <div class="admin-field">
+            <label asp-for="OrganizationName">@Localizer["OrganizationName"]</label>
+            <input asp-for="OrganizationName" />
+            <span asp-validation-for="OrganizationName" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
+            <label asp-for="OrganizationUrl">@Localizer["OrganizationUrl"]</label>
+            <input asp-for="OrganizationUrl" dir="ltr" />
+            <span asp-validation-for="OrganizationUrl" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
+            <label asp-for="OrganizationLogoUrl">@Localizer["OrganizationLogoUrl"]</label>
+            <input asp-for="OrganizationLogoUrl" dir="ltr" />
+            <span asp-validation-for="OrganizationLogoUrl" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
+            <label asp-for="DefaultSchemaType">@Localizer["DefaultSchemaType"]</label>
+            <select asp-for="DefaultSchemaType" asp-items="Model.SchemaTypeOptions"></select>
+            <span asp-validation-for="DefaultSchemaType" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
+            <label asp-for="TwitterSiteHandle">@Localizer["TwitterSiteHandle"]</label>
+            <input asp-for="TwitterSiteHandle" dir="ltr" placeholder="@@site" />
+            <span asp-validation-for="TwitterSiteHandle" class="admin-field-error"></span>
+        </div>
+    </fieldset>
+
+    <fieldset class="admin-fieldset">
+        <legend>@Localizer["CrawlingSection"]</legend>
+        <div class="admin-field">
+            <label class="admin-checkbox">
+                <input asp-for="SitemapEnabled" />
+                <span>@Localizer["SitemapEnabled"]</span>
+            </label>
+        </div>
+        <div class="admin-field">
+            <label class="admin-checkbox">
+                <input asp-for="EnableBrokenLinkChecks" />
+                <span>@Localizer["EnableBrokenLinkChecks"]</span>
+            </label>
+        </div>
+        <div class="admin-field">
+            <label asp-for="RobotsTxtExtra">@Localizer["RobotsTxtExtra"]</label>
+            <textarea asp-for="RobotsTxtExtra" rows="6" dir="ltr"></textarea>
+            <p class="admin-hint">@Localizer["RobotsTxtExtraHint"]</p>
+            <span asp-validation-for="RobotsTxtExtra" class="admin-field-error"></span>
+        </div>
+    </fieldset>
+
+    <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+    </div>
+</form>

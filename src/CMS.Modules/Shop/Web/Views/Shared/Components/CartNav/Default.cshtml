@@ -1,0 +1,10 @@
+@model int
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<CMS.Modules.Shop.Web.ShopPublic> Localizer
+<a class="site-nav-cart" asp-controller="Cart" asp-action="Index" aria-label="@Localizer["Cart"]">
+    <span>@Localizer["Cart"]</span>
+    @if (Model > 0)
+    {
+        <span class="site-nav-cart-count" aria-hidden="true">@Model</span>
+    }
+</a>

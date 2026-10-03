@@ -1,0 +1,33 @@
+@model CMS.Web.Areas.Admin.ViewModels.DashboardViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["Dashboard"];
+    var empty = new CMS.Web.Areas.Admin.ViewModels.EmptyStateViewModel(Localizer["DashboardEmpty"].Value);
+}
+
+<p class="admin-lead">@Localizer["Welcome"]</p>
+
+@if (Model.Cards.Count == 0)
+{
+    <partial name="_EmptyState" model="empty" />
+}
+else
+{
+    <div class="admin-stat-grid">
+        @foreach (var card in Model.Cards)
+        {
+            <article class="admin-stat-card">
+                <div class="admin-stat-icon" aria-hidden="true"><i class="@card.IconCss"></i></div>
+                <div class="admin-stat-label">@card.Title</div>
+                <div class="admin-stat-value">@card.Count.ToString("N0")</div>
+                @if (!string.IsNullOrWhiteSpace(card.Url))
+                {
+                    <a class="admin-stat-link" href="@card.Url">
+                        <span>@card.ActionLabel</span>
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    </a>
+                }
+            </article>
+        }
+    </div>
+}

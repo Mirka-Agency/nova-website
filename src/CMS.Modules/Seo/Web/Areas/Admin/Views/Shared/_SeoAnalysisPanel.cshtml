@@ -1,0 +1,95 @@
+@model CMS.Modules.Seo.Web.Areas.Admin.ViewModels.SeoEditorFieldsViewModel
+@{
+    var contentType = Model.ContentType;
+    var contentId = Model.ContentId?.ToString() ?? "";
+    // Ensure nested binding (Seo.FocusKeyword, …) when rendered without `for="Seo"`.
+    if (string.IsNullOrEmpty(ViewData.TemplateInfo.HtmlFieldPrefix))
+        ViewData.TemplateInfo.HtmlFieldPrefix = "Seo";
+}
+
+<aside class="admin-seo-panel"
+       data-seo-panel
+       data-seo-content-type="@contentType"
+       data-seo-content-id="@contentId"
+       data-seo-api-base="/api/v1/admin/seo">
+    <div class="admin-seo-panel__header">
+        <div class="admin-seo-panel__heading">
+            <h3 class="admin-seo-panel__title">@Localizer["SeoAnalysis"]</h3>
+            <p class="admin-seo-panel__subtitle">@Localizer["SeoAnalysisHint"]</p>
+        </div>
+        <div class="admin-seo-score"
+             data-seo-score
+             data-seo-score-value="@(Model.SeoScore?.ToString() ?? "")"
+             aria-label="@Localizer["SeoScore"]">
+            <span class="admin-seo-score__ring" data-seo-score-ring></span>
+            <span class="admin-seo-score__value" data-seo-score-label>@(Model.SeoScore?.ToString() ?? "—")</span>
+        </div>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="FocusKeyword">@Localizer["FocusKeyword"]</label>
+        <input asp-for="FocusKeyword"
+               data-seo-focus-keyword
+               autocomplete="off" />
+        <p class="admin-hint">@Localizer["FocusKeywordHint"]</p>
+        <span asp-validation-for="FocusKeyword" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-seo-serp" data-seo-serp>
+        <p class="admin-seo-serp__url" data-seo-serp-url dir="ltr">@(Model.PreviewUrl ?? "/")</p>
+        <p class="admin-seo-serp__title" data-seo-serp-title>@(Model.PreviewTitle ?? Localizer["SerpTitlePlaceholder"].Value)</p>
+        <p class="admin-seo-serp__desc" data-seo-serp-desc>@(Model.PreviewDescription ?? Localizer["SerpDescPlaceholder"].Value)</p>
+    </div>
+
+    <div class="admin-seo-tabs" data-seo-tabs role="tablist">
+        <button type="button" class="admin-seo-tab is-active" data-seo-tab="content" role="tab">@Localizer["TabContent"]</button>
+        <button type="button" class="admin-seo-tab" data-seo-tab="readability" role="tab">@Localizer["TabReadability"]</button>
+        <button type="button" class="admin-seo-tab" data-seo-tab="social" role="tab">@Localizer["TabSocial"]</button>
+        <button type="button" class="admin-seo-tab" data-seo-tab="advanced" role="tab">@Localizer["TabAdvanced"]</button>
+    </div>
+
+    <div class="admin-seo-tab-panels">
+        <div class="admin-seo-tab-panel is-active" data-seo-tab-panel="content" role="tabpanel">
+            <div data-seo-results data-seo-results-content class="admin-seo-results">
+                <p class="admin-hint">@Localizer["AnalysisPending"]</p>
+            </div>
+        </div>
+        <div class="admin-seo-tab-panel" data-seo-tab-panel="readability" role="tabpanel" hidden>
+            <div data-seo-results-readability class="admin-seo-results">
+                <p class="admin-hint">@Localizer["AnalysisPending"]</p>
+            </div>
+        </div>
+        <div class="admin-seo-tab-panel" data-seo-tab-panel="social" role="tabpanel" hidden>
+            <div data-seo-results-social class="admin-seo-results">
+                <p class="admin-hint">@Localizer["AnalysisPending"]</p>
+            </div>
+        </div>
+        <div class="admin-seo-tab-panel" data-seo-tab-panel="advanced" role="tabpanel" hidden>
+            <div class="admin-field">
+                <label class="admin-checkbox">
+                    <input asp-for="RobotsIndex" data-seo-robots-index />
+                    <span>@Localizer["RobotsIndex"]</span>
+                </label>
+            </div>
+            <div class="admin-field">
+                <label class="admin-checkbox">
+                    <input asp-for="RobotsFollow" data-seo-robots-follow />
+                    <span>@Localizer["RobotsFollow"]</span>
+                </label>
+            </div>
+            <div class="admin-field">
+                <label asp-for="SchemaType">@Localizer["SchemaType"]</label>
+                <select asp-for="SchemaType" asp-items="Model.SchemaTypeOptions" data-seo-schema-type></select>
+                <span asp-validation-for="SchemaType" class="admin-field-error"></span>
+            </div>
+            <div data-seo-results-advanced class="admin-seo-results"></div>
+        </div>
+    </div>
+
+    <input type="hidden" asp-for="SeoScore" data-seo-score-input />
+    <input type="hidden" asp-for="ContentType" />
+    @if (Model.ContentId.HasValue)
+    {
+        <input type="hidden" asp-for="ContentId" />
+    }
+</aside>

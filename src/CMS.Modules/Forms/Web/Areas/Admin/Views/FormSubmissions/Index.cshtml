@@ -1,0 +1,261 @@
+@model SubmissionIndexViewModel
+@using CMS.Modules.Forms.Application.Common
+@using CMS.Modules.Forms.Domain.Enums
+@{
+    ViewData["Title"] = Localizer["Submissions"];
+    ViewData["SearchPlaceholder"] = Localizer["Search"].Value;
+    ViewData["FilterFieldsPartial"] = "_SubmissionFilters";
+    ViewBag.Search = Model.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = !string.IsNullOrWhiteSpace(Model.Search)
+        || Model.Status.HasValue
+        || !string.IsNullOrWhiteSpace(Model.FromLocal)
+        || !string.IsNullOrWhiteSpace(Model.ToLocal);
+    if (Model.FormId.HasValue)
+        ViewBag.FilterClearRouteValues = new { area = "Admin", formId = Model.FormId.Value };
+    else
+        ViewBag.FilterClearRouteValues = new { area = "Admin" };
+    var hasFilters = ViewBag.HasActiveFilters as bool? == true;
+
+    string StatusBadgeClass(SubmissionStatus status) => status switch
+    {
+        SubmissionStatus.New => "admin-badge admin-badge-emphasis",
+        SubmissionStatus.Read => "admin-badge",
+        SubmissionStatus.Processed => "admin-badge admin-badge-success",
+        SubmissionStatus.Spam => "admin-badge admin-badge-danger",
+        SubmissionStatus.Archived => "admin-badge admin-badge-muted",
+        _ => "admin-badge admin-badge-muted"
+    };
+
+    var statusTabs = new (SubmissionStatus? Status, string Label)[]
+    {
+        (null, Localizer["AllStatuses"].Value),
+        (SubmissionStatus.New, Localizer["SubmissionStatus_New"].Value),
+        (SubmissionStatus.Read, Localizer["SubmissionStatus_Read"].Value),
+        (SubmissionStatus.Processed, Localizer["SubmissionStatus_Processed"].Value),
+        (SubmissionStatus.Archived, Localizer["SubmissionStatus_Archived"].Value),
+        (SubmissionStatus.Spam, Localizer["SubmissionStatus_Spam"].Value),
+    };
+}
+
+<div class="admin-toolbar">
+    @if (Model.FormId.HasValue)
+    {
+        <a class="btn btn-secondary" asp-controller="Forms" asp-action="Edit" asp-route-id="@Model.FormId" asp-route-tab="responses">@Localizer["BackToForm"]</a>
+        <span class="admin-lead">@Model.FormName</span>
+    }
+    else
+    {
+        <a class="btn btn-secondary" asp-controller="Forms" asp-action="Index">@Localizer["Forms"]</a>
+    }
+    <a class="btn btn-secondary"
+       asp-action="Export"
+       asp-route-formId="@Model.FormId"
+       asp-route-q="@Model.Search"
+       asp-route-status="@Model.Status"
+       asp-route-from="@Model.FromLocal"
+       asp-route-to="@Model.ToLocal">
+        <i class="fas fa-download" aria-hidden="true"></i><span>@Localizer["ExportCsv"]</span>
+    </a>
+    <partial name="_FilterPanel" />
+</div>
+
+<nav class="admin-submission-status-nav" aria-label="@Localizer["Status"]">
+    @foreach (var tab in statusTabs)
+    {
+        var isActive = tab.Status == Model.Status
+            || (!tab.Status.HasValue && !Model.Status.HasValue);
+        <a class="admin-submission-status-tab@(isActive ? " is-active" : "")"
+           asp-action="Index"
+           asp-route-formId="@Model.FormId"
+           asp-route-status="@tab.Status"
+           asp-route-q="@Model.Search"
+           asp-route-from="@Model.FromLocal"
+           asp-route-to="@Model.ToLocal"
+           aria-current="@(isActive ? "page" : null)">@tab.Label</a>
+    }
+</nav>
+
+@if (Model.Items.Count == 0)
+{
+    <div class="admin-empty-state" role="status">
+        <p class="admin-empty-message">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoSubmissions"])</p>
+    </div>
+}
+else
+{
+    <form method="post" id="bulk-form" asp-action="BulkStatus" class="admin-submission-inbox">
+        @Html.AntiForgeryToken()
+        @if (Model.FormId.HasValue)
+        {
+            <input type="hidden" name="formId" value="@Model.FormId" />
+        }
+        <div id="bulk-actions"
+             class="admin-bulk-bar"
+             hidden
+             role="region"
+             aria-label="@Localizer["BulkActionsTitle"]">
+            <div class="admin-bulk-bar-main">
+                <div class="admin-bulk-bar-info">
+                    <i class="fas fa-check-square" aria-hidden="true"></i>
+                    <div>
+                        <strong class="admin-bulk-bar-title">@Localizer["BulkActionsTitle"]</strong>
+                        <span class="admin-bulk-bar-count" id="bulk-selected-count"></span>
+                    </div>
+                </div>
+                <div class="admin-bulk-bar-actions">
+                    <label class="admin-bulk-status-label" for="bulk-status">@Localizer["ChangeStatusTo"]</label>
+                    <select id="bulk-status" name="status" class="admin-bulk-status-select">
+                        <option value="@SubmissionStatus.Read">@Localizer["SubmissionStatus_Read"]</option>
+                        <option value="@SubmissionStatus.New">@Localizer["SubmissionStatus_New"]</option>
+                        <option value="@SubmissionStatus.Processed">@Localizer["SubmissionStatus_Processed"]</option>
+                        <option value="@SubmissionStatus.Archived">@Localizer["SubmissionStatus_Archived"]</option>
+                        <option value="@SubmissionStatus.Spam">@Localizer["SubmissionStatus_Spam"]</option>
+                    </select>
+                    <button type="submit"
+                            formaction="@Url.Action("BulkStatus")"
+                            class="btn btn-primary">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                        <span>@Localizer["ApplyStatusChange"]</span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-ghost"
+                            id="bulk-clear-selection">
+                        @Localizer["ClearSelection"]
+                    </button>
+                    <button type="submit"
+                            formaction="@Url.Action("BulkDelete")"
+                            class="btn btn-text-danger"
+                            onclick="return confirm('@Localizer["ConfirmDelete"]');">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                        <span>@Localizer["BulkDelete"]</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-submission-list-head">
+            <label class="admin-submission-select-all">
+                <input type="checkbox" id="select-all" />
+                <span>@Localizer["BulkActionsTitle"]</span>
+            </label>
+            <p class="admin-bulk-hint admin-bulk-hint--inline" id="bulk-hint" data-admin-bulk-hint>
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span>@Localizer["BulkActionsHint"]</span>
+            </p>
+        </div>
+
+        <div class="admin-submission-list" role="list">
+            @foreach (var item in Model.Items)
+            {
+                var isUnread = item.Status == SubmissionStatus.New;
+                <article class="admin-submission-row@(isUnread ? " is-unread" : "")"
+                         role="listitem"
+                         data-submission-id="@item.Id">
+                    <label class="admin-submission-row-check">
+                        <input type="checkbox" name="ids" value="@item.Id" class="row-select" />
+                        <span class="visually-hidden">@item.FormName</span>
+                    </label>
+                    <a class="admin-submission-row-main"
+                       asp-action="Details"
+                       asp-route-id="@item.Id">
+                        <div class="admin-submission-row-top">
+                            <strong class="admin-submission-row-title">@item.FormName</strong>
+                            <span class="@StatusBadgeClass(item.Status)">@item.StatusLabel</span>
+                        </div>
+                        <p class="admin-submission-row-preview">@(string.IsNullOrWhiteSpace(item.Preview) ? "—" : item.Preview)</p>
+                        <div class="admin-submission-row-meta">
+                            <time class="admin-mono" dir="ltr" datetime="@item.SubmittedAtUtc.ToString("o")">@JalaliDateHelper.FormatFromUtc(item.SubmittedAtUtc)</time>
+                            @if (!string.IsNullOrWhiteSpace(item.IpAddress))
+                            {
+                                <span class="admin-submission-row-sep" aria-hidden="true">·</span>
+                                <span class="admin-mono" dir="ltr">@item.IpAddress</span>
+                            }
+                        </div>
+                    </a>
+                    <div class="admin-submission-row-actions admin-row-actions">
+                        <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">
+                            <i class="fas fa-eye" aria-hidden="true"></i><span>@Localizer["View"]</span>
+                        </a>
+                        @if (item.Status != SubmissionStatus.Archived)
+                        {
+                            <button type="submit"
+                                    formaction="@Url.Action("Archive")"
+                                    formmethod="post"
+                                    name="id"
+                                    value="@item.Id"
+                                    class="btn btn-ghost">@Localizer["Archive"]</button>
+                        }
+                        else
+                        {
+                            <button type="submit"
+                                    formaction="@Url.Action("Unarchive")"
+                                    formmethod="post"
+                                    name="id"
+                                    value="@item.Id"
+                                    class="btn btn-ghost">@Localizer["Unarchive"]</button>
+                        }
+                        <button type="submit"
+                                formaction="@Url.Action("Delete")"
+                                formmethod="post"
+                                name="id"
+                                value="@item.Id"
+                                class="btn btn-ghost"
+                                onclick="return confirm('@Localizer["ConfirmDelete"]');">
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </article>
+            }
+        </div>
+    </form>
+
+    <partial name="_Pager" />
+
+    <script>
+        (() => {
+            const selectAll = document.getElementById('select-all');
+            const bulk = document.getElementById('bulk-actions');
+            const hint = document.getElementById('bulk-hint');
+            const countEl = document.getElementById('bulk-selected-count');
+            const clearBtn = document.getElementById('bulk-clear-selection');
+            const label = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Localizer["SelectedCount"].Value));
+            const sync = () => {
+                const selected = document.querySelectorAll('.row-select:checked');
+                const n = selected.length;
+                const hasSelection = n > 0;
+                if (bulk) bulk.hidden = !hasSelection;
+                if (hint) hint.hidden = hasSelection;
+                if (countEl) countEl.textContent = hasSelection ? label.replace('{0}', String(n)) : '';
+                if (selectAll) {
+                    const all = document.querySelectorAll('.row-select');
+                    selectAll.checked = all.length > 0 && n === all.length;
+                    selectAll.indeterminate = n > 0 && n < all.length;
+                }
+                document.querySelectorAll('.row-select').forEach((cb) => {
+                    cb.closest('.admin-submission-row')?.classList.toggle('is-selected', cb.checked);
+                });
+            };
+            selectAll?.addEventListener('change', (e) => {
+                document.querySelectorAll('.row-select').forEach((cb) => { cb.checked = e.target.checked; });
+                sync();
+            });
+            document.querySelectorAll('.row-select').forEach((cb) => cb.addEventListener('change', sync));
+            clearBtn?.addEventListener('click', () => {
+                document.querySelectorAll('.row-select').forEach((cb) => { cb.checked = false; });
+                if (selectAll) {
+                    selectAll.checked = false;
+                    selectAll.indeterminate = false;
+                }
+                sync();
+            });
+            sync();
+        })();
+    </script>
+}
+
+@section Scripts {
+    <partial name="_JalaliDatePickerScripts" />
+}

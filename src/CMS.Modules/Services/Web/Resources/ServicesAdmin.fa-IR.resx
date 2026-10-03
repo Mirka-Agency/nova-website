@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ServiceItems" xml:space="preserve"><value>خدمات</value></data>
+  <data name="Categories" xml:space="preserve"><value>دسته‌ها</value></data>
+  <data name="CreatePost" xml:space="preserve"><value>ایجاد خدمت</value></data>
+  <data name="EditPost" xml:space="preserve"><value>ویرایش خدمت</value></data>
+  <data name="CreateCategory" xml:space="preserve"><value>ایجاد دسته</value></data>
+  <data name="EditCategory" xml:space="preserve"><value>ویرایش دسته</value></data>
+  <data name="Title" xml:space="preserve"><value>عنوان</value></data>
+  <data name="Name" xml:space="preserve"><value>نام</value></data>
+  <data name="Slug" xml:space="preserve"><value>نامک</value></data>
+  <data name="Body" xml:space="preserve"><value>متن</value></data>
+  <data name="Description" xml:space="preserve"><value>توضیحات</value></data>
+  <data name="DescriptionOptionalHint" xml:space="preserve"><value>اختیاری است.</value></data>
+  <data name="Image" xml:space="preserve"><value>تصویر</value></data>
+  <data name="ImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
+  <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
+  <data name="CoverImage" xml:space="preserve"><value>تصویر شاخص</value></data>
+  <data name="CoverImageUploadHint" xml:space="preserve"><value>آپلود JPEG، PNG، WebP یا GIF (حداکثر ۵ مگابایت). در S3 ذخیره می‌شود.</value></data>
+  <data name="CoverImageInvalidType" xml:space="preserve"><value>فقط تصاویر JPEG، PNG، WebP یا GIF مجاز هستند.</value></data>
+  <data name="CoverImageTooLarge" xml:space="preserve"><value>حجم تصویر شاخص باید حداکثر ۵ مگابایت باشد.</value></data>
+  <data name="Category" xml:space="preserve"><value>دسته</value></data>
+  <data name="NoCategory" xml:space="preserve"><value>بدون دسته</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="Draft" xml:space="preserve"><value>پیش‌نویس</value></data>
+  <data name="Published" xml:space="preserve"><value>منتشرشده</value></data>
+  <data name="Publish" xml:space="preserve"><value>انتشار</value></data>
+  <data name="SaveDraft" xml:space="preserve"><value>ذخیره به‌عنوان پیش‌نویس</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>این مورد حذف شود؟</value></data>
+  <data name="NoPosts" xml:space="preserve"><value>هنوز خدمتی ثبت نشده است.</value></data>
+  <data name="NoCategories" xml:space="preserve"><value>هنوز دسته‌ای ثبت نشده است.</value></data>
+  <data name="PostCreated" xml:space="preserve"><value>خدمت با موفقیت ایجاد شد.</value></data>
+  <data name="PostUpdated" xml:space="preserve"><value>خدمت به‌روزرسانی شد.</value></data>
+  <data name="PostDeleted" xml:space="preserve"><value>خدمت حذف شد.</value></data>
+  <data name="CategoryCreated" xml:space="preserve"><value>دسته با موفقیت ایجاد شد.</value></data>
+  <data name="CategoryUpdated" xml:space="preserve"><value>دسته به‌روزرسانی شد.</value></data>
+  <data name="CategoryDeleted" xml:space="preserve"><value>دسته حذف شد.</value></data>
+  <data name="ServiceItemCount" xml:space="preserve"><value>تعداد خدمات</value></data>
+  <data name="CreatedAt" xml:space="preserve"><value>تاریخ ایجاد</value></data>
+  <data name="CoverImageHint" xml:space="preserve"><value>اختیاری: به‌جای آپلود، آدرس مطلق https وارد کنید یا از کتابخانه انتخاب کنید.</value></data>
+  <data name="SelectFromLibrary" xml:space="preserve"><value>انتخاب از کتابخانه</value></data>
+  <data name="SelectImage" xml:space="preserve"><value>انتخاب تصویر</value></data>
+  <data name="SelectImageHint" xml:space="preserve"><value>کتابخانه رسانه را باز کنید تا از تصاویر موجود انتخاب کنید یا فایل جدید آپلود کنید.</value></data>
+  <data name="SearchPosts" xml:space="preserve"><value>جستجوی خدمت…</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
+  <data name="ShortDescription" xml:space="preserve"><value>توضیحات کوتاه</value></data>
+  <data name="ShortDescriptionHint" xml:space="preserve"><value>اختیاری؛ در فهرست خدمات و در صورت خالی بودن متا به‌عنوان خلاصه استفاده می‌شود.</value></data>
+  <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
+  <data name="AuthorHint" xml:space="preserve"><value>انتخاب دستی نویسنده از کاربران ادمین یا ویرایشگر.</value></data>
+  <data name="NoAuthor" xml:space="preserve"><value>بدون نویسنده</value></data>
+  <data name="AuthorNotFound" xml:space="preserve"><value>نویسنده انتخاب‌شده یافت نشد.</value></data>
+  <data name="PublishDate" xml:space="preserve"><value>تاریخ انتشار</value></data>
+  <data name="PublishDateHint" xml:space="preserve"><value>در صورت انتشار، این تاریخ نمایش داده می‌شود؛ خالی بگذارید تا زمان ذخیره ثبت شود.</value></data>
+  <data name="MetaSettings" xml:space="preserve"><value>تنظیمات متا</value></data>
+  <data name="SeoSettings" xml:space="preserve"><value>تنظیمات سئو</value></data>
+  <data name="MetaTitle" xml:space="preserve"><value>عنوان متا</value></data>
+  <data name="MetaTitleHint" xml:space="preserve"><value>عنوان صفحه در نتایج جستجو؛ خالی = عنوان خدمت.</value></data>
+  <data name="MetaDescription" xml:space="preserve"><value>توضیحات متا</value></data>
+  <data name="MetaDescriptionHint" xml:space="preserve"><value>خلاصه برای موتورهای جستجو؛ خالی = توضیحات کوتاه.</value></data>
+  <data name="SeoKeywords" xml:space="preserve"><value>کلمات کلیدی</value></data>
+  <data name="SeoKeywordsHint" xml:space="preserve"><value>کلمات را با ویرگول جدا کنید.</value></data>
+  <data name="CanonicalUrl" xml:space="preserve"><value>آدرس کنونیکال</value></data>
+  <data name="CanonicalUrlHint" xml:space="preserve"><value>اختیاری؛ آدرس اصلی این خدمت برای جلوگیری از محتوای تکراری.</value></data>
+  <data name="OgTitle" xml:space="preserve"><value>عنوان Open Graph</value></data>
+  <data name="OgDescription" xml:space="preserve"><value>توضیحات Open Graph</value></data>
+  <data name="OgImage" xml:space="preserve"><value>تصویر Open Graph</value></data>
+  <data name="OgImageHint" xml:space="preserve"><value>اختیاری؛ خالی = تصویر شاخص خدمت.</value></data>
+  <data name="TitleRequired" xml:space="preserve"><value>برای انتشار، عنوان الزامی است.</value></data>
+  <data name="AutosaveSaving" xml:space="preserve"><value>در حال ذخیره خودکار…</value></data>
+  <data name="AutosaveSaved" xml:space="preserve"><value>پیش‌نویس ذخیره شد</value></data>
+  <data name="AutosaveFailed" xml:space="preserve"><value>ذخیره خودکار ناموفق بود</value></data>
+  <data name="AutosavePausedPublish" xml:space="preserve"><value>ذخیره خودکار تا زمان انتشار متوقف است</value></data>
+  <data name="DraftResumeTitle" xml:space="preserve"><value>ادامه پیش‌نویس</value></data>
+  <data name="DraftResumeMessage" xml:space="preserve"><value>از جایی که رها کردید ادامه می‌دهید؟</value></data>
+  <data name="DraftResumeYes" xml:space="preserve"><value>بله</value></data>
+  <data name="DraftResumeDiscard" xml:space="preserve"><value>بیخیالش شو</value></data>
+  <data name="EditLockedBy" xml:space="preserve"><value>کاربر «{0}» در حال ویرایش این مورد است. فعلاً امکان ویرایش وجود ندارد.</value></data>
+  <data name="EditLockLost" xml:space="preserve"><value>قفل ویرایش شما منقضی شده یا این مورد توسط کاربر دیگری گرفته شده است.</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>همه وضعیت‌ها</value></data>
+  <data name="AllCategories" xml:space="preserve"><value>همه دسته‌ها</value></data>
+  <data name="FromDate" xml:space="preserve"><value>از تاریخ</value></data>
+  <data name="ToDate" xml:space="preserve"><value>تا تاریخ</value></data>
+  <data name="Sort" xml:space="preserve"><value>مرتب‌سازی</value></data>
+  <data name="SortNewest" xml:space="preserve"><value>جدیدترین</value></data>
+  <data name="SortOldest" xml:space="preserve"><value>قدیمی‌ترین</value></data>
+  <data name="SortPublished" xml:space="preserve"><value>تاریخ انتشار</value></data>
+  <data name="SortTitle" xml:space="preserve"><value>عنوان (الف–ی)</value></data>
+  <data name="SortTitleDesc" xml:space="preserve"><value>عنوان (ی–الف)</value></data>
+</root>

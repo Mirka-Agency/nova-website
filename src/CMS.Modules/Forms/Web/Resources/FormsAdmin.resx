@@ -1,0 +1,831 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Forms" xml:space="preserve">
+    <value>فرم‌ها</value>
+  </data>
+  <data name="CreateForm" xml:space="preserve">
+    <value>فرم جدید</value>
+  </data>
+  <data name="EditForm" xml:space="preserve">
+    <value>ویرایش فرم</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>نام</value>
+  </data>
+  <data name="Slug" xml:space="preserve">
+    <value>نامک</value>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>کلید</value>
+  </data>
+  <data name="KeyHint" xml:space="preserve">
+    <value>شناسه پایدار برای ارجاع در قالب/API؛ پس از ایجاد قابل تغییر نیست. اگر خالی باشد از نامک ساخته می‌شود.</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>توضیحات</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>انتشار</value>
+  </data>
+  <data name="PublicView" xml:space="preserve">
+    <value>مشاهده عمومی</value>
+  </data>
+  <data name="PublicViewHint" xml:space="preserve">
+    <value>با فعال‌سازی، فرم در آدرس عمومی قابل مشاهده و ارسال است.</value>
+  </data>
+  <data name="Published" xml:space="preserve">
+    <value>منتشر شده</value>
+  </data>
+  <data name="Draft" xml:space="preserve">
+    <value>پیش‌نویس</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>وضعیت</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>فیلدها</value>
+  </data>
+  <data name="FieldCount" xml:space="preserve">
+    <value>تعداد فیلد</value>
+  </data>
+  <data name="SubmissionCount" xml:space="preserve">
+    <value>پاسخ‌ها</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>ایجاد</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>ذخیره</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>انصراف</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>ویرایش</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>حذف شود؟</value>
+  </data>
+  <data name="NoForms" xml:space="preserve">
+    <value>هنوز فرمی ثبت نشده است.</value>
+  </data>
+  <data name="FormCreated" xml:space="preserve">
+    <value>فرم ایجاد شد.</value>
+  </data>
+  <data name="FormUpdated" xml:space="preserve">
+    <value>فرم به‌روزرسانی شد.</value>
+  </data>
+  <data name="FormDeleted" xml:space="preserve">
+    <value>فرم حذف شد.</value>
+  </data>
+  <data name="AddField" xml:space="preserve">
+    <value>افزودن فیلد</value>
+  </data>
+  <data name="EditField" xml:space="preserve">
+    <value>ویرایش فیلد</value>
+  </data>
+  <data name="FieldKey" xml:space="preserve">
+    <value>کلید</value>
+  </data>
+  <data name="FieldLabel" xml:space="preserve">
+    <value>برچسب</value>
+  </data>
+  <data name="FieldType" xml:space="preserve">
+    <value>نوع</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>اجباری</value>
+  </data>
+  <data name="OptionsCsv" xml:space="preserve">
+    <value>گزینه‌ها</value>
+  </data>
+  <data name="OptionsHint" xml:space="preserve">
+    <value>هر گزینه در یک خط، یا با | جدا کنید. برای value≠label از value:label استفاده کنید (مثلاً yes:بله).</value>
+  </data>
+  <data name="SortOrder" xml:space="preserve">
+    <value>ترتیب</value>
+  </data>
+  <data name="NoFields" xml:space="preserve">
+    <value>هنوز فیلدی تعریف نشده است.</value>
+  </data>
+  <data name="FieldCreated" xml:space="preserve">
+    <value>فیلد اضافه شد.</value>
+  </data>
+  <data name="FieldUpdated" xml:space="preserve">
+    <value>فیلد به‌روزرسانی شد.</value>
+  </data>
+  <data name="FieldDeleted" xml:space="preserve">
+    <value>فیلد حذف شد.</value>
+  </data>
+  <data name="Submissions" xml:space="preserve">
+    <value>پاسخ‌های فرم</value>
+  </data>
+  <data name="SubmissionDetail" xml:space="preserve">
+    <value>جزئیات پاسخ</value>
+  </data>
+  <data name="NoSubmissions" xml:space="preserve">
+    <value>پاسخی ثبت نشده است.</value>
+  </data>
+  <data name="SubmittedAt" xml:space="preserve">
+    <value>زمان ارسال</value>
+  </data>
+  <data name="IpAddress" xml:space="preserve">
+    <value>آی‌پی</value>
+  </data>
+  <data name="UserAgent" xml:space="preserve">
+    <value>مرورگر</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>مقدار</value>
+  </data>
+  <data name="ViewSubmissions" xml:space="preserve">
+    <value>مشاهده پاسخ‌ها</value>
+  </data>
+  <data name="PublicUrl" xml:space="preserve">
+    <value>آدرس عمومی</value>
+  </data>
+  <data name="BackToForm" xml:space="preserve">
+    <value>بازگشت به فرم</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>مشاهده</value>
+  </data>
+  <data name="Templates" xml:space="preserve">
+    <value>قالب‌های آماده</value>
+  </data>
+  <data name="TemplatesHint" xml:space="preserve">
+    <value>با یک کلیک فرم تماس، مشاوره یا استخدام بسازید و بعد فیلدها را ویرایش کنید.</value>
+  </data>
+  <data name="FormCreatedFromTemplate" xml:space="preserve">
+    <value>فرم از روی قالب ساخته شد.</value>
+  </data>
+  <data name="FormCreateFailed" xml:space="preserve">
+    <value>ساخت فرم با خطا مواجه شد. لطفاً دوباره تلاش کنید.</value>
+  </data>
+  <data name="SendEmailNotification" xml:space="preserve">
+    <value>ارسال ایمیل هنگام پاسخ جدید</value>
+  </data>
+  <data name="NotifyEmail" xml:space="preserve">
+    <value>ایمیل دریافت‌کننده</value>
+  </data>
+  <data name="NotifyEmailHint" xml:space="preserve">
+    <value>پس از هر ارسال موفق، خلاصه پاسخ به این آدرس ایمیل می‌شود (نیاز به تنظیم SMTP).</value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>باز کردن فایل</value>
+  </data>
+  <data name="SlugHint" xml:space="preserve">
+    <value>اختیاری؛ اگر خالی باشد از نام ساخته می‌شود.</value>
+  </data>
+  <data name="EmailSettings" xml:space="preserve">
+    <value>اعلان ایمیل</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>بله</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>خیر</value>
+  </data>
+  <data name="FieldType_Text" xml:space="preserve">
+    <value>متن</value>
+  </data>
+  <data name="FieldType_Email" xml:space="preserve">
+    <value>ایمیل</value>
+  </data>
+  <data name="FieldType_TextArea" xml:space="preserve">
+    <value>متن چندخطی</value>
+  </data>
+  <data name="FieldType_Number" xml:space="preserve">
+    <value>عدد</value>
+  </data>
+  <data name="FieldType_Select" xml:space="preserve">
+    <value>انتخابی</value>
+  </data>
+  <data name="FieldType_Checkbox" xml:space="preserve">
+    <value>چک‌باکس</value>
+  </data>
+  <data name="FieldType_Phone" xml:space="preserve">
+    <value>تلفن</value>
+  </data>
+  <data name="FieldType_FileUpload" xml:space="preserve">
+    <value>آپلود فایل</value>
+  </data>
+  <data name="FieldType_Radio" xml:space="preserve">
+    <value>رادیویی</value>
+  </data>
+  <data name="FieldType_Date" xml:space="preserve">
+    <value>تاریخ</value>
+  </data>
+  <data name="FieldType_Captcha" xml:space="preserve">
+    <value>کپچا</value>
+  </data>
+  <data name="FieldType_Url" xml:space="preserve">
+    <value>آدرس اینترنتی</value>
+  </data>
+  <data name="FieldType_CheckboxGroup" xml:space="preserve">
+    <value>چندگزینه‌ای</value>
+  </data>
+  <data name="FieldType_Time" xml:space="preserve">
+    <value>ساعت</value>
+  </data>
+  <data name="FieldType_DateTime" xml:space="preserve">
+    <value>تاریخ و زمان</value>
+  </data>
+  <data name="FieldType_Hidden" xml:space="preserve">
+    <value>پنهان</value>
+  </data>
+  <data name="FieldType_Consent" xml:space="preserve">
+    <value>رضایت</value>
+  </data>
+  <data name="FieldType_Heading" xml:space="preserve">
+    <value>عنوان</value>
+  </data>
+  <data name="FieldType_Paragraph" xml:space="preserve">
+    <value>پاراگراف</value>
+  </data>
+  <data name="FieldType_Divider" xml:space="preserve">
+    <value>جداکننده</value>
+  </data>
+  <data name="LayoutWidth" xml:space="preserve">
+    <value>عرض چیدمان</value>
+  </data>
+  <data name="LayoutWidthFull" xml:space="preserve">
+    <value>کامل</value>
+  </data>
+  <data name="LayoutWidthHalf" xml:space="preserve">
+    <value>نیم‌عرض</value>
+  </data>
+  <data name="DuplicateField" xml:space="preserve">
+    <value>کپی فیلد</value>
+  </data>
+  <data name="FieldDuplicated" xml:space="preserve">
+    <value>فیلد کپی شد.</value>
+  </data>
+  <data name="DefaultValue" xml:space="preserve">
+    <value>مقدار پیش‌فرض</value>
+  </data>
+  <data name="MinValue" xml:space="preserve">
+    <value>حداقل مقدار</value>
+  </data>
+  <data name="MaxValue" xml:space="preserve">
+    <value>حداکثر مقدار</value>
+  </data>
+  <data name="MinLength" xml:space="preserve">
+    <value>حداقل طول</value>
+  </data>
+  <data name="MaxLength" xml:space="preserve">
+    <value>حداکثر طول</value>
+  </data>
+  <data name="Pattern" xml:space="preserve">
+    <value>الگوی Regex</value>
+  </data>
+  <data name="PatternHint" xml:space="preserve">
+    <value>اختیاری؛ الگوی پیشرفته برای اعتبارسنجی.</value>
+  </data>
+  <data name="AdvancedValidation" xml:space="preserve">
+    <value>اعتبارسنجی پیشرفته</value>
+  </data>
+  <data name="AllowedExtensions" xml:space="preserve">
+    <value>پسوندهای مجاز</value>
+  </data>
+  <data name="AllowedExtensionsHint" xml:space="preserve">
+    <value>مثلاً pdf|jpg|png</value>
+  </data>
+  <data name="MaxFileSizeMb" xml:space="preserve">
+    <value>حداکثر حجم (مگابایت)</value>
+  </data>
+  <data name="MinSelections" xml:space="preserve">
+    <value>حداقل انتخاب</value>
+  </data>
+  <data name="MaxSelections" xml:space="preserve">
+    <value>حداکثر انتخاب</value>
+  </data>
+  <data name="VisibilitySection" xml:space="preserve">
+    <value>نمایش شرطی</value>
+  </data>
+  <data name="VisibilityMode" xml:space="preserve">
+    <value>حالت نمایش</value>
+  </data>
+  <data name="VisibilityModeHint" xml:space="preserve">
+    <value>فیلد را همیشه نشان دهید یا بر اساس شرط‌ها مخفی/نمایش کنید.</value>
+  </data>
+  <data name="VisibilityModeAlways" xml:space="preserve">
+    <value>همیشه نمایش</value>
+  </data>
+  <data name="VisibilityModeAll" xml:space="preserve">
+    <value>همه شرط‌ها (AND)</value>
+  </data>
+  <data name="VisibilityModeAny" xml:space="preserve">
+    <value>یکی از شرط‌ها (OR)</value>
+  </data>
+  <data name="VisibilityDependsOnFieldId" xml:space="preserve">
+    <value>وابسته به فیلد</value>
+  </data>
+  <data name="VisibilityOperator" xml:space="preserve">
+    <value>عملگر</value>
+  </data>
+  <data name="VisibilityOperatorEquals" xml:space="preserve">
+    <value>برابر است با</value>
+  </data>
+  <data name="VisibilityOperatorNotEquals" xml:space="preserve">
+    <value>برابر نیست با</value>
+  </data>
+  <data name="VisibilityOperatorContains" xml:space="preserve">
+    <value>شامل می‌شود</value>
+  </data>
+  <data name="VisibilityOperatorIsEmpty" xml:space="preserve">
+    <value>خالی است</value>
+  </data>
+  <data name="VisibilityOperatorIsNotEmpty" xml:space="preserve">
+    <value>خالی نیست</value>
+  </data>
+  <data name="VisibilityValue" xml:space="preserve">
+    <value>مقدار مقایسه</value>
+  </data>
+  <data name="VisibilityAddCondition" xml:space="preserve">
+    <value>افزودن شرط</value>
+  </data>
+  <data name="VisibilityRemoveCondition" xml:space="preserve">
+    <value>حذف شرط</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>غیرفعال</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>کپی</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>فعال‌سازی</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>غیرفعال‌سازی</value>
+  </data>
+  <data name="FormDuplicated" xml:space="preserve">
+    <value>فرم کپی شد.</value>
+  </data>
+  <data name="FormStatusUpdated" xml:space="preserve">
+    <value>وضعیت فرم به‌روزرسانی شد.</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>جستجو</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>اعمال فیلتر</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>همه وضعیت‌ها</value>
+  </data>
+  <data name="SortNewest" xml:space="preserve">
+    <value>جدیدترین</value>
+  </data>
+  <data name="SortName" xml:space="preserve">
+    <value>نام</value>
+  </data>
+  <data name="SortSubmissions" xml:space="preserve">
+    <value>بیشترین پاسخ</value>
+  </data>
+  <data name="SortStatus" xml:space="preserve">
+    <value>وضعیت</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>قبلی</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>بعدی</value>
+  </data>
+  <data name="SectionGeneral" xml:space="preserve">
+    <value>عمومی</value>
+  </data>
+  <data name="SectionSubmit" xml:space="preserve">
+    <value>تنظیمات ارسال</value>
+  </data>
+  <data name="SuccessMessage" xml:space="preserve">
+    <value>پیام موفقیت</value>
+  </data>
+  <data name="RedirectUrl" xml:space="preserve">
+    <value>آدرس هدایت پس از ارسال</value>
+  </data>
+  <data name="SubmitButtonText" xml:space="preserve">
+    <value>متن دکمه ارسال</value>
+  </data>
+  <data name="EnableCaptcha" xml:space="preserve">
+    <value>فعال‌سازی کپچا</value>
+  </data>
+  <data name="NotifyEmailSubject" xml:space="preserve">
+    <value>موضوع ایمیل اعلان</value>
+  </data>
+  <data name="NotifySenderName" xml:space="preserve">
+    <value>نام فرستنده</value>
+  </data>
+  <data name="NotifyReplyToFieldKey" xml:space="preserve">
+    <value>فیلد ایمیل Reply-To</value>
+  </data>
+  <data name="NotifyReplyToHint" xml:space="preserve">
+    <value>فیلد ایمیلی که پاسخ اعلان به آن برود.</value>
+  </data>
+  <data name="AutoReplySettings" xml:space="preserve">
+    <value>پاسخ خودکار</value>
+  </data>
+  <data name="AutoReplyEnabled" xml:space="preserve">
+    <value>ارسال پاسخ خودکار به کاربر</value>
+  </data>
+  <data name="AutoReplyEmailFieldKey" xml:space="preserve">
+    <value>فیلد ایمیل کاربر</value>
+  </data>
+  <data name="AutoReplySubject" xml:space="preserve">
+    <value>موضوع پاسخ خودکار</value>
+  </data>
+  <data name="AutoReplyBody" xml:space="preserve">
+    <value>متن پاسخ خودکار</value>
+  </data>
+  <data name="AutoReplyPlaceholdersHint" xml:space="preserve">
+    <value>جایگاه‌ها: {{name}} {{email}} {{phone}} {{message}} {{form.title}} {{submission.id}} {{site.name}}</value>
+  </data>
+  <data name="ReorderHint" xml:space="preserve">
+    <value>برای تغییر ترتیب، ردیف فیلدها را بکشید و رها کنید.</value>
+  </data>
+  <data name="Placeholder" xml:space="preserve">
+    <value>متن راهنما داخل فیلد</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>متن کمکی زیر فیلد</value>
+  </data>
+  <data name="SettingsJson" xml:space="preserve">
+    <value>تنظیمات JSON</value>
+  </data>
+  <data name="SettingsJsonHint" xml:space="preserve">
+    <value>برای کپچا مثلاً {"expected":"۴"}.</value>
+  </data>
+  <data name="FieldKeyHint" xml:space="preserve">
+    <value>نام داخلی فیلد؛ اگر خالی باشد از برچسب ساخته می‌شود.</value>
+  </data>
+  <data name="ExportCsv" xml:space="preserve">
+    <value>خروجی CSV</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>پیش‌نمایش</value>
+  </data>
+  <data name="BulkDelete" xml:space="preserve">
+    <value>حذف انتخاب‌شده‌ها</value>
+  </data>
+  <data name="MarkRead" xml:space="preserve">
+    <value>خوانده‌شده</value>
+  </data>
+  <data name="MarkUnread" xml:space="preserve">
+    <value>جدید / خوانده‌نشده</value>
+  </data>
+  <data name="MarkProcessed" xml:space="preserve">
+    <value>پردازش‌شده</value>
+  </data>
+  <data name="MarkSpam" xml:space="preserve">
+    <value>هرزنامه</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>بایگانی</value>
+  </data>
+  <data name="Unarchive" xml:space="preserve">
+    <value>خروج از بایگانی</value>
+  </data>
+  <data name="SubmissionStatus_New" xml:space="preserve">
+    <value>جدید</value>
+  </data>
+  <data name="SubmissionStatus_Unread" xml:space="preserve">
+    <value>جدید</value>
+  </data>
+  <data name="SubmissionStatus_Read" xml:space="preserve">
+    <value>خوانده‌شده</value>
+  </data>
+  <data name="SubmissionStatus_Archived" xml:space="preserve">
+    <value>بایگانی</value>
+  </data>
+  <data name="SubmissionStatus_Processed" xml:space="preserve">
+    <value>پردازش‌شده</value>
+  </data>
+  <data name="SubmissionStatus_Spam" xml:space="preserve">
+    <value>هرزنامه</value>
+  </data>
+  <data name="SubmissionMarkedRead" xml:space="preserve">
+    <value>پاسخ خوانده‌شده شد.</value>
+  </data>
+  <data name="SubmissionMarkedUnread" xml:space="preserve">
+    <value>پاسخ به وضعیت جدید برگشت.</value>
+  </data>
+  <data name="SubmissionArchived" xml:space="preserve">
+    <value>پاسخ بایگانی شد.</value>
+  </data>
+  <data name="SubmissionUnarchived" xml:space="preserve">
+    <value>پاسخ از بایگانی خارج شد.</value>
+  </data>
+  <data name="SubmissionDeleted" xml:space="preserve">
+    <value>پاسخ حذف شد.</value>
+  </data>
+  <data name="SubmissionsDeleted" xml:space="preserve">
+    <value>پاسخ‌های انتخاب‌شده حذف شدند.</value>
+  </data>
+  <data name="SubmissionsStatusUpdated" xml:space="preserve">
+    <value>وضعیت پاسخ‌ها به‌روزرسانی شد.</value>
+  </data>
+  <data name="ContextPage" xml:space="preserve">
+    <value>صفحه</value>
+  </data>
+  <data name="ContextLocale" xml:space="preserve">
+    <value>زبان</value>
+  </data>
+  <data name="ContextReferrer" xml:space="preserve">
+    <value>ارجاع‌دهنده</value>
+  </data>
+  <data name="ContextUtmSource" xml:space="preserve">
+    <value>UTM Source</value>
+  </data>
+  <data name="ContextUtmMedium" xml:space="preserve">
+    <value>UTM Medium</value>
+  </data>
+  <data name="ContextUtmCampaign" xml:space="preserve">
+    <value>UTM Campaign</value>
+  </data>
+  <data name="ContextUtmTerm" xml:space="preserve">
+    <value>UTM Term</value>
+  </data>
+  <data name="ContextUtmContent" xml:space="preserve">
+    <value>UTM Content</value>
+  </data>
+  <data name="SubmissionFiles" xml:space="preserve">
+    <value>فایل‌ها</value>
+  </data>
+  <data name="SubmissionMeta" xml:space="preserve">
+    <value>اطلاعات ارسال</value>
+  </data>
+  <data name="SubmissionAnswers" xml:space="preserve">
+    <value>پاسخ‌ها</value>
+  </data>
+  <data name="NoSubmissionAnswers" xml:space="preserve">
+    <value>فیلدی برای این پاسخ ثبت نشده است.</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>نام فایل</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>نوع محتوا</value>
+  </data>
+  <data name="FileSize" xml:space="preserve">
+    <value>حجم (بایت)</value>
+  </data>
+  <data name="SubmitBehaviorType" xml:space="preserve">
+    <value>پس از ارسال موفق</value>
+  </data>
+  <data name="SubmitBehavior_Message" xml:space="preserve">
+    <value>نمایش پیام</value>
+  </data>
+  <data name="SubmitBehavior_Redirect" xml:space="preserve">
+    <value>انتقال به URL</value>
+  </data>
+  <data name="SubmitBehavior_Page" xml:space="preserve">
+    <value>هدایت به مسیر صفحه</value>
+  </data>
+  <data name="SubmitBehaviorPageHint" xml:space="preserve">
+    <value>مسیر نسبی صفحه در سایت (مثلاً /thanks). پس از ارسال موفق به این مسیر هدایت می‌شود.</value>
+  </data>
+  <data name="SubmitPagePath" xml:space="preserve">
+    <value>مسیر صفحه</value>
+  </data>
+  <data name="SubmitPageMessageHint" xml:space="preserve">
+    <value>اگر مسیر خالی باشد، این پیام روی خود فرم نمایش داده می‌شود.</value>
+  </data>
+  <data name="RedirectUrlHint" xml:space="preserve">
+    <value>آدرس کامل http(s) برای هدایت پس از ارسال.</value>
+  </data>
+  <data name="SelectEmailField" xml:space="preserve">
+    <value>— انتخاب فیلد ایمیل —</value>
+  </data>
+  <data name="WebhookSettings" xml:space="preserve">
+    <value>وب‌هوک</value>
+  </data>
+  <data name="WebhookEnabled" xml:space="preserve">
+    <value>ارسال وب‌هوک پس از ثبت</value>
+  </data>
+  <data name="WebhookUrl" xml:space="preserve">
+    <value>آدرس وب‌هوک</value>
+  </data>
+  <data name="WebhookHint" xml:space="preserve">
+    <value>پس از ثبت موفق، payload کامل (form/submission/data/context) به این URL با POST ارسال می‌شود.</value>
+  </data>
+  <data name="WebhookSecret" xml:space="preserve">
+    <value>رمز امضای وب‌هوک (HMAC)</value>
+  </data>
+  <data name="WebhookSecretHint" xml:space="preserve">
+    <value>اختیاری. اگر تنظیم شود، هدر X-Form-Signature با HMAC-SHA256 روی بدنه ارسال می‌شود.</value>
+  </data>
+  <data name="SectionSecurity" xml:space="preserve">
+    <value>امنیت و ضداسپم</value>
+  </data>
+  <data name="AntiSpamEnabled" xml:space="preserve">
+    <value>فعال‌سازی ضداسپم</value>
+  </data>
+  <data name="AntiSpamProvider" xml:space="preserve">
+    <value>ارائه‌دهنده ضداسپم</value>
+  </data>
+  <data name="AntiSpamProviderHint" xml:space="preserve">
+    <value>honeypot همیشه فعال است؛ کپچای ساده یا سرویس خارجی را انتخاب کنید. کلیدهای Site/Secret سرویس‌های خارجی از فایل env خوانده می‌شوند.</value>
+  </data>
+  <data name="AntiSpamProvider_Honeypot" xml:space="preserve">
+    <value>Honeypot (پنهان)</value>
+  </data>
+  <data name="AntiSpamProvider_SimpleCaptcha" xml:space="preserve">
+    <value>کپچای ساده</value>
+  </data>
+  <data name="AntiSpamProvider_Turnstile" xml:space="preserve">
+    <value>Cloudflare Turnstile</value>
+  </data>
+  <data name="AntiSpamProvider_Recaptcha" xml:space="preserve">
+    <value>Google reCAPTCHA v3</value>
+  </data>
+  <data name="AntiSpamProvider_Hcaptcha" xml:space="preserve">
+    <value>hCaptcha</value>
+  </data>
+  <data name="AntiSpamSiteKey" xml:space="preserve">
+    <value>Site Key</value>
+  </data>
+  <data name="AntiSpamSecretKey" xml:space="preserve">
+    <value>Secret Key</value>
+  </data>
+  <data name="AntiSpamSecretKeyHint" xml:space="preserve">
+    <value>کلید مخفی فقط در سرور برای تأیید توکن استفاده می‌شود.</value>
+  </data>
+  <data name="AntiSpamEnvKeysHint" xml:space="preserve">
+    <value>Site Key و Secret Key برای ورود ادمین، فرم‌ها و کامنت‌ها مشترک‌اند و از env خوانده می‌شوند (Captcha__Turnstile|Recaptcha|Hcaptcha__SiteKey / SecretKey). Google reCAPTCHA باید نسخهٔ v3 باشد.</value>
+  </data>
+  <data name="SimpleCaptchaExpected" xml:space="preserve">
+    <value>پاسخ مورد انتظار کپچا</value>
+  </data>
+  <data name="SimpleCaptchaExpectedHint" xml:space="preserve">
+    <value>اگر خالی باشد، فقط پر بودن پاسخ یا فیلد Captcha فرم بررسی می‌شود.</value>
+  </data>
+  <data name="TabGeneral" xml:space="preserve">
+    <value>عمومی</value>
+  </data>
+  <data name="TabFields" xml:space="preserve">
+    <value>فیلدها</value>
+  </data>
+  <data name="TabSubmit" xml:space="preserve">
+    <value>پس از ارسال</value>
+  </data>
+  <data name="TabActions" xml:space="preserve">
+    <value>اقدامات</value>
+  </data>
+  <data name="TabSecurity" xml:space="preserve">
+    <value>امنیت</value>
+  </data>
+  <data name="TabAdvanced" xml:space="preserve">
+    <value>پیشرفته</value>
+  </data>
+  <data name="TabResponses" xml:space="preserve">
+    <value>پاسخ‌ها</value>
+  </data>
+  <data name="EmbedSnippet" xml:space="preserve">
+    <value>کد جاسازی در قالب</value>
+  </data>
+  <data name="EmbedHint" xml:space="preserve">
+    <value>این کد را در ویوی قالب قرار دهید تا فرم منتشرشده رندر شود.</value>
+  </data>
+  <data name="ResponsesLead" xml:space="preserve">
+    <value>پاسخ‌های ثبت‌شده این فرم را از صندوق ورودی مشاهده و مدیریت کنید.</value>
+  </data>
+  <data name="SaveFormBeforeFields" xml:space="preserve">
+    <value>ابتدا فرم را ذخیره کنید تا بتوانید فیلد اضافه کنید.</value>
+  </data>
+  <data name="SaveFormBeforeResponses" xml:space="preserve">
+    <value>ابتدا فرم را ذخیره کنید تا پاسخ‌ها در دسترس باشند.</value>
+  </data>
+  <data name="SchemaUrl" xml:space="preserve">
+    <value>آدرس Schema عمومی (JSON)</value>
+  </data>
+  <data name="SchemaUrlHint" xml:space="preserve">
+    <value>قرارداد رندر مستقل از قالب برای Themeها — بدون کلیدهای محرمانه.</value>
+  </data>
+  <data name="VersionHistory" xml:space="preserve">
+    <value>تاریخچه نسخه‌ها</value>
+  </data>
+  <data name="VersionHistoryHint" xml:space="preserve">
+    <value>با هر تغییر روی فرم منتشرشده، نسخه قبلی بایگانی می‌شود. بازیابی فقط تنظیمات/اکشن‌های پیش‌نویس را از آن نسخه کپی می‌کند.</value>
+  </data>
+  <data name="NoVersions" xml:space="preserve">
+    <value>هنوز نسخه‌ای ثبت نشده است.</value>
+  </data>
+  <data name="VersionNumber" xml:space="preserve">
+    <value>شماره</value>
+  </data>
+  <data name="VersionState" xml:space="preserve">
+    <value>وضعیت</value>
+  </data>
+  <data name="UpdatedAt" xml:space="preserve">
+    <value>به‌روزرسانی</value>
+  </data>
+  <data name="PublishedPointer" xml:space="preserve">
+    <value>منتشرشده فعلی</value>
+  </data>
+  <data name="DraftPointer" xml:space="preserve">
+    <value>پیش‌نویس فعلی</value>
+  </data>
+  <data name="RestoreVersion" xml:space="preserve">
+    <value>بازیابی به پیش‌نویس</value>
+  </data>
+  <data name="VersionRestored" xml:space="preserve">
+    <value>نسخه به پیش‌نویس بازیابی شد.</value>
+  </data>
+  <data name="SearchForms" xml:space="preserve">
+    <value>جستجوی فرم</value>
+  </data>
+  <data name="NoSearchResults" xml:space="preserve">
+    <value>نتیجه‌ای با این فیلترها پیدا نشد.</value>
+  </data>
+  <data name="Sort" xml:space="preserve">
+    <value>مرتب‌سازی</value>
+  </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>از تاریخ</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>تا تاریخ</value>
+  </data>
+  <data name="OpenPublicForm" xml:space="preserve">
+    <value>مشاهده فرم عمومی</value>
+  </data>
+  <data name="VersionState_Draft" xml:space="preserve">
+    <value>پیش‌نویس</value>
+  </data>
+  <data name="VersionState_Published" xml:space="preserve">
+    <value>منتشرشده</value>
+  </data>
+  <data name="VersionState_Archived" xml:space="preserve">
+    <value>بایگانی‌شده</value>
+  </data>
+  <data name="FieldSaveFailed" xml:space="preserve">
+    <value>ذخیره فیلد ناموفق بود. دوباره تلاش کنید.</value>
+  </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>صندوق</value>
+  </data>
+  <data name="SubmitButtonTextHint" xml:space="preserve">
+    <value>متنی که روی دکمه ارسال فرم دیده می‌شود.</value>
+  </data>
+  <data name="AddEmailFieldFirst" xml:space="preserve">
+    <value>ابتدا یک فیلد Email در تب فیلدها اضافه کنید.</value>
+  </data>
+  <data name="CopySnippet" xml:space="preserve">
+    <value>کپی کد</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>کپی شد</value>
+  </data>
+  <data name="SelectedCount" xml:space="preserve">
+    <value>{0} مورد انتخاب شده</value>
+  </data>
+  <data name="BulkActionsTitle" xml:space="preserve">
+    <value>اقدامات روی انتخاب‌شده‌ها</value>
+  </data>
+  <data name="BulkActionsHint" xml:space="preserve">
+    <value>برای تغییر وضعیت یا حذف گروهی، ردیف‌های جدول را با تیک انتخاب کنید. فیلتر پاسخ‌ها از آیکون قیف بالا است.</value>
+  </data>
+  <data name="ChangeStatusTo" xml:space="preserve">
+    <value>تغییر وضعیت به</value>
+  </data>
+  <data name="ApplyStatusChange" xml:space="preserve">
+    <value>اعمال</value>
+  </data>
+  <data name="ClearSelection" xml:space="preserve">
+    <value>لغو انتخاب</value>
+  </data>
+  <data name="SystemBadge" xml:space="preserve">
+    <value>سیستمی</value>
+  </data>
+  <data name="SystemFormHint" xml:space="preserve">
+    <value>این فرم از کد seed شده است. کلید و نامک ثابت‌اند و در ارجاعات هاردکد استفاده می‌شوند.</value>
+  </data>
+  <data name="SystemSlugReadonlyHint" xml:space="preserve">
+    <value>نامک فرم‌های سیستمی قابل تغییر نیست.</value>
+  </data>
+  <data name="SystemFieldsHint" xml:space="preserve">
+    <value>فیلدهای سیستمی حذف یا تغییر نوع/کلید نمی‌شوند؛ می‌توانید برچسب و راهنما را ویرایش کنید یا فیلد اضافه کنید.</value>
+  </data>
+  <data name="SystemFieldEditHint" xml:space="preserve">
+    <value>قرارداد این فیلد (کلید، نوع، اجباری، گزینه‌ها) ثابت است.</value>
+  </data>
+  <data name="SystemFieldContractHint" xml:space="preserve">
+    <value>این مقدار در کد تعریف شده و فقط خواندنی است.</value>
+  </data>
+</root>

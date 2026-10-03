@@ -1,0 +1,23 @@
+@model CMS.Application.Account.CustomerProfileDto?
+@{
+    ViewData["Title"] = "داشبورد";
+}
+
+<h1>داشبورد</h1>
+@if (Model is null || !Model.IsProfileComplete)
+{
+    <div class="account-alert account-alert--warn">
+        پروفایلت رو کامل کن تا بتوانی سفارش ثبت کنی.
+        <a asp-action="Profile">تکمیل پروفایل</a>
+    </div>
+}
+else
+{
+    <p class="blog-meta">سلام @(Model.FullName) — به حساب کاربری‌ات خوش آمدی.</p>
+}
+
+<div class="account-dash-links">
+    <a class="btn btn-secondary" asp-action="Orders">سفارش‌ها</a>
+    <a class="btn btn-secondary" asp-action="Addresses">آدرس‌ها</a>
+    <a class="btn btn-secondary" asp-action="Profile">پروفایل</a>
+</div>

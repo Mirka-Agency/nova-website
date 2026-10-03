@@ -1,0 +1,78 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var antiforgery = Antiforgery.GetAndStoreTokens(Context);
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="request-verification-token" content="@antiforgery.RequestToken" />
+    <title>@ViewData["Title"] - @Localizer["AdminPanel"]</title>
+    <link rel="stylesheet" href="~/admin/vendor/abar-font/abar-mid-fanum.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin/vendor/fontawesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin@(ViewBag.EditLockOwned is false && ViewBag.EditLockLockedByName is string ? " is-edit-locked" : "")">
+    <a class="admin-skip-link" href="#admin-main">@Localizer["SkipToContent"]</a>
+    <div class="admin-sidebar-backdrop" data-admin-sidebar-backdrop hidden></div>
+    <aside class="admin-sidebar" id="admin-sidebar" data-admin-sidebar>
+        <div class="admin-sidebar-header">
+            <div class="admin-brand">@Localizer["Brand"]</div>
+            <button type="button" class="admin-sidebar-close btn btn-ghost" data-admin-sidebar-close aria-label="@Localizer["CloseMenu"]">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <partial name="_Sidebar" />
+    </aside>
+    <div class="admin-shell">
+        <header class="admin-topbar">
+            <div class="admin-topbar-start">
+                <button type="button" class="admin-menu-toggle btn btn-ghost" data-admin-sidebar-open aria-controls="admin-sidebar" aria-expanded="false" aria-label="@Localizer["Menu"]">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                    <span>@Localizer["Menu"]</span>
+                </button>
+                <h1 class="admin-topbar-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="admin-topbar-actions">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    @await Component.InvokeAsync("AdminUserMenu")
+                }
+            </div>
+        </header>
+        <main class="admin-main" id="admin-main">
+            @if (TempData["Success"] is string success)
+            {
+                <div class="admin-flash admin-flash-success" role="status" aria-live="polite" data-admin-flash>
+                    <span class="admin-flash-content">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                        <span>@success</span>
+                    </span>
+                    <button type="button" class="admin-flash-dismiss" data-admin-flash-dismiss aria-label="@Localizer["Dismiss"]">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+            }
+            @if (TempData["Error"] is string error)
+            {
+                <div class="admin-flash admin-flash-error" role="alert" aria-live="assertive" data-admin-flash>
+                    <span class="admin-flash-content">
+                        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                        <span>@error</span>
+                    </span>
+                    <button type="button" class="admin-flash-dismiss" data-admin-flash-dismiss aria-label="@Localizer["Dismiss"]">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/admin/js/admin-shell.js" asp-append-version="true"></script>
+    <script src="~/admin/js/admin-slug.js" asp-append-version="true"></script>
+    <script src="~/admin/js/edit-lock.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

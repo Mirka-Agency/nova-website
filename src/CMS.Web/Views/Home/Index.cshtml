@@ -1,0 +1,37 @@
+﻿@using CMS.Application.Common.Features
+@using CMS.Application.Settings
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
+@inject ISiteSettingsService SiteSettings
+@{
+    var settings = await SiteSettings.GetAsync();
+    ViewData["Title"] = "خانه";
+    var tagline = string.IsNullOrWhiteSpace(settings.Tagline)
+        ? "محتوا، فروشگاه و ارتباط — همه در یک جا."
+        : settings.Tagline;
+    var blogOn = await FeatureManager.IsEnabledAsync(FeatureNames.Blog);
+    var newsOn = await FeatureManager.IsEnabledAsync(FeatureNames.News);
+    var shopOn = await FeatureManager.IsEnabledAsync(FeatureNames.Shop);
+}
+
+<section class="site-hero">
+    <h1>@settings.SiteName</h1>
+    <p class="site-hero-lead">@tagline</p>
+    @if (blogOn || newsOn || shopOn)
+    {
+        <div class="site-hero-actions">
+            @if (blogOn)
+            {
+                <a class="site-btn site-btn-primary" asp-controller="Blog" asp-action="Index">وبلاگ</a>
+            }
+            @if (newsOn)
+            {
+                <a class="site-btn site-btn-secondary" asp-controller="News" asp-action="Index">رویدادها و اخبار</a>
+            }
+            @if (shopOn)
+            {
+                <a class="site-btn site-btn-secondary" asp-controller="Shop" asp-action="Index">فروشگاه</a>
+            }
+        </div>
+    }
+</section>

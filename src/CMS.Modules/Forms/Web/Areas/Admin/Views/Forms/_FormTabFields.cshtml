@@ -1,0 +1,111 @@
+@model FormFormViewModel
+
+@if (!Model.Id.HasValue)
+{
+    <p class="admin-lead">@Localizer["SaveFormBeforeFields"]</p>
+    return;
+}
+
+@{
+    var addFieldUrl = Url.Action("AddField", new { formId = Model.Id });
+}
+
+@if (Model.IsSystem)
+{
+    <p class="admin-hint">@Localizer["SystemFieldsHint"]</p>
+}
+
+@if (Model.Fields.Count == 0)
+{
+    <div class="admin-empty-state" role="status">
+        <p class="admin-empty-message">@Localizer["NoFields"]</p>
+        <a class="btn btn-primary" href="@addFieldUrl">@Localizer["AddField"]</a>
+    </div>
+}
+else
+{
+    <div class="admin-toolbar" style="margin-block-end: 1rem;">
+        <div class="admin-row-actions" style="justify-content: flex-start;">
+            <a class="btn btn-primary" asp-action="AddField" asp-route-formId="@Model.Id"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["AddField"]</span></a>
+        </div>
+        <p class="admin-hint">@Localizer["ReorderHint"]</p>
+    </div>
+
+    <div class="admin-table-wrap">
+    <table class="admin-table" id="form-fields-table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>@Localizer["FieldLabel"]</th>
+            <th>@Localizer["FieldType"]</th>
+            <th>@Localizer["Required"]</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="form-fields-sortable">
+        @foreach (var field in Model.Fields)
+        {
+            <tr data-id="@field.Id">
+                <td class="admin-drag-handle" style="cursor: grab;" title="@Localizer["ReorderHint"]">⋮⋮</td>
+                <td>
+                    @field.Label
+                    @if (field.IsSystem)
+                    {
+                        <span class="admin-badge admin-badge-muted">@Localizer["SystemBadge"]</span>
+                    }
+                </td>
+                <td>@Localizer[$"FieldType_{field.FieldType}"]</td>
+                <td>@(field.IsRequired ? Localizer["Yes"] : Localizer["No"])</td>
+                <td class="admin-row-actions">
+                    <a class="btn btn-secondary" asp-action="EditField" asp-route-formId="@Model.Id" asp-route-fieldId="@field.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                    <form asp-action="DuplicateField" method="post" class="admin-inline-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="formId" value="@Model.Id" />
+                        <input type="hidden" name="fieldId" value="@field.Id" />
+                        <button type="submit" class="btn btn-ghost"><i class="fas fa-copy" aria-hidden="true"></i><span>@Localizer["Duplicate"]</span></button>
+                    </form>
+                    @if (!field.IsSystem)
+                    {
+                        <form asp-action="DeleteField" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="formId" value="@Model.Id" />
+                            <input type="hidden" name="fieldId" value="@field.Id" />
+                            <button type="submit" class="btn btn-ghost"><i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span></button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+    <script>
+        (function () {
+            var el = document.getElementById('form-fields-sortable');
+            if (!el || typeof Sortable === 'undefined') return;
+            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            Sortable.create(el, {
+                handle: '.admin-drag-handle',
+                animation: 150,
+                onEnd: function () {
+                    var ids = Array.from(el.querySelectorAll('tr[data-id]')).map(function (row) {
+                        return row.getAttribute('data-id');
+                    });
+                    var body = new URLSearchParams();
+                    body.append('formId', '@Model.Id');
+                    ids.forEach(function (id) { body.append('orderedIds', id); });
+                    fetch('@Url.Action("ReorderFields")', {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': token || '',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: body.toString()
+                    });
+                }
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,49 @@
+@model IReadOnlyList<CMS.Infrastructure.Features.FeatureToggle>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["FeaturesTitle"];
+}
+
+<p class="admin-lead">@Localizer["FeaturesHelp"]</p>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>@Localizer["FeatureName"]</th>
+            <th>@Localizer["Status"]</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var feature in Model)
+    {
+        var confirmMessage = feature.Enabled
+            ? string.Format(Localizer["ConfirmDisableFeature"].Value, Localizer[feature.Name].Value)
+            : string.Format(Localizer["ConfirmEnableFeature"].Value, Localizer[feature.Name].Value);
+        <tr>
+            <td>@Localizer[feature.Name]</td>
+            <td>
+                <span class="admin-badge @(feature.Enabled ? "admin-badge-success" : "admin-badge-muted")">
+                    @(feature.Enabled ? Localizer["Enabled"] : Localizer["Disabled"])
+                </span>
+            </td>
+            <td>
+                <form asp-action="Toggle" method="post" class="admin-inline-form"
+                      onsubmit="return confirm(@System.Text.Json.JsonSerializer.Serialize(confirmMessage));">
+                    <input type="hidden" name="name" value="@feature.Name" />
+                    <button type="submit" class="btn @(feature.Enabled ? "btn-secondary" : "btn-primary")">
+                        @if (feature.Enabled)
+                        {
+                            <i class="fas fa-toggle-off" aria-hidden="true"></i><span>@Localizer["Disable"]</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-toggle-on" aria-hidden="true"></i><span>@Localizer["Enable"]</span>
+                        }
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

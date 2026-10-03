@@ -1,0 +1,31 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> SharedLocalizer
+@{
+    var owned = ViewBag.EditLockOwned as bool? == true;
+    var lockedBy = ViewBag.EditLockLockedByName as string;
+    var entityType = ViewBag.EditLockEntityType as string;
+    var entityId = ViewBag.EditLockEntityId as string;
+    var lockToken = ViewBag.EditLockToken as string;
+}
+
+@if (!owned && !string.IsNullOrWhiteSpace(lockedBy))
+{
+    <div class="admin-edit-lock-banner" role="alert">
+        <i class="fas fa-user-lock" aria-hidden="true"></i>
+        <div>
+            <strong>@SharedLocalizer["EditLockedTitle"]</strong>
+            <p>@string.Format(SharedLocalizer["EditLockedBy"].Value, lockedBy)</p>
+            <p class="admin-hint">@SharedLocalizer["EditLockedHint"]</p>
+        </div>
+    </div>
+}
+else if (owned && !string.IsNullOrWhiteSpace(entityType) && !string.IsNullOrWhiteSpace(entityId) && !string.IsNullOrWhiteSpace(lockToken))
+{
+    <div hidden
+         data-edit-lock
+         data-entity-type="@entityType"
+         data-entity-id="@entityId"
+         data-lock-token="@lockToken"
+         data-heartbeat-url="/api/v1/admin/edit-locks/heartbeat"
+         data-release-url="/api/v1/admin/edit-locks/release"
+         data-interval-ms="20000"></div>
+}

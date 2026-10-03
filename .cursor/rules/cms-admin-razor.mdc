@@ -1,0 +1,67 @@
+---
+description: Admin Razor UI patterns — layouts, ViewModels, forms, antiforgery
+globs: "**/Areas/Admin/**,**/*Admin*.{cshtml,cs}"
+alwaysApply: false
+---
+
+# CMS Admin Razor Patterns
+
+Follow `cms-admin-design-system` for look and RTL. This rule covers structure and MVC patterns.
+
+## Structure
+
+```
+CMS.Web/Areas/Admin/
+├── Controllers/
+├── Views/
+│   ├── Shared/
+│   │   ├── _AdminLayout.cshtml
+│   │   ├── _Sidebar.cshtml
+│   │   └── _ValidationScriptsPartial.cshtml
+│   └── {Feature}/
+└── ViewModels/
+```
+
+Module admin UI lives under `CMS.Modules/{Module}/Web/Areas/Admin/` and registers into the same Admin area.
+
+## Layout
+
+- One `_AdminLayout.cshtml` with `lang="fa"` `dir="rtl"`.
+- Views set `Layout = "_AdminLayout"`.
+- Shared chrome (sidebar, top bar, flash, **filter panel**) only in Shared partials — never copy into feature views.
+- List Index toolbars use `<partial name="_FilterPanel" />` (see `cms-admin-filters`).
+
+## Controllers
+
+- Thin: bind → authorize → call Application → map to ViewModel → return View/Redirect.
+- Prefer `XxxViewModel` over entities/DTOs in views.
+- Use `[Area("Admin")]` and `[Authorize]` on all admin controllers.
+- PRG after POST: redirect with TempData flash; do not re-render success on POST.
+
+## Forms
+
+- Always include antiforgery (`asp-antiforgery` / `@Html.AntiForgeryToken()`).
+- Label above field; validation message below; Persian copy via localizer.
+- One primary submit button per form; cancel is secondary link/button.
+- Prefer tag helpers (`asp-for`, `asp-action`, `asp-controller`).
+
+```cshtml
+<form asp-action="Create" method="post">
+  <div asp-validation-summary="ModelOnly"></div>
+  <label asp-for="Title"></label>
+  <input asp-for="Title" />
+  <span asp-validation-for="Title"></span>
+  <button type="submit" class="btn btn-primary">ذخیره</button>
+</form>
+```
+
+## Flash & Empty States
+
+- Success/error via `TempData["Success"]` / `TempData["Error"]` rendered once in layout.
+- Empty lists: short Persian message + one primary CTA (e.g. ایجاد).
+
+## Do Not
+
+- Put business logic or EF queries in views or controllers.
+- Use English-only labels/placeholders in admin UI.
+- Inline one-off CSS that fights the design system — extend admin CSS instead.

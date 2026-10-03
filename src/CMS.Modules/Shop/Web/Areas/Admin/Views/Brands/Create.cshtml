@@ -1,0 +1,84 @@
+@model BrandFormViewModel
+@{ ViewData["Title"] = Model.Id.HasValue ? Localizer["EditBrand"] : Localizer["CreateBrand"]; }
+<form asp-action="@(Model.Id.HasValue ? "Edit" : "Create")" method="post" class="admin-form admin-form-narrow">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <div class="admin-field">
+        <label asp-for="Name">@Localizer["Name"]</label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="Slug">@Localizer["Slug"]</label>
+        <input asp-for="Slug" />
+        <span asp-validation-for="Slug" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="Description">@Localizer["Description"]</label>
+        <textarea asp-for="Description" rows="3"></textarea>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="Content">@Localizer["Content"]</label>
+        <textarea asp-for="Content"
+                  rows="10"
+                  class="admin-ckeditor-source"></textarea>
+        <span asp-validation-for="Content" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label>@Localizer["Logo"]</label>
+        <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+            <button type="button" class="btn btn-secondary" data-media-picker data-target="#LogoUrl">
+                <i class="fas fa-images" aria-hidden="true"></i>
+                <span>@Localizer["SelectImage"]</span>
+            </button>
+        </div>
+        <input asp-for="LogoUrl" id="LogoUrl" type="hidden" />
+        <p class="admin-hint">@Localizer["SelectImageHint"]</p>
+        <span asp-validation-for="LogoUrl" class="admin-field-error"></span>
+        <div class="admin-upload-preview" data-media-preview-for="#LogoUrl">
+            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+            {
+                <img src="@Model.LogoUrl" alt="" />
+            }
+        </div>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="MetaTitle">@Localizer["MetaTitle"]</label>
+        <input asp-for="MetaTitle" />
+        <p class="admin-hint">@Localizer["BrandMetaTitleHint"]</p>
+        <span asp-validation-for="MetaTitle" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="MetaDescription">@Localizer["MetaDescription"]</label>
+        <textarea asp-for="MetaDescription" rows="2"></textarea>
+        <p class="admin-hint">@Localizer["BrandMetaDescriptionHint"]</p>
+        <span asp-validation-for="MetaDescription" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="SeoKeywords">@Localizer["SeoKeywords"]</label>
+        <input asp-for="SeoKeywords" />
+        <p class="admin-hint">@Localizer["SeoKeywordsHint"]</p>
+        <span asp-validation-for="SeoKeywords" class="admin-field-error"></span>
+    </div>
+
+    <label class="admin-check"><input asp-for="IsActive" /> @Localizer["IsActive"]</label>
+
+    <div class="admin-actions">
+        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+        <a class="btn btn-secondary" asp-controller="ShopCategories" asp-action="Index" asp-route-tab="brands">@Localizer["Cancel"]</a>
+    </div>
+</form>
+
+<partial name="_MediaLibraryPicker" />
+
+@section Scripts {
+    <partial name="_CkEditorScripts" />
+}

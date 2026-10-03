@@ -1,0 +1,35 @@
+---
+description: PostgreSQL single-database and EF Core conventions for the CMS
+globs: "**/Persistence/**,**/*DbContext*,**/Migrations/**,**/appsettings*.json"
+alwaysApply: false
+---
+
+# CMS Database (PostgreSQL)
+
+## Locked decisions
+
+- Provider: **PostgreSQL** only (`Npgsql.EntityFrameworkCore.PostgreSQL`).
+- **One shared database** for Identity and all modules.
+- Connection string name: `DefaultConnection`.
+- **File binaries are not stored in Postgres** — use S3 via `IObjectStorage` (see `cms-storage` rule). Entities keep public URLs (and optionally object keys).
+
+## Do
+
+- Point every `DbContext` at `DefaultConnection`.
+- Use Code First + EF migrations.
+- Keep Identity schema/migrations in `CMS.Infrastructure`.
+- Isolate modules with separate DbContexts and/or Postgres schemas — same database.
+
+## Transactions
+
+- Use an explicit `BeginTransactionAsync` for multi-write business units (checkout, cancel/restore inventory, limited coupon redeem).
+- Prefer conditional `ExecuteUpdateAsync` for concurrent counters (`StockQuantity`, `Coupon.RedemptionCount`) over read-modify-write.
+- See `cms-transactions` rule for Shop inventory/coupon patterns.
+
+## Do Not
+
+- Create a database per module.
+- Add SQLite or SQL Server providers for app data.
+- Store upload blobs/bytea for CMS media in the database.
+- Hardcode production credentials in source; use config / user secrets / env vars.
+- Rely on soft cart checks alone for limited stock or limited coupon capacity.

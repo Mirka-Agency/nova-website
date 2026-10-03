@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Products" xml:space="preserve"><value>محصولات</value></data>
+  <data name="Shop" xml:space="preserve"><value>فروشگاه</value></data>
+  <data name="ShopHome" xml:space="preserve"><value>داشبورد</value></data>
+  <data name="ShopHomeLead" xml:space="preserve"><value>نمای کلی وضعیت فروشگاه، سفارش‌های اخیر و دسترسی سریع به بخش‌های پرکاربرد.</value></data>
+  <data name="NavHome" xml:space="preserve"><value>خانه</value></data>
+  <data name="ShopStatus" xml:space="preserve"><value>وضعیت فروشگاه</value></data>
+  <data name="QuickLinks" xml:space="preserve"><value>دسترسی سریع</value></data>
+  <data name="AllOrders" xml:space="preserve"><value>همه سفارش‌ها</value></data>
+  <data name="CatalogExtras" xml:space="preserve"><value>کاتالوگ</value></data>
+  <data name="SalesExtras" xml:space="preserve"><value>فروش</value></data>
+  <data name="SettingsExtras" xml:space="preserve"><value>پیکربندی</value></data>
+  <data name="AllProducts" xml:space="preserve"><value>همه محصولات</value></data>
+  <data name="ManageOrders" xml:space="preserve"><value>مدیریت سفارش‌ها</value></data>
+  <data name="ProcessingOrders" xml:space="preserve"><value>در جریان</value></data>
+  <data name="RecentOrders" xml:space="preserve"><value>سفارش‌های اخیر</value></data>
+  <data name="ShopCategories" xml:space="preserve"><value>دسته‌ها</value></data>
+  <data name="CategoriesAndBrands" xml:space="preserve"><value>دسته‌ها و برند ها</value></data>
+  <data name="ShopSettings" xml:space="preserve"><value>تنظیمات</value></data>
+  <data name="SettingsGeneral" xml:space="preserve"><value>عمومی</value></data>
+  <data name="SettingsPayments" xml:space="preserve"><value>پرداخت‌ها</value></data>
+  <data name="PaymentGateway" xml:space="preserve"><value>درگاه پرداخت</value></data>
+  <data name="PaymentGatewayHint" xml:space="preserve"><value>درگاه‌ها را از منوی «درگاه‌های پرداخت» فعال و پیکربندی کنید. مستندات کامل: docs/payment-gateways.md</value></data>
+  <data name="PaymentProviders" xml:space="preserve"><value>درگاه‌های پرداخت</value></data>
+  <data name="EditPaymentProvider" xml:space="preserve"><value>ویرایش درگاه</value></data>
+  <data name="PaymentProviderUpdated" xml:space="preserve"><value>درگاه پرداخت ذخیره شد.</value></data>
+  <data name="ProviderType" xml:space="preserve"><value>نوع درگاه</value></data>
+  <data name="EcommerceEnabled" xml:space="preserve"><value>فروش آنلاین</value></data>
+  <data name="EcommerceEnabledHint" xml:space="preserve"><value>در حالت‌های فروشگاه آنلاین و ترکیبی فعال است.</value></data>
+  <data name="Orders" xml:space="preserve"><value>سفارش‌ها</value></data>
+  <data name="OrderDetail" xml:space="preserve"><value>جزئیات سفارش</value></data>
+  <data name="CreateProduct" xml:space="preserve"><value>محصول جدید</value></data>
+  <data name="EditProduct" xml:space="preserve"><value>ویرایش محصول</value></data>
+  <data name="ImportProducts" xml:space="preserve"><value>ورود دسته‌ای محصولات</value></data>
+  <data name="ImportProductsHint" xml:space="preserve"><value>فایل CSV را با ستون‌های نمونه بارگذاری کنید. ستون‌های Title و Price الزامی‌اند. CategorySlug و BrandSlug باید با نامک یا نام موجود در سیستم مطابقت داشته باشند.</value></data>
+  <data name="DownloadSampleCsv" xml:space="preserve"><value>دانلود فایل نمونه CSV</value></data>
+  <data name="ImportCsvFile" xml:space="preserve"><value>فایل CSV</value></data>
+  <data name="ImportCsvFileHint" xml:space="preserve"><value>فقط فایل با پسوند .csv — حداکثر ۵ مگابایت.</value></data>
+  <data name="ImportFileRequired" xml:space="preserve"><value>انتخاب فایل CSV الزامی است.</value></data>
+  <data name="ImportFileMustBeCsv" xml:space="preserve"><value>فقط فایل CSV مجاز است.</value></data>
+  <data name="ImportProductsSuccess" xml:space="preserve"><value>{0} محصول از {1} ردیف با موفقیت ایجاد شد.</value></data>
+  <data name="ImportProductsFailed" xml:space="preserve"><value>هیچ محصولی ایجاد نشد. خطاهای زیر را بررسی کنید.</value></data>
+  <data name="ImportProductsError" xml:space="preserve"><value>خطا در پردازش فایل CSV.</value></data>
+  <data name="ImportProductsResult" xml:space="preserve"><value>نتیجه ورود</value></data>
+  <data name="ImportResultTotal" xml:space="preserve"><value>تعداد کل ردیف‌ها: {0}</value></data>
+  <data name="ImportResultCreated" xml:space="preserve"><value>ایجاد شده: {0}</value></data>
+  <data name="ImportResultFailed" xml:space="preserve"><value>ناموفق: {0}</value></data>
+  <data name="ImportRowNumber" xml:space="preserve"><value>ردیف</value></data>
+  <data name="ImportErrorMessage" xml:space="preserve"><value>پیام خطا</value></data>
+  <data name="CreateCategory" xml:space="preserve"><value>دسته جدید</value></data>
+  <data name="EditCategory" xml:space="preserve"><value>ویرایش دسته</value></data>
+  <data name="Title" xml:space="preserve"><value>عنوان</value></data>
+  <data name="Name" xml:space="preserve"><value>نام</value></data>
+  <data name="Slug" xml:space="preserve"><value>نامک</value></data>
+  <data name="Description" xml:space="preserve"><value>توضیحات</value></data>
+  <data name="Content" xml:space="preserve"><value>محتوا</value></data>
+  <data name="Logo" xml:space="preserve"><value>لوگو</value></data>
+  <data name="MetaTitle" xml:space="preserve"><value>عنوان متا</value></data>
+  <data name="MetaDescription" xml:space="preserve"><value>توضیحات متا</value></data>
+  <data name="SeoKeywords" xml:space="preserve"><value>کلمات کلیدی سئو</value></data>
+  <data name="BrandMetaTitleHint" xml:space="preserve"><value>عنوان سئو برای نتایج جستجو. در صورت خالی بودن از نام برند استفاده می‌شود.</value></data>
+  <data name="BrandMetaDescriptionHint" xml:space="preserve"><value>توضیح کوتاه سئو برای نمایش در نتایج جستجو.</value></data>
+  <data name="CategoryMetaTitleHint" xml:space="preserve"><value>عنوان سئو برای نتایج جستجو. در صورت خالی بودن از نام دسته استفاده می‌شود.</value></data>
+  <data name="CategoryMetaDescriptionHint" xml:space="preserve"><value>توضیح کوتاه سئو برای نمایش در نتایج جستجو.</value></data>
+  <data name="Price" xml:space="preserve"><value>قیمت</value></data>
+  <data name="Currency" xml:space="preserve"><value>واحد پول</value></data>
+  <data name="IsAvailable" xml:space="preserve"><value>موجود</value></data>
+  <data name="IsPurchasable" xml:space="preserve"><value>قابل خرید</value></data>
+  <data name="IsPurchasableHint" xml:space="preserve"><value>در حالت ترکیبی فقط محصولاتی که این گزینه را دارند قابل خرید هستند.</value></data>
+  <data name="Publish" xml:space="preserve"><value>انتشار</value></data>
+  <data name="Published" xml:space="preserve"><value>منتشر شده</value></data>
+  <data name="Draft" xml:space="preserve"><value>پیش‌نویس</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="Category" xml:space="preserve"><value>دسته</value></data>
+  <data name="NoCategory" xml:space="preserve"><value>بدون دسته</value></data>
+  <data name="CoverImage" xml:space="preserve"><value>تصویر</value></data>
+  <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
+  <data name="ImageGallery" xml:space="preserve"><value>گالری تصاویر</value></data>
+  <data name="ImageGalleryHint" xml:space="preserve"><value>چند تصویر از کتابخانه رسانه اضافه کنید. تصویر اصلی به‌عنوان تصویر شاخص هم استفاده می‌شود.</value></data>
+  <data name="ImageGalleryEmpty" xml:space="preserve"><value>هنوز تصویری به گالری اضافه نشده است.</value></data>
+  <data name="AddGalleryImage" xml:space="preserve"><value>افزودن تصویر</value></data>
+  <data name="MainImage" xml:space="preserve"><value>اصلی</value></data>
+  <data name="ImageAltText" xml:space="preserve"><value>متن جایگزین</value></data>
+  <data name="Remove" xml:space="preserve"><value>حذف</value></data>
+  <data name="Image" xml:space="preserve"><value>تصویر</value></data>
+  <data name="ImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
+  <data name="SortOrder" xml:space="preserve"><value>ترتیب</value></data>
+  <data name="ProductCount" xml:space="preserve"><value>محصولات</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="View" xml:space="preserve"><value>مشاهده</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>حذف شود؟</value></data>
+  <data name="NoProducts" xml:space="preserve"><value>هنوز محصولی ثبت نشده است.</value></data>
+  <data name="NoCategories" xml:space="preserve"><value>هنوز دسته‌ای ثبت نشده است.</value></data>
+  <data name="NoOrders" xml:space="preserve"><value>هنوز سفارشی ثبت نشده است.</value></data>
+  <data name="ProductCreated" xml:space="preserve"><value>محصول ایجاد شد.</value></data>
+  <data name="ProductUpdated" xml:space="preserve"><value>محصول به‌روزرسانی شد.</value></data>
+  <data name="ProductDeleted" xml:space="preserve"><value>محصول حذف شد.</value></data>
+  <data name="CategoryCreated" xml:space="preserve"><value>دسته ایجاد شد.</value></data>
+  <data name="CategoryUpdated" xml:space="preserve"><value>دسته به‌روزرسانی شد.</value></data>
+  <data name="CategoryDeleted" xml:space="preserve"><value>دسته حذف شد.</value></data>
+  <data name="SettingsUpdated" xml:space="preserve"><value>تنظیمات فروشگاه ذخیره شد.</value></data>
+  <data name="OrderStatusUpdated" xml:space="preserve"><value>وضعیت سفارش به‌روزرسانی شد.</value></data>
+  <data name="UploadHint" xml:space="preserve"><value>JPEG، PNG، WebP یا GIF تا ۵ مگابایت — ذخیره در S3</value></data>
+  <data name="UrlHint" xml:space="preserve"><value>اختیاری: به‌جای آپلود، آدرس https وارد کنید یا از کتابخانه انتخاب کنید.</value></data>
+  <data name="SelectFromLibrary" xml:space="preserve"><value>انتخاب از کتابخانه</value></data>
+  <data name="InvalidImageType" xml:space="preserve"><value>فقط تصویر مجاز است.</value></data>
+  <data name="ImageTooLarge" xml:space="preserve"><value>حجم تصویر حداکثر ۵ مگابایت است.</value></data>
+  <data name="ShopMode" xml:space="preserve"><value>حالت فروشگاه</value></data>
+  <data name="CatalogOnlyMode" xml:space="preserve"><value>فقط کاتالوگ</value></data>
+  <data name="OnlineStoreMode" xml:space="preserve"><value>فروشگاه آنلاین</value></data>
+  <data name="HybridMode" xml:space="preserve"><value>ترکیبی</value></data>
+  <data name="ModeHint" xml:space="preserve"><value>کاتالوگ: فقط نمایش. آنلاین: همه محصولات موجود قابل خرید. ترکیبی: فقط محصولات «قابل خرید».</value></data>
+  <data name="OrderNumber" xml:space="preserve"><value>شماره سفارش</value></data>
+  <data name="CustomerName" xml:space="preserve"><value>نام مشتری</value></data>
+  <data name="CustomerEmail" xml:space="preserve"><value>ایمیل مشتری</value></data>
+  <data name="CustomerPhone" xml:space="preserve"><value>تلفن</value></data>
+  <data name="ShippingAddress" xml:space="preserve"><value>آدرس ارسال</value></data>
+  <data name="Total" xml:space="preserve"><value>جمع</value></data>
+  <data name="CreatedAt" xml:space="preserve"><value>تاریخ</value></data>
+  <data name="Notes" xml:space="preserve"><value>یادداشت</value></data>
+  <data name="Quantity" xml:space="preserve"><value>تعداد</value></data>
+  <data name="PaymentProvider" xml:space="preserve"><value>درگاه پرداخت</value></data>
+  <data name="PaymentTransactionId" xml:space="preserve"><value>شناسه تراکنش</value></data>
+  <data name="ChangeStatus" xml:space="preserve"><value>تغییر وضعیت</value></data>
+  <data name="StatusPendingPayment" xml:space="preserve"><value>در انتظار پرداخت</value></data>
+  <data name="StatusPaid" xml:space="preserve"><value>پرداخت‌شده</value></data>
+  <data name="StatusProcessing" xml:space="preserve"><value>در حال آماده‌سازی</value></data>
+  <data name="StatusShipped" xml:space="preserve"><value>ارسال‌شده</value></data>
+  <data name="StatusCancelled" xml:space="preserve"><value>لغو شده</value></data>
+  <data name="StatusReviewing" xml:space="preserve"><value>در حال بررسی</value></data>
+  <data name="StatusReadyForShipping" xml:space="preserve"><value>آماده ارسال</value></data>
+  <data name="StatusCompleted" xml:space="preserve"><value>تکمیل‌شده</value></data>
+  <data name="StatusApproved" xml:space="preserve"><value>تأیید شده</value></data>
+  <data name="OrdersPending" xml:space="preserve"><value>در انتظار پرداخت</value></data>
+  <data name="OrdersProcessing" xml:space="preserve"><value>در حال آماده‌سازی</value></data>
+  <data name="OrdersShipped" xml:space="preserve"><value>ارسال‌شده</value></data>
+  <data name="OrdersCompleted" xml:space="preserve"><value>تکمیل‌شده</value></data>
+  <data name="OrdersCancelled" xml:space="preserve"><value>لغو شده</value></data>
+  <data name="Yes" xml:space="preserve"><value>بله</value></data>
+  <data name="No" xml:space="preserve"><value>خیر</value></data>
+  <data name="SearchProducts" xml:space="preserve"><value>جستجوی محصول…</value></data>
+  <data name="SearchOrders" xml:space="preserve"><value>جستجوی سفارش…</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
+  <data name="Brands" xml:space="preserve"><value>برندها</value></data>
+  <data name="CreateBrand" xml:space="preserve"><value>برند جدید</value></data>
+  <data name="EditBrand" xml:space="preserve"><value>ویرایش برند</value></data>
+  <data name="BrandCreated" xml:space="preserve"><value>برند ایجاد شد.</value></data>
+  <data name="BrandUpdated" xml:space="preserve"><value>برند به‌روزرسانی شد.</value></data>
+  <data name="BrandDeleted" xml:space="preserve"><value>برند حذف شد.</value></data>
+  <data name="NoBrands" xml:space="preserve"><value>هنوز برندی ثبت نشده است.</value></data>
+  <data name="Tags" xml:space="preserve"><value>برچسب‌ها</value></data>
+  <data name="CreateTag" xml:space="preserve"><value>برچسب جدید</value></data>
+  <data name="EditTag" xml:space="preserve"><value>ویرایش برچسب</value></data>
+  <data name="TagCreated" xml:space="preserve"><value>برچسب ایجاد شد.</value></data>
+  <data name="TagUpdated" xml:space="preserve"><value>برچسب به‌روزرسانی شد.</value></data>
+  <data name="TagDeleted" xml:space="preserve"><value>برچسب حذف شد.</value></data>
+  <data name="NoTags" xml:space="preserve"><value>هنوز برچسبی ثبت نشده است.</value></data>
+  <data name="Attributes" xml:space="preserve"><value>ویژگی‌ها</value></data>
+  <data name="CreateAttribute" xml:space="preserve"><value>ویژگی جدید</value></data>
+  <data name="EditAttribute" xml:space="preserve"><value>ویرایش ویژگی</value></data>
+  <data name="CustomerGroups" xml:space="preserve"><value>گروه‌های مشتری</value></data>
+  <data name="PriceRules" xml:space="preserve"><value>قوانین قیمت</value></data>
+  <data name="WholesaleRequests" xml:space="preserve"><value>درخواست عمده</value></data>
+  <data name="Coupons" xml:space="preserve"><value>کد تخفیف</value></data>
+  <data name="CreateCoupon" xml:space="preserve"><value>ایجاد کد تخفیف</value></data>
+  <data name="EditCoupon" xml:space="preserve"><value>ویرایش کد تخفیف</value></data>
+  <data name="CouponCreated" xml:space="preserve"><value>کد تخفیف ایجاد شد.</value></data>
+  <data name="CouponUpdated" xml:space="preserve"><value>کد تخفیف به‌روزرسانی شد.</value></data>
+  <data name="CouponDeleted" xml:space="preserve"><value>کد تخفیف حذف شد.</value></data>
+  <data name="Code" xml:space="preserve"><value>کد</value></data>
+  <data name="Amount" xml:space="preserve"><value>مقدار</value></data>
+  <data name="DiscountType" xml:space="preserve"><value>نوع تخفیف</value></data>
+  <data name="DiscountTypePercentage" xml:space="preserve"><value>درصدی</value></data>
+  <data name="DiscountTypeFixedAmount" xml:space="preserve"><value>مبلغ ثابت</value></data>
+  <data name="DiscountValue" xml:space="preserve"><value>مقدار تخفیف</value></data>
+  <data name="DiscountValueHint" xml:space="preserve"><value>برای درصدی عدد بین ۱ تا ۱۰۰؛ برای مبلغ ثابت مقدار به ریال.</value></data>
+  <data name="MinOrderAmount" xml:space="preserve"><value>حداقل مبلغ خرید</value></data>
+  <data name="MinOrderAmountHint" xml:space="preserve"><value>خالی بگذارید اگر حداقل مبلغ لازم نیست.</value></data>
+  <data name="CouponStartsAt" xml:space="preserve"><value>شروع اعتبار</value></data>
+  <data name="CouponEndsAt" xml:space="preserve"><value>پایان اعتبار</value></data>
+  <data name="CouponEndsAtHint" xml:space="preserve"><value>پس از این زمان کد باطل می‌شود. خالی = بدون انقضا.</value></data>
+  <data name="MaxRedemptions" xml:space="preserve"><value>حداکثر تعداد استفاده</value></data>
+  <data name="MaxRedemptionsHint" xml:space="preserve"><value>خالی بگذارید برای استفاده نامحدود.</value></data>
+  <data name="CouponAllowedUser" xml:space="preserve"><value>کاربر خاص</value></data>
+  <data name="CouponAllowedUserEmail" xml:space="preserve"><value>ایمیل کاربر مجاز</value></data>
+  <data name="CouponAllowedUserEmailHint" xml:space="preserve"><value>خالی = همه کاربران. در صورت پر کردن، فقط همان کاربر می‌تواند از کد استفاده کند.</value></data>
+  <data name="CouponUserNotFound" xml:space="preserve"><value>کاربری با این ایمیل یافت نشد.</value></data>
+  <data name="ShippingMethods" xml:space="preserve"><value>روش‌های ارسال</value></data>
+  <data name="CreateShippingMethod" xml:space="preserve"><value>افزودن روش ارسال</value></data>
+  <data name="EditShippingMethod" xml:space="preserve"><value>ویرایش روش ارسال</value></data>
+  <data name="ShippingMethodCreated" xml:space="preserve"><value>روش ارسال ایجاد شد.</value></data>
+  <data name="ShippingMethodUpdated" xml:space="preserve"><value>روش ارسال به‌روزرسانی شد.</value></data>
+  <data name="ShippingMethodDeleted" xml:space="preserve"><value>روش ارسال حذف شد.</value></data>
+  <data name="CalculationType" xml:space="preserve"><value>نوع محاسبه</value></data>
+  <data name="FixedCost" xml:space="preserve"><value>هزینه پایه</value></data>
+  <data name="EstimatedDeliveryText" xml:space="preserve"><value>زمان تقریبی تحویل</value></data>
+  <data name="EstimatedDeliveryTextHint" xml:space="preserve"><value>در تسویه‌حساب به مشتری نمایش داده می‌شود؛ مثلاً ۲ تا ۴ روز کاری.</value></data>
+  <data name="EstimatedDeliveryTextPlaceholder" xml:space="preserve"><value>۲ تا ۴ روز کاری</value></data>
+  <data name="FreeShippingMinAmount" xml:space="preserve"><value>حداقل مبلغ ارسال رایگان</value></data>
+  <data name="FreeShippingMinAmountHint" xml:space="preserve"><value>سفارش‌های بالاتر از این مبلغ با این روش ارسال رایگان می‌شوند.</value></data>
+  <data name="ShippingDescriptionHint" xml:space="preserve"><value>توضیح اختیاری برای مشتری.</value></data>
+  <data name="CalculationTypeHint" xml:space="preserve"><value>ثابت: هزینه یکسان. وزنی: بر اساس وزن سبد. شهری: بر اساس شهر مقصد.</value></data>
+  <data name="FixedCostHint" xml:space="preserve"><value>هزینه ارسال برای روش با نرخ ثابت.</value></data>
+  <data name="FixedCostFallbackHint" xml:space="preserve"><value>هزینه پیش‌فرض وقتی نرخ منطبق پیدا نشود.</value></data>
+  <data name="ShippingCalculationFixed" xml:space="preserve"><value>ثابت</value></data>
+  <data name="ShippingCalculationWeightBased" xml:space="preserve"><value>بر اساس وزن</value></data>
+  <data name="ShippingCalculationCityBased" xml:space="preserve"><value>بر اساس شهر</value></data>
+  <data name="WeightBasedRates" xml:space="preserve"><value>نرخ‌های وزنی</value></data>
+  <data name="WeightBasedRatesHint" xml:space="preserve"><value>هزینه را بر اساس بازه وزن (کیلوگرم) تعریف کنید.</value></data>
+  <data name="CityBasedRates" xml:space="preserve"><value>نرخ‌های شهری</value></data>
+  <data name="CityBasedRatesHint" xml:space="preserve"><value>هزینه هر شهر را جداگانه تعریف کنید؛ شهرهای تعریف‌نشده از هزینه پایه استفاده می‌کنند.</value></data>
+  <data name="MinWeight" xml:space="preserve"><value>حداقل وزن</value></data>
+  <data name="MaxWeight" xml:space="preserve"><value>حداکثر وزن</value></data>
+  <data name="Cost" xml:space="preserve"><value>هزینه</value></data>
+  <data name="City" xml:space="preserve"><value>شهر</value></data>
+  <data name="Province" xml:space="preserve"><value>استان</value></data>
+  <data name="AddRate" xml:space="preserve"><value>افزودن نرخ</value></data>
+  <data name="DeleteShippingMethodConfirm" xml:space="preserve"><value>این روش ارسال حذف شود؟</value></data>
+  <data name="Reviews" xml:space="preserve"><value>نظرات</value></data>
+  <data name="CommerceReports" xml:space="preserve"><value>گزارش‌ها</value></data>
+  <data name="SettingsCommerce" xml:space="preserve"><value>تجارت</value></data>
+  <data name="StatusActive" xml:space="preserve"><value>فعال</value></data>
+  <data name="IsActive" xml:space="preserve"><value>فعال</value></data>
+  <data name="StatusHidden" xml:space="preserve"><value>مخفی</value></data>
+  <data name="StatusOutOfStock" xml:space="preserve"><value>ناموجود</value></data>
+  <data name="ShortDescription" xml:space="preserve"><value>توضیح کوتاه</value></data>
+  <data name="SalePrice" xml:space="preserve"><value>قیمت فروش</value></data>
+  <data name="Brand" xml:space="preserve"><value>برند</value></data>
+  <data name="NoBrand" xml:space="preserve"><value>بدون برند</value></data>
+  <data name="Approve" xml:space="preserve"><value>تأیید</value></data>
+  <data name="Reject" xml:space="preserve"><value>رد</value></data>
+  <data name="MoreTools" xml:space="preserve"><value>ابزارهای بیشتر</value></data>
+  <data name="SalesSummary" xml:space="preserve"><value>خلاصه فروش</value></data>
+  <data name="TotalSales" xml:space="preserve"><value>جمع فروش</value></data>
+  <data name="OrderCount" xml:space="preserve"><value>تعداد سفارش</value></data>
+  <data name="TodaySales" xml:space="preserve"><value>امروز</value></data>
+  <data name="MonthSales" xml:space="preserve"><value>این ماه</value></data>
+  <data name="BestSellers" xml:space="preserve"><value>پرفروش‌ها</value></data>
+  <data name="Revenue" xml:space="preserve"><value>درآمد</value></data>
+  <data name="LowStock" xml:space="preserve"><value>موجودی کم</value></data>
+  <data name="Product" xml:space="preserve"><value>محصول</value></data>
+  <data name="TopCustomers" xml:space="preserve"><value>برترین مشتریان</value></data>
+  <data name="ProductSteps" xml:space="preserve"><value>مراحل محصول</value></data>
+  <data name="ProductStepBasics" xml:space="preserve"><value>اطلاعات اصلی</value></data>
+  <data name="ProductStepPricing" xml:space="preserve"><value>قیمت و موجودی</value></data>
+  <data name="ProductStepCatalog" xml:space="preserve"><value>دسته‌بندی و رسانه</value></data>
+  <data name="ProductStepStatus" xml:space="preserve"><value>وضعیت و سئو</value></data>
+  <data name="Next" xml:space="preserve"><value>بعدی</value></data>
+  <data name="Previous" xml:space="preserve"><value>قبلی</value></data>
+  <data name="TitleHint" xml:space="preserve"><value>نام محصول که در کاتالوگ و صفحه محصول نمایش داده می‌شود.</value></data>
+  <data name="SlugHint" xml:space="preserve"><value>نامک آدرس صفحه. اگر خالی بگذارید از روی عنوان ساخته می‌شود.</value></data>
+  <data name="ShortDescriptionHint" xml:space="preserve"><value>خلاصه کوتاه برای کارت‌های فهرست و پیش‌نمایش.</value></data>
+  <data name="DescriptionHint" xml:space="preserve"><value>توضیحات کامل محصول در صفحه جزئیات.</value></data>
+  <data name="ProductTypeHint" xml:space="preserve"><value>ساده برای یک SKU. برای تنوع یا رفتار خاص، نوع مناسب را انتخاب کنید.</value></data>
+  <data name="PriceHint" xml:space="preserve"><value>قیمت اصلی با جداکننده هزارگان (مثلاً ۱,۲۵۰,۰۰۰).</value></data>
+  <data name="SalePriceHint" xml:space="preserve"><value>قیمت تخفیف‌خورده اختیاری. اگر تخفیف ندارید خالی بگذارید.</value></data>
+  <data name="CurrencyHint" xml:space="preserve"><value>واحد پول قیمت محصول را انتخاب کنید.</value></data>
+  <data name="CurrencyRial" xml:space="preserve"><value>ریال</value></data>
+  <data name="CurrencyToman" xml:space="preserve"><value>تومان</value></data>
+  <data name="StockQuantity" xml:space="preserve"><value>موجودی</value></data>
+  <data name="UnlimitedStock" xml:space="preserve"><value>همیشه موجود</value></data>
+  <data name="StockQuantityHint" xml:space="preserve"><value>تعداد موجود. در صورت فعال بودن «همیشه موجود» نادیده گرفته می‌شود.</value></data>
+  <data name="UnlimitedStockHint" xml:space="preserve"><value>اگر فعال باشد، فیلد موجودی مخفی می‌شود و محصول همیشه موجود در نظر گرفته می‌شود.</value></data>
+  <data name="CategoryHint" xml:space="preserve"><value>دسته اصلی برای مرور و فیلتر محصولات.</value></data>
+  <data name="BrandHint" xml:space="preserve"><value>برند اختیاری برای فیلتر و صفحه محصول.</value></data>
+  <data name="TagsHint" xml:space="preserve"><value>با نگه‌داشتن Ctrl (یا Cmd) چند برچسب را انتخاب کنید.</value></data>
+  <data name="VideoUrlHint" xml:space="preserve"><value>لینک ویدیوی اختیاری (یوتیوب، آپارات یا آدرس مستقیم).</value></data>
+  <data name="StatusHint" xml:space="preserve"><value>پیش‌نویس در سایت دیده نمی‌شود. پس از آماده‌شدن منتشر کنید.</value></data>
+  <data name="IsAvailableHint" xml:space="preserve"><value>اگر خاموش باشد محصول به‌صورت ناموجود نمایش داده می‌شود.</value></data>
+  <data name="MetaTitleHint" xml:space="preserve"><value>عنوان سئو برای نتایج جستجو. در صورت خالی بودن از عنوان محصول استفاده می‌شود.</value></data>
+  <data name="MetaDescriptionHint" xml:space="preserve"><value>توضیح کوتاه سئو برای نمایش در نتایج جستجو.</value></data>
+  <data name="SeoKeywordsHint" xml:space="preserve"><value>کلمات کلیدی با جداکننده ویرگول برای مرجع سئو.</value></data>
+  <data name="AddVariations" xml:space="preserve"><value>افزودن تنوع</value></data>
+  <data name="ProductVariations" xml:space="preserve"><value>تنوع‌های محصول</value></data>
+  <data name="AddVariation" xml:space="preserve"><value>افزودن تنوع</value></data>
+  <data name="VariationsList" xml:space="preserve"><value>فهرست تنوع‌ها</value></data>
+  <data name="NoVariations" xml:space="preserve"><value>هنوز تنوعی ثبت نشده است.</value></data>
+  <data name="VariationCreated" xml:space="preserve"><value>تنوع ایجاد شد.</value></data>
+  <data name="VariationDeleted" xml:space="preserve"><value>تنوع حذف شد.</value></data>
+  <data name="VariationUpdated" xml:space="preserve"><value>تنوع به‌روزرسانی شد.</value></data>
+  <data name="EditVariation" xml:space="preserve"><value>ویرایش تنوع</value></data>
+  <data name="ManageVariations" xml:space="preserve"><value>تنوع‌ها</value></data>
+  <data name="ManageSpecifications" xml:space="preserve"><value>ویژگی‌ها</value></data>
+  <data name="ProductSpecifications" xml:space="preserve"><value>ویژگی‌های محصول</value></data>
+  <data name="SpecificationsCount" xml:space="preserve"><value>{0} ویژگی</value></data>
+  <data name="AddSpecification" xml:space="preserve"><value>افزودن ویژگی</value></data>
+  <data name="SpecificationKey" xml:space="preserve"><value>کلید</value></data>
+  <data name="SpecificationValue" xml:space="preserve"><value>مقدار</value></data>
+  <data name="SpecificationKeyPlaceholder" xml:space="preserve"><value>مثلاً جنس</value></data>
+  <data name="SpecificationValuePlaceholder" xml:space="preserve"><value>مثلاً پنبه</value></data>
+  <data name="SpecificationKeyRequired" xml:space="preserve"><value>کلید الزامی است.</value></data>
+  <data name="SpecificationValueRequired" xml:space="preserve"><value>مقدار الزامی است.</value></data>
+  <data name="SpecificationsEmpty" xml:space="preserve"><value>هنوز ویژگی‌ای ثبت نشده است. با دکمه افزودن، ردیف جدید بسازید.</value></data>
+  <data name="SpecificationsSaved" xml:space="preserve"><value>ویژگی‌های محصول ذخیره شد.</value></data>
+  <data name="Variations" xml:space="preserve"><value>تنوع‌ها</value></data>
+  <data name="VariationsCount" xml:space="preserve"><value>{0} تنوع</value></data>
+  <data name="VariationStatusHint" xml:space="preserve"><value>تنوع‌های فعال قابل فروش‌اند. مخفی‌ها در فروشگاه نمایش داده نمی‌شوند.</value></data>
+  <data name="BackToProducts" xml:space="preserve"><value>بازگشت به محصولات</value></data>
+  <data name="Sku" xml:space="preserve"><value>کد SKU</value></data>
+  <data name="ProductSkuHint" xml:space="preserve"><value>کد یکتای محصول (اختیاری).</value></data>
+  <data name="AttributeSummary" xml:space="preserve"><value>ویژگی‌ها</value></data>
+  <data name="VariationSkuHint" xml:space="preserve"><value>کد یکتای کالا برای این تنوع.</value></data>
+  <data name="AttributeSummaryHint" xml:space="preserve"><value>برچسب کوتاه مثل رنگ: قرمز / سایز: L.</value></data>
+  <data name="VariationPriceHint" xml:space="preserve"><value>قیمت این تنوع با جداکننده هزارگان.</value></data>
+  <data name="Weight" xml:space="preserve"><value>وزن</value></data>
+  <data name="WeightHint" xml:space="preserve"><value>وزن اختیاری برای محاسبه ارسال.</value></data>
+  <data name="SelectImage" xml:space="preserve"><value>انتخاب تصویر</value></data>
+  <data name="SelectImageHint" xml:space="preserve"><value>کتابخانه رسانه را باز کنید تا از تصاویر موجود انتخاب کنید یا فایل جدید آپلود کنید.</value></data>
+  <data name="SaveChanges" xml:space="preserve"><value>ذخیره تغییرات</value></data>
+  <data name="SalesAudience" xml:space="preserve"><value>مخاطب فروش</value></data>
+  <data name="SalesAudienceRetail" xml:space="preserve"><value>فقط خرده‌فروشی</value></data>
+  <data name="SalesAudienceWholesale" xml:space="preserve"><value>فقط عمده</value></data>
+  <data name="SalesAudienceBoth" xml:space="preserve"><value>خرده‌فروشی و عمده</value></data>
+  <data name="EnableOnlinePayment" xml:space="preserve"><value>پرداخت آنلاین</value></data>
+  <data name="EnableBankTransfer" xml:space="preserve"><value>واریز بانکی</value></data>
+  <data name="EnableCashOnDelivery" xml:space="preserve"><value>پرداخت در محل</value></data>
+  <data name="EnableGuestCheckout" xml:space="preserve"><value>خرید مهمان</value></data>
+  <data name="ShowPricesToGuests" xml:space="preserve"><value>نمایش قیمت به مهمان</value></data>
+  <data name="EnableReviews" xml:space="preserve"><value>نظرات محصول</value></data>
+  <data name="EnableCoupons" xml:space="preserve"><value>کوپن تخفیف</value></data>
+  <data name="EnableWholesaleInvoice" xml:space="preserve"><value>فاکتور عمده</value></data>
+  <data name="WholesaleMinimumOrderAmount" xml:space="preserve"><value>حداقل مبلغ عمده</value></data>
+  <data name="WholesaleMinimumOrderQuantity" xml:space="preserve"><value>حداقل تعداد عمده</value></data>
+  <data name="ProductWholesaleMinimumOrderAmountHint" xml:space="preserve"><value>حداقل مبلغ این محصول برای خرید عمده. برای بدون محدودیت اختصاصی خالی بگذارید.</value></data>
+  <data name="ProductWholesaleMinimumOrderQuantityHint" xml:space="preserve"><value>حداقل تعداد این محصول برای خرید عمده. برای بدون محدودیت اختصاصی خالی بگذارید.</value></data>
+  <data name="SalesAudienceHint" xml:space="preserve"><value>مشتری هدف فروش: خرده‌فروشی، فقط عمده، یا هر دو.</value></data>
+  <data name="EnableOnlinePaymentHint" xml:space="preserve"><value>پرداخت آنلاین از طریق درگاه تنظیم‌شده در تسویه‌حساب فعال شود.</value></data>
+  <data name="EnableBankTransferHint" xml:space="preserve"><value>مشتری بتواند با کارت‌به‌کارت / واریز بانکی پرداخت کند.</value></data>
+  <data name="BankTransferSettings" xml:space="preserve"><value>اطلاعات حساب واریز بانکی</value></data>
+  <data name="BankTransferSettingsHint" xml:space="preserve"><value>این مشخصات بعد از ثبت سفارش با روش واریز بانکی به مشتری نمایش داده می‌شود.</value></data>
+  <data name="BankAccountHolderName" xml:space="preserve"><value>نام صاحب حساب</value></data>
+  <data name="BankName" xml:space="preserve"><value>نام بانک</value></data>
+  <data name="BankCardNumber" xml:space="preserve"><value>شماره کارت</value></data>
+  <data name="BankCardNumberHint" xml:space="preserve"><value>۱۶ تا ۱۹ رقم، بدون فاصله.</value></data>
+  <data name="BankShebaNumber" xml:space="preserve"><value>شماره شبا</value></data>
+  <data name="BankShebaNumberHint" xml:space="preserve"><value>با پیشوند IR؛ حداقل یکی از کارت یا شبا الزامی است.</value></data>
+  <data name="BankTransferInstructions" xml:space="preserve"><value>راهنمای واریز</value></data>
+  <data name="BankTransferInstructionsHint" xml:space="preserve"><value>مثلاً: مبلغ دقیق سفارش را واریز کنید و شماره سفارش را در توضیحات بنویسید.</value></data>
+  <data name="ConfirmBankTransfer" xml:space="preserve"><value>تأیید دریافت واریز</value></data>
+  <data name="ConfirmBankTransferHint" xml:space="preserve"><value>پس از مشاهده واریز در حساب، پرداخت را تأیید کنید تا سفارش به پردازش برود.</value></data>
+  <data name="BankTransferReference" xml:space="preserve"><value>شماره پیگیری / مرجع واریز</value></data>
+  <data name="BankTransferReferenceHint" xml:space="preserve"><value>اختیاری؛ مثلاً کد پیگیری بانکی.</value></data>
+  <data name="BankTransferConfirmed" xml:space="preserve"><value>واریز بانکی تأیید و سفارش به‌روز شد.</value></data>
+  <data name="EnableCashOnDeliveryHint" xml:space="preserve"><value>امکان پرداخت نقدی هنگام تحویل سفارش.</value></data>
+  <data name="EnableGuestCheckoutHint" xml:space="preserve"><value>خرید بدون نیاز به ساخت حساب کاربری.</value></data>
+  <data name="ShowPricesToGuestsHint" xml:space="preserve"><value>قیمت محصولات برای بازدیدکنندگان بدون ورود نمایش داده شود.</value></data>
+  <data name="EnableReviewsHint" xml:space="preserve"><value>امکان ثبت امتیاز و نظر برای محصولات.</value></data>
+  <data name="EnableCouponsHint" xml:space="preserve"><value>استفاده از کد تخفیف در مرحله تسویه‌حساب.</value></data>
+  <data name="EnableWholesaleInvoiceHint" xml:space="preserve"><value>صدور فاکتور برای مشتریان عمده تأییدشده.</value></data>
+  <data name="WholesaleMinimumOrderAmountHint" xml:space="preserve"><value>حداقل مبلغ سفارش برای خرید عمده. برای بدون محدودیت خالی بگذارید.</value></data>
+  <data name="WholesaleMinimumOrderQuantityHint" xml:space="preserve"><value>حداقل تعداد قلم برای سفارش عمده. برای بدون محدودیت خالی بگذارید.</value></data>
+  <data name="OrderSpecs" xml:space="preserve"><value>مشخصات سفارش</value></data>
+  <data name="OrderItems" xml:space="preserve"><value>اقلام سفارش</value></data>
+  <data name="Subtotal" xml:space="preserve"><value>جمع جزء</value></data>
+  <data name="ShippingAmount" xml:space="preserve"><value>هزینه ارسال</value></data>
+  <data name="DiscountAmount" xml:space="preserve"><value>تخفیف</value></data>
+  <data name="GrandTotal" xml:space="preserve"><value>مبلغ نهایی</value></data>
+  <data name="ShippingCity" xml:space="preserve"><value>شهر</value></data>
+  <data name="ShippingMethod" xml:space="preserve"><value>روش ارسال</value></data>
+  <data name="PaymentStatus" xml:space="preserve"><value>وضعیت پرداخت</value></data>
+  <data name="PaymentMethod" xml:space="preserve"><value>روش پرداخت</value></data>
+  <data name="CouponCode" xml:space="preserve"><value>کد تخفیف</value></data>
+  <data name="PaymentStatusUnpaid" xml:space="preserve"><value>پرداخت‌نشده</value></data>
+  <data name="PaymentStatusPaid" xml:space="preserve"><value>پرداخت‌شده</value></data>
+  <data name="PaymentStatusInvoiceRequested" xml:space="preserve"><value>درخواست فاکتور</value></data>
+  <data name="PaymentMethodOnline" xml:space="preserve"><value>پرداخت آنلاین</value></data>
+  <data name="PaymentMethodBankTransfer" xml:space="preserve"><value>واریز بانکی</value></data>
+  <data name="PaymentMethodCashOnDelivery" xml:space="preserve"><value>پرداخت در محل</value></data>
+  <data name="PaymentMethodInvoice" xml:space="preserve"><value>فاکتور</value></data>
+  <data name="PaymentMethodPayLater" xml:space="preserve"><value>پرداخت بعدی</value></data>
+  <data name="PaymentMethodSnapPay" xml:space="preserve"><value>اسنپ‌پی</value></data>
+  <data name="Back" xml:space="preserve"><value>بازگشت</value></data>
+  <data name="IsWholesale" xml:space="preserve"><value>عمده</value></data>
+  <data name="AdminNotes" xml:space="preserve"><value>یادداشت ادمین</value></data>
+  <data name="PaymentDeadline" xml:space="preserve"><value>مهلت پرداخت</value></data>
+  <data name="PaymentDeadlineExpired" xml:space="preserve"><value>منقضی‌شده</value></data>
+  <data name="PendingPaymentTimeoutMinutes" xml:space="preserve"><value>مهلت پرداخت سفارش (دقیقه)</value></data>
+  <data name="PendingPaymentTimeoutMinutesHint" xml:space="preserve"><value>سفارش‌های در انتظار پرداخت پس از این مدت لغو می‌شوند و موجودی رزرو‌شده آزاد می‌گردد. پیش‌فرض ۳۰ دقیقه.</value></data>
+  <data name="AbandonedPaymentReminderMinutes" xml:space="preserve"><value>یادآوری پرداخت (دقیقه)</value></data>
+  <data name="AbandonedPaymentReminderMinutesHint" xml:space="preserve"><value>پس از این مدت از ثبت سفارش، پیامک یادآوری پرداخت برای مشتری ارسال می‌شود. باید کمتر از مهلت پرداخت باشد. پیش‌فرض ۳ دقیقه.</value></data>
+  <data name="EnableVat" xml:space="preserve"><value>مالیات بر ارزش افزوده</value></data>
+  <data name="EnableVatHint" xml:space="preserve"><value>در صورت فعال بودن، مالیات به مبلغ نهایی سفارش (جمع − تخفیف + ارسال) اضافه می‌شود.</value></data>
+  <data name="VatPercent" xml:space="preserve"><value>درصد مالیات (%)</value></data>
+  <data name="VatPercentHint" xml:space="preserve"><value>وقتی مالیات فعال است اعمال می‌شود. پیش‌فرض ۱۰٪.</value></data>
+  <data name="VatAmount" xml:space="preserve"><value>مالیات بر ارزش افزوده</value></data>
+  <data name="All" xml:space="preserve"><value>همه</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>همه وضعیت‌ها</value></data>
+  <data name="AllCategories" xml:space="preserve"><value>همه دسته‌ها</value></data>
+  <data name="AllBrands" xml:space="preserve"><value>همه برندها</value></data>
+  <data name="AllProductTypes" xml:space="preserve"><value>همه انواع</value></data>
+  <data name="ProductType" xml:space="preserve"><value>نوع محصول</value></data>
+  <data name="ProductTypeSimple" xml:space="preserve"><value>ساده</value></data>
+  <data name="ProductTypeVariable" xml:space="preserve"><value>متغیر</value></data>
+  <data name="StockFilter" xml:space="preserve"><value>موجودی</value></data>
+  <data name="StockFilterIn" xml:space="preserve"><value>موجود</value></data>
+  <data name="StockFilterOut" xml:space="preserve"><value>ناموجود</value></data>
+  <data name="StockFilterLow" xml:space="preserve"><value>موجودی کم</value></data>
+  <data name="StockFilterUnlimited" xml:space="preserve"><value>نامحدود</value></data>
+  <data name="Sort" xml:space="preserve"><value>مرتب‌سازی</value></data>
+  <data name="SortNewest" xml:space="preserve"><value>جدیدترین</value></data>
+  <data name="SortTitle" xml:space="preserve"><value>عنوان (الف–ی)</value></data>
+  <data name="SortTitleDesc" xml:space="preserve"><value>عنوان (ی–الف)</value></data>
+  <data name="SortPrice" xml:space="preserve"><value>قیمت (کم به زیاد)</value></data>
+  <data name="SortPriceDesc" xml:space="preserve"><value>قیمت (زیاد به کم)</value></data>
+  <data name="SortStock" xml:space="preserve"><value>موجودی</value></data>
+  <data name="SortStatus" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="FromDate" xml:space="preserve"><value>از تاریخ</value></data>
+  <data name="ToDate" xml:space="preserve"><value>تا تاریخ</value></data>
+  <data name="AllPaymentStatuses" xml:space="preserve"><value>همه وضعیت‌های پرداخت</value></data>
+  <data name="AllPaymentMethods" xml:space="preserve"><value>همه روش‌های پرداخت</value></data>
+  <data name="SortOldest" xml:space="preserve"><value>قدیمی‌ترین</value></data>
+  <data name="SortTotal" xml:space="preserve"><value>مبلغ (کم به زیاد)</value></data>
+  <data name="SortTotalDesc" xml:space="preserve"><value>مبلغ (زیاد به کم)</value></data>
+  <data name="SortCustomer" xml:space="preserve"><value>نام مشتری</value></data>
+  <data name="EditLockedBy" xml:space="preserve"><value>کاربر «{0}» در حال ویرایش این مورد است. فعلاً امکان ویرایش وجود ندارد.</value></data>
+  <data name="EditLockLost" xml:space="preserve"><value>قفل ویرایش شما منقضی شده یا این مورد توسط کاربر دیگری گرفته شده است.</value></data>
+  <data name="SettingsSeller" xml:space="preserve"><value>فروشنده</value></data>
+  <data name="SellerSettingsHint" xml:space="preserve"><value>اطلاعات فرستنده برای چاپ برچسب مرسوله پستی استفاده می‌شود.</value></data>
+  <data name="SellerName" xml:space="preserve"><value>نام فروشنده / فرستنده</value></data>
+  <data name="SellerPhone" xml:space="preserve"><value>تلفن فروشنده</value></data>
+  <data name="SellerProvince" xml:space="preserve"><value>استان</value></data>
+  <data name="SellerCity" xml:space="preserve"><value>شهر</value></data>
+  <data name="SellerAddress" xml:space="preserve"><value>آدرس فروشنده</value></data>
+  <data name="SellerPostalCode" xml:space="preserve"><value>کد پستی</value></data>
+  <data name="SellerPostalCodeHint" xml:space="preserve"><value>کد پستی ۱۰ رقمی (بدون خط تیره).</value></data>
+  <data name="PrintShipment" xml:space="preserve"><value>چاپ مرسوله</value></data>
+  <data name="Print" xml:space="preserve"><value>چاپ</value></data>
+  <data name="ShipmentLabel" xml:space="preserve"><value>برچسب مرسوله پستی</value></data>
+  <data name="Sender" xml:space="preserve"><value>فرستنده</value></data>
+  <data name="Recipient" xml:space="preserve"><value>گیرنده</value></data>
+  <data name="RecipientName" xml:space="preserve"><value>نام گیرنده</value></data>
+  <data name="RecipientPhone" xml:space="preserve"><value>موبایل گیرنده</value></data>
+  <data name="PostalCode" xml:space="preserve"><value>کد پستی</value></data>
+  <data name="ShipmentItemSummary" xml:space="preserve"><value>{0} قلم کالا — مجموع {1} عدد</value></data>
+  <data name="ShipmentPaperSize" xml:space="preserve"><value>اندازه کاغذ</value></data>
+  <data name="PrintInvoice" xml:space="preserve"><value>چاپ فاکتور</value></data>
+  <data name="SalesInvoice" xml:space="preserve"><value>فاکتور فروش</value></data>
+  <data name="SalesInvoiceSubtitle" xml:space="preserve"><value>صورتحساب الکترونیکی فروش کالا و خدمات</value></data>
+  <data name="InvoiceNumber" xml:space="preserve"><value>شماره فاکتور</value></data>
+  <data name="InvoiceDate" xml:space="preserve"><value>تاریخ صدور</value></data>
+  <data name="SellerInfo" xml:space="preserve"><value>مشخصات فروشنده</value></data>
+  <data name="BuyerInfo" xml:space="preserve"><value>مشخصات خریدار</value></data>
+  <data name="InvoiceRow" xml:space="preserve"><value>ردیف</value></data>
+  <data name="UnitPrice" xml:space="preserve"><value>مبلغ واحد</value></data>
+  <data name="LineTotal" xml:space="preserve"><value>مبلغ کل</value></data>
+  <data name="PaymentDetails" xml:space="preserve"><value>جزئیات پرداخت</value></data>
+  <data name="SellerSignature" xml:space="preserve"><value>مهر و امضای فروشنده</value></data>
+  <data name="BuyerSignature" xml:space="preserve"><value>مهر و امضای خریدار</value></data>
+  <data name="InvoiceFooterNote" xml:space="preserve"><value>این فاکتور به صورت سیستمی صادر شده و فاقد مهر و امضای فیزیکی معتبر است مگر اینکه توسط فروشنده مهر شود.</value></data>
+  <data name="SellerEmail" xml:space="preserve"><value>ایمیل فروشنده</value></data>
+  <data name="SellerNationalId" xml:space="preserve"><value>شناسه / کد ملی</value></data>
+  <data name="SellerNationalIdHint" xml:space="preserve"><value>برای اشخاص حقیقی: کد ملی — برای حقوقی: شناسه ملی (۱۱ رقم).</value></data>
+  <data name="SellerEconomicCode" xml:space="preserve"><value>کد اقتصادی</value></data>
+  <data name="SellerEconomicCodeHint" xml:space="preserve"><value>کد اقتصادی ۱۲ یا ۱۴ رقمی (اختیاری).</value></data>
+  <data name="SellerRegistrationNumber" xml:space="preserve"><value>شماره ثبت</value></data>
+  <data name="InvoiceDisplaySettings" xml:space="preserve"><value>نمایش در فاکتور</value></data>
+  <data name="InvoiceDisplaySettingsHint" xml:space="preserve"><value>انتخاب کنید کدام فیلدها در بخش فروشنده و خریدار فاکتور چاپ شوند.</value></data>
+</root>

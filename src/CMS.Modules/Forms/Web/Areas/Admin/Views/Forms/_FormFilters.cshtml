@@ -1,0 +1,57 @@
+@model FormIndexViewModel
+@using CMS.Modules.Forms.Domain.Enums
+
+<div class="admin-field">
+    <label for="form-filter-status">@Localizer["Status"]</label>
+    <select id="form-filter-status" name="status">
+        <option value="">@Localizer["AllStatuses"]</option>
+        @foreach (FormStatus s in Enum.GetValues<FormStatus>())
+        {
+            if (Model.Status == s)
+            {
+                <option value="@s" selected>@(s == FormStatus.Published ? Localizer["Published"] : s == FormStatus.Disabled ? Localizer["Disabled"] : Localizer["Draft"])</option>
+            }
+            else
+            {
+                <option value="@s">@(s == FormStatus.Published ? Localizer["Published"] : s == FormStatus.Disabled ? Localizer["Disabled"] : Localizer["Draft"])</option>
+            }
+        }
+    </select>
+</div>
+<div class="admin-field">
+    <label for="form-filter-sort">@Localizer["Sort"]</label>
+    <select id="form-filter-sort" name="sort">
+        @if (string.IsNullOrEmpty(Model.Sort))
+        {
+            <option value="" selected>@Localizer["SortNewest"]</option>
+        }
+        else
+        {
+            <option value="">@Localizer["SortNewest"]</option>
+        }
+        @if (string.Equals(Model.Sort, "name", StringComparison.OrdinalIgnoreCase))
+        {
+            <option value="name" selected>@Localizer["SortName"]</option>
+        }
+        else
+        {
+            <option value="name">@Localizer["SortName"]</option>
+        }
+        @if (string.Equals(Model.Sort, "submissions", StringComparison.OrdinalIgnoreCase))
+        {
+            <option value="submissions" selected>@Localizer["SortSubmissions"]</option>
+        }
+        else
+        {
+            <option value="submissions">@Localizer["SortSubmissions"]</option>
+        }
+        @if (string.Equals(Model.Sort, "status", StringComparison.OrdinalIgnoreCase))
+        {
+            <option value="status" selected>@Localizer["SortStatus"]</option>
+        }
+        else
+        {
+            <option value="status">@Localizer["SortStatus"]</option>
+        }
+    </select>
+</div>

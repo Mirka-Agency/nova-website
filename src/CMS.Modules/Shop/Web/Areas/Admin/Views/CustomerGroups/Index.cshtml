@@ -1,0 +1,10 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Pricing.CustomerGroupDto>
+@{ ViewData["Title"] = Localizer["CustomerGroups"]; }
+<div class="admin-toolbar"><a class="btn btn-primary" asp-action="Create">@Localizer["CreateCustomerGroup"]</a></div>
+<table class="admin-table"><thead><tr><th>@Localizer["Name"]</th><th>@Localizer["Code"]</th><th>@Localizer["IsWholesale"]</th><th></th></tr></thead><tbody>
+@foreach (var g in Model) { <tr><td>@g.Name</td><td>@g.Code</td><td>@(g.IsWholesale ? Localizer["Yes"] : Localizer["No"])</td><td><a class="btn btn-secondary" asp-action="Edit" asp-route-id="@g.Id">@Localizer["Edit"]</a></td></tr> }
+</tbody></table>
+@if (Model.Count > 0)
+{
+    <partial name="_Pager" />
+}

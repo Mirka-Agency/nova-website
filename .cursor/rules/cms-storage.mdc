@@ -1,0 +1,60 @@
+---
+description: S3 object storage for all CMS file uploads (Blog, Shop, Forms, Media)
+globs: "**/Storage/**,**/*Upload*,**/appsettings*.json,.env.example"
+alwaysApply: false
+---
+
+# CMS File Storage (S3)
+
+## Locked decisions
+
+- **All uploaded files** (blog covers, product images, form attachments, media library) go through **S3 object storage**.
+- Application code depends on `CMS.Application.Storage.IObjectStorage` only — never on `Amazon.S3` types.
+- Implementation: `CMS.Infrastructure.Storage.S3ObjectStorage` (AWS S3 **or** S3-compatible: MinIO, Arvan, Liara, etc.).
+- Do **not** save uploads under `wwwroot` or the local disk for module media.
+
+## Config keys (`Storage:S3`)
+
+| Key | Env var | Purpose |
+|-----|---------|---------|
+| AccessKey | `Storage__S3__AccessKey` | Access key |
+| SecretKey | `Storage__S3__SecretKey` | Secret key |
+| BucketName | `Storage__S3__BucketName` | Bucket |
+| Region | `Storage__S3__Region` | AWS region (also auth region for compatible APIs) |
+| ServiceUrl | `Storage__S3__ServiceUrl` | Custom endpoint (MinIO / compatible); empty for AWS |
+| PublicBaseUrl | `Storage__S3__PublicBaseUrl` | CDN / public URL prefix for `GetPublicUrl` |
+| ForcePathStyle | `Storage__S3__ForcePathStyle` | Path-style addressing (often `true` for MinIO) |
+| UsePublicReadAcl | `Storage__S3__UsePublicReadAcl` | Set object ACL `public-read` (prefer bucket policy when ACLs are off) |
+
+See `.env.example`. Never commit real credentials.
+
+## Object keys
+
+Use `ObjectStorageKeys.Create(module, category, fileName)`:
+
+```csharp
+var key = ObjectStorageKeys.Create(ObjectStorageKeys.Modules.Blog, "covers", file.FileName);
+// blog/covers/{guid}_{safe-name}.jpg
+```
+
+Module prefixes: `blog`, `shop`, `forms`, `media`.
+
+## Upload flow
+
+1. Web binds `IFormFile`.
+2. Validate type/size (`ImageUploadRules` for images).
+3. Call `IObjectStorage.UploadAsync(stream, key, contentType)`.
+4. Persist **`PublicUrl`** (and optionally the object key later for deletes) on the entity — not the binary.
+
+```csharp
+await using var stream = file.OpenReadStream();
+var result = await _storage.UploadAsync(stream, key, file.ContentType, ct);
+entity.SetCoverImage(result.PublicUrl);
+```
+
+## Do Not
+
+- Reference AWSSDK types from Application, Domain, or module Web layers.
+- Store binaries in PostgreSQL or on the app server disk.
+- Invent ad-hoc local `wwwroot/uploads` folders for CMS media.
+- Hardcode bucket names or credentials in source.

@@ -1,0 +1,95 @@
+@model FormFormViewModel
+
+<div class="admin-field">
+    <label asp-for="Key">@Localizer["Key"]</label>
+    <input asp-for="Key" readonly />
+    <p class="admin-hint">@Localizer["KeyHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label>@Localizer["PublicUrl"]</label>
+    <p><code dir="ltr">/forms/@Model.Slug</code></p>
+    <div class="admin-row-actions" style="justify-content: flex-start; margin-block-start: 0.5rem;">
+        <a class="btn btn-secondary" href="/forms/@Model.Slug" target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-external-link-alt" aria-hidden="true"></i><span>@Localizer["OpenPublicForm"]</span>
+        </a>
+    </div>
+</div>
+
+<div class="admin-field">
+    <label>@Localizer["SchemaUrl"]</label>
+    <p><code dir="ltr">/forms/@Model.Slug/schema</code></p>
+    <p class="admin-hint">@Localizer["SchemaUrlHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label>@Localizer["EmbedSnippet"]</label>
+    <p class="admin-hint">@Localizer["EmbedHint"]</p>
+    @{
+        var embed = $"@await Component.InvokeAsync(\"FormEmbed\", new {{ slug = \"{Model.Slug}\" }})";
+        var embedByKey = $"@await Component.InvokeAsync(\"FormEmbed\", new {{ key = \"{Model.Key}\" }})";
+    }
+    <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.35rem;">
+        <button type="button" class="btn btn-ghost" data-copy-target="#embed-slug">@Localizer["CopySnippet"]</button>
+    </div>
+    <textarea id="embed-slug" readonly rows="2" dir="ltr">@embed</textarea>
+    <div class="admin-row-actions" style="justify-content: flex-start; margin-block: 0.5rem 0.35rem;">
+        <button type="button" class="btn btn-ghost" data-copy-target="#embed-key">@Localizer["CopySnippet"]</button>
+    </div>
+    <textarea id="embed-key" readonly rows="2" dir="ltr">@embedByKey</textarea>
+</div>
+
+<div class="admin-field">
+    <label>@Localizer["VersionHistory"]</label>
+    <p class="admin-hint">@Localizer["VersionHistoryHint"]</p>
+    @if (Model.Versions.Count == 0)
+    {
+        <p class="admin-lead">@Localizer["NoVersions"]</p>
+    }
+    else
+    {
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["VersionNumber"]</th>
+                        <th>@Localizer["VersionState"]</th>
+                        <th>@Localizer["UpdatedAt"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var version in Model.Versions)
+                {
+                    var isCurrent = version.IsPublishedPointer || version.IsDraftPointer;
+                    <tr>
+                        <td>
+                            v@version.VersionNumber
+                            @if (version.IsPublishedPointer)
+                            {
+                                <span class="admin-hint">(@Localizer["PublishedPointer"])</span>
+                            }
+                            @if (version.IsDraftPointer)
+                            {
+                                <span class="admin-hint">(@Localizer["DraftPointer"])</span>
+                            }
+                        </td>
+                        <td>@Localizer[$"VersionState_{version.State}"]</td>
+                        <td>@((version.UpdatedAtUtc ?? version.CreatedAtUtc).ToLocalTime().ToString("yyyy/MM/dd HH:mm"))</td>
+                        <td class="admin-row-actions">
+                            @if (!isCurrent && Model.Id.HasValue)
+                            {
+                                <button type="submit"
+                                        class="btn btn-secondary"
+                                        form="restore-version-@version.Id">
+                                    @Localizer["RestoreVersion"]
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

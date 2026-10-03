@@ -1,0 +1,173 @@
+@model ProductIndexViewModel
+@using CMS.Modules.Shop.Domain.Enums
+
+<div class="admin-field">
+    <label for="product-filter-status">@Localizer["Status"]</label>
+    <select id="product-filter-status" name="status">
+        <option value="">@Localizer["AllStatuses"]</option>
+        @foreach (ProductStatus s in Enum.GetValues<ProductStatus>())
+        {
+            var label = s switch
+            {
+                ProductStatus.Active => Localizer["StatusActive"].Value,
+                ProductStatus.Draft => Localizer["Draft"].Value,
+                ProductStatus.Hidden => Localizer["StatusHidden"].Value,
+                ProductStatus.OutOfStock => Localizer["StatusOutOfStock"].Value,
+                _ => s.ToString()
+            };
+            if (Model.Status == s)
+            {
+                <option value="@s" selected>@label</option>
+            }
+            else
+            {
+                <option value="@s">@label</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="product-filter-category">@Localizer["Category"]</label>
+    <select id="product-filter-category" name="categoryId" asp-items="Model.CategoryOptions">
+        <option value="">@Localizer["AllCategories"]</option>
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="product-filter-brand">@Localizer["Brand"]</label>
+    <select id="product-filter-brand" name="brandId" asp-items="Model.BrandOptions">
+        <option value="">@Localizer["AllBrands"]</option>
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="product-filter-type">@Localizer["ProductType"]</label>
+    <select id="product-filter-type" name="productType">
+        <option value="">@Localizer["AllProductTypes"]</option>
+        @if (Model.ProductType == ProductType.Simple)
+        {
+            <option value="@ProductType.Simple" selected>@Localizer["ProductTypeSimple"]</option>
+        }
+        else
+        {
+            <option value="@ProductType.Simple">@Localizer["ProductTypeSimple"]</option>
+        }
+        @if (Model.ProductType == ProductType.Variable)
+        {
+            <option value="@ProductType.Variable" selected>@Localizer["ProductTypeVariable"]</option>
+        }
+        else
+        {
+            <option value="@ProductType.Variable">@Localizer["ProductTypeVariable"]</option>
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="product-filter-available">@Localizer["IsAvailable"]</label>
+    <select id="product-filter-available" name="isAvailable">
+        <option value="">@Localizer["All"]</option>
+        @if (Model.IsAvailable == true)
+        {
+            <option value="true" selected>@Localizer["Yes"]</option>
+        }
+        else
+        {
+            <option value="true">@Localizer["Yes"]</option>
+        }
+        @if (Model.IsAvailable == false)
+        {
+            <option value="false" selected>@Localizer["No"]</option>
+        }
+        else
+        {
+            <option value="false">@Localizer["No"]</option>
+        }
+    </select>
+</div>
+
+@if (Model.ShowPurchasable)
+{
+    <div class="admin-field">
+        <label for="product-filter-purchasable">@Localizer["IsPurchasable"]</label>
+        <select id="product-filter-purchasable" name="isPurchasable">
+            <option value="">@Localizer["All"]</option>
+            @if (Model.IsPurchasable == true)
+            {
+                <option value="true" selected>@Localizer["Yes"]</option>
+            }
+            else
+            {
+                <option value="true">@Localizer["Yes"]</option>
+            }
+            @if (Model.IsPurchasable == false)
+            {
+                <option value="false" selected>@Localizer["No"]</option>
+            }
+            else
+            {
+                <option value="false">@Localizer["No"]</option>
+            }
+        </select>
+    </div>
+}
+
+<div class="admin-field">
+    <label for="product-filter-stock">@Localizer["StockFilter"]</label>
+    <select id="product-filter-stock" name="stock">
+        <option value="">@Localizer["All"]</option>
+        @{
+            var stockOptions = new (string Value, string Key)[]
+            {
+                ("in", "StockFilterIn"),
+                ("out", "StockFilterOut"),
+                ("low", "StockFilterLow"),
+                ("unlimited", "StockFilterUnlimited")
+            };
+        }
+        @foreach (var opt in stockOptions)
+        {
+            if (string.Equals(Model.Stock, opt.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                <option value="@opt.Value" selected>@Localizer[opt.Key]</option>
+            }
+            else
+            {
+                <option value="@opt.Value">@Localizer[opt.Key]</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="product-filter-sort">@Localizer["Sort"]</label>
+    <select id="product-filter-sort" name="sort">
+        @{
+            var sortOptions = new (string Value, string Key)[]
+            {
+                ("", "SortNewest"),
+                ("title", "SortTitle"),
+                ("title_desc", "SortTitleDesc"),
+                ("price", "SortPrice"),
+                ("price_desc", "SortPriceDesc"),
+                ("stock", "SortStock"),
+                ("status", "SortStatus")
+            };
+        }
+        @foreach (var opt in sortOptions)
+        {
+            var selected = string.IsNullOrEmpty(opt.Value)
+                ? string.IsNullOrEmpty(Model.Sort)
+                : string.Equals(Model.Sort, opt.Value, StringComparison.OrdinalIgnoreCase);
+            if (selected)
+            {
+                <option value="@opt.Value" selected>@Localizer[opt.Key]</option>
+            }
+            else
+            {
+                <option value="@opt.Value">@Localizer[opt.Key]</option>
+            }
+        }
+    </select>
+</div>

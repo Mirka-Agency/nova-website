@@ -1,0 +1,96 @@
+@model CommerceReportViewModel
+@{
+    ViewData["Title"] = Localizer["CommerceReports"];
+    var r = Model.Report;
+}
+
+<div class="admin-stat-grid">
+    <div class="admin-stat-card">
+        <div class="admin-stat-label">@Localizer["TotalSales"]</div>
+        <div class="admin-stat-value">@r.Summary.TotalSales.ToString("N0")</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-label">@Localizer["OrderCount"]</div>
+        <div class="admin-stat-value">@r.Summary.OrderCount</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-label">@Localizer["TodaySales"]</div>
+        <div class="admin-stat-value">@r.Summary.TodaySales.ToString("N0")</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-label">@Localizer["MonthSales"]</div>
+        <div class="admin-stat-value">@r.Summary.MonthSales.ToString("N0")</div>
+    </div>
+</div>
+
+@if (r.BestSellers.Count > 0)
+{
+    <h2 class="admin-section-title">@Localizer["BestSellers"]</h2>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>@Localizer["Product"]</th>
+            <th>@Localizer["Quantity"]</th>
+            <th>@Localizer["Revenue"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var b in r.BestSellers)
+        {
+            <tr>
+                <td>@b.Title</td>
+                <td>@b.QuantitySold</td>
+                <td>@b.Revenue.ToString("N0")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (r.TopCustomers.Count > 0)
+{
+    <h2 class="admin-section-title">@Localizer["TopCustomers"]</h2>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>@Localizer["CustomerName"]</th>
+            <th>@Localizer["Email"]</th>
+            <th>@Localizer["OrderCount"]</th>
+            <th>@Localizer["Total"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var c in r.TopCustomers)
+        {
+            <tr>
+                <td>@c.CustomerName</td>
+                <td>@c.CustomerEmail</td>
+                <td>@c.OrderCount</td>
+                <td>@c.TotalSpent.ToString("N0")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (r.LowStock.Count > 0)
+{
+    <h2 class="admin-section-title">@Localizer["LowStock"]</h2>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>@Localizer["Product"]</th>
+            <th>@Localizer["Quantity"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var l in r.LowStock)
+        {
+            <tr>
+                <td>@l.Title @(string.IsNullOrWhiteSpace(l.Sku) ? null : $"({l.Sku})")</td>
+                <td>@l.Quantity</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

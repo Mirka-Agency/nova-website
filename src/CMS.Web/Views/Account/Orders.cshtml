@@ -1,0 +1,62 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Orders.OrderListItemDto>
+@{
+    ViewData["Title"] = "سفارش‌ها";
+}
+
+<h1>سفارش‌ها</h1>
+@if (Model.Count == 0)
+{
+    <p class="blog-empty">هنوز سفارشی ثبت نشده است.</p>
+}
+else
+{
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>شماره</th>
+            <th>وضعیت</th>
+            <th>مهلت پرداخت</th>
+            <th>مبلغ</th>
+            <th>تاریخ</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var o in Model)
+        {
+            <tr>
+                <td>@o.OrderNumber</td>
+                <td>@o.Status</td>
+                <td>
+                    @if (o.Status == CMS.Modules.Shop.Domain.Enums.OrderStatus.Pending && o.PaymentExpiresAtUtc.HasValue)
+                    {
+                        <span class="payment-timer"
+                              data-expires-utc="@o.PaymentExpiresAtUtc.Value.ToUniversalTime().ToString("o")"
+                              data-expired-label="منقضی‌شده">—</span>
+                    }
+                    else
+                    {
+                        <span>—</span>
+                    }
+                </td>
+                <td>@o.TotalAmount.ToString("N0") @o.Currency</td>
+                <td>@o.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                <td>
+                    <a class="btn btn-secondary" asp-action="OrderDetails" asp-route-id="@o.Id">جزئیات</a>
+                    @if (o.CanCancel)
+                    {
+                        <form asp-action="CancelOrder" asp-route-id="@o.Id" method="post" class="admin-inline-form" style="display:inline;" onsubmit="return confirm('سفارش لغو شود؟ موجودی به انبار برمی‌گردد.');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-ghost">لغو</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script src="~/admin/js/payment-timer.js" asp-append-version="true"></script>
+}

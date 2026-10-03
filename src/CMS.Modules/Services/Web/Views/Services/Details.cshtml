@@ -1,0 +1,44 @@
+@model PublicServiceItemDetailDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<article class="blog-page blog-detail">
+    <p class="blog-back">
+        <a asp-controller="Services" asp-action="Index">@Localizer["BackToServices"]</a>
+    </p>
+
+    <header class="blog-page-header">
+        <h1>@Model.Title</h1>
+        <p class="blog-meta">
+            <span>@Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
+            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
+            {
+                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
+            {
+                <span>· @Localizer["Category"]: @Model.CategoryName</span>
+            }
+        </p>
+        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+        {
+            <p class="blog-excerpt">@Model.Excerpt</p>
+        }
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+    {
+        <figure class="blog-cover">
+            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
+        </figure>
+    }
+
+    <div class="blog-content">@Html.Raw(Model.Body)</div>
+
+    @await Component.InvokeAsync("Comments", new {
+        targetType = 0,
+        targetId = Model.Id,
+        targetTitle = Model.Title
+    })
+</article>

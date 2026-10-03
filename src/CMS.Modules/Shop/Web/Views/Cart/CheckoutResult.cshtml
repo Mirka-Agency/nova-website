@@ -1,0 +1,95 @@
+@model CheckoutResultViewModel
+@using CMS.Modules.Shop.Web.ViewModels
+@{
+    ViewData["Title"] = Localizer["Checkout"];
+}
+
+<section class="shop-page">
+    <header class="blog-page-header">
+        <h1>@Localizer["OrderReceived"]</h1>
+    </header>
+
+    @if (Model.PaymentSucceeded)
+    {
+        <p class="blog-meta">@Localizer["OrderSuccess"]</p>
+    }
+    else if (Model.AwaitingOfflinePayment)
+    {
+        <p class="blog-meta">@Localizer["BankTransferPending"]</p>
+    }
+    else
+    {
+        <p class="blog-meta">@Localizer["PaymentFailed"]</p>
+    }
+
+    <p class="blog-meta">@Localizer["OrderNumber"]: <strong>@Model.OrderNumber</strong></p>
+    @if (!string.IsNullOrWhiteSpace(Model.TransactionId))
+    {
+        <p class="blog-meta">@Localizer["TransactionId"]: @Model.TransactionId</p>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.PaymentMessage) && Model.BankTransfer is null)
+    {
+        <p class="blog-meta">@Model.PaymentMessage</p>
+    }
+
+    @if (Model.BankTransfer is not null)
+    {
+        <section class="shop-bank-transfer" aria-labelledby="bank-transfer-title">
+            <h2 id="bank-transfer-title">@Localizer["BankTransferDetails"]</h2>
+            @if (!string.IsNullOrWhiteSpace(Model.BankTransfer.Instructions))
+            {
+                <p class="blog-meta">@Model.BankTransfer.Instructions</p>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.PaymentMessage))
+            {
+                <p class="blog-meta">@Model.PaymentMessage</p>
+            }
+
+            <dl class="shop-bank-transfer-list">
+                @if (!string.IsNullOrWhiteSpace(Model.BankTransfer.AccountHolderName))
+                {
+                    <div>
+                        <dt>@Localizer["BankAccountHolder"]</dt>
+                        <dd>@Model.BankTransfer.AccountHolderName</dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.BankTransfer.BankName))
+                {
+                    <div>
+                        <dt>@Localizer["BankName"]</dt>
+                        <dd>@Model.BankTransfer.BankName</dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.BankTransfer.CardNumber))
+                {
+                    <div>
+                        <dt>@Localizer["BankCardNumber"]</dt>
+                        <dd dir="ltr" class="admin-mono">@FormatCard(Model.BankTransfer.CardNumber)</dd>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.BankTransfer.ShebaNumber))
+                {
+                    <div>
+                        <dt>@Localizer["BankShebaNumber"]</dt>
+                        <dd dir="ltr" class="admin-mono">@Model.BankTransfer.ShebaNumber</dd>
+                    </div>
+                }
+            </dl>
+            <p class="blog-meta">@Localizer["BankTransferOrderHint"]</p>
+        </section>
+    }
+
+    <p>
+        <a class="btn btn-secondary" asp-controller="Shop" asp-action="Index">@Localizer["BackToShop"]</a>
+    </p>
+</section>
+
+@functions {
+    private static string FormatCard(string digits)
+    {
+        if (string.IsNullOrWhiteSpace(digits) || digits.Length < 16)
+            return digits;
+        return string.Join(' ', Enumerable.Range(0, (digits.Length + 3) / 4)
+            .Select(i => digits.Substring(i * 4, Math.Min(4, digits.Length - i * 4))));
+    }
+}

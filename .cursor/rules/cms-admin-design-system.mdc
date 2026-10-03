@@ -1,0 +1,118 @@
+---
+description: Design system for CMS admin panel — minimal black/white, Farsi RTL
+globs: "**/Areas/Admin/**,**/wwwroot/admin/**,**/*Admin*.{cshtml,css,scss,js,tsx}"
+alwaysApply: false
+---
+
+# CMS Admin Design System
+
+This rule applies **only to the CMS admin panel**. The public website template is customer-specific and not defined yet — do not reuse admin styles for the front-end site.
+
+## Principles
+
+- **Modern, clean, minimal, simple** — reduce visual noise; every element must earn its place.
+- Prefer whitespace over borders and decoration.
+- One primary action per screen section; secondary actions stay visually quiet.
+
+## Color Palette
+
+| Role | Value | Usage |
+|------|-------|-------|
+| Primary | `#000000` | Buttons, links, active nav, focus rings, key icons |
+| Background | `#FFFFFF` | Page, cards, modals, inputs |
+| Surface muted | `#F5F5F5` | Table headers, sidebar hover, subtle dividers |
+| Border | `#E5E5E5` | Input borders, card outlines, separators |
+| Text primary | `#000000` | Headings, body |
+| Text secondary | `#666666` | Labels, hints, metadata |
+| Text disabled | `#999999` | Disabled controls |
+| Error | `#DC2626` | Validation, destructive confirm |
+| Success | `#16A34A` | Success toasts, saved state |
+
+Do not introduce accent colors (blue, brand gradients, etc.) unless explicitly requested.
+
+## Typography (Farsi)
+
+- Set `lang="fa"` and `dir="rtl"` on the admin layout root.
+- Font stack: `'Abar Mid Fanum', Tahoma, sans-serif` (variable font, default weight Mid / 500, Farsi digits).
+- Base size: `16px`; line-height: `1.6`.
+- Headings: semibold/bold via `font-weight` (600–700) — avoid decorative display fonts.
+- Use Persian digits in UI copy; keep Latin for code, URLs, and API keys.
+
+## Spacing & Layout
+
+- Base unit: `4px` (use multiples: 8, 12, 16, 24, 32, 48).
+- Page padding: `24px` desktop, `16px` mobile.
+- Card padding: `16px`–`24px`; border-radius: `6px` max.
+- Max content width for forms: `640px`; for data tables: full width with horizontal scroll on small screens.
+
+## Components
+
+### Buttons
+
+```html
+<!-- Primary -->
+<button class="btn btn-primary">ذخیره</button>
+
+<!-- Secondary (outline) -->
+<button class="btn btn-secondary">انصراف</button>
+
+<!-- Ghost -->
+<button class="btn btn-ghost">حذف</button>
+```
+
+- Primary: black fill, white text, no shadow.
+- Secondary: white fill, black border (`1px solid #000`).
+- Hover: primary → `#333`; secondary → `#F5F5F5`.
+- Min height: `40px`; horizontal padding: `16px`.
+
+### Forms
+
+- Full-width inputs; label above field (RTL-aligned right).
+- Focus: `2px solid #000` outline, no glow.
+- Error state: red border + Persian error message below field.
+
+### Navigation
+
+- Sidebar or top bar: white background, black text/icons.
+- Active item: black background + white text, or black left/right border (use `border-inline-start`).
+
+### Tables
+
+- White rows, `#F5F5F5` header row.
+- Row hover: `#FAFAFA`.
+- Actions column on the **start** side (right in RTL).
+
+### Feedback
+
+- Toasts: minimal — white card, thin border, black text; success/error icon only.
+- Empty states: simple icon + one line of Persian copy + one action button.
+
+## RTL Rules
+
+- Use **logical CSS properties**: `margin-inline-start`, `padding-inline-end`, `inset-inline-start` — never hardcode `left`/`right`.
+- Mirror directional icons (chevrons, arrows, back buttons); keep universal icons (check, close, search) unchanged.
+- Dropdowns and tooltips open toward the inline-start edge.
+- Scrollbars stay on the physical right; do not force scrollbar side.
+
+## Do Not
+
+- Add gradients, glassmorphism, heavy shadows, or colorful themes.
+- Use LTR-only layouts or English-only placeholder copy in admin UI.
+- Copy admin styles to the public website template.
+- Overload screens with cards, badges, or icon-only buttons without labels.
+
+## Example Layout Shell
+
+```html
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="~/admin/css/admin.css" />
+</head>
+<body class="admin">
+  <aside class="admin-sidebar">…</aside>
+  <main class="admin-main">…</main>
+</body>
+</html>
+```

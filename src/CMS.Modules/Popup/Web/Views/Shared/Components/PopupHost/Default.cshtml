@@ -1,0 +1,99 @@
+@model IReadOnlyList<CMS.Modules.Popup.Application.Popups.PublicPopupDto>
+@using CMS.Application.Common.Features
+@using CMS.Modules.Popup.Domain.Enums
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
+@{
+    var formsEnabled = await FeatureManager.IsEnabledAsync(FeatureNames.Forms);
+}
+
+<link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" />
+
+<div id="cms-popup-host" class="cms-popup-host" data-cms-popup-host hidden>
+@foreach (var popup in Model)
+{
+    var frequency = popup.Frequency switch
+    {
+        PopupFrequency.EveryVisit => "every_visit",
+        PopupFrequency.OncePerSession => "once_session",
+        PopupFrequency.OncePerBrowser => "once_browser",
+        _ => "always"
+    };
+    var ctaAction = PopupCtaActions.Normalize(popup.CtaAction);
+    var hasCta = ctaAction != PopupCtaActions.None && !string.IsNullOrWhiteSpace(popup.CtaText);
+
+    <div class="cms-popup"
+         id="cms-popup-@popup.Slug"
+         data-cms-popup
+         data-popup-id="@popup.Id"
+         data-popup-slug="@popup.Slug"
+         data-trigger="@popup.TriggerType"
+         data-trigger-delay="@(popup.TriggerDelaySeconds ?? 0)"
+         data-trigger-scroll="@(popup.TriggerScrollPercent ?? 0)"
+         data-trigger-selector="@(popup.TriggerSelector ?? "")"
+         data-frequency="@frequency"
+         data-show-overlay="@(popup.ShowOverlay ? "true" : "false")"
+         data-show-close="@(popup.ShowCloseButton ? "true" : "false")"
+         data-close-overlay="@(popup.CloseOnOverlayClick ? "true" : "false")"
+         data-close-esc="@(popup.CloseOnEscape ? "true" : "false")"
+         data-lock-scroll="@(popup.LockBodyScroll ? "true" : "false")"
+         data-content-scroll="@(popup.EnableContentScroll ? "true" : "false")"
+         hidden
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="cms-popup-title-@popup.Slug">
+        <div class="cms-popup__backdrop" data-popup-backdrop @(popup.ShowOverlay ? null : "hidden")></div>
+        <div class="cms-popup__dialog @(popup.EnableContentScroll ? "cms-popup__dialog--scroll" : null)">
+            @if (popup.ShowCloseButton)
+            {
+                <button type="button" class="cms-popup__close" data-popup-close aria-label="بستن">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            }
+            <div class="cms-popup__body">
+                <h2 class="cms-popup__title" id="cms-popup-title-@popup.Slug">@popup.Title</h2>
+                @if (!string.IsNullOrWhiteSpace(popup.ImageUrl))
+                {
+                    <div class="cms-popup__image">
+                        <img src="@popup.ImageUrl" alt="" loading="lazy" />
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(popup.BodyText))
+                {
+                    <div class="cms-popup__text">@popup.BodyText</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(popup.ContentHtml))
+                {
+                    <div class="cms-popup__content">@Html.Raw(popup.ContentHtml)</div>
+                }
+                @if (hasCta)
+                {
+                    if (ctaAction == PopupCtaActions.Url && !string.IsNullOrWhiteSpace(popup.CtaUrl))
+                    {
+                        <a class="cms-popup__cta" href="@popup.CtaUrl">@popup.CtaText</a>
+                    }
+                    else if (ctaAction == PopupCtaActions.Close)
+                    {
+                        <button type="button" class="cms-popup__cta" data-popup-close>@popup.CtaText</button>
+                    }
+                    else if (ctaAction == PopupCtaActions.OpenPopup && !string.IsNullOrWhiteSpace(popup.CtaTargetPopupSlug))
+                    {
+                        <button type="button"
+                                class="cms-popup__cta"
+                                data-popup-open="@popup.CtaTargetPopupSlug"
+                                data-popup-close-current="true">@popup.CtaText</button>
+                    }
+                }
+                @if (popup.FormId.HasValue && formsEnabled)
+                {
+                    <div class="cms-popup__form" data-popup-form>
+                        @await Component.InvokeAsync("FormEmbed", new { id = popup.FormId.Value })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+<script src="~/site/js/popup.js" asp-append-version="true" defer></script>

@@ -1,0 +1,129 @@
+@model CategoriesAndBrandsPageViewModel
+@{
+    ViewData["Title"] = Localizer["CategoriesAndBrands"];
+    var tab = Model.ActiveTab?.ToLowerInvariant() ?? "categories";
+    var isBrands = tab == "brands";
+}
+
+<nav class="admin-tabs" aria-label="@Localizer["CategoriesAndBrands"]">
+    <a class="admin-tab @(!isBrands ? "is-active" : null)" asp-action="Index" asp-route-tab="categories">@Localizer["ShopCategories"]</a>
+    <a class="admin-tab @(isBrands ? "is-active" : null)" asp-action="Index" asp-route-tab="brands">@Localizer["Brands"]</a>
+</nav>
+
+@if (!isBrands)
+{
+    <div class="admin-toolbar">
+        <a class="btn btn-primary" asp-action="Create">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+            <span>@Localizer["CreateCategory"]</span>
+        </a>
+    </div>
+
+    @if (Model.Categories.Count == 0)
+    {
+        <p class="admin-lead">@Localizer["NoCategories"]</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Image"]</th>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Slug"]</th>
+                <th>@Localizer["ProductCount"]</th>
+                <th>@Localizer["Status"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Categories)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        {
+                            <img class="admin-table-thumb" src="@item.ImageUrl" alt="" />
+                        }
+                        else
+                        {
+                            <span>—</span>
+                        }
+                    </td>
+                    <td>@item.Name</td>
+                    <td>@item.Slug</td>
+                    <td>@item.ProductCount</td>
+                    <td>@(item.IsActive ? Localizer["Yes"] : Localizer["No"])</td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                            <span>@Localizer["Edit"]</span>
+                        </a>
+                        <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-ghost">
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                <span>@Localizer["Delete"]</span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <partial name="_Pager" />
+    }
+}
+else
+{
+    <div class="admin-toolbar">
+        <a class="btn btn-primary" asp-controller="Brands" asp-action="Create">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+            <span>@Localizer["CreateBrand"]</span>
+        </a>
+    </div>
+
+    @if (Model.Brands.Count == 0)
+    {
+        <p class="admin-lead">@Localizer["NoBrands"]</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Slug"]</th>
+                <th>@Localizer["Status"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Brands)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Slug</td>
+                    <td>@(item.IsActive ? Localizer["Yes"] : Localizer["No"])</td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-controller="Brands" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="fas fa-edit" aria-hidden="true"></i>
+                            <span>@Localizer["Edit"]</span>
+                        </a>
+                        <form asp-controller="Brands" asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-ghost">
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                <span>@Localizer["Delete"]</span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <partial name="_Pager" />
+    }
+}

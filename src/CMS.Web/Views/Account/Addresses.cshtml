@@ -1,0 +1,40 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Account.CustomerAddressDto>
+@{
+    ViewData["Title"] = "آدرس‌ها";
+}
+
+<h1>آدرس‌ها</h1>
+
+@if (Model.Count == 0)
+{
+    <p class="blog-empty">هنوز آدرسی ثبت نشده است.</p>
+}
+else
+{
+    <ul class="account-address-list">
+        @foreach (var a in Model)
+        {
+            <li class="account-address-item">
+                <strong>@a.RecipientName</strong> — @a.RecipientPhone
+                @if (a.IsDefault) { <span class="account-badge">پیش‌فرض</span> }
+                <div>@a.Province، @a.City</div>
+                <div>@a.AddressLine @a.PostalCode</div>
+                <form asp-action="DeleteAddress" asp-route-id="@a.Id" method="post" style="margin-top:.5rem;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-text-danger">حذف</button>
+                </form>
+            </li>
+        }
+    </ul>
+}
+
+<h2>افزودن آدرس</h2>
+<form asp-action="CreateAddress" method="post" class="admin-form admin-form-narrow">
+    @Html.AntiForgeryToken()
+    <partial name="_AddressFormFields" model="new CustomerAddressFormViewModel()" />
+    <button type="submit" class="btn btn-primary">ذخیره آدرس</button>
+</form>
+
+@section Scripts {
+    <script src="~/js/iran-location-select.js" asp-append-version="true"></script>
+}

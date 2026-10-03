@@ -1,0 +1,24 @@
+{
+  "name": "mirka-seo-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hybrid YoastSEO.js (Farsi) + Mirka SEO content analyzer for Mirka CMS admin",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "build:js": "node scripts/build.js",
+    "build:css": "node scripts/copy-css.js",
+    "smoke": "node scripts/smoke-test.js",
+    "test:yoast": "node scripts/yoast-probe.js"
+  },
+  "dependencies": {
+    "@persian-tools/persian-tools": "^3.6.0",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "url": "^0.11.4",
+    "yoastseo": "^3.6.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

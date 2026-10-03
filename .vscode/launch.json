@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CMS.Web (http)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/CMS.Web/bin/Debug/net10.0/CMS.Web.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/CMS.Web",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5016"
+      },
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "CMS.Web (https)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/CMS.Web/bin/Debug/net10.0/CMS.Web.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/CMS.Web",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:7211;http://localhost:5016"
+      },
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

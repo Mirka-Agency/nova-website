@@ -1,0 +1,491 @@
+@model OrderInvoicePrintViewModel
+@{
+    Layout = null;
+    var dash = "—";
+    var currencyLabel = Model.Currency.Equals("IRR", StringComparison.OrdinalIgnoreCase) ? "ریال" : Model.Currency;
+    string Field(string? value) => string.IsNullOrWhiteSpace(value) ? dash : value;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@Localizer["PrintInvoice"] — @Model.OrderNumber</title>
+    <link rel="stylesheet" href="~/admin/vendor/vazirmatn/vazirmatn.css" asp-append-version="true" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        body {
+            font-family: "Vazirmatn", "IRANSans", Tahoma, sans-serif;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #111827;
+            background: #eef2f7;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .print-toolbar {
+            width: 210mm;
+            margin: 0 0 16px;
+            display: flex;
+            gap: 10px;
+        }
+        .print-toolbar button,
+        .print-toolbar a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            color: #111827;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+        }
+        .print-toolbar button.primary {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #fff;
+        }
+        .invoice-sheet {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 12mm 10mm;
+            overflow: hidden;
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #111827;
+            margin-bottom: 18px;
+        }
+        .brand {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .brand img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+        }
+        .brand h1 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .brand p {
+            color: #64748b;
+            font-size: 12px;
+        }
+        .invoice-title-block {
+            text-align: left;
+        }
+        .invoice-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .invoice-subtitle {
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 12px;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .meta-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: #f8fafc;
+        }
+        .meta-card .label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        .meta-card .value {
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .parties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .party-minimal h2 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+        .party-line {
+            font-size: 13px;
+            line-height: 1.75;
+            color: #374151;
+        }
+        .party-line + .party-line { margin-top: 2px; }
+        .party-line .k {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+        .party-line .v { font-weight: 500; }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        .items-table th,
+        .items-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: right;
+            vertical-align: top;
+        }
+        .items-table th {
+            background: #f1f5f9;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .items-table .num { text-align: center; direction: ltr; white-space: nowrap; }
+        .items-table .money { text-align: left; direction: ltr; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .summary-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 18px;
+        }
+        .summary-table {
+            width: 320px;
+            border-collapse: collapse;
+        }
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+        }
+        .summary-table th {
+            background: #f8fafc;
+            text-align: right;
+            font-weight: 600;
+        }
+        .summary-table td {
+            text-align: left;
+            direction: ltr;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+        .summary-table tr.grand-total th,
+        .summary-table tr.grand-total td {
+            background: #111827;
+            color: #fff;
+            font-size: 15px;
+        }
+        .payment-box,
+        .notes-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 14px;
+        }
+        .payment-box h3,
+        .notes-box h3 {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .payment-item .label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .payment-item .value {
+            font-weight: 600;
+        }
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 28px;
+            padding-top: 16px;
+        }
+        .signature-box {
+            text-align: center;
+            padding-top: 48px;
+            border-top: 1px solid #94a3b8;
+            color: #64748b;
+            font-size: 12px;
+        }
+        .invoice-footer {
+            margin-top: 18px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+        @@page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+        @@media print {
+            html, body {
+                width: 210mm;
+                height: auto;
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                display: block;
+            }
+            .print-toolbar { display: none !important; }
+            .invoice-sheet {
+                width: 100%;
+                min-height: 0;
+                height: auto;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                page-break-after: auto;
+            }
+            .items-table { page-break-inside: auto; }
+            .items-table tr { page-break-inside: avoid; }
+        }
+        @@media screen and (max-width: 220mm) {
+            body { padding: 12px; }
+            .print-toolbar,
+            .invoice-sheet {
+                width: 100%;
+                min-width: 0;
+            }
+            .invoice-sheet { min-height: auto; }
+        }
+        @@media (max-width: 768px) {
+            .meta-grid, .parties, .payment-grid, .signatures { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-toolbar">
+        <button type="button" class="primary" onclick="window.print()">@Localizer["Print"]</button>
+        <a href="javascript:history.back()">@Localizer["Back"]</a>
+    </div>
+
+    <article class="invoice-sheet">
+        <header class="invoice-header">
+            <div class="brand">
+                @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                {
+                    <img src="@Model.LogoUrl" alt="@Field(Model.SiteName)" />
+                }
+                <div>
+                    <h1>@Field(Model.SellerName ?? Model.SiteName)</h1>
+                    @if (!string.IsNullOrWhiteSpace(Model.SiteName) && !string.Equals(Model.SiteName, Model.SellerName, StringComparison.Ordinal))
+                    {
+                        <p>@Model.SiteName</p>
+                    }
+                </div>
+            </div>
+            <div class="invoice-title-block">
+                <div class="invoice-title">@Localizer["SalesInvoice"]</div>
+                <div class="invoice-subtitle">@Localizer["SalesInvoiceSubtitle"]</div>
+            </div>
+        </header>
+
+        <section class="meta-grid">
+            <div class="meta-card">
+                <span class="label">@Localizer["InvoiceNumber"]</span>
+                <span class="value" dir="ltr">@Model.OrderNumber</span>
+            </div>
+            <div class="meta-card">
+                <span class="label">@Localizer["InvoiceDate"]</span>
+                <span class="value">@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+            </div>
+            <div class="meta-card">
+                <span class="label">@Localizer["Status"]</span>
+                <span class="value">@Model.StatusDisplay</span>
+            </div>
+            <div class="meta-card">
+                <span class="label">@Localizer["PaymentStatus"]</span>
+                <span class="value">@Model.PaymentStatusDisplay</span>
+            </div>
+        </section>
+
+        @if (Model.SellerFields.Count > 0 || Model.BuyerFields.Count > 0)
+        {
+            <section class="parties">
+                @if (Model.SellerFields.Count > 0)
+                {
+                    <div class="party-minimal">
+                        <h2>@Localizer["SellerInfo"]</h2>
+                        @foreach (var field in Model.SellerFields)
+                        {
+                            <p class="party-line">
+                                <span class="k">@field.Label:</span>
+                                <span class="v" @(field.IsLtr ? "dir=\"ltr\"" : null)>@field.Value</span>
+                            </p>
+                        }
+                    </div>
+                }
+                @if (Model.BuyerFields.Count > 0)
+                {
+                    <div class="party-minimal">
+                        <h2>@Localizer["BuyerInfo"]</h2>
+                        @foreach (var field in Model.BuyerFields)
+                        {
+                            <p class="party-line">
+                                <span class="k">@field.Label:</span>
+                                <span class="v" @(field.IsLtr ? "dir=\"ltr\"" : null)>@field.Value</span>
+                            </p>
+                        }
+                    </div>
+                }
+            </section>
+        }
+
+        <table class="items-table">
+            <thead>
+            <tr>
+                <th class="num">@Localizer["InvoiceRow"]</th>
+                <th>@Localizer["Product"]</th>
+                <th>@Localizer["Sku"]</th>
+                <th class="num">@Localizer["Quantity"]</th>
+                <th class="money">@Localizer["UnitPrice"] (@currencyLabel)</th>
+                <th class="money">@Localizer["LineTotal"] (@currencyLabel)</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var line in Model.Lines)
+            {
+                <tr>
+                    <td class="num">@line.RowNumber</td>
+                    <td>@line.ProductTitle</td>
+                    <td dir="ltr">@Field(line.Sku)</td>
+                    <td class="num">@line.Quantity</td>
+                    <td class="money">@line.UnitPrice.ToString("N0")</td>
+                    <td class="money">@line.LineTotal.ToString("N0")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <div class="summary-wrap">
+            <table class="summary-table">
+                <tbody>
+                <tr>
+                    <th>@Localizer["Subtotal"]</th>
+                    <td>@Model.SubtotalAmount.ToString("N0")</td>
+                </tr>
+                <tr>
+                    <th>@Localizer["DiscountAmount"]</th>
+                    <td>@Model.DiscountAmount.ToString("N0")</td>
+                </tr>
+                <tr>
+                    <th>@Localizer["ShippingAmount"]</th>
+                    <td>@Model.ShippingAmount.ToString("N0")</td>
+                </tr>
+                @if (Model.VatAmount > 0)
+                {
+                    <tr>
+                        <th>
+                            @Localizer["VatAmount"]
+                            @if (Model.VatPercent.HasValue)
+                            {
+                                <span>(@Model.VatPercent.Value.ToString("0.##")%)</span>
+                            }
+                        </th>
+                        <td>@Model.VatAmount.ToString("N0")</td>
+                    </tr>
+                }
+                <tr class="grand-total">
+                    <th>@Localizer["GrandTotal"] (@currencyLabel)</th>
+                    <td>@Model.TotalAmount.ToString("N0")</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <section class="payment-box">
+            <h3>@Localizer["PaymentDetails"]</h3>
+            <div class="payment-grid">
+                <div class="payment-item">
+                    <span class="label">@Localizer["PaymentMethod"]</span>
+                    <span class="value">@Field(Model.PaymentMethodDisplay)</span>
+                </div>
+                <div class="payment-item">
+                    <span class="label">@Localizer["PaymentStatus"]</span>
+                    <span class="value">@Model.PaymentStatusDisplay</span>
+                </div>
+                <div class="payment-item">
+                    <span class="label">@Localizer["ShippingMethod"]</span>
+                    <span class="value">@Field(Model.ShippingMethodName)</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.PaymentProvider))
+                {
+                    <div class="payment-item">
+                        <span class="label">@Localizer["PaymentProvider"]</span>
+                        <span class="value">@Model.PaymentProvider</span>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.PaymentTransactionId))
+                {
+                    <div class="payment-item">
+                        <span class="label">@Localizer["PaymentTransactionId"]</span>
+                        <span class="value" dir="ltr">@Model.PaymentTransactionId</span>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.CouponCode))
+                {
+                    <div class="payment-item">
+                        <span class="label">@Localizer["CouponCode"]</span>
+                        <span class="value" dir="ltr">@Model.CouponCode</span>
+                    </div>
+                }
+            </div>
+        </section>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+        {
+            <section class="notes-box">
+                <h3>@Localizer["Notes"]</h3>
+                <p>@Model.Notes</p>
+            </section>
+        }
+
+        <section class="signatures">
+            <div class="signature-box">@Localizer["SellerSignature"]</div>
+            <div class="signature-box">@Localizer["BuyerSignature"]</div>
+        </section>
+
+        <footer class="invoice-footer">
+            @Localizer["InvoiceFooterNote"]
+        </footer>
+    </article>
+</body>
+</html>

@@ -1,0 +1,94 @@
+@model ServiceItemIndexViewModel
+@using CMS.Modules.Services.Domain.Enums
+
+<div class="admin-field">
+    <label for="post-filter-status">@Localizer["Status"]</label>
+    <select id="post-filter-status" name="status">
+        <option value="">@Localizer["AllStatuses"]</option>
+        @foreach (ServiceStatus s in Enum.GetValues<ServiceStatus>())
+        {
+            var label = s == ServiceStatus.Published ? Localizer["Published"] : Localizer["Draft"];
+            if (Model.Status == s)
+            {
+                <option value="@s" selected>@label</option>
+            }
+            else
+            {
+                <option value="@s">@label</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="post-filter-category">@Localizer["Category"]</label>
+    <select id="post-filter-category" name="categoryId">
+        @foreach (var item in Model.Categories)
+        {
+            if (item.Selected)
+            {
+                <option value="@item.Value" selected>@item.Text</option>
+            }
+            else
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        }
+    </select>
+</div>
+
+<div class="admin-field">
+    <label for="post-filter-from">@Localizer["FromDate"]</label>
+    <input id="post-filter-from"
+           type="text"
+           name="from"
+           value="@Model.FromLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="post-filter-to">@Localizer["ToDate"]</label>
+    <input id="post-filter-to"
+           type="text"
+           name="to"
+           value="@Model.ToLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="post-filter-sort">@Localizer["Sort"]</label>
+    <select id="post-filter-sort" name="sort">
+        @{
+            var sortOptions = new (string Value, string Key)[]
+            {
+                ("", "SortNewest"),
+                ("oldest", "SortOldest"),
+                ("published", "SortPublished"),
+                ("title", "SortTitle"),
+                ("title_desc", "SortTitleDesc")
+            };
+        }
+        @foreach (var opt in sortOptions)
+        {
+            var selected = string.IsNullOrEmpty(opt.Value)
+                ? string.IsNullOrEmpty(Model.Sort)
+                : string.Equals(Model.Sort, opt.Value, StringComparison.OrdinalIgnoreCase);
+            if (selected)
+            {
+                <option value="@opt.Value" selected>@Localizer[opt.Key]</option>
+            }
+            else
+            {
+                <option value="@opt.Value">@Localizer[opt.Key]</option>
+            }
+        }
+    </select>
+</div>

@@ -1,0 +1,102 @@
+@model ProductSpecificationsPageViewModel
+@{
+    ViewData["Title"] = Localizer["ProductSpecifications"];
+}
+
+<div class="admin-page-header">
+    <div class="admin-page-header-text">
+        <p class="admin-lead admin-lead--flush">@Model.ProductTitle · @Localizer["SpecificationsCount", Model.Items.Count]</p>
+    </div>
+    <div class="admin-page-header-actions">
+        <a class="btn btn-secondary" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductId">
+            <i class="fas fa-edit" aria-hidden="true"></i>
+            <span>@Localizer["EditProduct"]</span>
+        </a>
+        <a class="btn btn-secondary" asp-controller="Products" asp-action="Index">
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            <span>@Localizer["BackToProducts"]</span>
+        </a>
+    </div>
+</div>
+
+<form asp-action="Save" asp-route-productId="@Model.ProductId" method="post" class="admin-form" data-product-specs>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <section class="admin-panel-section">
+        <div class="admin-panel-section-head">
+            <h2 class="admin-section-title admin-section-title--flush">@Localizer["ProductSpecifications"]</h2>
+        </div>
+
+        <div class="admin-spec-list">
+            <div class="admin-spec-rows" data-spec-list>
+                @for (var i = 0; i < Model.Items.Count; i++)
+                {
+                    <div class="admin-spec-row" data-spec-row>
+                        <div class="admin-field admin-spec-field">
+                            <label asp-for="Items[i].Key">@Localizer["SpecificationKey"]</label>
+                            <input asp-for="Items[i].Key" placeholder="@Localizer["SpecificationKeyPlaceholder"]" autocomplete="off" />
+                            <span asp-validation-for="Items[i].Key" class="admin-field-error"></span>
+                        </div>
+                        <div class="admin-field admin-spec-field">
+                            <label asp-for="Items[i].Value">@Localizer["SpecificationValue"]</label>
+                            <input asp-for="Items[i].Value" placeholder="@Localizer["SpecificationValuePlaceholder"]" autocomplete="off" />
+                            <span asp-validation-for="Items[i].Value" class="admin-field-error"></span>
+                        </div>
+                        <div class="admin-spec-row-actions">
+                            <button type="button" class="btn btn-text-danger" data-spec-remove>
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                <span>@Localizer["Remove"]</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <p class="admin-hint" data-spec-empty @(Model.Items.Count > 0 ? "hidden" : null)>
+                @Localizer["SpecificationsEmpty"]
+            </p>
+
+            <div class="admin-spec-add-row">
+                <button type="button" class="btn btn-secondary" data-spec-add>
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <span>@Localizer["AddSpecification"]</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <div class="admin-actions">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save" aria-hidden="true"></i>
+            <span>@Localizer["SaveChanges"]</span>
+        </button>
+        <a class="btn btn-secondary" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductId">
+            <i class="fas fa-times" aria-hidden="true"></i>
+            <span>@Localizer["Cancel"]</span>
+        </a>
+    </div>
+</form>
+
+<template id="product-spec-row-template">
+    <div class="admin-spec-row" data-spec-row>
+        <div class="admin-field admin-spec-field">
+            <label>@Localizer["SpecificationKey"]</label>
+            <input name="Items[__INDEX__].Key" placeholder="@Localizer["SpecificationKeyPlaceholder"]" autocomplete="off" />
+        </div>
+        <div class="admin-field admin-spec-field">
+            <label>@Localizer["SpecificationValue"]</label>
+            <input name="Items[__INDEX__].Value" placeholder="@Localizer["SpecificationValuePlaceholder"]" autocomplete="off" />
+        </div>
+        <div class="admin-spec-row-actions">
+            <button type="button" class="btn btn-text-danger" data-spec-remove>
+                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                <span>@Localizer["Remove"]</span>
+            </button>
+        </div>
+    </div>
+</template>
+
+@section Scripts {
+    <script src="~/admin/js/admin-product-specs.js" asp-append-version="true"></script>
+}

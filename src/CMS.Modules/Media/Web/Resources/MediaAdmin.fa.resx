@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="MediaLibrary" xml:space="preserve"><value>کتابخانه رسانه</value></data>
+  <data name="Upload" xml:space="preserve"><value>آپلود</value></data>
+  <data name="Uploading" xml:space="preserve"><value>در حال آپلود…</value></data>
+  <data name="UploadMedia" xml:space="preserve"><value>آپلود رسانه</value></data>
+  <data name="FileName" xml:space="preserve"><value>نام فایل</value></data>
+  <data name="ContentType" xml:space="preserve"><value>نوع</value></data>
+  <data name="Size" xml:space="preserve"><value>حجم</value></data>
+  <data name="CreatedAt" xml:space="preserve"><value>تاریخ</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>این فایل از کتابخانه و فضای ذخیره‌سازی حذف شود؟</value></data>
+  <data name="NoMedia" xml:space="preserve"><value>هنوز فایلی در کتابخانه نیست.</value></data>
+  <data name="MediaUploaded" xml:space="preserve"><value>فایل آپلود شد.</value></data>
+  <data name="MediaDeleted" xml:space="preserve"><value>فایل حذف شد.</value></data>
+  <data name="MediaUpdated" xml:space="preserve"><value>جزئیات رسانه ذخیره شد.</value></data>
+  <data name="ImageEdited" xml:space="preserve"><value>تصویر ویرایش‌شده ذخیره شد.</value></data>
+  <data name="SelectFile" xml:space="preserve"><value>انتخاب فایل</value></data>
+  <data name="UploadHint" xml:space="preserve"><value>JPEG، PNG، WebP یا GIF تا ۵ مگابایت — فایل اصلی نگه داشته می‌شود و نسخهٔ نمایشی به WebP تبدیل می‌شود</value></data>
+  <data name="CustomizeOptimize" xml:space="preserve"><value>تنظیم اختیاری تغییر اندازه و فشرده‌سازی</value></data>
+  <data name="CustomizeOptimizeHint" xml:space="preserve"><value>در صورت خالی بودن، حداکثر بعد ۲۵۶۰ پیکسل و کیفیت ۸۲ استفاده می‌شود</value></data>
+  <data name="MaxWidth" xml:space="preserve"><value>حداکثر عرض/ارتفاع (پیکسل)</value></data>
+  <data name="MaxWidthHint" xml:space="preserve"><value>بزرگ‌ترین ضلع تصویر نمایشی؛ خالی = پیش‌فرض</value></data>
+  <data name="CompressQuality" xml:space="preserve"><value>کیفیت فشرده‌سازی WebP</value></data>
+  <data name="CompressQualityHint" xml:space="preserve"><value>۴۰ تا ۱۰۰؛ عدد کمتر = حجم کمتر؛ خالی = پیش‌فرض</value></data>
+  <data name="InvalidImageType" xml:space="preserve"><value>فقط تصویر مجاز است.</value></data>
+  <data name="ImageTooLarge" xml:space="preserve"><value>حجم تصویر حداکثر ۵ مگابایت است.</value></data>
+  <data name="Select" xml:space="preserve"><value>انتخاب</value></data>
+  <data name="SelectFromLibrary" xml:space="preserve"><value>انتخاب از کتابخانه</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="Close" xml:space="preserve"><value>بستن</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Preview" xml:space="preserve"><value>پیش‌نمایش</value></data>
+  <data name="SearchMedia" xml:space="preserve"><value>جستجوی رسانه…</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
+  <data name="AttachmentDetails" xml:space="preserve"><value>جزئیات پیوست</value></data>
+  <data name="Title" xml:space="preserve"><value>عنوان</value></data>
+  <data name="AltText" xml:space="preserve"><value>متن جایگزین (Alt)</value></data>
+  <data name="Caption" xml:space="preserve"><value>کپشن</value></data>
+  <data name="Description" xml:space="preserve"><value>توضیحات</value></data>
+  <data name="FileUrl" xml:space="preserve"><value>آدرس فایل</value></data>
+  <data name="CopyLink" xml:space="preserve"><value>کپی لینک</value></data>
+  <data name="LinkCopied" xml:space="preserve"><value>لینک کپی شد.</value></data>
+  <data name="EditImage" xml:space="preserve"><value>ویرایش تصویر</value></data>
+  <data name="SaveEditedImage" xml:space="preserve"><value>ذخیره تصویر ویرایش‌شده</value></data>
+  <data name="RotateLeft" xml:space="preserve"><value>چرخش به چپ</value></data>
+  <data name="RotateRight" xml:space="preserve"><value>چرخش به راست</value></data>
+  <data name="FlipHorizontal" xml:space="preserve"><value>آینه افقی</value></data>
+  <data name="FlipVertical" xml:space="preserve"><value>آینه عمودی</value></data>
+  <data name="ApplyCrop" xml:space="preserve"><value>اعمال برش</value></data>
+  <data name="ApplyResize" xml:space="preserve"><value>اعمال تغییر اندازه</value></data>
+  <data name="Reset" xml:space="preserve"><value>بازنشانی</value></data>
+  <data name="Width" xml:space="preserve"><value>عرض</value></data>
+  <data name="Height" xml:space="preserve"><value>ارتفاع</value></data>
+  <data name="LockAspect" xml:space="preserve"><value>حفظ نسبت</value></data>
+  <data name="CropHint" xml:space="preserve"><value>برای برش، روی تصویر بکشید تا محدوده انتخاب شود، سپس «اعمال برش» را بزنید.</value></data>
+  <data name="ResizeHint" xml:space="preserve"><value>عرض و ارتفاع را تغییر دهید و «اعمال تغییر اندازه» را بزنید (یا مستقیم ذخیره کنید؛ قبل از ذخیره خودکار اعمال می‌شود). ابعاد واقعی بالای پیش‌نمایش نمایش داده می‌شود.</value></data>
+  <data name="ImageNotInLibrary" xml:space="preserve"><value>این تصویر در کتابخانه رسانه یافت نشد و قابل ویرایش نیست.</value></data>
+  <data name="Dimensions" xml:space="preserve"><value>ابعاد</value></data>
+  <data name="OriginalSize" xml:space="preserve"><value>حجم اصلی</value></data>
+  <data name="OriginalUrl" xml:space="preserve"><value>آدرس نسخهٔ اصلی</value></data>
+  <data name="CopyOriginalLink" xml:space="preserve"><value>کپی اصلی</value></data>
+  <data name="RestoreOriginal" xml:space="preserve"><value>بازگردانی نسخهٔ اصلی</value></data>
+  <data name="ConfirmRestoreOriginal" xml:space="preserve"><value>تصویر به نسخهٔ اصلی برگردد؟ نسخه‌های بهینه‌شده و ویرایش‌شده حذف می‌شوند.</value></data>
+  <data name="ImageRestored" xml:space="preserve"><value>نسخهٔ اصلی تصویر بازگردانده شد.</value></data>
+  <data name="OptimizedHint" xml:space="preserve"><value>این آدرس نسخهٔ بهینه‌شده است و در نوشته‌ها استفاده می‌شود. فایل اصلی جداگانه نگه داشته شده است.</value></data>
+</root>

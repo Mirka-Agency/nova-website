@@ -1,0 +1,122 @@
+using CMS.Application.Common.Paging;
+using CMS.Modules.News.Application.Articles;
+using CMS.Modules.News.Application.Interfaces;
+using CMS.Modules.News.Domain.Enums;
+using CMS.Modules.News.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace CMS.Modules.News.Infrastructure.Services;
+
+public sealed class PublicArticleQuery : IPublicArticleQuery
+{
+    public const int DefaultPageSize = 12;
+    private const int ExcerptLength = 180;
+    private readonly NewsDbContext _db;
+
+    public PublicArticleQuery(NewsDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<IReadOnlyList<PublicArticleSummaryDto>> ListPublishedAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var page = await ListPublishedPagedAsync(1, DefaultPageSize, cancellationToken);
+        return page.Items;
+    }
+
+    public async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedPagedAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedPage = page < 1 ? 1 : page;
+        var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+
+        var query = _db.Articles
+            .AsNoTracking()
+            .Where(p => p.Status == ArticleStatus.Published);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var articles = await query
+            .OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc)
+            .Skip((normalizedPage - 1) * normalizedPageSize)
+            .Take(normalizedPageSize)
+            .Select(p => new PublicArticleSummaryDto(
+                p.Title,
+                p.Slug,
+                p.Kind,
+                p.Category != null ? p.Category.Name : null,
+                p.CoverImageUrl,
+                p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.EventStartAtUtc,
+                p.EventEndAtUtc,
+                p.Location,
+                p.Excerpt != null && p.Excerpt != string.Empty
+                    ? p.Excerpt
+                    : (p.Body.Length > ExcerptLength ? p.Body.Substring(0, ExcerptLength) : p.Body),
+                p.AuthorDisplayName))
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<PublicArticleSummaryDto>(articles, totalCount, normalizedPage, normalizedPageSize);
+    }
+
+    public async Task<PublicArticleDetailDto?> GetPublishedBySlugAsync(
+        string slug,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(slug))
+            return null;
+
+        var normalized = slug.Trim().ToLowerInvariant();
+        var article = await _db.Articles
+            .AsNoTracking()
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(
+                p => p.Slug == normalized && p.Status == ArticleStatus.Published,
+                cancellationToken);
+
+        if (article is null)
+            return null;
+
+        return new PublicArticleDetailDto(
+            article.Id,
+            article.Title,
+            article.Slug,
+            article.Body,
+            article.Kind,
+            article.Category?.Name,
+            article.CoverImageUrl,
+            article.PublishedAtUtc ?? article.CreatedAtUtc,
+            article.EventStartAtUtc,
+            article.EventEndAtUtc,
+            article.Location,
+            ResolveExcerpt(article.Excerpt, article.Body),
+            article.AuthorDisplayName,
+            article.MetaTitle,
+            article.MetaDescription,
+            article.SeoKeywords,
+            article.CanonicalUrl,
+            article.OgTitle,
+            article.OgDescription,
+            article.OgImageUrl);
+    }
+
+    private static string ResolveExcerpt(string? excerpt, string body) =>
+        !string.IsNullOrWhiteSpace(excerpt) ? excerpt.Trim() : MakeExcerpt(body);
+
+    private static string MakeExcerpt(string body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+            return string.Empty;
+
+        var plain = System.Text.RegularExpressions.Regex.Replace(body, "<[^>]+>", " ");
+        plain = System.Net.WebUtility.HtmlDecode(plain);
+        var normalized = string.Join(' ', plain.Split(default(char[]), StringSplitOptions.RemoveEmptyEntries));
+        if (normalized.Length <= ExcerptLength)
+            return normalized;
+
+        return normalized[..ExcerptLength].TrimEnd() + "…";
+    }
+}

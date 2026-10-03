@@ -1,0 +1,583 @@
+
+
+# ASP.NET Core CMS Architecture Rules
+
+## General Principles
+
+You are working on a professional ASP.NET Core CMS.
+
+Always follow:
+
+- Clean Architecture
+- SOLID principles
+- Separation of Concerns
+- Domain Driven Design principles where applicable
+- Modular Monolith architecture
+- Dependency Injection
+- Clean Code practices
+
+Never create quick hacks or tightly coupled code.
+
+Prefer maintainable and scalable solutions over short implementations.
+
+---
+
+# Solution Structure
+
+The solution must follow this structure:
+
+```
+
+src/
+
+├── CMS.Domain
+│
+├── CMS.Application
+│
+├── CMS.Infrastructure
+│
+├── CMS.Web
+│
+└── CMS.Modules
+
+├── Blog
+│   ├── Domain
+│   ├── Application
+│   ├── Infrastructure
+│   └── Web
+
+├── Shop
+│   ├── Domain
+│   ├── Application
+│   ├── Infrastructure
+│   └── Web
+└── Forms
+    ├── Domain
+    ├── Application
+    ├── Infrastructure
+    └── Web
+
+
+```
+
+# Dependency Rules
+
+Dependencies must always flow inward.
+
+Allowed:
+
+```
+
+Web
+↓
+Application
+↓
+Domain
+
+Infrastructure
+↓
+Application
+↓
+Domain
+
+```
+
+Forbidden:
+
+```
+
+Domain -> Infrastructure ❌
+
+Domain -> Web ❌
+
+Application -> Web ❌
+
+````
+
+Domain must never know external technologies.
+
+---
+
+# Domain Layer Rules
+
+Domain contains:
+
+- Entities
+- Value Objects
+- Domain Events
+- Domain Exceptions
+- Interfaces
+
+Do NOT put:
+
+- EF Core code
+- SQL
+- API Models
+- Controllers
+- External services
+
+Example:
+
+GOOD:
+
+```csharp
+public class Product : BaseEntity
+{
+    public string Name { get; private set; }
+
+    public void ChangePrice(decimal price)
+    {
+        if(price <= 0)
+            throw new DomainException();
+
+        Price = price;
+    }
+}
+````
+
+BAD:
+
+```csharp
+public async Task SaveProduct()
+{
+    db.Products.Add(this);
+}
+```
+
+---
+
+# Application Layer Rules
+
+Application contains:
+
+* Use Cases
+* CQRS Commands
+* Queries
+* DTOs
+* Validators
+* Interfaces
+
+Use:
+
+* MediatR pattern
+* FluentValidation
+
+Example:
+
+```
+Features/
+
+Products/
+
+Commands/
+Queries/
+Handlers/
+DTOs/
+Validators/
+```
+
+Never put business logic inside controllers.
+
+---
+
+# Infrastructure Rules
+
+Infrastructure handles:
+
+* Database
+* EF Core
+* External APIs
+* Email
+* SMS
+* **File Storage** — S3 / S3-compatible via `IObjectStorage` (see `cms-storage` rule). Never local `wwwroot` uploads for module media.
+* Payment Gateways
+
+Rules:
+
+* EF Core configurations must be separated.
+
+Example:
+
+```
+Persistence/
+
+Configurations/
+
+ProductConfiguration.cs
+OrderConfiguration.cs
+```
+
+Never put database logic inside Application.
+
+---
+
+# Web Layer Rules
+
+Controllers must be thin.
+
+Controller responsibilities:
+
+* Receive request
+* Validate ModelState
+* Call Application layer
+* Return response
+
+Never:
+
+* Write business logic
+* Query database directly
+* Manipulate entities manually
+
+---
+
+# Entity Rules
+
+Entities:
+
+* Must protect their state.
+* Use private setters.
+* Use methods for state changes.
+
+Avoid:
+
+```csharp
+public decimal Price {get;set;}
+```
+
+Prefer:
+
+```csharp
+public decimal Price {get;private set;}
+```
+
+---
+
+# DTO Rules
+
+Never expose entities directly.
+
+Bad:
+
+```csharp
+return product;
+```
+
+Good:
+
+```csharp
+return ProductDto.FromEntity(product);
+```
+
+---
+
+# Module Architecture
+
+Every module must be isolated.
+
+Example:
+
+Shop Module:
+
+```
+Shop
+
+Domain
+Application
+Infrastructure
+Web
+```
+
+Modules cannot directly access each other's database tables.
+
+Communication must happen through:
+
+* Interfaces
+* Domain Events
+* Contracts
+
+---
+
+# Feature Toggle Rules
+
+Optional features must be controlled by Feature Management.
+
+Example:
+
+Features:
+
+* Shop
+* Blog
+* Forms
+
+Never hardcode:
+
+```csharp
+if(shop)
+```
+
+Use:
+
+```csharp
+IFeatureManager.IsEnabled("Shop")
+```
+
+---
+
+# Database Rules
+
+Use:
+
+* Entity Framework Core
+* Code First
+* Migrations
+* **PostgreSQL** via Npgsql (`Npgsql.EntityFrameworkCore.PostgreSQL`)
+
+Rules:
+
+* **Single database** for the entire CMS (Identity + all modules). Never create a separate database per module.
+* Shared connection string name: `DefaultConnection`.
+* One DbContext per module if possible; every context must use the same Postgres database / connection string.
+* Identity migrations live in `CMS.Infrastructure`.
+* Prefer schemas or clear table naming for module isolation — not separate databases.
+* No raw SQL unless required.
+* Repository pattern only when useful.
+
+Avoid unnecessary abstractions.
+
+Do not use SQLite or SQL Server as the application database provider.
+
+---
+
+# Naming Rules
+
+Classes:
+
+```
+ProductService
+CreateProductCommand
+ProductRepository
+```
+
+Interfaces:
+
+```
+IProductRepository
+IEmailSender
+```
+
+Methods:
+
+Use verbs:
+
+```
+CreateProduct()
+UpdateOrder()
+DisableFeature()
+```
+
+Avoid:
+
+```
+Product()
+Data()
+Manager()
+Helper()
+```
+
+---
+
+# Error Handling
+
+Use global exception middleware.
+
+Never:
+
+```csharp
+try
+{
+}
+catch(Exception ex)
+{
+}
+```
+
+inside every method.
+
+Create:
+
+```
+DomainException
+ValidationException
+NotFoundException
+```
+
+---
+
+# Validation Rules
+
+Use FluentValidation.
+
+Example:
+
+```csharp
+RuleFor(x=>x.Name)
+.NotEmpty()
+.MaximumLength(200);
+```
+
+Do not put validation inside controllers.
+
+---
+
+# Logging
+
+Use structured logging.
+
+Use:
+
+* ILogger
+* Serilog
+
+Log:
+
+* Errors
+* Important actions
+* Security events
+
+Do not log sensitive data.
+
+---
+
+# Security Rules
+
+Always implement:
+
+* Authentication
+* Authorization
+* Anti Forgery
+* Input Validation
+* Password Hashing
+* Rate Limiting
+
+Never store plain passwords.
+
+---
+
+# Async Rules
+
+Use async everywhere for I/O:
+
+GOOD:
+
+```csharp
+Task<Product> GetAsync()
+```
+
+Avoid:
+
+```csharp
+.Result
+.Wait()
+```
+
+---
+
+# API Rules
+
+API:
+
+* Use REST conventions
+* Use versioning
+* Return consistent responses
+
+Example:
+
+```
+GET /api/products
+
+POST /api/products
+
+PUT /api/products/{id}
+```
+
+---
+
+# Testing Rules
+
+Every important business rule should have tests.
+
+Structure:
+
+```
+Tests
+
+├── Domain.Tests
+
+├── Application.Tests
+
+└── Integration.Tests
+```
+
+---
+
+# Code Quality Rules
+
+Before creating code:
+
+Ask:
+
+1. Does this belong to this layer?
+2. Can this be reused?
+3. Is this violating SOLID?
+4. Is there a simpler design?
+
+Prefer readable code over clever code.
+
+Avoid:
+
+* Huge classes
+* Huge methods
+* Static helpers
+* God objects
+* Duplicate logic
+
+---
+
+# CMS Specific Rules
+
+The CMS must support:
+
+* Blog module
+* Shop module
+* Forms module
+* Users module
+* Feature activation/deactivation
+* **S3 object storage for all file uploads** (shared `IObjectStorage`; modules only store public URLs / keys)
+
+Shop must support:
+
+Modes:
+
+1. Online Store
+2. Catalog Only
+3. Hybrid
+
+Do not mix catalog and ecommerce logic.
+
+Payment must be a separate service.
+
+---
+
+# When adding new features:
+
+Always create:
+
+1. Domain model
+2. Application use cases
+3. Infrastructure implementation
+4. API/UI integration
+5. Validation
+6. Tests
+
+Never add everything into one controller or service.
+

@@ -1,0 +1,48 @@
+@model SubmissionIndexViewModel
+@using CMS.Modules.Forms.Domain.Enums
+
+@if (Model.FormId.HasValue)
+{
+    <input type="hidden" name="formId" value="@Model.FormId" />
+}
+<div class="admin-field">
+    <label for="submission-filter-status">@Localizer["Status"]</label>
+    <select id="submission-filter-status" name="status">
+        <option value="">@Localizer["AllStatuses"]</option>
+        @foreach (SubmissionStatus s in Enum.GetValues<SubmissionStatus>())
+        {
+            if (Model.Status == s)
+            {
+                <option value="@s" selected>@Localizer[$"SubmissionStatus_{s}"]</option>
+            }
+            else
+            {
+                <option value="@s">@Localizer[$"SubmissionStatus_{s}"]</option>
+            }
+        }
+    </select>
+</div>
+<div class="admin-field">
+    <label for="submission-filter-from">@Localizer["FromDate"]</label>
+    <input id="submission-filter-from"
+           type="text"
+           name="from"
+           value="@Model.FromLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+<div class="admin-field">
+    <label for="submission-filter-to">@Localizer["ToDate"]</label>
+    <input id="submission-filter-to"
+           type="text"
+           name="to"
+           value="@Model.ToLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>

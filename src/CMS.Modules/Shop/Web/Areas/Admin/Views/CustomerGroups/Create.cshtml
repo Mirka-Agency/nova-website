@@ -1,0 +1,11 @@
+@model CustomerGroupFormViewModel
+@{ ViewData["Title"] = Model.Id.HasValue ? Localizer["EditCustomerGroup"] : Localizer["CreateCustomerGroup"]; }
+<form asp-action="@(Model.Id.HasValue ? "Edit" : "Create")" method="post" class="admin-form admin-form-narrow">
+@Html.AntiForgeryToken()
+<div class="admin-field"><label asp-for="Name">@Localizer["Name"]</label><input asp-for="Name" /></div>
+<div class="admin-field"><label asp-for="Code">@Localizer["Code"]</label><input asp-for="Code" /></div>
+<div class="admin-field"><label asp-for="Description">@Localizer["Description"]</label><textarea asp-for="Description" rows="2"></textarea></div>
+<label class="admin-check"><input asp-for="IsWholesale" /> @Localizer["IsWholesale"]</label>
+<label class="admin-check"><input asp-for="IsActive" /> @Localizer["IsActive"]</label>
+<div class="admin-actions"><button type="submit" class="btn btn-primary">@Localizer["Save"]</button><a class="btn btn-secondary" asp-action="Index">@Localizer["Cancel"]</a></div>
+</form>

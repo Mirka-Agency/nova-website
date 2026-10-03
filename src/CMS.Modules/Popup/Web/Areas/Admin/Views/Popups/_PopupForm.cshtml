@@ -1,0 +1,267 @@
+@model PopupFormViewModel
+@using CMS.Modules.Popup.Domain.Enums
+
+<div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+<div class="popup-editor"
+     data-popup-editor
+     data-fallback-title="@Localizer["PreviewTitleFallback"]"
+     data-fallback-body="@Localizer["PreviewBodyFallback"]"
+     data-fallback-cta="@Localizer["CtaTextPlaceholder"]">
+    <div class="popup-editor-main">
+        <section class="popup-editor-card">
+            <header class="popup-editor-card-head">
+                <h2>@Localizer["SectionContent"]</h2>
+                <p>@Localizer["SectionContentLead"]</p>
+            </header>
+
+            <div class="admin-field">
+                <label asp-for="Title">@Localizer["Title"]</label>
+                <input asp-for="Title" data-preview-title placeholder="@Localizer["TitlePlaceholder"]" />
+                <p class="admin-hint">@Localizer["TitleHelp"]</p>
+                <span asp-validation-for="Title" class="admin-field-error"></span>
+            </div>
+
+            <div class="admin-field">
+                <label asp-for="BodyText">@Localizer["BodyText"]</label>
+                <textarea asp-for="BodyText" rows="5" data-preview-body placeholder="@Localizer["BodyTextPlaceholder"]"></textarea>
+                <p class="admin-hint">@Localizer["BodyTextHelp"]</p>
+                <span asp-validation-for="BodyText" class="admin-field-error"></span>
+            </div>
+
+            <div class="admin-field">
+                <label>@Localizer["Image"]</label>
+                <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                    <button type="button" class="btn btn-secondary" data-media-picker data-target="#ImageUrl">
+                        <i class="fas fa-images" aria-hidden="true"></i>
+                        <span>@Localizer["SelectImage"]</span>
+                    </button>
+                    <button type="button" class="btn btn-ghost" data-preview-clear-image>
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                        <span>@Localizer["RemoveImage"]</span>
+                    </button>
+                </div>
+                <input asp-for="ImageUrl" id="ImageUrl" type="hidden" data-preview-image />
+                <p class="admin-hint">@Localizer["ImageHelp"]</p>
+                <span asp-validation-for="ImageUrl" class="admin-field-error"></span>
+                <div class="admin-upload-preview" data-media-preview-for="#ImageUrl" data-preview-image-box>
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="" />
+                    }
+                </div>
+            </div>
+
+            <div class="admin-field">
+                <label asp-for="FormId">@Localizer["LinkedForm"]</label>
+                <select asp-for="FormId" asp-items="Model.FormOptions" data-preview-form></select>
+                <p class="admin-hint">@Localizer["LinkedFormHint"]</p>
+                <span asp-validation-for="FormId" class="admin-field-error"></span>
+            </div>
+        </section>
+
+        <section class="popup-editor-card">
+            <header class="popup-editor-card-head">
+                <h2>@Localizer["SectionCta"]</h2>
+                <p>@Localizer["SectionCtaLead"]</p>
+            </header>
+
+            @{
+                var ctaActionNorm = PopupCtaActions.Normalize(Model.CtaAction);
+                var showCtaFields = ctaActionNorm != PopupCtaActions.None;
+                var showCtaUrl = ctaActionNorm == PopupCtaActions.Url;
+                var showCtaTarget = ctaActionNorm == PopupCtaActions.OpenPopup;
+            }
+
+            <div class="admin-field">
+                <label asp-for="CtaAction">@Localizer["CtaAction"]</label>
+                <select asp-for="CtaAction" asp-items="Model.CtaActionOptions" data-cta-action data-preview-cta-action></select>
+                <p class="admin-hint">@Localizer["CtaActionHelp"]</p>
+            </div>
+
+            <div class="admin-field popup-cta-panel" data-cta-fields @(showCtaFields ? null : "hidden")>
+                <label asp-for="CtaText">@Localizer["CtaText"]</label>
+                <input asp-for="CtaText" data-preview-cta-text placeholder="@Localizer["CtaTextPlaceholder"]" />
+                <p class="admin-hint">@Localizer["CtaTextHelp"]</p>
+                <span asp-validation-for="CtaText" class="admin-field-error"></span>
+            </div>
+
+            <div class="admin-field popup-cta-panel" data-cta-url @(showCtaUrl ? null : "hidden")>
+                <label asp-for="CtaUrl">@Localizer["CtaUrl"]</label>
+                <input asp-for="CtaUrl" dir="ltr" placeholder="https://example.com/offer" />
+                <p class="admin-hint">@Localizer["CtaUrlHelp"]</p>
+                <span asp-validation-for="CtaUrl" class="admin-field-error"></span>
+            </div>
+
+            <div class="admin-field popup-cta-panel" data-cta-target @(showCtaTarget ? null : "hidden")>
+                <label asp-for="CtaTargetPopupId">@Localizer["CtaTargetPopup"]</label>
+                <select asp-for="CtaTargetPopupId" asp-items="Model.PopupTargetOptions"></select>
+                <p class="admin-hint">@Localizer["CtaTargetPopupHelp"]</p>
+                <span asp-validation-for="CtaTargetPopupId" class="admin-field-error"></span>
+            </div>
+        </section>
+
+        <section class="popup-editor-card">
+            <header class="popup-editor-card-head">
+                <h2>@Localizer["SectionTrigger"]</h2>
+                <p>@Localizer["SectionTriggerLead"]</p>
+            </header>
+
+            <div class="popup-trigger-grid" role="radiogroup" aria-label="@Localizer["Trigger"]">
+                <label class="popup-trigger-card @(Model.TriggerType == PopupTriggerTypes.Manual ? "is-selected" : null)">
+                    <input type="radio" name="TriggerType" value="@PopupTriggerTypes.Manual"
+                           data-popup-trigger-type
+                           @(Model.TriggerType == PopupTriggerTypes.Manual ? "checked" : null) />
+                    <span class="popup-trigger-card-icon" aria-hidden="true"><i class="fas fa-hand-pointer"></i></span>
+                    <span class="popup-trigger-card-title">@Localizer["TriggerManual"]</span>
+                    <span class="popup-trigger-card-desc">@Localizer["TriggerManualHelp"]</span>
+                    <span class="popup-trigger-card-example">@Localizer["TriggerManualExample"]</span>
+                </label>
+                <label class="popup-trigger-card @(Model.TriggerType == PopupTriggerTypes.Timer ? "is-selected" : null)">
+                    <input type="radio" name="TriggerType" value="@PopupTriggerTypes.Timer"
+                           data-popup-trigger-type
+                           @(Model.TriggerType == PopupTriggerTypes.Timer ? "checked" : null) />
+                    <span class="popup-trigger-card-icon" aria-hidden="true"><i class="fas fa-clock"></i></span>
+                    <span class="popup-trigger-card-title">@Localizer["TriggerTimer"]</span>
+                    <span class="popup-trigger-card-desc">@Localizer["TriggerTimerHelp"]</span>
+                    <span class="popup-trigger-card-example">@Localizer["TriggerTimerExample"]</span>
+                </label>
+                <label class="popup-trigger-card @(Model.TriggerType == PopupTriggerTypes.Scroll ? "is-selected" : null)">
+                    <input type="radio" name="TriggerType" value="@PopupTriggerTypes.Scroll"
+                           data-popup-trigger-type
+                           @(Model.TriggerType == PopupTriggerTypes.Scroll ? "checked" : null) />
+                    <span class="popup-trigger-card-icon" aria-hidden="true"><i class="fas fa-arrows-alt-v"></i></span>
+                    <span class="popup-trigger-card-title">@Localizer["TriggerScroll"]</span>
+                    <span class="popup-trigger-card-desc">@Localizer["TriggerScrollHelp"]</span>
+                    <span class="popup-trigger-card-example">@Localizer["TriggerScrollExample"]</span>
+                </label>
+            </div>
+
+            <div class="popup-trigger-panel admin-field" data-popup-trigger-timer hidden>
+                <label asp-for="TriggerDelaySeconds">@Localizer["TriggerDelaySeconds"]</label>
+                <select asp-for="TriggerDelaySeconds" asp-items="Model.DelaySecondsOptions"></select>
+                <p class="admin-hint">@Localizer["TriggerDelayHelp"]</p>
+                <span asp-validation-for="TriggerDelaySeconds" class="admin-field-error"></span>
+            </div>
+
+            <div class="popup-trigger-panel admin-field" data-popup-trigger-scroll hidden>
+                <label asp-for="TriggerScrollPercent">@Localizer["TriggerScrollPercent"]</label>
+                <select asp-for="TriggerScrollPercent" asp-items="Model.ScrollPercentOptions"></select>
+                <p class="admin-hint">@Localizer["TriggerScrollHelpField"]</p>
+                <span asp-validation-for="TriggerScrollPercent" class="admin-field-error"></span>
+            </div>
+
+            <div class="popup-trigger-panel admin-field" data-popup-trigger-manual>
+                <p class="admin-hint">@Localizer["ManualOpenSimpleHelp"]</p>
+                @if (!string.IsNullOrWhiteSpace(Model.Slug))
+                {
+                    <p class="admin-hint"><code>data-popup-open="@Model.Slug"</code></p>
+                }
+            </div>
+        </section>
+
+        <details class="popup-editor-advanced">
+            <summary>@Localizer["SectionAdvanced"]</summary>
+            <div class="popup-editor-advanced-body">
+                <div class="admin-field">
+                    <label class="admin-check">
+                        <input asp-for="IsActive" />
+                        <span>@Localizer["Active"]</span>
+                    </label>
+                    <p class="admin-hint">@Localizer["ActiveHelp"]</p>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Slug">@Localizer["Slug"]</label>
+                    <input asp-for="Slug" dir="ltr" placeholder="welcome-offer" />
+                    <p class="admin-hint">@Localizer["SlugHintSimple"]</p>
+                    <span asp-validation-for="Slug" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Frequency">@Localizer["Frequency"]</label>
+                    <select asp-for="Frequency" asp-items="Model.FrequencyOptions"></select>
+                    <p class="admin-hint">@Localizer["FrequencyHelp"]</p>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="PageTargetMode">@Localizer["PageTargetMode"]</label>
+                    <select asp-for="PageTargetMode" asp-items="Model.PageTargetOptions" data-popup-page-target></select>
+                    <p class="admin-hint">@Localizer["PageTargetHelp"]</p>
+                </div>
+
+                <div class="admin-field" data-popup-page-paths hidden>
+                    <label asp-for="PagePaths">@Localizer["PagePaths"]</label>
+                    <textarea asp-for="PagePaths" rows="3" dir="ltr" placeholder="/blog&#10;/shop/*"></textarea>
+                    <p class="admin-hint">@Localizer["PagePathsHint"]</p>
+                    <span asp-validation-for="PagePaths" class="admin-field-error"></span>
+                </div>
+
+                <fieldset class="admin-fieldset">
+                    <legend>@Localizer["BehaviorSettings"]</legend>
+                    <label class="admin-check"><input asp-for="ShowOverlay" data-preview-overlay /><span>@Localizer["ShowOverlay"]</span></label>
+                    <label class="admin-check"><input asp-for="ShowCloseButton" data-preview-close /><span>@Localizer["ShowCloseButton"]</span></label>
+                    <label class="admin-check"><input asp-for="CloseOnOverlayClick" /><span>@Localizer["CloseOnOverlayClick"]</span></label>
+                    <label class="admin-check"><input asp-for="CloseOnEscape" /><span>@Localizer["CloseOnEscape"]</span></label>
+                    <label class="admin-check"><input asp-for="LockBodyScroll" /><span>@Localizer["LockBodyScroll"]</span></label>
+                    <label class="admin-check"><input asp-for="EnableContentScroll" /><span>@Localizer["EnableContentScroll"]</span></label>
+                </fieldset>
+
+                <div class="admin-field">
+                    <label asp-for="SortOrder">@Localizer["SortOrder"]</label>
+                    <input asp-for="SortOrder" type="number" />
+                    <p class="admin-hint">@Localizer["SortOrderHelp"]</p>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="TriggerSelector">@Localizer["TriggerSelector"]</label>
+                    <input asp-for="TriggerSelector" dir="ltr" placeholder='.open-newsletter' />
+                    <p class="admin-hint">@Localizer["TriggerSelectorHint"]</p>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="ContentHtml">@Localizer["CustomHtml"]</label>
+                    <textarea asp-for="ContentHtml" rows="4" class="admin-ckeditor-source" data-preview-html></textarea>
+                    <p class="admin-hint">@Localizer["CustomHtmlHelp"]</p>
+                </div>
+            </div>
+        </details>
+
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+            <a class="btn btn-secondary" asp-action="Index"><i class="fas fa-times" aria-hidden="true"></i><span>@Localizer["Cancel"]</span></a>
+        </div>
+    </div>
+
+    <aside class="popup-editor-preview" aria-label="@Localizer["LivePreview"]">
+        <div class="popup-preview-sticky">
+            <div class="popup-preview-label">@Localizer["LivePreview"]</div>
+            <div class="popup-preview-stage">
+                <div class="popup-preview-backdrop" data-preview-backdrop></div>
+                <div class="popup-preview-dialog">
+                    <button type="button" class="popup-preview-close" data-preview-close-btn aria-hidden="true">&times;</button>
+                    <h3 class="popup-preview-title" data-preview-title-out>@(!string.IsNullOrWhiteSpace(Model.Title) ? Model.Title : Localizer["PreviewTitleFallback"].Value)</h3>
+                    <div class="popup-preview-image" data-preview-image-out @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
+                        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="" />
+                        }
+                    </div>
+                    <p class="popup-preview-body" data-preview-body-out>@(!string.IsNullOrWhiteSpace(Model.BodyText) ? Model.BodyText : Localizer["PreviewBodyFallback"].Value)</p>
+                    <div class="popup-preview-html" data-preview-html-out @(string.IsNullOrWhiteSpace(Model.ContentHtml) ? "hidden" : null)>
+                        @Html.Raw(Model.ContentHtml)
+                    </div>
+                    <div class="popup-preview-form-badge" data-preview-form-out @(Model.FormId.HasValue ? null : "hidden")>
+                        <i class="fas fa-wpforms" aria-hidden="true"></i>
+                        <span>@Localizer["PreviewFormBadge"]</span>
+                    </div>
+                    <button type="button" class="btn btn-primary popup-preview-cta" data-preview-cta-out
+                            @(string.IsNullOrWhiteSpace(Model.CtaText) || Model.CtaAction == PopupCtaActions.None ? "hidden" : null)>
+                        @(string.IsNullOrWhiteSpace(Model.CtaText) ? Localizer["CtaTextPlaceholder"].Value : Model.CtaText)
+                    </button>
+                </div>
+            </div>
+            <p class="admin-hint">@Localizer["LivePreviewHelp"]</p>
+        </div>
+    </aside>
+</div>

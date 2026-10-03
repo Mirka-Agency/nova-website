@@ -1,0 +1,41 @@
+@using CMS.Infrastructure.Auth
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "حساب کاربری")</title>
+    <link rel="stylesheet" href="~/site/css/site.css" asp-append-version="true" />
+</head>
+<body class="site">
+    @await Component.InvokeAsync("AdminBar")
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="site-brand" asp-controller="Home" asp-action="Index">حساب کاربری</a>
+            <nav class="site-nav">
+                <a asp-controller="Shop" asp-action="Index">فروشگاه</a>
+                <a asp-controller="Cart" asp-action="Index">سبد خرید</a>
+                <a asp-controller="Home" asp-action="Index">بازگشت به سایت</a>
+            </nav>
+        </div>
+    </header>
+    <main class="site-main account-shell">
+        <aside class="account-sidebar">
+            <a asp-controller="Account" asp-action="Index" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "is-active" : null)">داشبورد</a>
+            <a asp-controller="Account" asp-action="Profile" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "is-active" : null)">پروفایل</a>
+            <a asp-controller="Account" asp-action="Orders" class="@(ViewContext.RouteData.Values["action"]?.ToString() is "Orders" or "OrderDetails" ? "is-active" : null)">سفارش‌ها</a>
+            <a asp-controller="Account" asp-action="Addresses" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Addresses" ? "is-active" : null)">آدرس‌ها</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="account-logout-form">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-text-danger">خروج</button>
+            </form>
+        </aside>
+        <div class="account-content">
+            @if (TempData["Success"] is string success) { <p class="account-alert account-alert--ok">@success</p> }
+            @if (TempData["Error"] is string error) { <p class="account-alert account-alert--err">@error</p> }
+            @RenderBody()
+        </div>
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

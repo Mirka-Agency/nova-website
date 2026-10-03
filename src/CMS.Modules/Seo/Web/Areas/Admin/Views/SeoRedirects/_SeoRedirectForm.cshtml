@@ -1,0 +1,31 @@
+@model SeoRedirectFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+<div class="admin-field">
+    <label asp-for="FromPath">@Localizer["FromPath"]</label>
+    <input asp-for="FromPath" dir="ltr" placeholder="/old-path" />
+    <p class="admin-hint">@Localizer["FromPathHint"]</p>
+    <span asp-validation-for="FromPath" class="admin-field-error"></span>
+</div>
+<div class="admin-field">
+    <label asp-for="ToUrl">@Localizer["ToUrl"]</label>
+    <input asp-for="ToUrl" dir="ltr" placeholder="/new-path یا https://..." />
+    <span asp-validation-for="ToUrl" class="admin-field-error"></span>
+</div>
+<div class="admin-field">
+    <label asp-for="StatusCode">@Localizer["StatusCode"]</label>
+    <select asp-for="StatusCode" asp-items="Model.StatusCodeOptions"></select>
+    <span asp-validation-for="StatusCode" class="admin-field-error"></span>
+</div>
+<div class="admin-field">
+    <label class="admin-checkbox">
+        <input asp-for="IsActive" />
+        <span>@Localizer["Active"]</span>
+    </label>
+</div>
+<div class="admin-field">
+    <label asp-for="Note">@Localizer["Note"]</label>
+    <input asp-for="Note" />
+    <span asp-validation-for="Note" class="admin-field-error"></span>
+</div>

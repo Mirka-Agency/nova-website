@@ -1,0 +1,69 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace CMS.Modules.Blog.Web.Areas.Admin.ViewModels;
+
+public sealed class SavePostApiRequest
+{
+    [MaxLength(300)]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(300)]
+    public string? Slug { get; set; }
+
+    [Required(AllowEmptyStrings = true)]
+    public string Body { get; set; } = string.Empty;
+
+    [MaxLength(1000)]
+    public string? Excerpt { get; set; }
+
+    [MaxLength(1000)]
+    public string? CoverImageUrl { get; set; }
+
+    [MaxLength(1000)]
+    public string? CoverVideoUrl { get; set; }
+
+    public Guid? CategoryId { get; set; }
+
+    public string? AuthorUserId { get; set; }
+
+    public string? AuthorDisplayName { get; set; }
+
+    public bool Publish { get; set; }
+
+    public DateTime? PublishedAtUtc { get; set; }
+
+    [MaxLength(200)]
+    public string? MetaTitle { get; set; }
+
+    [MaxLength(500)]
+    public string? MetaDescription { get; set; }
+
+    [MaxLength(500)]
+    public string? SeoKeywords { get; set; }
+
+    [MaxLength(1000)]
+    public string? CanonicalUrl { get; set; }
+
+    [MaxLength(200)]
+    public string? OgTitle { get; set; }
+
+    [MaxLength(500)]
+    public string? OgDescription { get; set; }
+
+    [MaxLength(1000)]
+    public string? OgImageUrl { get; set; }
+
+    public string? FaqJson { get; set; }
+
+    public string? FocusKeyword { get; set; }
+    public bool RobotsIndex { get; set; } = true;
+    public bool RobotsFollow { get; set; } = true;
+    public string? SchemaType { get; set; }
+    public int? SeoScore { get; set; }
+}
+
+public sealed class SavePostApiResponse
+{
+    public Guid Id { get; set; }
+    public string Slug { get; set; } = string.Empty;
+}

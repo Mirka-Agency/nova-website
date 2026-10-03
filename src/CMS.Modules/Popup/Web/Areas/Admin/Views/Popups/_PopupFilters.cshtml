@@ -1,0 +1,30 @@
+@model PopupIndexViewModel
+<div class="admin-field">
+    <label for="popup-filter-active">@Localizer["Status"]</label>
+    <select id="popup-filter-active" name="active">
+        @if (!Model.IsActive.HasValue)
+        {
+            <option value="" selected>@Localizer["AllStatuses"]</option>
+        }
+        else
+        {
+            <option value="">@Localizer["AllStatuses"]</option>
+        }
+        @if (Model.IsActive == true)
+        {
+            <option value="true" selected>@Localizer["Active"]</option>
+        }
+        else
+        {
+            <option value="true">@Localizer["Active"]</option>
+        }
+        @if (Model.IsActive == false)
+        {
+            <option value="false" selected>@Localizer["Inactive"]</option>
+        }
+        else
+        {
+            <option value="false">@Localizer["Inactive"]</option>
+        }
+    </select>
+</div>

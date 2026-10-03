@@ -1,0 +1,23 @@
+@model FormFormViewModel
+
+<div class="admin-field">
+    <label asp-for="SubmitButtonText">@Localizer["SubmitButtonText"]</label>
+    <input asp-for="SubmitButtonText" />
+    <p class="admin-hint">@Localizer["SubmitButtonTextHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label asp-for="SubmitBehaviorType">@Localizer["SubmitBehaviorType"]</label>
+    <select asp-for="SubmitBehaviorType" asp-items="Model.SubmitBehaviorOptions" id="submit-behavior-type"></select>
+</div>
+<div class="admin-field submit-behavior-panel" data-show-for="message,page">
+    <label asp-for="SuccessMessage">@Localizer["SuccessMessage"]</label>
+    <textarea asp-for="SuccessMessage" rows="2"></textarea>
+    <p class="admin-hint" id="submit-success-hint" hidden>@Localizer["SubmitPageMessageHint"]</p>
+</div>
+<div class="admin-field submit-behavior-panel" data-show-for="redirect,page" id="submit-url-panel">
+    <label asp-for="RedirectUrl" id="submit-url-label">@Localizer["RedirectUrl"]</label>
+    <input asp-for="RedirectUrl" id="submit-url-input" placeholder="https://..." />
+    <p class="admin-hint" id="submit-url-hint-redirect">@Localizer["RedirectUrlHint"]</p>
+    <p class="admin-hint" id="submit-url-hint-page" hidden>@Localizer["SubmitBehaviorPageHint"]</p>
+</div>

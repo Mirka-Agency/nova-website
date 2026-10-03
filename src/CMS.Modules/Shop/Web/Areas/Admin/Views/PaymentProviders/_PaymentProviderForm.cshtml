@@ -1,0 +1,88 @@
+@model PaymentProviderFormViewModel
+@using CMS.Modules.Shop.Domain.Enums
+<div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+<div class="admin-field">
+    <label>@Localizer["ProviderType"]</label>
+    <input value="@Model.ProviderType" readonly />
+</div>
+
+<div class="admin-field">
+    <label asp-for="DisplayName">@Localizer["Name"]</label>
+    <input asp-for="DisplayName" />
+    <span asp-validation-for="DisplayName"></span>
+</div>
+
+<label class="admin-check"><input asp-for="IsEnabled" /> @Localizer["IsActive"]</label>
+@if (Model.SandboxAllowed)
+{
+    <label class="admin-check"><input asp-for="IsSandbox" /> Sandbox</label>
+}
+else
+{
+    <input type="hidden" asp-for="IsSandbox" value="false" />
+    <p class="admin-meta">حالت سندباکس در محیط Production غیرفعال است.</p>
+}
+
+<div class="admin-field">
+    <label asp-for="SortOrder">@Localizer["SortOrder"]</label>
+    <input asp-for="SortOrder" type="number" min="0" />
+</div>
+
+<div class="admin-field">
+    <label>Callback URL</label>
+    <input value="@Model.CallbackUrl" readonly />
+    <p class="admin-meta">این URL را در پنل درگاه بانک ثبت کنید.</p>
+</div>
+
+@if (Model.ProviderType is PaymentProviderType.Zarinpal or PaymentProviderType.Zibal)
+{
+    <div class="admin-field">
+        <label asp-for="MerchantId">Merchant ID</label>
+        <input asp-for="MerchantId" autocomplete="off" />
+    </div>
+}
+
+@if (Model.ProviderType is PaymentProviderType.Sep)
+{
+    <div class="admin-field">
+        <label asp-for="TerminalId">Terminal ID</label>
+        <input asp-for="TerminalId" autocomplete="off" />
+    </div>
+}
+
+@if (Model.ProviderType is PaymentProviderType.Mellat)
+{
+    <div class="admin-field">
+        <label asp-for="TerminalId">Terminal ID</label>
+        <input asp-for="TerminalId" autocomplete="off" />
+    </div>
+    <div class="admin-field">
+        <label asp-for="Username">Username</label>
+        <input asp-for="Username" autocomplete="off" />
+    </div>
+    <div class="admin-field">
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" type="password" autocomplete="new-password" />
+    </div>
+}
+
+@if (Model.ProviderType is PaymentProviderType.SnapPay)
+{
+    <div class="admin-field">
+        <label asp-for="ClientId">Client ID</label>
+        <input asp-for="ClientId" autocomplete="off" />
+    </div>
+    <div class="admin-field">
+        <label asp-for="ClientSecret">Client Secret</label>
+        <input asp-for="ClientSecret" type="password" autocomplete="new-password" />
+    </div>
+    <div class="admin-field">
+        <label asp-for="Username">Username</label>
+        <input asp-for="Username" autocomplete="off" />
+    </div>
+    <div class="admin-field">
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" type="password" autocomplete="new-password" />
+    </div>
+}

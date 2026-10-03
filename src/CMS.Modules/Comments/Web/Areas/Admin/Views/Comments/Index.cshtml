@@ -1,0 +1,139 @@
+@model CommentIndexViewModel
+@{
+    var filter = Model.Filter;
+    ViewData["Title"] = Localizer["Comments"];
+    ViewData["SearchPlaceholder"] = Localizer["Search"].Value;
+    ViewData["FilterFieldsPartial"] = "_CommentFilters";
+    ViewBag.Filter = filter;
+    ViewBag.Search = filter.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.PageSize = Model.PageSize;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = filter.HasActiveFilters;
+    ViewBag.FilterClearRouteValues = new { area = "Admin" };
+    var hasFilters = filter.HasActiveFilters;
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-secondary" asp-action="Index">@Localizer["AllComments"]</a>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-targetType="@((int)CommentTargetType.BlogPost)">@Localizer["BlogComments"]</a>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-targetType="@((int)CommentTargetType.Event)">@Localizer["EventComments"]</a>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-targetType="@((int)CommentTargetType.Product)">@Localizer["ProductComments"]</a>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-targetType="@((int)CommentTargetType.ProductCategory)">@Localizer["ProductCategoryComments"]</a>
+    <a class="btn btn-primary" asp-controller="CommentSettings" asp-action="Index"><i class="fas fa-cog" aria-hidden="true"></i><span>@Localizer["CommentSettings"]</span></a>
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.TotalCount == 0)
+{
+    <p class="admin-lead">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoComments"])</p>
+}
+else
+{
+    <div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>@Localizer["Target"]</th>
+                <th>@Localizer["AuthorName"]</th>
+                <th>@Localizer["Body"]</th>
+                <th>@Localizer["Status"]</th>
+                <th>@Localizer["PublishedAt"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    <div>@TargetTypeLabel(item.TargetType)</div>
+                    <small>@item.TargetTitle</small>
+                </td>
+                <td>
+                    <div>@item.AuthorName</div>
+                    @if (!string.IsNullOrWhiteSpace(item.AuthorEmail))
+                    {
+                        <small>@item.AuthorEmail</small>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(item.AuthorPhone))
+                    {
+                        <small>@item.AuthorPhone</small>
+                    }
+                </td>
+                <td>@(item.Body.Length > 120 ? item.Body[..120] + "…" : item.Body)</td>
+                <td>@StatusLabel(item.Status)</td>
+                <td><span class="admin-mono" dir="ltr">@item.PublishedAtLocal</span></td>
+                <td class="admin-actions">
+                    <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id">@Localizer["Edit"]</a>
+                    @if (item.Status != CommentStatus.Approved)
+                    {
+                        <form asp-action="Approve" method="post" class="admin-inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="targetType" value="@(filter.TargetType.HasValue ? ((int)filter.TargetType.Value).ToString() : "")" />
+                            <input type="hidden" name="status" value="@(filter.Status.HasValue ? ((int)filter.Status.Value).ToString() : "")" />
+                            <input type="hidden" name="q" value="@filter.Search" />
+                            <input type="hidden" name="from" value="@filter.FromLocal" />
+                            <input type="hidden" name="to" value="@filter.ToLocal" />
+                            <input type="hidden" name="sort" value="@filter.Sort" />
+                            <button type="submit" class="btn btn-primary">@Localizer["Approve"]</button>
+                        </form>
+                    }
+                    @if (item.Status != CommentStatus.Rejected)
+                    {
+                        <form asp-action="Reject" method="post" class="admin-inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="targetType" value="@(filter.TargetType.HasValue ? ((int)filter.TargetType.Value).ToString() : "")" />
+                            <input type="hidden" name="status" value="@(filter.Status.HasValue ? ((int)filter.Status.Value).ToString() : "")" />
+                            <input type="hidden" name="q" value="@filter.Search" />
+                            <input type="hidden" name="from" value="@filter.FromLocal" />
+                            <input type="hidden" name="to" value="@filter.ToLocal" />
+                            <input type="hidden" name="sort" value="@filter.Sort" />
+                            <button type="submit" class="btn btn-ghost">@Localizer["Reject"]</button>
+                        </form>
+                    }
+                    <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="hidden" name="targetType" value="@(filter.TargetType.HasValue ? ((int)filter.TargetType.Value).ToString() : "")" />
+                        <input type="hidden" name="status" value="@(filter.Status.HasValue ? ((int)filter.Status.Value).ToString() : "")" />
+                        <input type="hidden" name="q" value="@filter.Search" />
+                        <input type="hidden" name="from" value="@filter.FromLocal" />
+                        <input type="hidden" name="to" value="@filter.ToLocal" />
+                        <input type="hidden" name="sort" value="@filter.Sort" />
+                        <button type="submit" class="btn btn-ghost">@Localizer["Delete"]</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+    <partial name="_Pager" />
+}
+
+@section Scripts {
+    <partial name="_JalaliDatePickerScripts" />
+}
+
+@functions {
+    string TargetTypeLabel(CommentTargetType type) => type switch
+    {
+        CommentTargetType.BlogPost => Localizer["BlogComments"].Value,
+        CommentTargetType.Event => Localizer["EventComments"].Value,
+        CommentTargetType.Product => Localizer["ProductComments"].Value,
+        CommentTargetType.ProductCategory => Localizer["ProductCategoryComments"].Value,
+        _ => type.ToString()
+    };
+
+    string StatusLabel(CommentStatus status) => status switch
+    {
+        CommentStatus.Pending => Localizer["StatusPending"].Value,
+        CommentStatus.Approved => Localizer["StatusApproved"].Value,
+        CommentStatus.Rejected => Localizer["StatusRejected"].Value,
+        _ => status.ToString()
+    };
+}

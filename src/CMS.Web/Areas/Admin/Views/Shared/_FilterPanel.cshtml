@@ -1,0 +1,78 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    var search = ViewBag.Search as string;
+    var placeholder = ViewData["SearchPlaceholder"] as string ?? Localizer["Search"].Value;
+    var showSearch = ViewData["FilterHideSearch"] as bool? != true;
+    var extraPartial = ViewData["FilterFieldsPartial"] as string;
+    var hasActiveFilters = ViewBag.HasActiveFilters as bool?
+        ?? !string.IsNullOrWhiteSpace(search);
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+    var clearRouteValues = ViewBag.FilterClearRouteValues as object
+        ?? new { area };
+    var clearUrl = Url.Action(action, controller, clearRouteValues);
+}
+
+<div class="admin-filter @(hasActiveFilters ? "is-active" : null)" data-admin-filter>
+    <button type="button"
+            class="btn btn-secondary admin-filter-trigger"
+            data-admin-filter-trigger
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="admin-filter-panel"
+            title="@Localizer["Filters"]">
+        <i class="fas fa-filter" aria-hidden="true"></i>
+        <span class="visually-hidden">@Localizer["Filters"]</span>
+        @if (hasActiveFilters)
+        {
+            <span class="admin-filter-dot" aria-hidden="true"></span>
+        }
+    </button>
+
+    <div class="admin-filter-panel" id="admin-filter-panel" data-admin-filter-panel hidden>
+        <div class="admin-filter-panel-header">
+            <strong>@Localizer["Filters"]</strong>
+            <button type="button"
+                    class="btn btn-ghost btn-icon-only"
+                    data-admin-filter-close
+                    aria-label="@Localizer["Dismiss"]">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <form method="get" class="admin-filter-form" role="search">
+            @if (showSearch)
+            {
+                <div class="admin-field">
+                    <label for="admin-filter-q">@placeholder</label>
+                    <input id="admin-filter-q"
+                           type="search"
+                           name="q"
+                           value="@search"
+                           class="admin-filter-input"
+                           autocomplete="off" />
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(extraPartial))
+            {
+                <partial name="@extraPartial" />
+            }
+
+            <div class="admin-filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check" aria-hidden="true"></i>
+                    <span>@Localizer["ApplyFilters"]</span>
+                </button>
+                @if (hasActiveFilters && !string.IsNullOrWhiteSpace(clearUrl))
+                {
+                    <a class="btn btn-secondary" href="@clearUrl">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                        <span>@Localizer["ClearFilters"]</span>
+                    </a>
+                }
+            </div>
+        </form>
+    </div>
+</div>

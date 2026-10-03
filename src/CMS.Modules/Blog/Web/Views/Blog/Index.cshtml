@@ -1,0 +1,68 @@
+@model IReadOnlyList<PublicPostSummaryDto>
+@{
+    ViewData["Title"] = Localizer["Blog"];
+}
+
+<section class="blog-page">
+    <header class="blog-page-header">
+        <h1>@Localizer["Blog"]</h1>
+    </header>
+
+    @if (Model.Count == 0)
+    {
+        <p class="blog-empty">@Localizer["NoPosts"]</p>
+    }
+    else
+    {
+        <div class="blog-list">
+            @foreach (var post in Model)
+            {
+                <article class="blog-card">
+                    @if (!string.IsNullOrWhiteSpace(post.CoverImageUrl))
+                    {
+                        <a class="blog-card-cover" asp-controller="Blog" asp-action="Details" asp-route-slug="@post.Slug">
+                            <img src="@post.CoverImageUrl" alt="@post.Title" />
+                        </a>
+                    }
+                    <div class="blog-card-body">
+                        <h2>
+                            <a asp-controller="Blog" asp-action="Details" asp-route-slug="@post.Slug">@post.Title</a>
+                        </h2>
+                        <p class="blog-meta">
+                            <span>@Localizer["PublishedOn"]: @post.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
+                            @if (!string.IsNullOrWhiteSpace(post.AuthorDisplayName))
+                            {
+                                <span>· @Localizer["Author"]: @post.AuthorDisplayName</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(post.CategoryName))
+                            {
+                                <span>· @Localizer["Category"]: @post.CategoryName</span>
+                            }
+                        </p>
+                        @if (!string.IsNullOrWhiteSpace(post.Excerpt))
+                        {
+                            <p class="blog-excerpt">@post.Excerpt</p>
+                        }
+                        <a class="blog-read-more" asp-controller="Blog" asp-action="Details" asp-route-slug="@post.Slug">@Localizer["ReadMore"]</a>
+                    </div>
+                </article>
+            }
+        </div>
+
+        @if (ViewBag.TotalPages is int totalPages && totalPages > 1)
+        {
+            var currentPage = ViewBag.Page as int? ?? 1;
+            <nav class="blog-pager" aria-label="صفحه‌بندی" style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;">
+                @if (currentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage - 1)">قبلی</a>
+                }
+                <span>صفحه @currentPage از @totalPages</span>
+                @if (currentPage < totalPages)
+                {
+                    <a asp-action="Index" asp-route-page="@(currentPage + 1)">بعدی</a>
+                }
+            </nav>
+        }
+    }
+</section>

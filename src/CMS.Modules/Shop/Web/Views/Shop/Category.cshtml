@@ -1,0 +1,152 @@
+@model IReadOnlyList<PublicProductListItemDto>
+@using System.Globalization
+@using CMS.Modules.Shop.Application.Categories
+@{
+    var category = (PublicCategoryDetailDto)ViewBag.Category;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(category.MetaTitle) ? category.Name : category.MetaTitle;
+    var anyPurchasable = Model.Any(p => p.CanPurchase);
+    var priceCulture = CultureInfo.GetCultureInfo("fa-IR");
+    string FormatPrice(decimal amount) => amount.ToString("N0", priceCulture);
+    string CurrencyLabel(string? code) =>
+        code?.ToUpperInvariant() switch
+        {
+            "TOMAN" or "IRT" or "TMN" => "تومان",
+            "IRR" => "ریال",
+            _ => code ?? ""
+        };
+}
+
+<section class="shop-page shop-catalog">
+    <p class="shop-back">
+        <a asp-action="Index">@Localizer["BackToShop"]</a>
+    </p>
+
+    <header class="shop-catalog-header">
+        <div class="shop-catalog-header-text">
+            <h1>@category.Name</h1>
+            @if (!string.IsNullOrWhiteSpace(category.Description))
+            {
+                <p class="shop-catalog-count">@category.Description</p>
+            }
+            else if (Model.Count > 0)
+            {
+                <p class="shop-catalog-count">@Model.Count @Localizer["Products"]</p>
+            }
+        </div>
+        @if (anyPurchasable)
+        {
+            <a class="shop-catalog-cart-link" asp-controller="Cart" asp-action="Index">@Localizer["Cart"]</a>
+        }
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(category.ImageUrl))
+    {
+        <figure class="shop-category-cover">
+            <img src="@category.ImageUrl" alt="@category.Name" />
+        </figure>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(category.Content))
+    {
+        <div class="blog-content shop-category-content">@Html.Raw(category.Content)</div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <p class="shop-empty">@Localizer["NoProducts"]</p>
+    }
+    else
+    {
+        <div class="shop-grid">
+            @foreach (var item in Model)
+            {
+                var price = item.DisplayPrice ?? item.Price;
+                var showAdd = item.CanPurchase && item.IsAvailable;
+                <article class="product-card">
+                    <a class="product-card-media" asp-action="Details" asp-route-slug="@item.Slug" tabindex="-1" aria-hidden="true">
+                        @if (!string.IsNullOrWhiteSpace(item.CoverImageUrl))
+                        {
+                            <img src="@item.CoverImageUrl" alt="" loading="lazy" decoding="async" />
+                        }
+                        else
+                        {
+                            <span class="product-card-placeholder" aria-hidden="true"></span>
+                        }
+                        @if (!item.IsAvailable)
+                        {
+                            <span class="product-card-badge">@Localizer["Unavailable"]</span>
+                        }
+                    </a>
+
+                    <div class="product-card-body">
+                        @if (!string.IsNullOrWhiteSpace(item.BrandName))
+                        {
+                            <p class="product-card-meta">@item.BrandName</p>
+                        }
+
+                        <h2 class="product-card-title">
+                            <a asp-action="Details" asp-route-slug="@item.Slug">@item.Title</a>
+                        </h2>
+
+                        <div class="product-card-price-row">
+                            @if (item.ShowPrice && item.IsAvailable)
+                            {
+                                <p class="product-card-price">
+                                    <span class="product-card-price-value">@FormatPrice(price)</span>
+                                    <span class="product-card-price-currency">@CurrencyLabel(item.Currency)</span>
+                                </p>
+                            }
+                            else if (!item.IsAvailable)
+                            {
+                                <p class="product-card-status product-card-status--out">@Localizer["Unavailable"]</p>
+                            }
+                            else
+                            {
+                                <p class="product-card-status">@Localizer["Available"]</p>
+                            }
+                        </div>
+
+                        <div class="product-card-actions">
+                            @if (showAdd)
+                            {
+                                <form asp-controller="Cart" asp-action="Add" method="post" class="product-card-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@item.Id" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                    <button type="submit" class="product-card-btn product-card-btn--primary">@Localizer["AddToCart"]</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a class="product-card-btn product-card-btn--ghost" asp-action="Details" asp-route-slug="@item.Slug">@Localizer["ViewProduct"]</a>
+                            }
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+
+        @if (ViewBag.TotalPages is int totalPages && totalPages > 1)
+        {
+            var currentPage = ViewBag.Page as int? ?? 1;
+            <nav class="shop-pager" aria-label="صفحه‌بندی" style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;">
+                @if (currentPage > 1)
+                {
+                    <a asp-action="Category" asp-route-slug="@category.Slug" asp-route-page="@(currentPage - 1)">قبلی</a>
+                }
+                <span>صفحه @currentPage از @totalPages</span>
+                @if (currentPage < totalPages)
+                {
+                    <a asp-action="Category" asp-route-slug="@category.Slug" asp-route-page="@(currentPage + 1)">بعدی</a>
+                }
+            </nav>
+        }
+    }
+
+    @await Component.InvokeAsync("Comments", new {
+        targetType = 3,
+        targetId = category.Id,
+        targetTitle = category.Name
+    })
+</section>

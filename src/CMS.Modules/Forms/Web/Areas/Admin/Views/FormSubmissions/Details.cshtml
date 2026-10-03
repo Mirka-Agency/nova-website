@@ -1,0 +1,286 @@
+@model SubmissionDetailViewModel
+@using CMS.Modules.Forms.Application.Common
+@using CMS.Modules.Forms.Domain.Enums
+@{
+    ViewData["Title"] = Localizer["SubmissionDetail"];
+    var dash = "—";
+    string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:0.#} KB";
+        return $"{bytes / (1024.0 * 1024.0):0.#} MB";
+    }
+
+    var statusBadgeClass = Model.Status switch
+    {
+        SubmissionStatus.New => "admin-badge admin-badge-emphasis",
+        SubmissionStatus.Read => "admin-badge",
+        SubmissionStatus.Processed => "admin-badge admin-badge-success",
+        SubmissionStatus.Spam => "admin-badge admin-badge-danger",
+        SubmissionStatus.Archived => "admin-badge admin-badge-muted",
+        _ => "admin-badge admin-badge-muted"
+    };
+
+    var hasContext = !string.IsNullOrWhiteSpace(Model.Page)
+                     || !string.IsNullOrWhiteSpace(Model.Referrer)
+                     || !string.IsNullOrWhiteSpace(Model.Locale)
+                     || !string.IsNullOrWhiteSpace(Model.UtmSource)
+                     || !string.IsNullOrWhiteSpace(Model.UtmMedium)
+                     || !string.IsNullOrWhiteSpace(Model.UtmCampaign)
+                     || !string.IsNullOrWhiteSpace(Model.UtmTerm)
+                     || !string.IsNullOrWhiteSpace(Model.UtmContent);
+
+    IReadOnlyList<string> SplitMulti(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return [];
+        if (value.Contains('|', StringComparison.Ordinal))
+            return value.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (value.Contains('\n'))
+            return value.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return [value];
+    }
+
+    bool IsUrl(string? value) =>
+        !string.IsNullOrWhiteSpace(value)
+        && (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-secondary" asp-action="Index" asp-route-formId="@Model.FormId">
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <span>@Localizer["Submissions"]</span>
+    </a>
+    <a class="btn btn-secondary" asp-controller="Forms" asp-action="Edit" asp-route-id="@Model.FormId">@Localizer["BackToForm"]</a>
+    @if (Model.Status != SubmissionStatus.New)
+    {
+        <form asp-action="MarkUnread" method="post" class="admin-inline-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="formId" value="@Model.FormId" />
+            <button type="submit" class="btn btn-secondary">@Localizer["MarkUnread"]</button>
+        </form>
+    }
+    @if (Model.Status == SubmissionStatus.New)
+    {
+        <form asp-action="MarkRead" method="post" class="admin-inline-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="formId" value="@Model.FormId" />
+            <button type="submit" class="btn btn-secondary">@Localizer["MarkRead"]</button>
+        </form>
+    }
+    @if (Model.Status != SubmissionStatus.Archived)
+    {
+        <form asp-action="Archive" method="post" class="admin-inline-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="formId" value="@Model.FormId" />
+            <button type="submit" class="btn btn-secondary">@Localizer["Archive"]</button>
+        </form>
+    }
+    else
+    {
+        <form asp-action="Unarchive" method="post" class="admin-inline-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="formId" value="@Model.FormId" />
+            <button type="submit" class="btn btn-secondary">@Localizer["Unarchive"]</button>
+        </form>
+    }
+</div>
+
+<div class="admin-order-detail admin-submission-detail">
+    <header class="admin-order-header">
+        <div class="admin-order-header-main">
+            <p class="admin-order-kicker">@Localizer["SubmissionDetail"]</p>
+            <h1 class="admin-order-number">@Model.FormName</h1>
+            <div class="admin-order-header-meta">
+                <span class="@statusBadgeClass">@Model.StatusLabel</span>
+                <span class="admin-order-header-date admin-mono" dir="ltr">@JalaliDateHelper.FormatFromUtc(Model.SubmittedAtUtc)</span>
+            </div>
+        </div>
+        <div class="admin-order-header-total">
+            <span class="admin-stat-label">@Localizer["SubmissionAnswers"]</span>
+            <strong class="admin-stat-value admin-stat-value--sm">@Model.Values.Count</strong>
+        </div>
+    </header>
+
+    <section class="admin-panel-section" aria-labelledby="submission-answers-title">
+        <div class="admin-panel-section-head">
+            <h2 id="submission-answers-title" class="admin-section-title admin-section-title--flush">@Localizer["SubmissionAnswers"]</h2>
+        </div>
+        @if (Model.Values.Count == 0)
+        {
+            <p class="admin-empty-message">@Localizer["NoSubmissionAnswers"]</p>
+        }
+        else
+        {
+            <dl class="admin-submission-answers-list">
+                @foreach (var value in Model.Values)
+                {
+                    var parts = SplitMulti(value.Value);
+                    var isDateLike = string.Equals(value.FieldType, "date", StringComparison.OrdinalIgnoreCase)
+                                     || string.Equals(value.FieldType, "datetime", StringComparison.OrdinalIgnoreCase);
+                    var label = string.IsNullOrWhiteSpace(value.FieldLabel) ? value.FieldKey : value.FieldLabel;
+                    <div class="admin-submission-answer">
+                        <dt class="admin-submission-answer-label">
+                            <span>@label</span>
+                            @if (!string.IsNullOrWhiteSpace(value.FieldLabel)
+                                 && !string.Equals(value.FieldLabel, value.FieldKey, StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="admin-mono admin-submission-field-key" dir="ltr">@value.FieldKey</span>
+                            }
+                        </dt>
+                        <dd class="admin-submission-answer-value admin-submission-value" dir="@(isDateLike ? "ltr" : null)">
+                            @if (parts.Count == 0)
+                            {
+                                @dash
+                            }
+                            else if (parts.Count == 1)
+                            {
+                                if (IsUrl(parts[0]))
+                                {
+                                    <a class="btn btn-secondary" href="@parts[0]" target="_blank" rel="noopener">@Localizer["OpenFile"]</a>
+                                }
+                                else if (isDateLike)
+                                {
+                                    <span class="admin-mono">@parts[0]</span>
+                                }
+                                else
+                                {
+                                    @parts[0]
+                                }
+                            }
+                            else
+                            {
+                                <ul class="admin-submission-multi">
+                                    @foreach (var part in parts)
+                                    {
+                                        <li>
+                                            @if (IsUrl(part))
+                                            {
+                                                <a href="@part" target="_blank" rel="noopener">@Localizer["OpenFile"]</a>
+                                            }
+                                            else
+                                            {
+                                                @part
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </dd>
+                    </div>
+                }
+            </dl>
+        }
+    </section>
+
+    @if (Model.Files.Count > 0)
+    {
+        <section class="admin-panel-section" aria-labelledby="submission-files-title">
+            <div class="admin-panel-section-head">
+                <h2 id="submission-files-title" class="admin-section-title admin-section-title--flush">@Localizer["SubmissionFiles"]</h2>
+            </div>
+            <ul class="admin-submission-files">
+                @foreach (var file in Model.Files)
+                {
+                    <li class="admin-submission-file">
+                        <div class="admin-submission-file-main">
+                            <strong class="admin-submission-file-name">@file.OriginalFileName</strong>
+                            <div class="admin-submission-file-meta">
+                                <span class="admin-mono" dir="ltr">@file.FieldKey</span>
+                                <span class="admin-submission-row-sep" aria-hidden="true">·</span>
+                                <span class="admin-mono" dir="ltr">@file.ContentType</span>
+                                <span class="admin-submission-row-sep" aria-hidden="true">·</span>
+                                <span>@FormatBytes(file.SizeBytes)</span>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(file.PublicUrl))
+                        {
+                            <a class="btn btn-secondary" href="@file.PublicUrl" target="_blank" rel="noopener">
+                                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                                <span>@Localizer["OpenFile"]</span>
+                            </a>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <section class="admin-panel-section admin-panel-section--flush" aria-labelledby="submission-meta-title">
+        <div class="admin-panel-section-head">
+            <h2 id="submission-meta-title" class="admin-section-title admin-section-title--flush">@Localizer["SubmissionMeta"]</h2>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-spec-table">
+                <tbody>
+                <tr>
+                    <th scope="row">@Localizer["Name"]</th>
+                    <td>@Model.FormName</td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["Status"]</th>
+                    <td><span class="@statusBadgeClass">@Model.StatusLabel</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["SubmittedAt"]</th>
+                    <td><span class="admin-mono" dir="ltr">@JalaliDateHelper.FormatFromUtc(Model.SubmittedAtUtc)</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["IpAddress"]</th>
+                    <td><span class="admin-mono" dir="ltr">@(Model.IpAddress ?? dash)</span></td>
+                </tr>
+                <tr>
+                    <th scope="row">@Localizer["UserAgent"]</th>
+                    <td class="admin-submission-value">@(Model.UserAgent ?? dash)</td>
+                </tr>
+                @if (hasContext)
+                {
+                    <tr>
+                        <th scope="row">@Localizer["ContextPage"]</th>
+                        <td class="admin-submission-value">@(Model.Page ?? dash)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">@Localizer["ContextLocale"]</th>
+                        <td><span class="admin-mono" dir="ltr">@(Model.Locale ?? dash)</span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">@Localizer["ContextReferrer"]</th>
+                        <td class="admin-submission-value">@(Model.Referrer ?? dash)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">@Localizer["ContextUtmSource"]</th>
+                        <td>@(Model.UtmSource ?? dash)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">@Localizer["ContextUtmMedium"]</th>
+                        <td>@(Model.UtmMedium ?? dash)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">@Localizer["ContextUtmCampaign"]</th>
+                        <td>@(Model.UtmCampaign ?? dash)</td>
+                    </tr>
+                    @if (!string.IsNullOrWhiteSpace(Model.UtmTerm))
+                    {
+                        <tr>
+                            <th scope="row">@Localizer["ContextUtmTerm"]</th>
+                            <td>@Model.UtmTerm</td>
+                        </tr>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.UtmContent))
+                    {
+                        <tr>
+                            <th scope="row">@Localizer["ContextUtmContent"]</th>
+                            <td>@Model.UtmContent</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

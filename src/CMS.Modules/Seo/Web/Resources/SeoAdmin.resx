@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="SeoSettings" xml:space="preserve"><value>تنظیمات سئو</value></data>
+  <data name="Redirects" xml:space="preserve"><value>ریدایرکت‌ها</value></data>
+  <data name="CreateRedirect" xml:space="preserve"><value>ایجاد ریدایرکت</value></data>
+  <data name="EditRedirect" xml:space="preserve"><value>ویرایش ریدایرکت</value></data>
+  <data name="SearchRedirects" xml:space="preserve"><value>جستجوی مسیر یا مقصد…</value></data>
+  <data name="NoRedirects" xml:space="preserve"><value>هنوز ریدایرکتی ثبت نشده است.</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای یافت نشد.</value></data>
+  <data name="FromPath" xml:space="preserve"><value>مسیر مبدأ</value></data>
+  <data name="FromPathHint" xml:space="preserve"><value>باید با / شروع شود، مثلاً /old-page</value></data>
+  <data name="ToUrl" xml:space="preserve"><value>آدرس مقصد</value></data>
+  <data name="StatusCode" xml:space="preserve"><value>کد وضعیت</value></data>
+  <data name="Note" xml:space="preserve"><value>یادداشت</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="Active" xml:space="preserve"><value>فعال</value></data>
+  <data name="Inactive" xml:space="preserve"><value>غیرفعال</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>همه</value></data>
+  <data name="Activate" xml:space="preserve"><value>فعال‌سازی</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>غیرفعال‌سازی</value></data>
+  <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>این ریدایرکت حذف شود؟</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="RedirectCreated" xml:space="preserve"><value>ریدایرکت ایجاد شد.</value></data>
+  <data name="RedirectUpdated" xml:space="preserve"><value>ریدایرکت به‌روز شد.</value></data>
+  <data name="RedirectDeleted" xml:space="preserve"><value>ریدایرکت حذف شد.</value></data>
+  <data name="RedirectActivated" xml:space="preserve"><value>ریدایرکت فعال شد.</value></data>
+  <data name="RedirectDeactivated" xml:space="preserve"><value>ریدایرکت غیرفعال شد.</value></data>
+  <data name="SettingsUpdated" xml:space="preserve"><value>تنظیمات سئو ذخیره شد.</value></data>
+  <data name="OrganizationSection" xml:space="preserve"><value>سازمان و اسکیما</value></data>
+  <data name="CrawlingSection" xml:space="preserve"><value>خزش و نقشه سایت</value></data>
+  <data name="OrganizationName" xml:space="preserve"><value>نام سازمان</value></data>
+  <data name="OrganizationUrl" xml:space="preserve"><value>آدرس سازمان</value></data>
+  <data name="OrganizationLogoUrl" xml:space="preserve"><value>آدرس لوگوی سازمان</value></data>
+  <data name="DefaultSchemaType" xml:space="preserve"><value>نوع اسکیمای پیش‌فرض</value></data>
+  <data name="SchemaTypeNone" xml:space="preserve"><value>— بدون —</value></data>
+  <data name="TwitterSiteHandle" xml:space="preserve"><value>هندل توییتر / X</value></data>
+  <data name="SitemapEnabled" xml:space="preserve"><value>نقشه سایت در robots.txt</value></data>
+  <data name="EnableBrokenLinkChecks" xml:space="preserve"><value>فعال‌سازی بررسی لینک‌های شکسته</value></data>
+  <data name="RobotsTxtExtra" xml:space="preserve"><value>خطوط اضافی robots.txt</value></data>
+  <data name="RobotsTxtExtraHint" xml:space="preserve"><value>هر خط در انتهای فایل robots.txt اضافه می‌شود.</value></data>
+  <data name="SeoAnalysis" xml:space="preserve"><value>تحلیل سئو</value></data>
+  <data name="SeoAnalysisHint" xml:space="preserve"><value>بررسی هم‌زمان Mirka و Yoast برای محتوای فارسی</value></data>
+  <data name="SeoScore" xml:space="preserve"><value>امتیاز سئو</value></data>
+  <data name="FocusKeyword" xml:space="preserve"><value>کلمه کلیدی تمرکز</value></data>
+  <data name="FocusKeywordHint" xml:space="preserve"><value>کلمه یا عبارت اصلی که می‌خواهید صفحه برای آن رتبه بگیرد.</value></data>
+  <data name="RobotsIndex" xml:space="preserve"><value>اجازه ایندکس (index)</value></data>
+  <data name="RobotsFollow" xml:space="preserve"><value>دنبال کردن لینک‌ها (follow)</value></data>
+  <data name="SchemaType" xml:space="preserve"><value>نوع اسکیما</value></data>
+  <data name="TabContent" xml:space="preserve"><value>محتوا</value></data>
+  <data name="TabReadability" xml:space="preserve"><value>خوانایی</value></data>
+  <data name="TabSocial" xml:space="preserve"><value>اجتماعی</value></data>
+  <data name="TabAdvanced" xml:space="preserve"><value>پیشرفته</value></data>
+  <data name="AnalysisPending" xml:space="preserve"><value>تحلیل پس از بارگذاری اسکریپت سئو نمایش داده می‌شود.</value></data>
+  <data name="SerpTitlePlaceholder" xml:space="preserve"><value>عنوان صفحه در نتایج جستجو</value></data>
+  <data name="SerpDescPlaceholder" xml:space="preserve"><value>توضیح متا در نتایج جستجو اینجا نمایش داده می‌شود.</value></data>
+</root>

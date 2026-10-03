@@ -1,0 +1,271 @@
+@model ShopSettingsViewModel
+@{
+    ViewData["Title"] = Localizer["ShopSettings"];
+    var tab = Model.ActiveTab?.ToLowerInvariant() ?? "general";
+    var isPayments = tab == "payments";
+    var isCommerce = tab == "commerce";
+    var isSeller = tab == "seller";
+}
+
+<nav class="admin-tabs" aria-label="@Localizer["ShopSettings"]">
+    <a class="admin-tab @(!isPayments && !isCommerce && !isSeller ? "is-active" : null)" asp-action="Index" asp-route-tab="general">@Localizer["SettingsGeneral"]</a>
+    <a class="admin-tab @(isCommerce ? "is-active" : null)" asp-action="Index" asp-route-tab="commerce">@Localizer["SettingsCommerce"]</a>
+    <a class="admin-tab @(isSeller ? "is-active" : null)" asp-action="Index" asp-route-tab="seller">@Localizer["SettingsSeller"]</a>
+    <a class="admin-tab @(isPayments ? "is-active" : null)" asp-action="Index" asp-route-tab="payments">@Localizer["SettingsPayments"]</a>
+</nav>
+
+@if (tab == "general")
+{
+    <form asp-action="Index" method="post" class="admin-form admin-form-narrow">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ActiveTab" value="general" />
+        <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+        <div class="admin-field">
+            <label asp-for="Mode">@Localizer["ShopMode"]</label>
+            <select asp-for="Mode" asp-items="Model.ModeOptions"></select>
+            <p class="admin-hint">@Localizer["ModeHint"]</p>
+        </div>
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+        </div>
+    </form>
+}
+else if (isCommerce)
+{
+    <form asp-action="Index" method="post" class="admin-form admin-form-narrow">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ActiveTab" value="commerce" />
+        <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+        <div class="admin-field">
+            <label asp-for="SalesAudience">@Localizer["SalesAudience"]</label>
+            <select asp-for="SalesAudience" asp-items="Model.SalesAudienceOptions"></select>
+            <p class="admin-hint">@Localizer["SalesAudienceHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="EnableOnlinePayment" />
+                @Localizer["EnableOnlinePayment"]
+            </label>
+            <p class="admin-hint">@Localizer["EnableOnlinePaymentHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="EnableBankTransfer" />
+                @Localizer["EnableBankTransfer"]
+            </label>
+            <p class="admin-hint">@Localizer["EnableBankTransferHint"]</p>
+        </div>
+
+        <fieldset class="admin-fieldset">
+            <legend>@Localizer["BankTransferSettings"]</legend>
+            <p class="admin-hint">@Localizer["BankTransferSettingsHint"]</p>
+            <div class="admin-field">
+                <label asp-for="BankAccountHolderName">@Localizer["BankAccountHolderName"]</label>
+                <input asp-for="BankAccountHolderName" />
+            </div>
+            <div class="admin-field">
+                <label asp-for="BankName">@Localizer["BankName"]</label>
+                <input asp-for="BankName" />
+            </div>
+            <div class="admin-field">
+                <label asp-for="BankCardNumber">@Localizer["BankCardNumber"]</label>
+                <input asp-for="BankCardNumber" dir="ltr" inputmode="numeric" autocomplete="off" />
+                <p class="admin-hint">@Localizer["BankCardNumberHint"]</p>
+            </div>
+            <div class="admin-field">
+                <label asp-for="BankShebaNumber">@Localizer["BankShebaNumber"]</label>
+                <input asp-for="BankShebaNumber" dir="ltr" autocomplete="off" />
+                <p class="admin-hint">@Localizer["BankShebaNumberHint"]</p>
+            </div>
+            <div class="admin-field">
+                <label asp-for="BankTransferInstructions">@Localizer["BankTransferInstructions"]</label>
+                <textarea asp-for="BankTransferInstructions" rows="4"></textarea>
+                <p class="admin-hint">@Localizer["BankTransferInstructionsHint"]</p>
+            </div>
+        </fieldset>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="ShowPricesToGuests" />
+                @Localizer["ShowPricesToGuests"]
+            </label>
+            <p class="admin-hint">@Localizer["ShowPricesToGuestsHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="EnableReviews" />
+                @Localizer["EnableReviews"]
+            </label>
+            <p class="admin-hint">@Localizer["EnableReviewsHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="EnableCoupons" />
+                @Localizer["EnableCoupons"]
+            </label>
+            <p class="admin-hint">@Localizer["EnableCouponsHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="EnableWholesaleInvoice" />
+                @Localizer["EnableWholesaleInvoice"]
+            </label>
+            <p class="admin-hint">@Localizer["EnableWholesaleInvoiceHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="WholesaleMinimumOrderAmount">@Localizer["WholesaleMinimumOrderAmount"]</label>
+            <input asp-for="WholesaleMinimumOrderAmount" type="number" step="1" min="0" />
+            <p class="admin-hint">@Localizer["WholesaleMinimumOrderAmountHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="WholesaleMinimumOrderQuantity">@Localizer["WholesaleMinimumOrderQuantity"]</label>
+            <input asp-for="WholesaleMinimumOrderQuantity" type="number" min="0" />
+            <p class="admin-hint">@Localizer["WholesaleMinimumOrderQuantityHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="PendingPaymentTimeoutMinutes">@Localizer["PendingPaymentTimeoutMinutes"]</label>
+            <input asp-for="PendingPaymentTimeoutMinutes" type="number" min="1" max="1440" step="1" />
+            <p class="admin-hint">@Localizer["PendingPaymentTimeoutMinutesHint"]</p>
+            <span asp-validation-for="PendingPaymentTimeoutMinutes"></span>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="AbandonedPaymentReminderMinutes">@Localizer["AbandonedPaymentReminderMinutes"]</label>
+            <input asp-for="AbandonedPaymentReminderMinutes" type="number" min="1" max="1440" step="1" />
+            <p class="admin-hint">@Localizer["AbandonedPaymentReminderMinutesHint"]</p>
+            <span asp-validation-for="AbandonedPaymentReminderMinutes"></span>
+        </div>
+
+        <div class="admin-field">
+            <label class="admin-check">
+                <input asp-for="EnableVat" />
+                @Localizer["EnableVat"]
+            </label>
+            <p class="admin-hint">@Localizer["EnableVatHint"]</p>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="VatPercent">@Localizer["VatPercent"]</label>
+            <input asp-for="VatPercent" type="number" step="0.01" min="0" max="100" />
+            <p class="admin-hint">@Localizer["VatPercentHint"]</p>
+            <span asp-validation-for="VatPercent"></span>
+        </div>
+
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+        </div>
+    </form>
+}
+else if (isSeller)
+{
+    <form asp-action="Index" method="post" class="admin-form admin-form-narrow">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ActiveTab" value="seller" />
+        <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+        <p class="admin-hint">@Localizer["SellerSettingsHint"]</p>
+
+        <div class="admin-field">
+            <label asp-for="SellerName">@Localizer["SellerName"]</label>
+            <input asp-for="SellerName" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerPhone">@Localizer["SellerPhone"]</label>
+            <input asp-for="SellerPhone" dir="ltr" inputmode="tel" autocomplete="off" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerEmail">@Localizer["SellerEmail"]</label>
+            <input asp-for="SellerEmail" dir="ltr" type="email" autocomplete="off" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerNationalId">@Localizer["SellerNationalId"]</label>
+            <input asp-for="SellerNationalId" dir="ltr" inputmode="numeric" autocomplete="off" maxlength="11" />
+            <p class="admin-hint">@Localizer["SellerNationalIdHint"]</p>
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerEconomicCode">@Localizer["SellerEconomicCode"]</label>
+            <input asp-for="SellerEconomicCode" dir="ltr" inputmode="numeric" autocomplete="off" maxlength="14" />
+            <p class="admin-hint">@Localizer["SellerEconomicCodeHint"]</p>
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerRegistrationNumber">@Localizer["SellerRegistrationNumber"]</label>
+            <input asp-for="SellerRegistrationNumber" dir="ltr" autocomplete="off" maxlength="50" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerProvince">@Localizer["SellerProvince"]</label>
+            <input asp-for="SellerProvince" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerCity">@Localizer["SellerCity"]</label>
+            <input asp-for="SellerCity" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerAddress">@Localizer["SellerAddress"]</label>
+            <textarea asp-for="SellerAddress" rows="3"></textarea>
+        </div>
+        <div class="admin-field">
+            <label asp-for="SellerPostalCode">@Localizer["SellerPostalCode"]</label>
+            <input asp-for="SellerPostalCode" dir="ltr" inputmode="numeric" autocomplete="off" maxlength="10" />
+            <p class="admin-hint">@Localizer["SellerPostalCodeHint"]</p>
+        </div>
+
+        <fieldset class="admin-fieldset">
+            <legend>@Localizer["InvoiceDisplaySettings"]</legend>
+            <p class="admin-hint">@Localizer["InvoiceDisplaySettingsHint"]</p>
+            <div class="admin-field">
+                <p class="admin-section-title admin-section-title--flush">@Localizer["SellerInfo"]</p>
+                <div class="admin-check-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 16px;">
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerName" /> @Localizer["SellerName"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerNationalId" /> @Localizer["SellerNationalId"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerEconomicCode" /> @Localizer["SellerEconomicCode"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerRegistrationNumber" /> @Localizer["SellerRegistrationNumber"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerPhone" /> @Localizer["SellerPhone"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerEmail" /> @Localizer["SellerEmail"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerCity" /> @Localizer["ShippingCity"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerPostalCode" /> @Localizer["PostalCode"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowSellerAddress" /> @Localizer["SellerAddress"]</label>
+                </div>
+            </div>
+            <div class="admin-field">
+                <p class="admin-section-title admin-section-title--flush">@Localizer["BuyerInfo"]</p>
+                <div class="admin-check-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 16px;">
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerCustomerName" /> @Localizer["CustomerName"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerCustomerEmail" /> @Localizer["CustomerEmail"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerCustomerPhone" /> @Localizer["CustomerPhone"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerRecipientName" /> @Localizer["RecipientName"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerRecipientPhone" /> @Localizer["RecipientPhone"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerShippingCity" /> @Localizer["ShippingCity"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerShippingAddress" /> @Localizer["ShippingAddress"]</label>
+                    <label class="admin-check"><input asp-for="InvoiceShowBuyerIsWholesale" /> @Localizer["IsWholesale"]</label>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+        </div>
+    </form>
+}
+else if (isPayments)
+{
+    <div class="admin-form admin-form-narrow">
+        <div class="admin-field">
+            <label>@Localizer["PaymentGateway"]</label>
+            <p><strong>@Model.PaymentProviderName</strong></p>
+            <p class="admin-hint">@Localizer["PaymentGatewayHint"]</p>
+        </div>
+        <div class="admin-field">
+            <label>@Localizer["EcommerceEnabled"]</label>
+            <p>@(Model.EcommerceEnabled ? Localizer["Yes"] : Localizer["No"])</p>
+            <p class="admin-hint">@Localizer["EcommerceEnabledHint"]</p>
+        </div>
+    </div>
+}

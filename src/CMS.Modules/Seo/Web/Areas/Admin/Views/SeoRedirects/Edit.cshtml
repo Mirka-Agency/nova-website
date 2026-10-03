@@ -1,0 +1,12 @@
+@model SeoRedirectFormViewModel
+@{
+    ViewData["Title"] = Localizer["EditRedirect"];
+}
+
+<form method="post" class="admin-form" style="max-width: 40rem;">
+    <partial name="_SeoRedirectForm" model="Model" />
+    <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+        <a class="btn btn-secondary" asp-action="Index">@Localizer["Cancel"]</a>
+    </div>
+</form>

@@ -1,0 +1,227 @@
+@model CheckoutFormViewModel
+@using CMS.Modules.Shop.Web.ViewModels
+@{
+    ViewData["Title"] = Localizer["Checkout"];
+    var selectedId = Model.ShippingMethodId;
+    var shippingCost = selectedId.HasValue && Model.ShippingCosts.TryGetValue(selectedId.Value, out var quotedCost)
+        ? quotedCost
+        : Model.Cart.ShippingAmount;
+    var billBase = Math.Max(0, Model.Cart.Subtotal - Model.Cart.DiscountAmount + shippingCost);
+    var billVat = Model.Cart.VatPercent is > 0
+        ? CMS.Modules.Shop.Domain.Commerce.VatCalculator.ComputeAmount(billBase, Model.Cart.VatPercent.Value)
+        : 0m;
+    var billTotal = billBase + billVat;
+}
+
+<section class="shop-page">
+    <header class="blog-page-header">
+        <h1>@Localizer["Checkout"]</h1>
+        <p class="blog-meta"><a asp-controller="Cart" asp-action="Index">@Localizer["Cart"]</a></p>
+    </header>
+
+    <div class="checkout-grid">
+        <form asp-controller="Cart" asp-action="Checkout" method="post" class="admin-form" id="checkout-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+            <section class="checkout-block">
+                <h2>تحویل‌گیرنده و آدرس</h2>
+                <p class="blog-meta">@Model.ProfileName — @Model.ProfilePhone</p>
+
+                @if (Model.Addresses.Count == 0)
+                {
+                    <p class="account-alert account-alert--warn">هنوز آدرسی ندارید. یک آدرس اضافه کنید.</p>
+                }
+                else
+                {
+                    <div class="checkout-address-list">
+                        @foreach (var a in Model.Addresses)
+                        {
+                            <label class="checkout-address-option">
+                                @if (Model.AddressId == a.Id)
+                                {
+                                    <input type="radio" name="AddressId" value="@a.Id" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="AddressId" value="@a.Id" />
+                                }
+                                <span>
+                                    <strong>@a.RecipientName</strong> — @a.RecipientPhone<br />
+                                    @a.Province، @a.City — @a.AddressLine
+                                </span>
+                            </label>
+                        }
+                    </div>
+                }
+
+                <button type="button" class="btn btn-secondary" id="open-address-modal">افزودن آدرس جدید</button>
+            </section>
+
+            @if (Model.ShippingMethodOptions.Any())
+            {
+                <section class="checkout-block">
+                    <h2>@Localizer["ShippingMethod"]</h2>
+                    <select asp-for="ShippingMethodId" asp-items="Model.ShippingMethodOptions" id="shipping-method">
+                        <option value="">—</option>
+                    </select>
+                    <p class="blog-meta" id="shipping-delivery-hint"></p>
+                </section>
+            }
+
+            @if (Model.PaymentMethodOptions.Any())
+            {
+                <section class="checkout-block">
+                    <h2>@Localizer["PaymentMethod"]</h2>
+                    <select asp-for="PaymentMethod" asp-items="Model.PaymentMethodOptions" id="payment-method"></select>
+                    <div id="online-providers" class="checkout-provider-list" hidden>
+                        <p class="blog-meta">درگاه پرداخت</p>
+                        @foreach (var provider in Model.OnlinePaymentProviders)
+                        {
+                            <label class="checkout-address-option">
+                                @if (Model.PaymentProviderConfigId == provider.Id)
+                                {
+                                    <input type="radio" name="PaymentProviderConfigId" value="@provider.Id" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="PaymentProviderConfigId" value="@provider.Id" />
+                                }
+                                <span>
+                                    <strong>@provider.DisplayName</strong>
+                                    @if (provider.IsSandbox)
+                                    {
+                                        <span class="blog-meta"> (sandbox)</span>
+                                    }
+                                </span>
+                            </label>
+                        }
+                        @if (!Model.OnlinePaymentProviders.Any())
+                        {
+                            <p class="account-alert account-alert--warn">هیچ درگاه آنلاینی فعال نیست.</p>
+                        }
+                    </div>
+                </section>
+            }
+
+            <div class="admin-field"><label asp-for="Notes">@Localizer["Notes"]</label><textarea asp-for="Notes" rows="3"></textarea></div>
+
+            <div class="admin-actions">
+                <button type="submit" class="btn btn-primary">@Localizer["PlaceOrder"]</button>
+                <a class="btn btn-secondary" asp-controller="Cart" asp-action="Index">@Localizer["Cart"]</a>
+            </div>
+        </form>
+
+        <aside class="checkout-summary admin-card">
+            <h2>صورتحساب</h2>
+            <p>@Localizer["Subtotal"]: <span>@Model.Cart.Subtotal.ToString("N0")</span> @Model.Cart.Currency</p>
+            @if (Model.Cart.DiscountAmount > 0)
+            {
+                <p>@Localizer["Discount"]: −@Model.Cart.DiscountAmount.ToString("N0")</p>
+            }
+            <p>@Localizer["Shipping"]: <span id="bill-shipping">@shippingCost.ToString("N0")</span></p>
+            @if (Model.Cart.VatPercent is > 0)
+            {
+                <p>@Localizer["Vat"] (@Model.Cart.VatPercent.Value.ToString("0.##")%): <span id="bill-vat">@billVat.ToString("N0")</span></p>
+            }
+            <p><strong>@Localizer["Total"]: <span id="bill-total">@billTotal.ToString("N0")</span> @Model.Cart.Currency</strong></p>
+        </aside>
+    </div>
+</section>
+
+<dialog class="account-modal" id="address-modal">
+    <form method="post" id="quick-address-form" class="admin-form admin-form-narrow">
+        @Html.AntiForgeryToken()
+        <h3>آدرس جدید</h3>
+        <div class="admin-field"><label>نام تحویل‌گیرنده</label><input name="RecipientName" required maxlength="200" /></div>
+        <div class="admin-field"><label>موبایل تحویل‌گیرنده</label><input name="RecipientPhone" required maxlength="40" /></div>
+        <div class="admin-field-row" data-iran-location>
+            <div class="admin-field">
+                <label>استان</label>
+                <select name="Province" data-iran-province data-placeholder="انتخاب استان" required>
+                    <option value="">انتخاب استان</option>
+                </select>
+            </div>
+            <div class="admin-field">
+                <label>شهر</label>
+                <select name="City" data-iran-city data-placeholder="انتخاب شهر" required disabled>
+                    <option value="">انتخاب شهر</option>
+                </select>
+            </div>
+        </div>
+        <div class="admin-field"><label>کد پستی</label><input name="PostalCode" maxlength="20" /></div>
+        <div class="admin-field"><label>آدرس</label><textarea name="AddressLine" rows="3" required maxlength="1000"></textarea></div>
+        <label class="admin-check"><input type="checkbox" name="IsDefault" value="true" /> آدرس پیش‌فرض</label>
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary">ذخیره</button>
+            <button type="button" class="btn btn-secondary" id="close-address-modal">انصراف</button>
+        </div>
+        <p class="admin-validation" id="address-modal-error" hidden></p>
+    </form>
+</dialog>
+
+<script src="~/js/iran-location-select.js" asp-append-version="true"></script>
+<script>
+(function () {
+    var methods = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.ShippingCosts.ToDictionary(x => x.Key.ToString(), x => x.Value)));
+    var deliveryHints = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.ShippingMethods.ToDictionary(m => m.Id.ToString(), m => m.EstimatedDeliveryText ?? "")));
+    var subtotal = @Model.Cart.Subtotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var discount = @Model.Cart.DiscountAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var vatPercent = @((Model.Cart.VatPercent ?? 0).ToString(System.Globalization.CultureInfo.InvariantCulture));
+    var paymentSelect = document.getElementById('payment-method');
+    var providers = document.getElementById('online-providers');
+    function refreshPaymentUi() {
+        if (!paymentSelect || !providers) return;
+        providers.hidden = paymentSelect.value !== 'Online';
+    }
+    if (paymentSelect) paymentSelect.addEventListener('change', refreshPaymentUi);
+    refreshPaymentUi();
+
+    var shippingSelect = document.getElementById('shipping-method');
+    var billShipping = document.getElementById('bill-shipping');
+    var billVat = document.getElementById('bill-vat');
+    var billTotal = document.getElementById('bill-total');
+    var deliveryHint = document.getElementById('shipping-delivery-hint');
+
+    function refreshBill() {
+        var id = shippingSelect ? shippingSelect.value : '';
+        var cost = methods[id] || 0;
+        var base = Math.max(0, Number(subtotal) - Number(discount) + Number(cost));
+        var vat = vatPercent > 0 ? Math.round(base * vatPercent / 100) : 0;
+        if (billShipping) billShipping.textContent = Number(cost).toLocaleString('fa-IR');
+        if (billVat) billVat.textContent = Number(vat).toLocaleString('fa-IR');
+        if (billTotal) billTotal.textContent = Number(base + vat).toLocaleString('fa-IR');
+        if (deliveryHint) {
+            var hint = deliveryHints[id];
+            deliveryHint.textContent = hint ? ('زمان تقریبی تحویل: ' + hint) : '';
+        }
+    }
+    if (shippingSelect) shippingSelect.addEventListener('change', refreshBill);
+    refreshBill();
+
+    var modal = document.getElementById('address-modal');
+    var openBtn = document.getElementById('open-address-modal');
+    var closeBtn = document.getElementById('close-address-modal');
+    if (openBtn && modal) openBtn.addEventListener('click', function () { modal.showModal(); });
+    if (closeBtn && modal) closeBtn.addEventListener('click', function () { modal.close(); });
+
+    var form = document.getElementById('quick-address-form');
+    var err = document.getElementById('address-modal-error');
+    if (form) {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            err.hidden = true;
+            var res = await fetch('/account/addresses/quick', { method: 'POST', body: new FormData(form), credentials: 'same-origin' });
+            if (!res.ok) {
+                var data = await res.json().catch(function () { return { error: 'خطا در ذخیره آدرس' }; });
+                err.textContent = data.error || 'خطا در ذخیره آدرس';
+                err.hidden = false;
+                return;
+            }
+            window.location.reload();
+        });
+    }
+})();
+</script>

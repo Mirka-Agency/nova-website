@@ -1,0 +1,25 @@
+@model FormFormViewModel
+
+@if (!Model.Id.HasValue)
+{
+    <p class="admin-lead">@Localizer["SaveFormBeforeResponses"]</p>
+    return;
+}
+
+<p class="admin-lead">@Localizer["ResponsesLead"]</p>
+
+<div class="admin-field">
+    <p>
+        <strong>@Model.SubmissionCount</strong>
+        @Localizer["SubmissionCount"]
+        ·
+        <strong>@Model.Fields.Count</strong>
+        @Localizer["FieldCount"]
+    </p>
+</div>
+
+<div class="admin-actions" style="justify-content: flex-start;">
+    <a class="btn btn-primary" asp-controller="FormSubmissions" asp-action="Index" asp-route-formId="@Model.Id">
+        <i class="fas fa-inbox" aria-hidden="true"></i><span>@Localizer["ViewSubmissions"]</span>
+    </a>
+</div>

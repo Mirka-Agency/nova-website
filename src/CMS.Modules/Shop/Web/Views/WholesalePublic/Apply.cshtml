@@ -1,0 +1,17 @@
+@model WholesaleApplyFormViewModel
+@{ ViewData["Title"] = Localizer["WholesaleApply"]; }
+
+<section class="shop-page">
+    <h1>@Localizer["WholesaleApply"]</h1>
+    <form asp-action="Apply" method="post" class="admin-form admin-form-narrow">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+        <div class="admin-field"><label asp-for="CompanyName">@Localizer["CompanyName"]</label><input asp-for="CompanyName" /><span asp-validation-for="CompanyName"></span></div>
+        <div class="admin-field"><label asp-for="ContactName">@Localizer["ContactName"]</label><input asp-for="ContactName" /></div>
+        <div class="admin-field"><label asp-for="Phone">@Localizer["CustomerPhone"]</label><input asp-for="Phone" /></div>
+        <div class="admin-field"><label asp-for="Email">@Localizer["CustomerEmail"]</label><input asp-for="Email" /></div>
+        <div class="admin-field"><label asp-for="Address">@Localizer["ShippingAddress"]</label><textarea asp-for="Address" rows="2"></textarea></div>
+        <div class="admin-field"><label asp-for="BusinessInfo">@Localizer["BusinessInfo"]</label><textarea asp-for="BusinessInfo" rows="4"></textarea></div>
+        <button type="submit" class="btn btn-primary">@Localizer["SubmitWholesaleRequest"]</button>
+    </form>
+</section>

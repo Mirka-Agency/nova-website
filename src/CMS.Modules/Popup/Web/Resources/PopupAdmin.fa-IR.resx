@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Popups" xml:space="preserve"><value>پاپ‌آپ‌ها</value></data>
+  <data name="CreatePopup" xml:space="preserve"><value>ایجاد پاپ‌آپ</value></data>
+  <data name="EditPopup" xml:space="preserve"><value>ویرایش پاپ‌آپ</value></data>
+  <data name="SectionContent" xml:space="preserve"><value>۱. محتوای پاپ‌آپ</value></data>
+  <data name="SectionContentLead" xml:space="preserve"><value>عنوان، متن و تصویر را مثل یک کارت تبلیغاتی ساده پر کنید.</value></data>
+  <data name="SectionCta" xml:space="preserve"><value>۲. دکمه اقدام (CTA)</value></data>
+  <data name="SectionCtaLead" xml:space="preserve"><value>اگر می‌خواهید کاربر روی دکمه کلیک کند، نوع عملکرد را انتخاب کنید.</value></data>
+  <data name="SectionTrigger" xml:space="preserve"><value>۳. چه زمانی نمایش داده شود؟</value></data>
+  <data name="SectionTriggerLead" xml:space="preserve"><value>یکی از حالت‌های زیر را انتخاب کنید. برای شروع، «با کلیک دکمه» معمولاً بهترین گزینه است.</value></data>
+  <data name="SectionAdvanced" xml:space="preserve"><value>تنظیمات پیشرفته (اختیاری)</value></data>
+  <data name="Title" xml:space="preserve"><value>عنوان</value></data>
+  <data name="TitlePlaceholder" xml:space="preserve"><value>مثلاً: ۲۰٪ تخفیف ویژه</value></data>
+  <data name="TitleHelp" xml:space="preserve"><value>این عنوان بالای پاپ‌آپ دیده می‌شود.</value></data>
+  <data name="BodyText" xml:space="preserve"><value>متن پیام</value></data>
+  <data name="BodyTextPlaceholder" xml:space="preserve"><value>متن کوتاه و واضح بنویسید. نیازی به HTML نیست.</value></data>
+  <data name="BodyTextHelp" xml:space="preserve"><value>متن ساده را بنویسید. برای رفتن به خط بعد Enter بزنید.</value></data>
+  <data name="Image" xml:space="preserve"><value>تصویر (اختیاری)</value></data>
+  <data name="SelectImage" xml:space="preserve"><value>انتخاب از رسانه</value></data>
+  <data name="RemoveImage" xml:space="preserve"><value>حذف تصویر</value></data>
+  <data name="ImageHelp" xml:space="preserve"><value>یک تصویر جذاب از کتابخانه رسانه انتخاب کنید.</value></data>
+  <data name="LinkedForm" xml:space="preserve"><value>فرم (اختیاری)</value></data>
+  <data name="LinkedFormHint" xml:space="preserve"><value>اگر می‌خواهید کاربر اطلاعات وارد کند (مثل عضویت در خبرنامه)، یکی از فرم‌های منتشرشده را انتخاب کنید.</value></data>
+  <data name="NoForm" xml:space="preserve"><value>بدون فرم</value></data>
+  <data name="LinkedFormEmpty" xml:space="preserve"><value>بدون فیلد — در ادمین فرم فیلد اضافه کنید</value></data>
+  <data name="HasForm" xml:space="preserve"><value>دارای فرم</value></data>
+  <data name="CtaAction" xml:space="preserve"><value>عملکرد دکمه</value></data>
+  <data name="CtaActionHelp" xml:space="preserve"><value>اگر دکمه لازم ندارید، «بدون دکمه» را انتخاب کنید.</value></data>
+  <data name="CtaActionNone" xml:space="preserve"><value>بدون دکمه</value></data>
+  <data name="CtaActionUrl" xml:space="preserve"><value>رفتن به یک آدرس / صفحه</value></data>
+  <data name="CtaActionClose" xml:space="preserve"><value>بستن همین پاپ‌آپ</value></data>
+  <data name="CtaActionOpenPopup" xml:space="preserve"><value>باز کردن پاپ‌آپ دیگر</value></data>
+  <data name="CtaText" xml:space="preserve"><value>متن دکمه</value></data>
+  <data name="CtaTextPlaceholder" xml:space="preserve"><value>مثلاً: همین حالا ثبت‌نام کنید</value></data>
+  <data name="CtaTextHelp" xml:space="preserve"><value>متن کوتاه و واضح برای دکمه بنویسید.</value></data>
+  <data name="CtaUrl" xml:space="preserve"><value>آدرس لینک</value></data>
+  <data name="CtaUrlHelp" xml:space="preserve"><value>مثال: /shop یا https://example.com/offer</value></data>
+  <data name="CtaTargetPopup" xml:space="preserve"><value>پاپ‌آپ مقصد</value></data>
+  <data name="CtaTargetPopupHelp" xml:space="preserve"><value>از لیست انتخاب کنید؛ نیازی به وارد کردن شناسه نیست.</value></data>
+  <data name="SelectTargetPopup" xml:space="preserve"><value>انتخاب پاپ‌آپ…</value></data>
+  <data name="Trigger" xml:space="preserve"><value>تریگر</value></data>
+  <data name="TriggerManual" xml:space="preserve"><value>با کلیک دکمه</value></data>
+  <data name="TriggerManualHelp" xml:space="preserve"><value>پاپ‌آپ فقط وقتی باز می‌شود که کاربر روی دکمه مشخص کلیک کند.</value></data>
+  <data name="TriggerManualExample" xml:space="preserve"><value>مثال: دکمه «عضویت» در هدر سایت</value></data>
+  <data name="TriggerTimer" xml:space="preserve"><value>بعد از چند ثانیه</value></data>
+  <data name="TriggerTimerHelp" xml:space="preserve"><value>پس از ورود کاربر به صفحه، بعد از زمان مشخص باز می‌شود.</value></data>
+  <data name="TriggerTimerExample" xml:space="preserve"><value>مثال: ۵ ثانیه بعد از باز شدن صفحه</value></data>
+  <data name="TriggerScroll" xml:space="preserve"><value>با اسکرول صفحه</value></data>
+  <data name="TriggerScrollHelp" xml:space="preserve"><value>وقتی کاربر به درصد مشخصی از صفحه رسید، پاپ‌آپ باز می‌شود.</value></data>
+  <data name="TriggerScrollExample" xml:space="preserve"><value>مثال: بعد از رسیدن به ۵۰٪ صفحه</value></data>
+  <data name="TriggerDelaySeconds" xml:space="preserve"><value>چند ثانیه صبر کند؟</value></data>
+  <data name="TriggerDelayHelp" xml:space="preserve"><value>از لیست انتخاب کنید. ۰ یعنی بلافاصله. پیشنهاد: ۳ تا ۷ ثانیه.</value></data>
+  <data name="TriggerScrollPercent" xml:space="preserve"><value>درصد اسکرول صفحه</value></data>
+  <data name="TriggerScrollHelpField" xml:space="preserve"><value>وقتی کاربر به این درصد از صفحه رسید، پاپ‌آپ باز می‌شود. پیشنهاد رایج: ۵۰٪</value></data>
+  <data name="TriggerSecondsOption" xml:space="preserve"><value>{0} ثانیه</value></data>
+  <data name="TriggerSecondsImmediate" xml:space="preserve"><value>بلافاصله (۰ ثانیه)</value></data>
+  <data name="TriggerScrollOption" xml:space="preserve"><value>{0}٪</value></data>
+  <data name="ManualOpenSimpleHelp" xml:space="preserve"><value>برای باز کردن این پاپ‌آپ از هر دکمه سایت، این ویژگی را روی دکمه بگذارید:</value></data>
+  <data name="Slug" xml:space="preserve"><value>شناسه انگلیسی (نامک)</value></data>
+  <data name="SlugHint" xml:space="preserve"><value>برای باز کردن دستی از این نامک استفاده کنید.</value></data>
+  <data name="SlugHintSimple" xml:space="preserve"><value>اگر خالی بگذارید، از روی عنوان ساخته می‌شود. معمولاً نیازی به تغییر نیست.</value></data>
+  <data name="PageTargeting" xml:space="preserve"><value>هدف‌گذاری صفحه</value></data>
+  <data name="PageTargetMode" xml:space="preserve"><value>در کدام صفحات نشان داده شود؟</value></data>
+  <data name="PageTargetHelp" xml:space="preserve"><value>برای شروع «تمام صفحات» کافی است.</value></data>
+  <data name="PageTargetAll" xml:space="preserve"><value>تمام صفحات</value></data>
+  <data name="PageTargetHomepage" xml:space="preserve"><value>فقط صفحه اصلی</value></data>
+  <data name="PageTargetInclude" xml:space="preserve"><value>فقط صفحات انتخاب‌شده</value></data>
+  <data name="PageTargetExclude" xml:space="preserve"><value>همه به‌جز صفحات انتخاب‌شده</value></data>
+  <data name="PagePaths" xml:space="preserve"><value>مسیر صفحات</value></data>
+  <data name="PagePathsHint" xml:space="preserve"><value>هر خط یک مسیر. مثال: /blog یا /shop/*</value></data>
+  <data name="Frequency" xml:space="preserve"><value>چند بار نمایش داده شود؟</value></data>
+  <data name="FrequencyHelp" xml:space="preserve"><value>پیشنهاد: «یک‌بار در مرورگر» تا کاربر اذیت نشود.</value></data>
+  <data name="FrequencyAlways" xml:space="preserve"><value>همیشه</value></data>
+  <data name="FrequencyEveryVisit" xml:space="preserve"><value>هر بارگذاری صفحه</value></data>
+  <data name="FrequencyOncePerSession" xml:space="preserve"><value>یک‌بار تا بستن مرورگر</value></data>
+  <data name="FrequencyOncePerBrowser" xml:space="preserve"><value>یک‌بار در مرورگر</value></data>
+  <data name="BehaviorSettings" xml:space="preserve"><value>رفتار پاپ‌آپ</value></data>
+  <data name="ShowOverlay" xml:space="preserve"><value>پس‌زمینه تیره (Overlay)</value></data>
+  <data name="ShowCloseButton" xml:space="preserve"><value>دکمه بستن ×</value></data>
+  <data name="CloseOnOverlayClick" xml:space="preserve"><value>بستن با کلیک روی پس‌زمینه</value></data>
+  <data name="CloseOnEscape" xml:space="preserve"><value>بستن با کلید ESC</value></data>
+  <data name="LockBodyScroll" xml:space="preserve"><value>قفل اسکرول صفحه هنگام باز بودن</value></data>
+  <data name="EnableContentScroll" xml:space="preserve"><value>اسکرول داخلی برای محتوای بلند</value></data>
+  <data name="SortOrder" xml:space="preserve"><value>ترتیب نمایش</value></data>
+  <data name="SortOrderHelp" xml:space="preserve"><value>عدد کوچکتر زودتر نمایش داده می‌شود. معمولاً ۰ کافی است.</value></data>
+  <data name="Active" xml:space="preserve"><value>فعال باشد</value></data>
+  <data name="ActiveHelp" xml:space="preserve"><value>اگر غیرفعال باشد، در سایت نشان داده نمی‌شود.</value></data>
+  <data name="Inactive" xml:space="preserve"><value>غیرفعال</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>همه وضعیت‌ها</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="Activate" xml:space="preserve"><value>فعال‌سازی</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>غیرفعال‌سازی</value></data>
+  <data name="TriggerSelector" xml:space="preserve"><value>سلکتور CSS دکمه (پیشرفته)</value></data>
+  <data name="TriggerSelectorHint" xml:space="preserve"><value>فقط اگر با تیم فنی کار می‌کنید. مثال: .open-newsletter</value></data>
+  <data name="CustomHtml" xml:space="preserve"><value>HTML سفارشی (پیشرفته)</value></data>
+  <data name="CustomHtmlHelp" xml:space="preserve"><value>معمولاً لازم نیست. متن و تصویر را از بخش محتوا وارد کنید.</value></data>
+  <data name="LivePreview" xml:space="preserve"><value>پیش‌نمایش زنده</value></data>
+  <data name="LivePreviewHelp" xml:space="preserve"><value>تغییرات عنوان، متن، تصویر و دکمه همین‌جا دیده می‌شود.</value></data>
+  <data name="PreviewTitleFallback" xml:space="preserve"><value>عنوان پاپ‌آپ</value></data>
+  <data name="PreviewBodyFallback" xml:space="preserve"><value>متن پیام شما اینجا نمایش داده می‌شود.</value></data>
+  <data name="PreviewFormBadge" xml:space="preserve"><value>فرم انتخاب‌شده اینجا نمایش داده می‌شود</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>این پاپ‌آپ حذف شود؟</value></data>
+  <data name="SearchPopups" xml:space="preserve"><value>جستجوی پاپ‌آپ…</value></data>
+  <data name="NoPopups" xml:space="preserve"><value>هنوز پاپ‌آپی ثبت نشده است.</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای فیلتر فعلی یافت نشد.</value></data>
+  <data name="PopupCreated" xml:space="preserve"><value>پاپ‌آپ با موفقیت ایجاد شد.</value></data>
+  <data name="PopupUpdated" xml:space="preserve"><value>پاپ‌آپ با موفقیت به‌روزرسانی شد.</value></data>
+  <data name="PopupDeleted" xml:space="preserve"><value>پاپ‌آپ حذف شد.</value></data>
+  <data name="PopupActivated" xml:space="preserve"><value>پاپ‌آپ فعال شد.</value></data>
+  <data name="PopupDeactivated" xml:space="preserve"><value>پاپ‌آپ غیرفعال شد.</value></data>
+  <data name="ManualOpenHint" xml:space="preserve"><value>باز کردن دستی: data-popup-open="{0}" یا MirkaPopup.open("{0}")</value></data>
+</root>

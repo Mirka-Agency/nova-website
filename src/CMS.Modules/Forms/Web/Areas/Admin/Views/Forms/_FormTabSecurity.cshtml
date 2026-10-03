@@ -1,0 +1,22 @@
+@model FormFormViewModel
+
+<label class="admin-check">
+    <input asp-for="AntiSpamEnabled" id="AntiSpamEnabled" />
+    @Localizer["AntiSpamEnabled"]
+</label>
+<input type="hidden" asp-for="EnableCaptcha" id="enable-captcha-sync" />
+<div data-action-panel="antispam">
+    <div class="admin-field">
+        <label asp-for="AntiSpamProvider">@Localizer["AntiSpamProvider"]</label>
+        <select asp-for="AntiSpamProvider" asp-items="Model.AntiSpamProviderOptions" id="antispam-provider"></select>
+        <p class="admin-hint">@Localizer["AntiSpamProviderHint"]</p>
+    </div>
+    <div class="admin-field antispam-panel" data-show-for="simple_captcha">
+        <label asp-for="SimpleCaptchaExpected">@Localizer["SimpleCaptchaExpected"]</label>
+        <input asp-for="SimpleCaptchaExpected" />
+        <p class="admin-hint">@Localizer["SimpleCaptchaExpectedHint"]</p>
+    </div>
+    <div class="admin-field antispam-panel" data-show-for="turnstile,recaptcha,hcaptcha">
+        <p class="admin-hint">@Localizer["AntiSpamEnvKeysHint"]</p>
+    </div>
+</div>

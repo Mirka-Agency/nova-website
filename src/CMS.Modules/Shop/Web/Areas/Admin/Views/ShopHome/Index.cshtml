@@ -1,0 +1,84 @@
+@model ShopHomeViewModel
+@{
+    ViewData["Title"] = Localizer["Shop"];
+}
+
+<div class="admin-page-header">
+    <div class="admin-page-header-text">
+        <p class="admin-lead admin-lead--flush">@Localizer["ShopHomeLead"]</p>
+    </div>
+    <div class="admin-page-header-actions">
+        <a class="btn btn-primary" asp-controller="Products" asp-action="Create">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+            <span>@Localizer["CreateProduct"]</span>
+        </a>
+    </div>
+</div>
+
+<div class="admin-stat-grid admin-stat-grid--4">
+    <a class="admin-stat-card admin-stat-card--link" asp-controller="Products" asp-action="Index">
+        <div class="admin-stat-label">@Localizer["Products"]</div>
+        <div class="admin-stat-value">@Model.ProductCount.ToString("N0")</div>
+        <div class="admin-stat-meta">@Localizer["Published"]: @Model.PublishedProductCount.ToString("N0")</div>
+    </a>
+    <a class="admin-stat-card admin-stat-card--link" asp-controller="Orders" asp-action="Index">
+        <div class="admin-stat-label">@Localizer["Orders"]</div>
+        <div class="admin-stat-value">@Model.OrderCount.ToString("N0")</div>
+        <div class="admin-stat-meta">@Localizer["ProcessingOrders"]: @Model.ProcessingOrderCount.ToString("N0")</div>
+    </a>
+    <a class="admin-stat-card admin-stat-card--link" asp-controller="ShopCategories" asp-action="Index">
+        <div class="admin-stat-label">@Localizer["ShopCategories"]</div>
+        <div class="admin-stat-value">@Model.CategoryCount.ToString("N0")</div>
+    </a>
+    <a class="admin-stat-card admin-stat-card--link" asp-controller="ShopSettings" asp-action="Index">
+        <div class="admin-stat-label">@Localizer["ShopStatus"]</div>
+        <div class="admin-stat-value admin-stat-value--sm">@Model.ModeDisplay</div>
+    </a>
+</div>
+
+<section class="admin-panel-section">
+    <div class="admin-panel-section-head">
+        <h2 class="admin-section-title admin-section-title--flush">@Localizer["RecentOrders"]</h2>
+        @if (Model.RecentOrders.Count > 0)
+        {
+            <a class="admin-text-link" asp-controller="Orders" asp-action="Index">@Localizer["AllOrders"]</a>
+        }
+    </div>
+
+    @if (Model.RecentOrders.Count == 0)
+    {
+        <p class="admin-lead">@Localizer["NoOrders"]</p>
+    }
+    else
+    {
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>@Localizer["OrderNumber"]</th>
+                    <th>@Localizer["CustomerName"]</th>
+                    <th>@Localizer["Status"]</th>
+                    <th>@Localizer["Total"]</th>
+                    <th>@Localizer["CreatedAt"]</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.RecentOrders)
+                {
+                    <tr>
+                        <td>@item.OrderNumber</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.StatusDisplay</td>
+                        <td>@item.TotalDisplay</td>
+                        <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                        <td class="admin-row-actions">
+                            <a class="btn btn-ghost" asp-controller="Orders" asp-action="Details" asp-route-id="@item.Id">@Localizer["View"]</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

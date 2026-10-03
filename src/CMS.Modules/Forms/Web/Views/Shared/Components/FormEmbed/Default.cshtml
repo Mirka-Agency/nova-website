@@ -1,0 +1,49 @@
+@model CMS.Modules.Forms.Web.ViewModels.PublicFormSubmitViewModel
+@{
+    ViewData["FieldIdPrefix"] = "embed";
+    ViewData["ShowFieldValidation"] = true;
+}
+
+<section class="public-form-embed"
+         data-form-key="@Model.Key"
+         data-form-slug="@Model.Slug"
+         data-form-version="@Model.PublishedVersionId"
+         data-form-schema-url="@Model.SchemaUrl">
+    <h2>@Model.Name</h2>
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="public-form-lead">@Model.Description</p>
+    }
+
+    <form asp-controller="PublicForms"
+          asp-action="Submit"
+          asp-route-slug="@Model.Slug"
+          method="post"
+          enctype="multipart/form-data"
+          class="public-form"
+          data-form-key="@Model.Key"
+          data-submit-behavior="@Model.SubmitBehaviorType">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="public-form-errors"></div>
+
+        <div class="public-form-hp" aria-hidden="true">
+            <label asp-for="Website">@Localizer["HoneypotWebsite"]</label>
+            <input asp-for="Website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        @if (Model.Fields.Count == 0)
+        {
+            <p class="public-form-empty">@Localizer["FormHasNoFields"]</p>
+        }
+        else
+        {
+            <partial name="_PublicFormFields" model="Model" />
+
+            <div class="public-form-actions">
+                <button type="submit" class="btn btn-primary">@(string.IsNullOrWhiteSpace(Model.SubmitButtonText) ? Localizer["Submit"] : Model.SubmitButtonText)</button>
+            </div>
+        }
+    </form>
+</section>
+
+<partial name="_PublicFormVisibility" />

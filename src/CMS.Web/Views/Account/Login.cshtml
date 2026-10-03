@@ -1,0 +1,68 @@
+@model CustomerLoginViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "ورود / ثبت‌نام";
+    var isOtp = string.Equals(Model.Step, "otp", StringComparison.OrdinalIgnoreCase);
+}
+
+<section class="shop-page account-auth">
+    <header class="blog-page-header">
+        <h1>ورود یا ثبت‌نام</h1>
+        <p class="blog-meta">فقط با شماره موبایل و کد یکبارمصرف</p>
+    </header>
+
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+    @if (TempData["Success"] is string success) { <p class="account-alert account-alert--ok">@success</p> }
+
+    @if (!isOtp)
+    {
+        <form asp-controller="Account" asp-action="RequestOtp" method="post" class="admin-form admin-form-narrow">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="admin-field">
+                <label asp-for="Phone">شماره موبایل</label>
+                <input asp-for="Phone" inputmode="numeric" placeholder="0912xxxxxxx" autocomplete="tel" />
+                <span asp-validation-for="Phone"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">دریافت کد تأیید</button>
+        </form>
+    }
+    else
+    {
+        <form asp-controller="Account" asp-action="VerifyOtp" method="post" class="admin-form admin-form-narrow">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
+            <input type="hidden" asp-for="Phone" />
+            <input type="hidden" asp-for="Step" value="otp" />
+            <p class="blog-meta">کد به شماره @Model.Phone ارسال شد.</p>
+            <div class="admin-field">
+                <label asp-for="Code">کد تأیید</label>
+                <input asp-for="Code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" />
+                <span asp-validation-for="Code"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">ورود</button>
+        </form>
+        <form asp-controller="Account" asp-action="RequestOtp" method="post" class="admin-form admin-form-narrow" style="margin-top:1rem;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
+            <input type="hidden" asp-for="Phone" />
+            <button type="submit" class="btn btn-secondary" id="resend-otp">ارسال مجدد کد</button>
+        </form>
+        @if (Model.RetryAfterSeconds is int sec and > 0)
+        {
+            <script>
+                (function () {
+                    var btn = document.getElementById('resend-otp');
+                    var left = @sec;
+                    if (!btn) return;
+                    btn.disabled = true;
+                    var timer = setInterval(function () {
+                        left -= 1;
+                        btn.textContent = left > 0 ? ('ارسال مجدد (' + left + ')') : 'ارسال مجدد کد';
+                        if (left <= 0) { btn.disabled = false; clearInterval(timer); }
+                    }, 1000);
+                })();
+            </script>
+        }
+    }
+</section>

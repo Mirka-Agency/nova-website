@@ -1,0 +1,64 @@
+@model PublicArticleDetailDto
+@using CMS.Modules.News.Domain.Enums
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<article class="blog-page blog-detail">
+    <p class="blog-back">
+        <a asp-controller="News" asp-action="Index">@Localizer["BackToNews"]</a>
+    </p>
+
+    <header class="blog-page-header">
+        <h1>@Model.Title</h1>
+        <p class="blog-meta">
+            <span class="blog-kind">@(Model.Kind == ArticleKind.Event ? Localizer["EventKind"] : Localizer["NewsKind"])</span>
+            <span>· @Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
+            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
+            {
+                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
+            {
+                <span>· @Localizer["Category"]: @Model.CategoryName</span>
+            }
+            @if (Model.Kind == ArticleKind.Event)
+            {
+                @if (Model.EventStartAtUtc.HasValue)
+                {
+                    <span>· @Localizer["EventStart"]: @Model.EventStartAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+                }
+                @if (Model.EventEndAtUtc.HasValue)
+                {
+                    <span>· @Localizer["EventEnd"]: @Model.EventEndAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Location))
+                {
+                    <span>· @Localizer["Location"]: @Model.Location</span>
+                }
+            }
+        </p>
+        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+        {
+            <p class="blog-excerpt">@Model.Excerpt</p>
+        }
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+    {
+        <figure class="blog-cover">
+            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
+        </figure>
+    }
+
+    <div class="blog-content">@Html.Raw(Model.Body)</div>
+
+    @if (Model.Kind == ArticleKind.Event)
+    {
+        @await Component.InvokeAsync("Comments", new {
+            targetType = 1,
+            targetId = Model.Id,
+            targetTitle = Model.Title
+        })
+    }
+</article>

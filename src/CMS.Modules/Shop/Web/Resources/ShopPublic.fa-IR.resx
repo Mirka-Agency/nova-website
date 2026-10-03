@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Shop" xml:space="preserve"><value>فروشگاه</value></data>
+  <data name="NoProducts" xml:space="preserve"><value>محصولی برای نمایش نیست.</value></data>
+  <data name="Price" xml:space="preserve"><value>قیمت</value></data>
+  <data name="Available" xml:space="preserve"><value>موجود</value></data>
+  <data name="Unavailable" xml:space="preserve"><value>ناموجود</value></data>
+  <data name="Category" xml:space="preserve"><value>دسته</value></data>
+  <data name="BackToShop" xml:space="preserve"><value>بازگشت به فروشگاه</value></data>
+  <data name="ViewProduct" xml:space="preserve"><value>مشاهده</value></data>
+  <data name="Cart" xml:space="preserve"><value>سبد خرید</value></data>
+  <data name="CartEmpty" xml:space="preserve"><value>سبد خرید خالی است.</value></data>
+  <data name="AddToCart" xml:space="preserve"><value>افزودن به سبد</value></data>
+  <data name="AddedToCart" xml:space="preserve"><value>به سبد خرید اضافه شد.</value></data>
+  <data name="CartUpdated" xml:space="preserve"><value>سبد خرید به‌روزرسانی شد.</value></data>
+  <data name="ItemRemoved" xml:space="preserve"><value>محصول از سبد حذف شد.</value></data>
+  <data name="Checkout" xml:space="preserve"><value>تسویه حساب</value></data>
+  <data name="PlaceOrder" xml:space="preserve"><value>ثبت سفارش</value></data>
+  <data name="Product" xml:space="preserve"><value>محصول</value></data>
+  <data name="Quantity" xml:space="preserve"><value>تعداد</value></data>
+  <data name="OutOfStock" xml:space="preserve"><value>ناموجود</value></data>
+  <data name="Total" xml:space="preserve"><value>جمع</value></data>
+  <data name="Update" xml:space="preserve"><value>به‌روزرسانی</value></data>
+  <data name="Remove" xml:space="preserve"><value>حذف</value></data>
+  <data name="CustomerName" xml:space="preserve"><value>نام</value></data>
+  <data name="CustomerEmail" xml:space="preserve"><value>ایمیل</value></data>
+  <data name="CustomerPhone" xml:space="preserve"><value>تلفن</value></data>
+  <data name="ShippingAddress" xml:space="preserve"><value>آدرس ارسال</value></data>
+  <data name="Notes" xml:space="preserve"><value>یادداشت</value></data>
+  <data name="OrderReceived" xml:space="preserve"><value>سفارش ثبت شد</value></data>
+  <data name="OrderSuccess" xml:space="preserve"><value>سفارش شما با موفقیت ثبت و پرداخت شد.</value></data>
+  <data name="PaymentFailed" xml:space="preserve"><value>پرداخت ناموفق بود؛ سفارش در انتظار پرداخت مانده است.</value></data>
+  <data name="BankTransferPending" xml:space="preserve"><value>سفارش ثبت شد و در انتظار واریز بانکی است.</value></data>
+  <data name="BankTransferDetails" xml:space="preserve"><value>اطلاعات واریز</value></data>
+  <data name="BankAccountHolder" xml:space="preserve"><value>صاحب حساب</value></data>
+  <data name="BankName" xml:space="preserve"><value>بانک</value></data>
+  <data name="BankCardNumber" xml:space="preserve"><value>شماره کارت</value></data>
+  <data name="BankShebaNumber" xml:space="preserve"><value>شماره شبا</value></data>
+  <data name="BankTransferOrderHint" xml:space="preserve"><value>لطفاً مبلغ دقیق سفارش را واریز کنید و شماره سفارش را در توضیحات تراکنش بنویسید.</value></data>
+  <data name="OrderNumber" xml:space="preserve"><value>شماره سفارش</value></data>
+  <data name="TransactionId" xml:space="preserve"><value>شناسه تراکنش</value></data>
+  <data name="Subtotal" xml:space="preserve"><value>جمع جزء</value></data>
+  <data name="Discount" xml:space="preserve"><value>تخفیف</value></data>
+  <data name="Shipping" xml:space="preserve"><value>ارسال</value></data>
+  <data name="Vat" xml:space="preserve"><value>مالیات بر ارزش افزوده</value></data>
+  <data name="CouponCode" xml:space="preserve"><value>کد تخفیف</value></data>
+  <data name="ApplyCoupon" xml:space="preserve"><value>اعمال کوپن</value></data>
+  <data name="ShippingCity" xml:space="preserve"><value>شهر</value></data>
+  <data name="ShippingMethod" xml:space="preserve"><value>روش ارسال</value></data>
+  <data name="PaymentMethod" xml:space="preserve"><value>روش پرداخت</value></data>
+  <data name="Variation" xml:space="preserve"><value>تنوع</value></data>
+  <data name="Reviews" xml:space="preserve"><value>نظرات</value></data>
+  <data name="SubmitReview" xml:space="preserve"><value>ثبت نظر</value></data>
+  <data name="WholesaleApply" xml:space="preserve"><value>درخواست عمده‌فروشی</value></data>
+  <data name="CompanyName" xml:space="preserve"><value>نام شرکت</value></data>
+  <data name="Products" xml:space="preserve"><value>محصول</value></data>
+  <data name="Description" xml:space="preserve"><value>توضیحات</value></data>
+  <data name="NoReviews" xml:space="preserve"><value>هنوز نظری ثبت نشده است.</value></data>
+</root>

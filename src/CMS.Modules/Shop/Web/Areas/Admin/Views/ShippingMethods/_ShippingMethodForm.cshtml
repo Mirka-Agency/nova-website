@@ -1,0 +1,243 @@
+@model ShippingMethodFormViewModel
+@using CMS.Modules.Shop.Domain.Enums
+@{
+    var weightRates = Model.CalculationType == ShippingCalculationType.WeightBased ? Model.Rates : [];
+    var cityRates = Model.CalculationType == ShippingCalculationType.CityBased ? Model.Rates : [];
+}
+
+<div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+<div class="admin-field">
+    <label asp-for="Name">@Localizer["Name"]</label>
+    <input asp-for="Name" />
+    <span asp-validation-for="Name"></span>
+</div>
+
+<div class="admin-field">
+    <label asp-for="Description">@Localizer["Description"]</label>
+    <textarea asp-for="Description" rows="2"></textarea>
+    <p class="admin-hint">@Localizer["ShippingDescriptionHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label asp-for="EstimatedDeliveryText">@Localizer["EstimatedDeliveryText"]</label>
+    <input asp-for="EstimatedDeliveryText" placeholder="@Localizer["EstimatedDeliveryTextPlaceholder"]" />
+    <p class="admin-hint">@Localizer["EstimatedDeliveryTextHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label asp-for="CalculationType">@Localizer["CalculationType"]</label>
+    <select asp-for="CalculationType" asp-items="Model.CalculationTypeOptions" id="calculation-type"></select>
+    <p class="admin-hint">@Localizer["CalculationTypeHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label asp-for="FixedCost">@Localizer["FixedCost"]</label>
+    <input asp-for="FixedCost" type="text" inputmode="numeric" data-price-input autocomplete="off" />
+    <p class="admin-hint"
+       id="fixed-cost-hint"
+       data-hint-fixed="@Localizer["FixedCostHint"]"
+       data-hint-fallback="@Localizer["FixedCostFallbackHint"]">@Localizer["FixedCostHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label asp-for="FreeShippingMinAmount">@Localizer["FreeShippingMinAmount"]</label>
+    <input asp-for="FreeShippingMinAmount" type="number" step="1" min="0" />
+    <p class="admin-hint">@Localizer["FreeShippingMinAmountHint"]</p>
+</div>
+
+<div class="admin-field">
+    <label asp-for="SortOrder">@Localizer["SortOrder"]</label>
+    <input asp-for="SortOrder" type="number" min="0" step="1" />
+</div>
+
+<label class="admin-check">
+    <input asp-for="IsActive" />
+    @Localizer["IsActive"]
+</label>
+
+<section class="admin-panel-section" id="weight-rates-section" hidden>
+    <h2 class="admin-section-title">@Localizer["WeightBasedRates"]</h2>
+    <p class="admin-hint">@Localizer["WeightBasedRatesHint"]</p>
+    <div class="shipping-rate-rows" id="weight-rates">
+        @for (var i = 0; i < weightRates.Count; i++)
+        {
+            <div class="shipping-rate-row" data-rate-row>
+                <input type="hidden" name="Rates[@i].Province" value="" />
+                <input type="hidden" name="Rates[@i].City" value="" />
+                <div class="admin-field shipping-rate-field">
+                    <label for="weight-min-@i">@Localizer["MinWeight"]</label>
+                    <input id="weight-min-@i" name="Rates[@i].MinWeight" value="@weightRates[i].MinWeight" type="number" step="0.001" min="0" inputmode="decimal" />
+                </div>
+                <div class="admin-field shipping-rate-field">
+                    <label for="weight-max-@i">@Localizer["MaxWeight"]</label>
+                    <input id="weight-max-@i" name="Rates[@i].MaxWeight" value="@weightRates[i].MaxWeight" type="number" step="0.001" min="0" inputmode="decimal" />
+                </div>
+                <div class="admin-field shipping-rate-field">
+                    <label for="weight-cost-@i">@Localizer["Cost"]</label>
+                    <input id="weight-cost-@i" name="Rates[@i].Cost" value="@weightRates[i].Cost.ToString("0.##")" type="text" inputmode="numeric" data-price-input autocomplete="off" required />
+                </div>
+                <div class="shipping-rate-row-actions">
+                    <button type="button" class="btn btn-ghost btn-icon-only" data-remove-rate aria-label="@Localizer["Remove"]" title="@Localizer["Remove"]">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+    <button type="button" class="btn btn-secondary shipping-rate-add" id="add-weight-rate">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+        <span>@Localizer["AddRate"]</span>
+    </button>
+</section>
+
+<section class="admin-panel-section" id="city-rates-section" hidden>
+    <h2 class="admin-section-title">@Localizer["CityBasedRates"]</h2>
+    <p class="admin-hint">@Localizer["CityBasedRatesHint"]</p>
+    <div class="shipping-rate-rows" id="city-rates">
+        @for (var i = 0; i < cityRates.Count; i++)
+        {
+            <div class="shipping-rate-row shipping-rate-row--city" data-rate-row data-iran-location>
+                <input type="hidden" name="Rates[@i].MinWeight" value="" />
+                <input type="hidden" name="Rates[@i].MaxWeight" value="" />
+                <div class="admin-field shipping-rate-field">
+                    <label for="city-province-@i">@Localizer["Province"]</label>
+                    <select id="city-province-@i"
+                            name="Rates[@i].Province"
+                            data-iran-province
+                            data-selected="@cityRates[i].Province"
+                            data-placeholder="@Localizer["Province"]"
+                            required>
+                        <option value="">@Localizer["Province"]</option>
+                    </select>
+                </div>
+                <div class="admin-field shipping-rate-field">
+                    <label for="city-name-@i">@Localizer["City"]</label>
+                    <select id="city-name-@i"
+                            name="Rates[@i].City"
+                            data-iran-city
+                            data-selected="@cityRates[i].City"
+                            data-placeholder="@Localizer["City"]"
+                            required
+                            disabled>
+                        <option value="">@Localizer["City"]</option>
+                    </select>
+                </div>
+                <div class="admin-field shipping-rate-field">
+                    <label for="city-cost-@i">@Localizer["Cost"]</label>
+                    <input id="city-cost-@i" name="Rates[@i].Cost" value="@cityRates[i].Cost.ToString("0.##")" type="text" inputmode="numeric" data-price-input autocomplete="off" required />
+                </div>
+                <div class="shipping-rate-row-actions">
+                    <button type="button" class="btn btn-ghost btn-icon-only" data-remove-rate aria-label="@Localizer["Remove"]" title="@Localizer["Remove"]">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+    <button type="button" class="btn btn-secondary shipping-rate-add" id="add-city-rate">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+        <span>@Localizer["AddRate"]</span>
+    </button>
+</section>
+
+<script>
+(function () {
+    var calcType = document.getElementById('calculation-type');
+    var weightSection = document.getElementById('weight-rates-section');
+    var citySection = document.getElementById('city-rates-section');
+    var fixedHint = document.getElementById('fixed-cost-hint');
+    var labelMin = @System.Text.Json.JsonSerializer.Serialize(Localizer["MinWeight"].Value);
+    var labelMax = @System.Text.Json.JsonSerializer.Serialize(Localizer["MaxWeight"].Value);
+    var labelCost = @System.Text.Json.JsonSerializer.Serialize(Localizer["Cost"].Value);
+    var labelProvince = @System.Text.Json.JsonSerializer.Serialize(Localizer["Province"].Value);
+    var labelCity = @System.Text.Json.JsonSerializer.Serialize(Localizer["City"].Value);
+    var labelRemove = @System.Text.Json.JsonSerializer.Serialize(Localizer["Remove"].Value);
+
+    function refreshSections() {
+        var type = calcType ? calcType.value : 'Fixed';
+        if (weightSection) weightSection.hidden = type !== 'WeightBased';
+        if (citySection) citySection.hidden = type !== 'CityBased';
+        if (fixedHint) {
+            var hint = type === 'Fixed'
+                ? fixedHint.getAttribute('data-hint-fixed')
+                : fixedHint.getAttribute('data-hint-fallback');
+            fixedHint.textContent = hint || '';
+        }
+        if (type === 'CityBased' && window.IranLocationSelect) {
+            window.IranLocationSelect.bindAll(citySection);
+        }
+    }
+
+    function bindRemoveButtons(root) {
+        root.querySelectorAll('[data-remove-rate]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                btn.closest('[data-rate-row]')?.remove();
+            });
+        });
+    }
+
+    function bindPriceInputs(root) {
+        if (window.AdminPriceInput && typeof window.AdminPriceInput.bindAll === 'function') {
+            window.AdminPriceInput.bindAll(root);
+        }
+    }
+
+    function bindLocationInputs(root) {
+        if (window.IranLocationSelect && typeof window.IranLocationSelect.bindAll === 'function') {
+            window.IranLocationSelect.bindAll(root);
+        }
+    }
+
+    function addRate(containerId, templateHtml) {
+        var container = document.getElementById(containerId);
+        if (!container) return;
+        var index = container.querySelectorAll('[data-rate-row]').length;
+        var html = templateHtml.replace(/__INDEX__/g, String(index));
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = html.trim();
+        var row = wrapper.firstElementChild;
+        container.appendChild(row);
+        bindRemoveButtons(row);
+        bindPriceInputs(row);
+        bindLocationInputs(row);
+    }
+
+    if (calcType) calcType.addEventListener('change', refreshSections);
+    bindRemoveButtons(document);
+
+    var addWeight = document.getElementById('add-weight-rate');
+    if (addWeight) addWeight.addEventListener('click', function () {
+        addRate('weight-rates',
+            '<div class="shipping-rate-row" data-rate-row>' +
+            '<input type="hidden" name="Rates[__INDEX__].Province" value="" />' +
+            '<input type="hidden" name="Rates[__INDEX__].City" value="" />' +
+            '<div class="admin-field shipping-rate-field"><label for="weight-min-__INDEX__">' + labelMin + '</label>' +
+            '<input id="weight-min-__INDEX__" name="Rates[__INDEX__].MinWeight" type="number" step="0.001" min="0" inputmode="decimal" /></div>' +
+            '<div class="admin-field shipping-rate-field"><label for="weight-max-__INDEX__">' + labelMax + '</label>' +
+            '<input id="weight-max-__INDEX__" name="Rates[__INDEX__].MaxWeight" type="number" step="0.001" min="0" inputmode="decimal" /></div>' +
+            '<div class="admin-field shipping-rate-field"><label for="weight-cost-__INDEX__">' + labelCost + '</label>' +
+            '<input id="weight-cost-__INDEX__" name="Rates[__INDEX__].Cost" type="text" inputmode="numeric" data-price-input autocomplete="off" required /></div>' +
+            '<div class="shipping-rate-row-actions"><button type="button" class="btn btn-ghost btn-icon-only" data-remove-rate aria-label="' + labelRemove + '" title="' + labelRemove + '"><i class="fas fa-trash" aria-hidden="true"></i></button></div>' +
+            '</div>');
+    });
+
+    var addCity = document.getElementById('add-city-rate');
+    if (addCity) addCity.addEventListener('click', function () {
+        addRate('city-rates',
+            '<div class="shipping-rate-row shipping-rate-row--city" data-rate-row data-iran-location>' +
+            '<input type="hidden" name="Rates[__INDEX__].MinWeight" value="" />' +
+            '<input type="hidden" name="Rates[__INDEX__].MaxWeight" value="" />' +
+            '<div class="admin-field shipping-rate-field"><label for="city-province-__INDEX__">' + labelProvince + '</label>' +
+            '<select id="city-province-__INDEX__" name="Rates[__INDEX__].Province" data-iran-province data-placeholder="' + labelProvince + '" required><option value="">' + labelProvince + '</option></select></div>' +
+            '<div class="admin-field shipping-rate-field"><label for="city-name-__INDEX__">' + labelCity + '</label>' +
+            '<select id="city-name-__INDEX__" name="Rates[__INDEX__].City" data-iran-city data-placeholder="' + labelCity + '" required disabled><option value="">' + labelCity + '</option></select></div>' +
+            '<div class="admin-field shipping-rate-field"><label for="city-cost-__INDEX__">' + labelCost + '</label>' +
+            '<input id="city-cost-__INDEX__" name="Rates[__INDEX__].Cost" type="text" inputmode="numeric" data-price-input autocomplete="off" required /></div>' +
+            '<div class="shipping-rate-row-actions"><button type="button" class="btn btn-ghost btn-icon-only" data-remove-rate aria-label="' + labelRemove + '" title="' + labelRemove + '"><i class="fas fa-trash" aria-hidden="true"></i></button></div>' +
+            '</div>');
+    });
+
+    refreshSections();
+})();
+</script>

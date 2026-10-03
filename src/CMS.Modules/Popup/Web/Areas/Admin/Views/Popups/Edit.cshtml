@@ -1,0 +1,17 @@
+@model PopupFormViewModel
+@{
+    ViewData["Title"] = Localizer["EditPopup"];
+}
+
+<form asp-action="Edit" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <partial name="_PopupForm" model="Model" />
+</form>
+
+<partial name="_MediaLibraryPicker" />
+
+@section Scripts {
+    <partial name="_CkEditorScripts" />
+    <partial name="_PopupFormScripts" />
+}

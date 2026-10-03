@@ -1,0 +1,355 @@
+@model ProductFormViewModel
+@{
+    ViewData["Title"] = Model.Id.HasValue ? Localizer["EditProduct"] : Localizer["CreateProduct"];
+    var productFormAction = Model.Id.HasValue ? "Edit" : "Create";
+    var saveAlways = Model.Id.HasValue ? "true" : "false";
+}
+
+<nav class="admin-form-steps" data-admin-form-steps-nav aria-label="@Localizer["ProductSteps"]">
+    <ol class="admin-form-steps-list">
+        <li class="admin-form-steps-item is-active" data-admin-form-step-indicator="1">
+            <span class="admin-form-steps-num" aria-hidden="true">1</span>
+            <span class="admin-form-steps-label">@Localizer["ProductStepBasics"]</span>
+        </li>
+        <li class="admin-form-steps-item" data-admin-form-step-indicator="2">
+            <span class="admin-form-steps-num" aria-hidden="true">2</span>
+            <span class="admin-form-steps-label">@Localizer["ProductStepPricing"]</span>
+        </li>
+        <li class="admin-form-steps-item" data-admin-form-step-indicator="3">
+            <span class="admin-form-steps-num" aria-hidden="true">3</span>
+            <span class="admin-form-steps-label">@Localizer["ProductStepCatalog"]</span>
+        </li>
+        <li class="admin-form-steps-item" data-admin-form-step-indicator="4">
+            <span class="admin-form-steps-num" aria-hidden="true">4</span>
+            <span class="admin-form-steps-label">@Localizer["ProductStepStatus"]</span>
+        </li>
+    </ol>
+</nav>
+
+<form asp-action="@productFormAction"
+      method="post"
+      enctype="multipart/form-data"
+      class="admin-form"
+      data-admin-form-steps
+      data-admin-form-steps-count="4"
+      data-admin-form-steps-save-always="@saveAlways"
+      novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <div class="admin-product-editor">
+        <div class="admin-product-editor-main">
+            <div class="admin-form-step-panel" data-admin-form-step="1">
+                <h2 class="admin-section-title">@Localizer["ProductStepBasics"]</h2>
+
+                <div class="admin-field">
+                    <label asp-for="Title">@Localizer["Title"]</label>
+                    <input asp-for="Title" required />
+                    <p class="admin-hint">@Localizer["TitleHint"]</p>
+                    <span asp-validation-for="Title" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Slug">@Localizer["Slug"]</label>
+                    <input asp-for="Slug" />
+                    <p class="admin-hint">@Localizer["SlugHint"]</p>
+                    <span asp-validation-for="Slug" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Sku">@Localizer["Sku"]</label>
+                    <input asp-for="Sku" dir="ltr" />
+                    <p class="admin-hint">@Localizer["ProductSkuHint"]</p>
+                    <span asp-validation-for="Sku" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="ShortDescription">@Localizer["ShortDescription"]</label>
+                    <textarea asp-for="ShortDescription" rows="2"></textarea>
+                    <p class="admin-hint">@Localizer["ShortDescriptionHint"]</p>
+                    <span asp-validation-for="ShortDescription" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Description">@Localizer["Description"]</label>
+                    <textarea asp-for="Description"
+                              rows="10"
+                              class="admin-ckeditor-source"></textarea>
+                    <p class="admin-hint">@Localizer["DescriptionHint"]</p>
+                    <span asp-validation-for="Description" class="admin-field-error"></span>
+                </div>
+            </div>
+
+            <div class="admin-form-step-panel" data-admin-form-step="2" hidden>
+                <h2 class="admin-section-title">@Localizer["ProductStepPricing"]</h2>
+
+                <div class="admin-field">
+                    <label asp-for="Price">@Localizer["Price"]</label>
+                    <input asp-for="Price" type="text" inputmode="numeric" data-price-input />
+                    <p class="admin-hint">@Localizer["PriceHint"]</p>
+                    <span asp-validation-for="Price" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="SalePrice">@Localizer["SalePrice"]</label>
+                    <input asp-for="SalePrice" type="text" inputmode="numeric" data-price-input />
+                    <p class="admin-hint">@Localizer["SalePriceHint"]</p>
+                    <span asp-validation-for="SalePrice" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Currency">@Localizer["Currency"]</label>
+                    <select asp-for="Currency" asp-items="Model.CurrencyOptions"></select>
+                    <p class="admin-hint">@Localizer["CurrencyHint"]</p>
+                    <span asp-validation-for="Currency" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field" data-stock-quantity-field>
+                    <label asp-for="StockQuantity">@Localizer["StockQuantity"]</label>
+                    <input asp-for="StockQuantity" type="number" min="0" />
+                    <p class="admin-hint">@Localizer["StockQuantityHint"]</p>
+                    <span asp-validation-for="StockQuantity" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label class="admin-check">
+                        <input asp-for="UnlimitedStock" data-unlimited-stock />
+                        @Localizer["UnlimitedStock"]
+                    </label>
+                    <p class="admin-hint">@Localizer["UnlimitedStockHint"]</p>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="Weight">@Localizer["Weight"]</label>
+                    <input asp-for="Weight" type="number" step="0.01" min="0" />
+                    <p class="admin-hint">@Localizer["WeightHint"]</p>
+                    <span asp-validation-for="Weight" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="WholesaleMinimumOrderQuantity">@Localizer["WholesaleMinimumOrderQuantity"]</label>
+                    <input asp-for="WholesaleMinimumOrderQuantity" type="number" min="1" />
+                    <p class="admin-hint">@Localizer["ProductWholesaleMinimumOrderQuantityHint"]</p>
+                    <span asp-validation-for="WholesaleMinimumOrderQuantity" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="WholesaleMinimumOrderAmount">@Localizer["WholesaleMinimumOrderAmount"]</label>
+                    <input asp-for="WholesaleMinimumOrderAmount" type="number" step="1" min="0" />
+                    <p class="admin-hint">@Localizer["ProductWholesaleMinimumOrderAmountHint"]</p>
+                    <span asp-validation-for="WholesaleMinimumOrderAmount" class="admin-field-error"></span>
+                </div>
+            </div>
+
+            <div class="admin-form-step-panel" data-admin-form-step="3" hidden>
+                <h2 class="admin-section-title">@Localizer["ProductStepCatalog"]</h2>
+
+                <div class="admin-field">
+                    <label asp-for="CategoryId">@Localizer["Category"]</label>
+                    <select asp-for="CategoryId" asp-items="Model.CategoryOptions"></select>
+                    <p class="admin-hint">@Localizer["CategoryHint"]</p>
+                    <span asp-validation-for="CategoryId" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="BrandId">@Localizer["Brand"]</label>
+                    <select asp-for="BrandId" asp-items="Model.BrandOptions"></select>
+                    <p class="admin-hint">@Localizer["BrandHint"]</p>
+                    <span asp-validation-for="BrandId" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="VideoUrl">@Localizer["VideoUrl"]</label>
+                    <input asp-for="VideoUrl" />
+                    <p class="admin-hint">@Localizer["VideoUrlHint"]</p>
+                    <span asp-validation-for="VideoUrl" class="admin-field-error"></span>
+                </div>
+            </div>
+
+            <div class="admin-form-step-panel" data-admin-form-step="4" hidden>
+                <h2 class="admin-section-title">@Localizer["ProductStepStatus"]</h2>
+
+                <div class="admin-field">
+                    <label asp-for="Status">@Localizer["Status"]</label>
+                    <select asp-for="Status" asp-items="Model.StatusOptions"></select>
+                    <p class="admin-hint">@Localizer["StatusHint"]</p>
+                    <span asp-validation-for="Status" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label class="admin-check">
+                        <input asp-for="IsAvailable" />
+                        @Localizer["IsAvailable"]
+                    </label>
+                    <p class="admin-hint">@Localizer["IsAvailableHint"]</p>
+                </div>
+
+                @if (Model.ShowPurchasableOption)
+                {
+                    <div class="admin-field">
+                        <label class="admin-check">
+                            <input asp-for="IsPurchasable" />
+                            @Localizer["IsPurchasable"]
+                        </label>
+                        <p class="admin-hint">@Localizer["IsPurchasableHint"]</p>
+                    </div>
+                }
+
+                <div class="admin-field">
+                    <label asp-for="MetaTitle">@Localizer["MetaTitle"]</label>
+                    <input asp-for="MetaTitle" />
+                    <p class="admin-hint">@Localizer["MetaTitleHint"]</p>
+                    <span asp-validation-for="MetaTitle" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="MetaDescription">@Localizer["MetaDescription"]</label>
+                    <textarea asp-for="MetaDescription" rows="2"></textarea>
+                    <p class="admin-hint">@Localizer["MetaDescriptionHint"]</p>
+                    <span asp-validation-for="MetaDescription" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-field">
+                    <label asp-for="SeoKeywords">@Localizer["SeoKeywords"]</label>
+                    <input asp-for="SeoKeywords" />
+                    <p class="admin-hint">@Localizer["SeoKeywordsHint"]</p>
+                    <span asp-validation-for="SeoKeywords" class="admin-field-error"></span>
+                </div>
+            </div>
+
+            <div class="admin-actions admin-form-steps-actions">
+                <a class="btn btn-secondary" asp-action="Index">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span>@Localizer["Cancel"]</span>
+                </a>
+                <button type="button" class="btn btn-secondary" data-admin-form-step-prev hidden>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    <span>@Localizer["Previous"]</span>
+                </button>
+                <button type="button" class="btn btn-primary" data-admin-form-step-next>
+                    <span>@Localizer["Next"]</span>
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                </button>
+                <button type="submit" class="btn btn-primary" data-admin-form-step-submit @(Model.Id.HasValue ? null : "hidden")>
+                    <i class="fas fa-save" aria-hidden="true"></i>
+                    <span>@(Model.Id.HasValue ? Localizer["SaveChanges"] : Localizer["Save"])</span>
+                </button>
+            </div>
+        </div>
+
+        <aside class="admin-product-editor-side" data-product-gallery>
+            <div class="admin-field">
+                <label>@Localizer["CoverImage"]</label>
+                <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                    <button type="button" class="btn btn-secondary" data-media-picker data-target="#CoverImageUrl">
+                        <i class="fas fa-images" aria-hidden="true"></i>
+                        <span>@Localizer["SelectImage"]</span>
+                    </button>
+                </div>
+                <input asp-for="CoverImageUrl" id="CoverImageUrl" type="hidden" />
+                <p class="admin-hint">@Localizer["SelectImageHint"]</p>
+                <span asp-validation-for="CoverImageUrl" class="admin-field-error"></span>
+                <div class="admin-upload-preview" data-media-preview-for="#CoverImageUrl">
+                    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+                    {
+                        <img src="@Model.CoverImageUrl" alt="" />
+                    }
+                </div>
+            </div>
+
+            <div class="admin-field">
+                <label>@Localizer["ImageGallery"]</label>
+                <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-media-picker
+                            data-media-picker-no-clear
+                            data-target="#ProductGalleryStagingUrl">
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span>@Localizer["AddGalleryImage"]</span>
+                    </button>
+                </div>
+                <input type="hidden" id="ProductGalleryStagingUrl" data-product-gallery-staging />
+                <p class="admin-hint">@Localizer["ImageGalleryHint"]</p>
+                <ul class="admin-product-gallery-list" data-product-gallery-list>
+                    @for (var i = 0; i < Model.Images.Count; i++)
+                    {
+                        <li class="admin-product-gallery-item" data-product-gallery-item>
+                            <div class="admin-product-gallery-thumb">
+                                <img src="@Model.Images[i].Url" alt="" />
+                            </div>
+                            <input type="hidden" name="Images[@i].Url" value="@Model.Images[i].Url" data-gallery-url />
+                            <input type="hidden" name="Images[@i].SortOrder" value="@i" data-gallery-sort />
+                            <input type="hidden" name="Images[@i].IsMain" value="@(Model.Images[i].IsMain ? "true" : "false")" data-gallery-main-flag />
+                            <div class="admin-product-gallery-meta">
+                                <input type="text"
+                                       name="Images[@i].AltText"
+                                       value="@Model.Images[i].AltText"
+                                       placeholder="@Localizer["ImageAltText"]"
+                                       data-gallery-alt />
+                                <div class="admin-product-gallery-actions">
+                                    <label class="admin-check">
+                                        <input type="checkbox"
+                                               data-gallery-main
+                                               @(Model.Images[i].IsMain ? "checked" : null) />
+                                        @Localizer["MainImage"]
+                                    </label>
+                                    <button type="button" class="btn btn-text-danger" data-gallery-remove>
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                        <span>@Localizer["Remove"]</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <p class="admin-hint" data-product-gallery-empty @(Model.Images.Count > 0 ? "hidden" : null)>
+                    @Localizer["ImageGalleryEmpty"]
+                </p>
+            </div>
+        </aside>
+    </div>
+</form>
+
+@if (Model.Id.HasValue)
+{
+    <div class="admin-actions" style="margin-block-start: 1rem;">
+        <a class="btn btn-secondary"
+           asp-controller="ProductVariations"
+           asp-action="Index"
+           asp-route-productId="@Model.Id">
+            <i class="fas fa-layer-group" aria-hidden="true"></i>
+            <span>@Localizer["ManageVariations"]</span>
+        </a>
+    </div>
+}
+
+<template id="product-gallery-item-template">
+    <li class="admin-product-gallery-item" data-product-gallery-item>
+        <div class="admin-product-gallery-thumb">
+            <img src="" alt="" />
+        </div>
+        <input type="hidden" name="Images[__INDEX__].Url" value="" data-gallery-url />
+        <input type="hidden" name="Images[__INDEX__].SortOrder" value="0" data-gallery-sort />
+        <input type="hidden" name="Images[__INDEX__].IsMain" value="false" data-gallery-main-flag />
+        <div class="admin-product-gallery-meta">
+            <input type="text"
+                   name="Images[__INDEX__].AltText"
+                   value=""
+                   placeholder="@Localizer["ImageAltText"]"
+                   data-gallery-alt />
+            <div class="admin-product-gallery-actions">
+                <label class="admin-check">
+                    <input type="checkbox" data-gallery-main />
+                    @Localizer["MainImage"]
+                </label>
+                <button type="button" class="btn btn-text-danger" data-gallery-remove>
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                    <span>@Localizer["Remove"]</span>
+                </button>
+            </div>
+        </div>
+    </li>
+</template>
+
+<partial name="_MediaLibraryPicker" />

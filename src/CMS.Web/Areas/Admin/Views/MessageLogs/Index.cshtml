@@ -1,0 +1,169 @@
+@model CMS.Web.Areas.Admin.ViewModels.MessageLogsDashboardViewModel
+@using CMS.Application.Messaging
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["MessageLogs"];
+    var stats = Model.Stats;
+}
+
+<div class="admin-toolbar">
+    <form method="get" class="admin-inline-form" style="display:flex;flex-wrap:wrap;gap:8px;align-items:end;">
+        <div class="admin-field">
+            <label for="period">@Localizer["Period"]</label>
+            <select id="period" name="period" onchange="this.form.submit()">
+                @if (Model.Period == "today")
+                {
+                    <option value="today" selected>@Localizer["PeriodToday"]</option>
+                }
+                else
+                {
+                    <option value="today">@Localizer["PeriodToday"]</option>
+                }
+                @if (Model.Period == "7d")
+                {
+                    <option value="7d" selected>@Localizer["PeriodLast7Days"]</option>
+                }
+                else
+                {
+                    <option value="7d">@Localizer["PeriodLast7Days"]</option>
+                }
+                @if (Model.Period == "30d")
+                {
+                    <option value="30d" selected>@Localizer["PeriodLast30Days"]</option>
+                }
+                else
+                {
+                    <option value="30d">@Localizer["PeriodLast30Days"]</option>
+                }
+                @if (Model.Period == "90d")
+                {
+                    <option value="90d" selected>@Localizer["PeriodLast90Days"]</option>
+                }
+                else
+                {
+                    <option value="90d">@Localizer["PeriodLast90Days"]</option>
+                }
+                @if (Model.Period == "custom")
+                {
+                    <option value="custom" selected>@Localizer["PeriodCustom"]</option>
+                }
+                else
+                {
+                    <option value="custom">@Localizer["PeriodCustom"]</option>
+                }
+            </select>
+        </div>
+        @if (Model.Period == "custom")
+        {
+            <div class="admin-field">
+                <label for="from">@Localizer["FromDate"]</label>
+                <input id="from" type="date" name="from" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="admin-field">
+                <label for="to">@Localizer["ToDate"]</label>
+                <input id="to" type="date" name="to" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <button type="submit" class="btn btn-primary">@Localizer["ApplyFilters"]</button>
+        }
+    </form>
+</div>
+
+<div class="admin-stat-grid" style="margin-block:24px;">
+    <article class="admin-stat-card">
+        <div class="admin-stat-icon" aria-hidden="true"><i class="fas fa-comment"></i></div>
+        <div class="admin-stat-label">@Localizer["SmsSent"]</div>
+        <div class="admin-stat-value">@stats.SmsSucceeded.ToString("N0")</div>
+    </article>
+    <article class="admin-stat-card">
+        <div class="admin-stat-icon" aria-hidden="true"><i class="fas fa-envelope"></i></div>
+        <div class="admin-stat-label">@Localizer["EmailSent"]</div>
+        <div class="admin-stat-value">@stats.EmailSucceeded.ToString("N0")</div>
+    </article>
+    <article class="admin-stat-card">
+        <div class="admin-stat-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="admin-stat-label">@Localizer["MessageFailed"]</div>
+        <div class="admin-stat-value">@((stats.SmsFailed + stats.EmailFailed).ToString("N0"))</div>
+    </article>
+    <article class="admin-stat-card">
+        <div class="admin-stat-icon" aria-hidden="true"><i class="fas fa-ban"></i></div>
+        <div class="admin-stat-label">@Localizer["MessageSkipped"]</div>
+        <div class="admin-stat-value">@((stats.SmsSkipped + stats.EmailSkipped).ToString("N0"))</div>
+    </article>
+</div>
+
+<section class="admin-section" style="margin-block-end:32px;">
+    <h2 class="admin-section-title">@Localizer["DailyBreakdown"]</h2>
+    @if (stats.Daily.Count == 0)
+    {
+        <p class="admin-muted">@Localizer["MessageLogsEmpty"]</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>@Localizer["Date"]</th>
+                    <th>@Localizer["SmsSent"]</th>
+                    <th>@Localizer["EmailSent"]</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var day in stats.Daily.OrderByDescending(x => x.Date))
+            {
+                <tr>
+                    <td>@day.Date.ToString("yyyy/MM/dd")</td>
+                    <td>@day.SmsSucceeded.ToString("N0")</td>
+                    <td>@day.EmailSucceeded.ToString("N0")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>
+
+<section class="admin-section">
+    <h2 class="admin-section-title">@Localizer["RecentMessages"]</h2>
+    @if (Model.Recent.Count == 0)
+    {
+        var empty = new CMS.Web.Areas.Admin.ViewModels.EmptyStateViewModel(Localizer["MessageLogsEmpty"].Value);
+        <partial name="_EmptyState" model="empty" />
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>@Localizer["Time"]</th>
+                    <th>@Localizer["Channel"]</th>
+                    <th>@Localizer["Recipient"]</th>
+                    <th>@Localizer["Status"]</th>
+                    <th>@Localizer["Details"]</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var entry in Model.Recent)
+            {
+                var channel = entry.Channel == MessageChannel.Sms ? Localizer["Sms"].Value : Localizer["Email"].Value;
+                var status = entry.Status switch
+                {
+                    MessageSendStatus.Succeeded => Localizer["Succeeded"].Value,
+                    MessageSendStatus.Failed => Localizer["Failed"].Value,
+                    _ => Localizer["Skipped"].Value
+                };
+                var detail = entry.Channel == MessageChannel.Email
+                    ? (entry.Subject ?? "—")
+                    : (entry.BodyPreview ?? "—");
+                if (!string.IsNullOrWhiteSpace(entry.ErrorMessage))
+                    detail = entry.ErrorMessage;
+                <tr>
+                    <td>@entry.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                    <td>@channel</td>
+                    <td>@entry.Recipient</td>
+                    <td>@status</td>
+                    <td>@detail</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>

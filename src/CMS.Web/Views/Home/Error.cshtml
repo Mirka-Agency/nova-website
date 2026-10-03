@@ -1,0 +1,16 @@
+@using System.Diagnostics
+@model CMS.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout";
+}
+
+<div class="text-center">
+    <h1 class="display-6">@Model.Title</h1>
+    <p>@Model.Message</p>
+    @if (Model.ShowRequestId)
+    {
+        <p><small>کد پیگیری: @Model.RequestId</small></p>
+    }
+    <p><a asp-controller="Home" asp-action="Index">بازگشت</a></p>
+</div>

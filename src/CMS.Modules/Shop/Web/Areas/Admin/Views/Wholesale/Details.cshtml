@@ -1,0 +1,20 @@
+@model WholesaleDetailViewModel
+@{ ViewData["Title"] = Localizer["WholesaleRequestDetail"]; var r = Model.Request; }
+<div class="admin-card">
+<p><strong>@Localizer["CompanyName"]:</strong> @r.CompanyName</p>
+<p><strong>@Localizer["ContactName"]:</strong> @r.ContactName</p>
+<p><strong>@Localizer["Email"]:</strong> @r.Email</p>
+<p><strong>@Localizer["Phone"]:</strong> @r.Phone</p>
+<p><strong>@Localizer["Status"]:</strong> @r.Status</p>
+<p><strong>@Localizer["BusinessInfo"]:</strong> @r.BusinessInfo</p>
+<p><strong>@Localizer["Address"]:</strong> @r.Address</p>
+</div>
+@if (r.Status == CMS.Modules.Shop.Domain.Enums.WholesaleRequestStatus.Pending) {
+<form asp-action="Approve" method="post" class="admin-form admin-form-narrow">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" />
+<div class="admin-field"><label>@Localizer["CustomerGroup"]</label><select name="assignedGroupId" asp-items="Model.GroupOptions"><option value="">—</option></select></div>
+<div class="admin-field"><label>@Localizer["AdminNotes"]</label><textarea name="adminNotes" rows="2">@Model.AdminNotes</textarea></div>
+<button type="submit" class="btn btn-primary">@Localizer["Approve"]</button>
+</form>
+<form asp-action="Reject" method="post" class="admin-inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><button type="submit" class="btn btn-ghost">@Localizer["Reject"]</button></form>
+}
+<a class="btn btn-secondary" asp-action="Index">@Localizer["Back"]</a>

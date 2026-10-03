@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Comments" xml:space="preserve"><value>کامنت‌ها</value></data>
+  <data name="AllComments" xml:space="preserve"><value>همه کامنت‌ها</value></data>
+  <data name="BlogComments" xml:space="preserve"><value>کامنت‌های وبلاگ</value></data>
+  <data name="EventComments" xml:space="preserve"><value>کامنت‌های رویداد</value></data>
+  <data name="ProductComments" xml:space="preserve"><value>کامنت‌های محصول</value></data>
+  <data name="ProductCategoryComments" xml:space="preserve"><value>کامنت‌های دسته محصول</value></data>
+  <data name="CommentSettings" xml:space="preserve"><value>تنظیمات کامنت</value></data>
+  <data name="EditComment" xml:space="preserve"><value>ویرایش کامنت</value></data>
+  <data name="NoComments" xml:space="preserve"><value>کامنتی یافت نشد.</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
+  <data name="FromDate" xml:space="preserve"><value>از تاریخ انتشار</value></data>
+  <data name="ToDate" xml:space="preserve"><value>تا تاریخ انتشار</value></data>
+  <data name="Sort" xml:space="preserve"><value>مرتب‌سازی</value></data>
+  <data name="SortNewest" xml:space="preserve"><value>جدیدترین</value></data>
+  <data name="SortOldest" xml:space="preserve"><value>قدیمی‌ترین</value></data>
+  <data name="SortPublished" xml:space="preserve"><value>تاریخ انتشار (جدیدترین)</value></data>
+  <data name="SortPublishedAsc" xml:space="preserve"><value>تاریخ انتشار (قدیمی‌ترین)</value></data>
+  <data name="SortAuthor" xml:space="preserve"><value>نام نویسنده (الف–ی)</value></data>
+  <data name="SortAuthorDesc" xml:space="preserve"><value>نام نویسنده (ی–الف)</value></data>
+  <data name="AuthorName" xml:space="preserve"><value>نام</value></data>
+  <data name="AuthorEmail" xml:space="preserve"><value>ایمیل</value></data>
+  <data name="AuthorPhone" xml:space="preserve"><value>تلفن</value></data>
+  <data name="Body" xml:space="preserve"><value>متن کامنت</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>همه وضعیت‌ها</value></data>
+  <data name="StatusPending" xml:space="preserve"><value>در انتظار تأیید</value></data>
+  <data name="StatusApproved" xml:space="preserve"><value>تأییدشده</value></data>
+  <data name="StatusRejected" xml:space="preserve"><value>ردشده</value></data>
+  <data name="PublishedAt" xml:space="preserve"><value>تاریخ انتشار</value></data>
+  <data name="Target" xml:space="preserve"><value>هدف</value></data>
+  <data name="Search" xml:space="preserve"><value>جستجو</value></data>
+  <data name="Filter" xml:space="preserve"><value>فیلتر</value></data>
+  <data name="Approve" xml:space="preserve"><value>تأیید</value></data>
+  <data name="Reject" xml:space="preserve"><value>رد</value></data>
+  <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>این کامنت حذف شود؟</value></data>
+  <data name="CommentApproved" xml:space="preserve"><value>کامنت تأیید شد.</value></data>
+  <data name="CommentRejected" xml:space="preserve"><value>کامنت رد شد.</value></data>
+  <data name="CommentUpdated" xml:space="preserve"><value>کامنت به‌روزرسانی شد.</value></data>
+  <data name="CommentDeleted" xml:space="preserve"><value>کامنت حذف شد.</value></data>
+  <data name="SettingsSaved" xml:space="preserve"><value>تنظیمات ذخیره شد.</value></data>
+  <data name="InvalidPublishDate" xml:space="preserve"><value>تاریخ انتشار نامعتبر است.</value></data>
+  <data name="AccessSettings" xml:space="preserve"><value>دسترسی</value></data>
+  <data name="AllowAnonymous" xml:space="preserve"><value>امکان کامنت بدون ورود</value></data>
+  <data name="AllowAnonymousHint" xml:space="preserve"><value>اگر غیرفعال باشد، فقط کاربران واردشده می‌توانند کامنت بگذارند.</value></data>
+  <data name="EnableTargets" xml:space="preserve"><value>فعال‌سازی بخش‌ها</value></data>
+  <data name="EnableOnBlog" xml:space="preserve"><value>وبلاگ</value></data>
+  <data name="EnableOnEvents" xml:space="preserve"><value>رویدادها</value></data>
+  <data name="EnableOnProducts" xml:space="preserve"><value>محصولات</value></data>
+  <data name="EnableOnProductCategories" xml:space="preserve"><value>دسته‌بندی محصولات</value></data>
+  <data name="FieldSettings" xml:space="preserve"><value>فیلدها</value></data>
+  <data name="ShowEmail" xml:space="preserve"><value>نمایش فیلد ایمیل</value></data>
+  <data name="RequireEmail" xml:space="preserve"><value>اجباری بودن ایمیل</value></data>
+  <data name="ShowPhone" xml:space="preserve"><value>نمایش فیلد تلفن</value></data>
+  <data name="RequirePhone" xml:space="preserve"><value>اجباری بودن تلفن</value></data>
+  <data name="NameAndBodyAlwaysRequired" xml:space="preserve"><value>نام و متن کامنت همیشه اجباری هستند.</value></data>
+  <data name="CaptchaSettings" xml:space="preserve"><value>کپچا</value></data>
+  <data name="EnableCaptcha" xml:space="preserve"><value>فعال‌سازی کپچا</value></data>
+  <data name="CaptchaProvider" xml:space="preserve"><value>ارائه‌دهنده کپچا</value></data>
+  <data name="CaptchaNone" xml:space="preserve"><value>بدون کپچا</value></data>
+  <data name="CaptchaTurnstile" xml:space="preserve"><value>Cloudflare Turnstile</value></data>
+  <data name="CaptchaRecaptcha" xml:space="preserve"><value>Google reCAPTCHA v3</value></data>
+  <data name="CaptchaHcaptcha" xml:space="preserve"><value>hCaptcha</value></data>
+  <data name="ExternalCaptchaHint" xml:space="preserve"><value>کلیدهای Site و Secret با ورود ادمین و فرم‌ها مشترک‌اند (Captcha__Turnstile|Recaptcha|Hcaptcha در env). Google reCAPTCHA نسخهٔ v3 است.</value></data>
+  <data name="BackToComments" xml:space="preserve"><value>بازگشت به کامنت‌ها</value></data>
+</root>

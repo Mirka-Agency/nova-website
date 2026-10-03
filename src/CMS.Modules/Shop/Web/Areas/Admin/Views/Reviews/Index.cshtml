@@ -1,0 +1,18 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Reviews.ReviewListItemDto>
+@{ ViewData["Title"] = Localizer["Reviews"]; }
+<div class="admin-toolbar">
+<a class="btn btn-secondary" asp-action="Index">@Localizer["AllReviews"]</a>
+<a class="btn btn-secondary" asp-action="Index" asp-route-approved="false">@Localizer["PendingReviews"]</a>
+</div>
+@if (Model.Count == 0) { <p class="admin-lead">@Localizer["NoReviews"]</p> } else {
+<div class="admin-table-wrap">
+<table class="admin-table"><thead><tr><th>@Localizer["Product"]</th><th>@Localizer["AuthorName"]</th><th>@Localizer["Rating"]</th><th>@Localizer["IsApproved"]</th><th></th></tr></thead><tbody>
+@foreach (var r in Model) { <tr><td>@r.ProductTitle</td><td>@r.AuthorName</td><td>@r.Rating</td><td>@(r.IsApproved ? Localizer["Yes"] : Localizer["No"])</td><td>
+@if (!r.IsApproved) {
+<form asp-action="Approve" method="post" class="admin-inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><button type="submit" class="btn btn-primary">@Localizer["Approve"]</button></form>
+<form asp-action="Reject" method="post" class="admin-inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><button type="submit" class="btn btn-ghost">@Localizer["Reject"]</button></form>
+}</td></tr> }
+</tbody></table>
+</div>
+<partial name="_Pager" />
+}

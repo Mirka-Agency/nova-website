@@ -1,0 +1,127 @@
+@model FormFormViewModel
+@{
+    var emailFields = Model.Fields
+        .Where(f => string.Equals(f.FieldType, "Email", StringComparison.OrdinalIgnoreCase))
+        .ToList();
+}
+
+<fieldset class="admin-field">
+    <legend>@Localizer["EmailSettings"]</legend>
+    <label class="admin-check">
+        <input asp-for="SendEmailNotification" id="SendEmailNotification" />
+        @Localizer["SendEmailNotification"]
+    </label>
+    <div data-action-panel="notify">
+        <div class="admin-field">
+            <label asp-for="NotifyEmail">@Localizer["NotifyEmail"]</label>
+            <input asp-for="NotifyEmail" type="email" />
+            <p class="admin-hint">@Localizer["NotifyEmailHint"]</p>
+            <span asp-validation-for="NotifyEmail" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
+            <label asp-for="NotifyEmailSubject">@Localizer["NotifyEmailSubject"]</label>
+            <input asp-for="NotifyEmailSubject" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="NotifySenderName">@Localizer["NotifySenderName"]</label>
+            <input asp-for="NotifySenderName" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="NotifyReplyToFieldId">@Localizer["NotifyReplyToFieldKey"]</label>
+            <select asp-for="NotifyReplyToFieldId">
+                <option value="">@Localizer["SelectEmailField"]</option>
+                @foreach (var field in emailFields)
+                {
+                    if (Model.NotifyReplyToFieldId == field.Id)
+                    {
+                        <option value="@field.Id" selected>@field.Label (@field.Key)</option>
+                    }
+                    else
+                    {
+                        <option value="@field.Id">@field.Label (@field.Key)</option>
+                    }
+                }
+            </select>
+            @if (emailFields.Count == 0)
+            {
+                <p class="admin-hint">
+                    @Localizer["AddEmailFieldFirst"]
+                    @if (Model.Id.HasValue)
+                    {
+                        <a href="?tab=fields">@Localizer["TabFields"]</a>
+                    }
+                </p>
+            }
+            else
+            {
+                <p class="admin-hint">@Localizer["NotifyReplyToHint"]</p>
+            }
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="admin-field">
+    <legend>@Localizer["AutoReplySettings"]</legend>
+    <label class="admin-check">
+        <input asp-for="AutoReplyEnabled" id="AutoReplyEnabled" />
+        @Localizer["AutoReplyEnabled"]
+    </label>
+    <div data-action-panel="autoreply">
+        <div class="admin-field">
+            <label asp-for="AutoReplyEmailFieldId">@Localizer["AutoReplyEmailFieldKey"]</label>
+            <select asp-for="AutoReplyEmailFieldId">
+                <option value="">@Localizer["SelectEmailField"]</option>
+                @foreach (var field in emailFields)
+                {
+                    if (Model.AutoReplyEmailFieldId == field.Id)
+                    {
+                        <option value="@field.Id" selected>@field.Label (@field.Key)</option>
+                    }
+                    else
+                    {
+                        <option value="@field.Id">@field.Label (@field.Key)</option>
+                    }
+                }
+            </select>
+            @if (emailFields.Count == 0)
+            {
+                <p class="admin-hint">
+                    @Localizer["AddEmailFieldFirst"]
+                    @if (Model.Id.HasValue)
+                    {
+                        <a href="?tab=fields">@Localizer["TabFields"]</a>
+                    }
+                </p>
+            }
+        </div>
+        <div class="admin-field">
+            <label asp-for="AutoReplySubject">@Localizer["AutoReplySubject"]</label>
+            <input asp-for="AutoReplySubject" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="AutoReplyBody">@Localizer["AutoReplyBody"]</label>
+            <textarea asp-for="AutoReplyBody" rows="5"></textarea>
+            <p class="admin-hint">@Localizer["AutoReplyPlaceholdersHint"]</p>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="admin-field">
+    <legend>@Localizer["WebhookSettings"]</legend>
+    <label class="admin-check">
+        <input asp-for="WebhookEnabled" id="WebhookEnabled" />
+        @Localizer["WebhookEnabled"]
+    </label>
+    <div data-action-panel="webhook">
+        <div class="admin-field">
+            <label asp-for="WebhookUrl">@Localizer["WebhookUrl"]</label>
+            <input asp-for="WebhookUrl" placeholder="https://..." />
+            <p class="admin-hint">@Localizer["WebhookHint"]</p>
+        </div>
+        <div class="admin-field">
+            <label asp-for="WebhookSecret">@Localizer["WebhookSecret"]</label>
+            <input asp-for="WebhookSecret" type="password" autocomplete="new-password" />
+            <p class="admin-hint">@Localizer["WebhookSecretHint"]</p>
+        </div>
+    </div>
+</fieldset>

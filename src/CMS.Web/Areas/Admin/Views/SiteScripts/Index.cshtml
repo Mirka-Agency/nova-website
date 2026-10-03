@@ -1,0 +1,43 @@
+@model CMS.Web.Areas.Admin.ViewModels.SiteScriptsFormViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["SiteScripts"];
+}
+
+<form asp-action="Index" method="post" class="admin-form admin-form-wide">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <p class="admin-help" style="margin-block-end: 1.5rem;">@Localizer["SiteScriptsIntro"]</p>
+
+    <fieldset class="admin-field">
+        <legend>@Localizer["HeadScripts"]</legend>
+        <div class="admin-field">
+            <textarea asp-for="HeadScripts" rows="8" class="admin-code" dir="ltr" spellcheck="false"></textarea>
+            <span class="admin-help">@Localizer["HeadScriptsHelp"]</span>
+            <span asp-validation-for="HeadScripts" class="admin-field-error"></span>
+        </div>
+    </fieldset>
+
+    <fieldset class="admin-field">
+        <legend>@Localizer["BodyOpenScripts"]</legend>
+        <div class="admin-field">
+            <textarea asp-for="BodyOpenScripts" rows="8" class="admin-code" dir="ltr" spellcheck="false"></textarea>
+            <span class="admin-help">@Localizer["BodyOpenScriptsHelp"]</span>
+            <span asp-validation-for="BodyOpenScripts" class="admin-field-error"></span>
+        </div>
+    </fieldset>
+
+    <fieldset class="admin-field">
+        <legend>@Localizer["BodyCloseScripts"]</legend>
+        <div class="admin-field">
+            <textarea asp-for="BodyCloseScripts" rows="8" class="admin-code" dir="ltr" spellcheck="false"></textarea>
+            <span class="admin-help">@Localizer["BodyCloseScriptsHelp"]</span>
+            <span asp-validation-for="BodyCloseScripts" class="admin-field-error"></span>
+        </div>
+    </fieldset>
+
+    <div class="admin-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+    </div>
+</form>

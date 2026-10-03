@@ -1,0 +1,77 @@
+﻿@model PostIndexViewModel
+@{
+    ViewData["Title"] = Localizer["Posts"];
+    ViewData["SearchPlaceholder"] = Localizer["SearchPosts"].Value;
+    ViewData["FilterFieldsPartial"] = "_PostFilters";
+    ViewBag.Search = Model.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.PageSize = Model.PageSize;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = !string.IsNullOrWhiteSpace(Model.Search)
+        || Model.Status.HasValue
+        || Model.CategoryId.HasValue
+        || !string.IsNullOrWhiteSpace(Model.FromLocal)
+        || !string.IsNullOrWhiteSpace(Model.ToLocal)
+        || !string.IsNullOrWhiteSpace(Model.Sort);
+    ViewBag.FilterClearRouteValues = new { area = "Admin" };
+    var hasFilters = ViewBag.HasActiveFilters as bool? == true;
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreatePost"]</span></a>
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.TotalCount == 0)
+{
+    <p class="admin-lead">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoPosts"])</p>
+}
+else
+{
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Title"]</th>
+                <th>@Localizer["Slug"]</th>
+                <th>@Localizer["Category"]</th>
+                <th>@Localizer["Status"]</th>
+                <th>@Localizer["CreatedAt"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var post in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <a asp-area=""
+                           asp-controller="Blog"
+                           asp-action="Details"
+                           asp-route-slug="@post.Slug"
+                           target="_blank"
+                           rel="noopener noreferrer">@post.Title</a>
+                    </td>
+                    <td>@post.Slug</td>
+                    <td>@(post.CategoryName ?? "—")</td>
+                    <td>@post.Status</td>
+                    <td><span class="admin-mono" dir="ltr">@post.CreatedAtLocal</span></td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@post.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                        <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                            <input type="hidden" name="id" value="@post.Id" />
+                            <button type="submit" class="btn btn-ghost"><i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" />
+}
+
+@section Scripts {
+    <partial name="_JalaliDatePickerScripts" />
+}

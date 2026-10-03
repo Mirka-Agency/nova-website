@@ -1,0 +1,9 @@
+@model bool
+@if (Model)
+{
+    <a class="site-nav-account" asp-controller="Account" asp-action="Index">حساب من</a>
+}
+else
+{
+    <a class="site-nav-account" asp-controller="Account" asp-action="Login">ورود</a>
+}

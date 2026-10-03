@@ -1,0 +1,71 @@
+@model SeoRedirectIndexViewModel
+@{
+    ViewData["Title"] = Localizer["Redirects"];
+    var hasFilters = !string.IsNullOrWhiteSpace(Model.Search) || Model.IsActive.HasValue;
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreateRedirect"]</span></a>
+    @{
+        ViewData["SearchPlaceholder"] = Localizer["SearchRedirects"].Value;
+        ViewData["FilterFieldsPartial"] = "_SeoRedirectFilters";
+        ViewBag.HasActiveFilters = Model.IsActive.HasValue;
+        ViewBag.Search = Model.Search;
+    }
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.Items.Count == 0)
+{
+    <p class="admin-lead">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoRedirects"])</p>
+}
+else
+{
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>@Localizer["FromPath"]</th>
+            <th>@Localizer["ToUrl"]</th>
+            <th>@Localizer["StatusCode"]</th>
+            <th>@Localizer["Status"]</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td><code dir="ltr">@item.FromPath</code></td>
+                <td><code dir="ltr">@item.ToUrl</code></td>
+                <td>@item.StatusCode</td>
+                <td>
+                    @if (item.IsActive)
+                    {
+                        <span class="admin-badge admin-badge-success">@Localizer["Active"]</span>
+                    }
+                    else
+                    {
+                        <span class="admin-badge">@Localizer["Inactive"]</span>
+                    }
+                </td>
+                <td class="admin-row-actions">
+                    <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                    <form asp-action="SetActive" method="post" class="admin-inline-form">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="hidden" name="isActive" value="@(!item.IsActive)" />
+                        <button type="submit" class="btn btn-ghost">
+                            <i class="fas @(item.IsActive ? "fa-pause" : "fa-play")" aria-hidden="true"></i>
+                            <span>@(item.IsActive ? Localizer["Deactivate"] : Localizer["Activate"])</span>
+                        </button>
+                    </form>
+                    <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-ghost"><i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span></button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <partial name="_Pager" />
+}

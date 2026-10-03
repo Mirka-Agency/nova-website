@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mirka_cms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - cms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mirka_cms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "${CMS_HTTP_PORT:-8080}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      AllowedHosts: ${ALLOWED_HOSTS:-localhost;127.0.0.1}
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=mirka_cms;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
+      Cache__RedisConnectionString: redis:6379
+      Database__MigrateOnStartup: "true"
+      Seed__Admin__Email: ${SEED_ADMIN_EMAIL:-admin@local.test}
+      Seed__Admin__Password: ${SEED_ADMIN_PASSWORD:-Admin123!}
+      Seed__Admin__FullName: ${SEED_ADMIN_FULLNAME:-مدیر سیستم}
+      Storage__S3__AccessKey: ${STORAGE_S3_ACCESS_KEY:-}
+      Storage__S3__SecretKey: ${STORAGE_S3_SECRET_KEY:-}
+      Storage__S3__BucketName: ${STORAGE_S3_BUCKET_NAME:-}
+      Storage__S3__Region: ${STORAGE_S3_REGION:-us-east-1}
+      Storage__S3__ServiceUrl: ${STORAGE_S3_SERVICE_URL:-}
+      Storage__S3__PublicBaseUrl: ${STORAGE_S3_PUBLIC_BASE_URL:-}
+      Storage__S3__ForcePathStyle: ${STORAGE_S3_FORCE_PATH_STYLE:-false}
+      OpenTelemetry__OtlpEndpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+
+volumes:
+  cms_pgdata:

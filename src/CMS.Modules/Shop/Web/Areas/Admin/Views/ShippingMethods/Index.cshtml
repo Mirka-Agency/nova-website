@@ -1,0 +1,67 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Shipping.ShippingMethodDto>
+@using CMS.Modules.Shop.Domain.Enums
+@{ ViewData["Title"] = Localizer["ShippingMethods"]; }
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+        <span>@Localizer["CreateShippingMethod"]</span>
+    </a>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <p class="admin-flash admin-flash--success">@success</p>
+}
+
+<table class="admin-table">
+    <thead>
+    <tr>
+        <th>@Localizer["Name"]</th>
+        <th>@Localizer["CalculationType"]</th>
+        <th class="admin-col-num">@Localizer["FixedCost"]</th>
+        <th>@Localizer["EstimatedDeliveryText"]</th>
+        <th class="admin-col-num">@Localizer["SortOrder"]</th>
+        <th>@Localizer["IsActive"]</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var m in Model)
+    {
+        var typeLabel = m.CalculationType switch
+        {
+            ShippingCalculationType.Fixed => Localizer["ShippingCalculationFixed"],
+            ShippingCalculationType.WeightBased => Localizer["ShippingCalculationWeightBased"],
+            ShippingCalculationType.CityBased => Localizer["ShippingCalculationCityBased"],
+            _ => m.CalculationType.ToString()
+        };
+        <tr>
+            <td>
+                <strong>@m.Name</strong>
+                @if (!string.IsNullOrWhiteSpace(m.Description))
+                {
+                    <div class="admin-meta">@m.Description</div>
+                }
+            </td>
+            <td>@typeLabel</td>
+            <td class="admin-col-num">@m.FixedCost.ToString("N0")</td>
+            <td>@(string.IsNullOrWhiteSpace(m.EstimatedDeliveryText) ? "—" : m.EstimatedDeliveryText)</td>
+            <td class="admin-col-num">@m.SortOrder</td>
+            <td>@(m.IsActive ? Localizer["Yes"] : Localizer["No"])</td>
+            <td class="admin-actions-inline">
+                <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@m.Id">@Localizer["Edit"]</a>
+                <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="admin-inline-form"
+                      onsubmit="return confirm('@Localizer["DeleteShippingMethodConfirm"]');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-text-danger">@Localizer["Delete"]</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@if (Model.Count > 0)
+{
+    <partial name="_Pager" />
+}

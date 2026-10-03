@@ -1,0 +1,34 @@
+@model CheckoutResultViewModel
+@using CMS.Modules.Shop.Web.ViewModels
+@{
+    ViewData["Title"] = Localizer["Checkout"];
+}
+
+<section class="shop-page">
+    <header class="blog-page-header">
+        <h1>@Localizer["OrderReceived"]</h1>
+    </header>
+
+    @if (Model.PaymentSucceeded)
+    {
+        <p class="blog-meta">@Localizer["OrderSuccess"]</p>
+    }
+    else
+    {
+        <p class="blog-meta">@Localizer["PaymentFailed"]</p>
+    }
+
+    <p class="blog-meta">@Localizer["OrderNumber"]: <strong>@Model.OrderNumber</strong></p>
+    @if (!string.IsNullOrWhiteSpace(Model.TransactionId))
+    {
+        <p class="blog-meta">@Localizer["TransactionId"]: @Model.TransactionId</p>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.PaymentMessage))
+    {
+        <p class="blog-meta">@Model.PaymentMessage</p>
+    }
+
+    <p>
+        <a class="btn btn-secondary" asp-controller="Shop" asp-action="Index">@Localizer["BackToShop"]</a>
+    </p>
+</section>

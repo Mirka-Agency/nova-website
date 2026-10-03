@@ -1,0 +1,16 @@
+@model CategoryFormViewModel
+@{
+    ViewData["Title"] = Localizer["EditCategory"];
+}
+
+<form asp-action="Edit" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <partial name="_CategoryForm" model="Model" />
+</form>
+
+<partial name="_MediaLibraryPicker" />
+
+@section Scripts {
+    <partial name="_CkEditorScripts" />
+}

@@ -1,0 +1,17 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Catalog.BrandListItemDto>
+@{
+    ViewData["Title"] = Localizer["Brands"];
+}
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreateBrand"]</span></a>
+</div>
+@if (Model.Count == 0) { <p class="admin-lead">@Localizer["NoBrands"]</p> }
+else {
+<table class="admin-table"><thead><tr><th>@Localizer["Name"]</th><th>@Localizer["Slug"]</th><th>@Localizer["Status"]</th><th></th></tr></thead><tbody>
+@foreach (var item in Model) {
+<tr><td>@item.Name</td><td>@item.Slug</td><td>@(item.IsActive ? Localizer["Yes"] : Localizer["No"])</td>
+<td class="admin-row-actions">
+<a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id">@Localizer["Edit"]</a>
+<form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@item.Id" /><button type="submit" class="btn btn-text-danger">@Localizer["Delete"]</button></form>
+</td></tr> }
+</tbody></table> }

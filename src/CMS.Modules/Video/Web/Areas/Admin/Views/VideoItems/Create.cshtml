@@ -1,0 +1,17 @@
+@model VideoItemFormViewModel
+@{
+    ViewData["Title"] = Localizer["CreatePost"];
+}
+
+<form asp-action="Create" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <partial name="_VideoItemForm" model="Model" />
+</form>
+
+<partial name="_MediaLibraryPicker" />
+
+@section Scripts {
+    <partial name="_CkEditorScripts" />
+    <partial name="_JalaliDatePickerScripts" />
+    <script src="~/admin/js/video-upload.js" asp-append-version="true"></script>
+}

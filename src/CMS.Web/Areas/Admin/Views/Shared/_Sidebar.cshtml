@@ -1,0 +1,559 @@
+@using CMS.Application.Common.Features
+@using CMS.Infrastructure.Auth
+@using CMS.Modules.Forms.Application.Interfaces
+@using CMS.Modules.Shop.Application.Interfaces
+@using CMS.Modules.Shop.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
+@inject IAuthorizationService AuthorizationService
+@inject ISubmissionService SubmissionService
+@inject IOrderService OrderService
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    bool IsCtrl(params string[] names) => names.Any(n => string.Equals(n, controller, StringComparison.OrdinalIgnoreCase));
+
+    var blogActive = IsCtrl("Posts", "Categories");
+    var newsActive = IsCtrl("NewsArticles", "NewsCategories");
+    var servicesActive = IsCtrl("ServiceItems", "ServiceCategories");
+    var videoActive = IsCtrl("VideoItems", "VideoCategories");
+    var teamActive = IsCtrl("TeamItems", "TeamCategories");
+    var shopActive = IsCtrl(
+        "ShopHome", "Products", "ShopCategories", "ShopSettings",
+        "Brands", "Attributes", "CustomerGroups",
+        "PriceRules", "Wholesale", "Coupons", "ShippingMethods", "PaymentProviders", "Reviews", "CommerceReports",
+        "ProductVariations");
+    var ordersActive = IsCtrl("Orders");
+    var formsActive = IsCtrl("Forms", "FormSubmissions");
+    var commentsActive = IsCtrl("Comments", "CommentSettings");
+    var popupActive = IsCtrl("Popups");
+    var seoActive = IsCtrl("SeoSettings", "SeoRedirects");
+    var mediaActive = IsCtrl("Media");
+    var systemActive = IsCtrl("Users", "Features", "Settings", "SiteScripts", "Audit", "MessageLogs");
+    var orderStatus = Context.Request.Query["status"].ToString();
+    bool IsOrderStatus(string value) =>
+        string.Equals(orderStatus, value, StringComparison.OrdinalIgnoreCase);
+    bool IsAllOrders = ordersActive && string.IsNullOrWhiteSpace(orderStatus);
+    var submissionStatus = Context.Request.Query["status"].ToString();
+    bool IsSubmissionStatus(string value) =>
+        IsCtrl("FormSubmissions")
+        && string.Equals(submissionStatus, value, StringComparison.OrdinalIgnoreCase);
+    bool IsFormSubmissionsInbox = IsCtrl("FormSubmissions") && !IsSubmissionStatus("Archived");
+    bool IsFormSubmissionsArchive = IsSubmissionStatus("Archived");
+}
+
+<nav class="admin-nav" aria-label="@Localizer["AdminNav"]" data-admin-nav>
+    <a class="admin-nav-link @(IsCtrl("Dashboard") ? "is-active" : null)"
+       asp-area="Admin"
+       asp-controller="Dashboard"
+       asp-action="Index">
+        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+        <span>@Localizer["Dashboard"]</span>
+    </a>
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Blog)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewBlog)).Succeeded)
+    {
+        <div class="admin-nav-section @(blogActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="blog">
+            <button type="button"
+                    class="admin-nav-section-toggle @(blogActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(blogActive ? "true" : "false")"
+                    aria-controls="admin-nav-blog">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-blog" aria-hidden="true"></i>
+                    <span>@Localizer["Blog"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-blog" data-admin-nav-subitems @(blogActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("Posts") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Posts" asp-action="Index">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i>
+                    <span>@Localizer["Posts"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("Categories") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Categories" asp-action="Index">
+                    <i class="fas fa-folder" aria-hidden="true"></i>
+                    <span>@Localizer["Categories"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.News)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewNews)).Succeeded)
+    {
+        <div class="admin-nav-section @(newsActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="news">
+            <button type="button"
+                    class="admin-nav-section-toggle @(newsActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(newsActive ? "true" : "false")"
+                    aria-controls="admin-nav-news">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                    <span>@Localizer["News"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-news" data-admin-nav-subitems @(newsActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("NewsArticles") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="NewsArticles" asp-action="Index">
+                    <i class="fas fa-bullhorn" aria-hidden="true"></i>
+                    <span>@Localizer["NewsArticles"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("NewsCategories") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="NewsCategories" asp-action="Index">
+                    <i class="fas fa-folder" aria-hidden="true"></i>
+                    <span>@Localizer["NewsCategories"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Services)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewServices)).Succeeded)
+    {
+        <div class="admin-nav-section @(servicesActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="services">
+            <button type="button"
+                    class="admin-nav-section-toggle @(servicesActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(servicesActive ? "true" : "false")"
+                    aria-controls="admin-nav-services">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-concierge-bell" aria-hidden="true"></i>
+                    <span>@Localizer["Services"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-services" data-admin-nav-subitems @(servicesActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("ServiceItems") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="ServiceItems" asp-action="Index">
+                    <i class="fas fa-list" aria-hidden="true"></i>
+                    <span>@Localizer["ServiceItems"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("ServiceCategories") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="ServiceCategories" asp-action="Index">
+                    <i class="fas fa-folder" aria-hidden="true"></i>
+                    <span>@Localizer["ServiceCategories"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Video)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewVideo)).Succeeded)
+    {
+        <div class="admin-nav-section @(videoActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="video">
+            <button type="button"
+                    class="admin-nav-section-toggle @(videoActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(videoActive ? "true" : "false")"
+                    aria-controls="admin-nav-video">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-video" aria-hidden="true"></i>
+                    <span>@Localizer["Video"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-video" data-admin-nav-subitems @(videoActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("VideoItems") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="VideoItems" asp-action="Index">
+                    <i class="fas fa-list" aria-hidden="true"></i>
+                    <span>@Localizer["VideoItems"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("VideoCategories") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="VideoCategories" asp-action="Index">
+                    <i class="fas fa-folder" aria-hidden="true"></i>
+                    <span>@Localizer["VideoCategories"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Team)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewTeam)).Succeeded)
+    {
+        <div class="admin-nav-section @(teamActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="team">
+            <button type="button"
+                    class="admin-nav-section-toggle @(teamActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(teamActive ? "true" : "false")"
+                    aria-controls="admin-nav-team">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <span>@Localizer["Team"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-team" data-admin-nav-subitems @(teamActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("TeamItems") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="TeamItems" asp-action="Index">
+                    <i class="fas fa-list" aria-hidden="true"></i>
+                    <span>@Localizer["TeamItems"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("TeamCategories") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="TeamCategories" asp-action="Index">
+                    <i class="fas fa-folder" aria-hidden="true"></i>
+                    <span>@Localizer["TeamCategories"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Shop)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewShop)).Succeeded)
+    {
+        <div class="admin-nav-section @(shopActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="shop">
+            <button type="button"
+                    class="admin-nav-section-toggle @(shopActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(shopActive ? "true" : "false")"
+                    aria-controls="admin-nav-shop">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-store" aria-hidden="true"></i>
+                    <span>@Localizer["Shop"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-shop" data-admin-nav-subitems @(shopActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("ShopHome") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="ShopHome" asp-action="Index">
+                    <i class="fas fa-home" aria-hidden="true"></i>
+                    <span>@Localizer["ShopHome"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("Products", "ProductVariations") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Products" asp-action="Index">
+                    <i class="fas fa-box" aria-hidden="true"></i>
+                    <span>@Localizer["Products"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("ShopCategories", "Brands") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="ShopCategories" asp-action="Index">
+                    <i class="fas fa-sitemap" aria-hidden="true"></i>
+                    <span>@Localizer["CategoriesAndBrands"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("Coupons") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Coupons" asp-action="Index">
+                    <i class="fas fa-ticket-alt" aria-hidden="true"></i>
+                    <span>@Localizer["Coupons"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("ShippingMethods") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="ShippingMethods" asp-action="Index">
+                    <i class="fas fa-truck" aria-hidden="true"></i>
+                    <span>@Localizer["ShippingMethods"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("PaymentProviders") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="PaymentProviders" asp-action="Index">
+                    <i class="fas fa-credit-card" aria-hidden="true"></i>
+                    <span>@Localizer["PaymentProviders"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("ShopSettings") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="ShopSettings" asp-action="Index">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    <span>@Localizer["ShopSettings"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Shop)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewShop)).Succeeded)
+    {
+        var pendingOrderCount = await OrderService.CountByStatusesAsync([OrderStatus.Pending]);
+        var processingOrderCount = await OrderService.CountByStatusesAsync([
+            OrderStatus.Reviewing,
+            OrderStatus.Approved,
+            OrderStatus.Processing,
+            OrderStatus.ReadyForShipping
+        ]);
+        var newOrderCount = pendingOrderCount + processingOrderCount;
+        var newOrdersLabel = newOrderCount > 0
+            ? Localizer["NewOrders", newOrderCount.ToString("N0")].Value
+            : null;
+        <div class="admin-nav-section @(ordersActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="orders">
+            <button type="button"
+                    class="admin-nav-section-toggle @(ordersActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(ordersActive ? "true" : "false")"
+                    aria-controls="admin-nav-orders">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+                    <span>@Localizer["Orders"]</span>
+                </span>
+                <span class="admin-nav-section-meta">
+                    @if (newOrderCount > 0)
+                    {
+                        <span class="admin-nav-count" aria-label="@newOrdersLabel">@newOrderCount.ToString("N0")</span>
+                    }
+                    <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+                </span>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-orders" data-admin-nav-subitems @(ordersActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsAllOrders ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index">
+                    <i class="fas fa-list" aria-hidden="true"></i>
+                    <span>@Localizer["AllOrders"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsOrderStatus("pending") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index" asp-route-status="pending">
+                    <i class="fas fa-clock" aria-hidden="true"></i>
+                    <span>@Localizer["OrdersPending"]</span>
+                    @if (pendingOrderCount > 0)
+                    {
+                        <span class="admin-nav-count" aria-label="@Localizer["NewOrders", pendingOrderCount.ToString("N0")]">@pendingOrderCount.ToString("N0")</span>
+                    }
+                </a>
+                <a class="admin-nav-sublink @(IsOrderStatus("processing") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index" asp-route-status="processing">
+                    <i class="fas fa-cogs" aria-hidden="true"></i>
+                    <span>@Localizer["OrdersProcessing"]</span>
+                    @if (processingOrderCount > 0)
+                    {
+                        <span class="admin-nav-count" aria-label="@Localizer["NewOrders", processingOrderCount.ToString("N0")]">@processingOrderCount.ToString("N0")</span>
+                    }
+                </a>
+                <a class="admin-nav-sublink @(IsOrderStatus("shipped") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index" asp-route-status="shipped">
+                    <i class="fas fa-truck" aria-hidden="true"></i>
+                    <span>@Localizer["OrdersShipped"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsOrderStatus("completed") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index" asp-route-status="completed">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                    <span>@Localizer["OrdersCompleted"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsOrderStatus("cancelled") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index" asp-route-status="cancelled">
+                    <i class="fas fa-ban" aria-hidden="true"></i>
+                    <span>@Localizer["OrdersCancelled"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Forms)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewForms)).Succeeded)
+    {
+        var unreadSubmissions = await SubmissionService.CountUnreadAsync();
+        var unreadLabel = unreadSubmissions > 0
+            ? Localizer["UnreadFormSubmissions", unreadSubmissions.ToString("N0")].Value
+            : null;
+        <div class="admin-nav-section @(formsActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="forms">
+            <button type="button"
+                    class="admin-nav-section-toggle @(formsActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(formsActive ? "true" : "false")"
+                    aria-controls="admin-nav-forms">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                    <span>@Localizer["Forms"]</span>
+                </span>
+                <span class="admin-nav-section-meta">
+                    @if (unreadSubmissions > 0)
+                    {
+                        <span class="admin-nav-count" aria-label="@unreadLabel">@unreadSubmissions.ToString("N0")</span>
+                    }
+                    <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+                </span>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-forms" data-admin-nav-subitems @(formsActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("Forms") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Forms" asp-action="Index">
+                    <i class="fas fa-list" aria-hidden="true"></i>
+                    <span>@Localizer["Forms"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsFormSubmissionsInbox ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="FormSubmissions" asp-action="Index"
+                   asp-route-status="@(unreadSubmissions > 0 ? "New" : null)">
+                    <i class="fas fa-inbox" aria-hidden="true"></i>
+                    <span>@Localizer["FormSubmissions"]</span>
+                    @if (unreadSubmissions > 0)
+                    {
+                        <span class="admin-nav-count" aria-label="@unreadLabel">@unreadSubmissions.ToString("N0")</span>
+                    }
+                </a>
+                <a class="admin-nav-sublink @(IsFormSubmissionsArchive ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="FormSubmissions" asp-action="Index"
+                   asp-route-status="Archived">
+                    <i class="fas fa-archive" aria-hidden="true"></i>
+                    <span>@Localizer["FormSubmissionsArchive"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Popup)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewPopup)).Succeeded)
+    {
+        <a class="admin-nav-link @(popupActive ? "is-active" : null)"
+           asp-area="Admin"
+           asp-controller="Popups"
+           asp-action="Index">
+            <i class="fas fa-window-restore" aria-hidden="true"></i>
+            <span>@Localizer["Popups"]</span>
+        </a>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Seo)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewSeo)).Succeeded)
+    {
+        <div class="admin-nav-section @(seoActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="seo">
+            <button type="button"
+                    class="admin-nav-section-toggle @(seoActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(seoActive ? "true" : "false")"
+                    aria-controls="admin-nav-seo">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <span>@Localizer["Seo"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-seo" data-admin-nav-subitems @(seoActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("SeoSettings") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="SeoSettings" asp-action="Index">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    <span>@Localizer["SeoSettings"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("SeoRedirects") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="SeoRedirects" asp-action="Index">
+                    <i class="fas fa-random" aria-hidden="true"></i>
+                    <span>@Localizer["SeoRedirects"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Comments)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewComments)).Succeeded)
+    {
+        <div class="admin-nav-section @(commentsActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="comments">
+            <button type="button"
+                    class="admin-nav-section-toggle @(commentsActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(commentsActive ? "true" : "false")"
+                    aria-controls="admin-nav-comments">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-comments" aria-hidden="true"></i>
+                    <span>@Localizer["Comments"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-comments" data-admin-nav-subitems @(commentsActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("Comments") && string.IsNullOrWhiteSpace(Context.Request.Query["targetType"]) ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Comments" asp-action="Index">
+                    <i class="fas fa-list" aria-hidden="true"></i>
+                    <span>@Localizer["AllComments"]</span>
+                </a>
+                <a class="admin-nav-sublink @(Context.Request.Query["targetType"] == "0" ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Comments" asp-action="Index" asp-route-targetType="0">
+                    <i class="fas fa-blog" aria-hidden="true"></i>
+                    <span>@Localizer["BlogComments"]</span>
+                </a>
+                <a class="admin-nav-sublink @(Context.Request.Query["targetType"] == "1" ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Comments" asp-action="Index" asp-route-targetType="1">
+                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                    <span>@Localizer["EventComments"]</span>
+                </a>
+                <a class="admin-nav-sublink @(Context.Request.Query["targetType"] == "2" ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Comments" asp-action="Index" asp-route-targetType="2">
+                    <i class="fas fa-box" aria-hidden="true"></i>
+                    <span>@Localizer["ProductComments"]</span>
+                </a>
+                <a class="admin-nav-sublink @(Context.Request.Query["targetType"] == "3" ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Comments" asp-action="Index" asp-route-targetType="3">
+                    <i class="fas fa-sitemap" aria-hidden="true"></i>
+                    <span>@Localizer["ProductCategoryComments"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("CommentSettings") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="CommentSettings" asp-action="Index">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    <span>@Localizer["CommentSettings"]</span>
+                </a>
+            </div>
+        </div>
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewMedia)).Succeeded)
+    {
+        <a class="admin-nav-link @(mediaActive ? "is-active" : null)"
+           asp-area="Admin"
+           asp-controller="Media"
+           asp-action="Index">
+            <i class="fas fa-images" aria-hidden="true"></i>
+            <span>@Localizer["MediaLibrary"]</span>
+        </a>
+    }
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, AuthPolicies.AdminOnly)).Succeeded)
+    {
+        <div class="admin-nav-section @(systemActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="system">
+            <button type="button"
+                    class="admin-nav-section-toggle @(systemActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(systemActive ? "true" : "false")"
+                    aria-controls="admin-nav-system">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-server" aria-hidden="true"></i>
+                    <span>@Localizer["System"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-system" data-admin-nav-subitems @(systemActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(IsCtrl("Users") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Users" asp-action="Index">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <span>@Localizer["Users"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("Features") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Features" asp-action="Index">
+                    <i class="fas fa-toggle-on" aria-hidden="true"></i>
+                    <span>@Localizer["Features"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("Settings") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                    <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                    <span>@Localizer["SiteSettings"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("SiteScripts") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="SiteScripts" asp-action="Index">
+                    <i class="fas fa-code" aria-hidden="true"></i>
+                    <span>@Localizer["SiteScripts"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("Audit") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="Audit" asp-action="Index">
+                    <i class="fas fa-history" aria-hidden="true"></i>
+                    <span>@Localizer["AuditLog"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("MessageLogs") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="MessageLogs" asp-action="Index">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    <span>@Localizer["MessageLogs"]</span>
+                </a>
+            </div>
+        </div>
+    }
+</nav>

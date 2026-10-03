@@ -1,0 +1,244 @@
+@model CMS.Web.Models.AdminBarViewModel
+@{
+    var hasCreate = Model.CreateLinks.Count > 0;
+    var hasManage = Model.ManageLinks.Count > 0 || Model.CanManageSettings;
+    var hasUserExtras = Model.CanManageSettings;
+}
+<link rel="stylesheet" href="~/admin/vendor/fontawesome/css/all.min.css" asp-append-version="true" />
+<div class="site-admin-bar"
+     id="site-admin-bar"
+     role="navigation"
+     aria-label="نوار مدیریت سایت"
+     data-admin-bar>
+    <div class="site-admin-bar-inner">
+        <div class="site-admin-bar-group site-admin-bar-group--start">
+            <a class="site-admin-bar-item site-admin-bar-brand"
+               asp-area="Admin"
+               asp-controller="Dashboard"
+               asp-action="Index"
+               title="رفتن به داشبورد مدیریت">
+                <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                <span class="site-admin-bar-label">داشبورد</span>
+            </a>
+
+            @if (Model.EditLink is { } edit)
+            {
+                if (edit.Id is Guid editId)
+                {
+                    <a class="site-admin-bar-item site-admin-bar-edit"
+                       asp-area="@edit.Area"
+                       asp-controller="@edit.Controller"
+                       asp-action="@edit.Action"
+                       asp-route-id="@editId"
+                       title="@edit.Label">
+                        <i class="fas @(edit.Icon ?? "fa-edit")" aria-hidden="true"></i>
+                        <span class="site-admin-bar-label">@edit.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="site-admin-bar-item site-admin-bar-edit"
+                       asp-area="@edit.Area"
+                       asp-controller="@edit.Controller"
+                       asp-action="@edit.Action"
+                       title="@edit.Label">
+                        <i class="fas @(edit.Icon ?? "fa-edit")" aria-hidden="true"></i>
+                        <span class="site-admin-bar-label">@edit.Label</span>
+                    </a>
+                }
+            }
+
+            @if (hasCreate)
+            {
+                <div class="site-admin-bar-menu site-admin-bar-menu--desktop" data-admin-bar-menu>
+                    <button type="button"
+                            class="site-admin-bar-item site-admin-bar-menu-trigger"
+                            data-admin-bar-menu-trigger
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            title="ایجاد محتوای جدید">
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span class="site-admin-bar-label">جدید</span>
+                        <i class="fas fa-chevron-down site-admin-bar-caret" aria-hidden="true"></i>
+                    </button>
+                    <div class="site-admin-bar-menu-panel" data-admin-bar-menu-panel hidden role="menu">
+                        <div class="site-admin-bar-menu-heading">ایجاد سریع</div>
+                        @foreach (var link in Model.CreateLinks)
+                        {
+                            <a role="menuitem"
+                               asp-area="@link.Area"
+                               asp-controller="@link.Controller"
+                               asp-action="@link.Action">
+                                <i class="fas @(link.Icon ?? "fa-plus")" aria-hidden="true"></i>
+                                <span>@link.Label</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (hasManage)
+            {
+                <div class="site-admin-bar-menu site-admin-bar-menu--desktop" data-admin-bar-menu>
+                    <button type="button"
+                            class="site-admin-bar-item site-admin-bar-menu-trigger"
+                            data-admin-bar-menu-trigger
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            title="مدیریت بخش‌های سایت">
+                        <i class="fas fa-folder-open" aria-hidden="true"></i>
+                        <span class="site-admin-bar-label">مدیریت</span>
+                        <i class="fas fa-chevron-down site-admin-bar-caret" aria-hidden="true"></i>
+                    </button>
+                    <div class="site-admin-bar-menu-panel" data-admin-bar-menu-panel hidden role="menu">
+                        <div class="site-admin-bar-menu-heading">بخش‌ها</div>
+                        @foreach (var link in Model.ManageLinks)
+                        {
+                            <a role="menuitem"
+                               asp-area="@link.Area"
+                               asp-controller="@link.Controller"
+                               asp-action="@link.Action">
+                                <i class="fas @(link.Icon ?? "fa-circle")" aria-hidden="true"></i>
+                                <span>@link.Label</span>
+                            </a>
+                        }
+                        @if (Model.CanManageSettings)
+                        {
+                            <a role="menuitem" asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                                <i class="fas fa-cog" aria-hidden="true"></i>
+                                <span>تنظیمات سایت</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="site-admin-bar-menu site-admin-bar-menu--mobile" data-admin-bar-menu>
+                <button type="button"
+                        class="site-admin-bar-item site-admin-bar-menu-trigger"
+                        data-admin-bar-menu-trigger
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        title="منوی بیشتر">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                    <span class="site-admin-bar-label">بیشتر</span>
+                </button>
+                <div class="site-admin-bar-menu-panel site-admin-bar-menu-panel--wide" data-admin-bar-menu-panel hidden role="menu">
+                    <a role="menuitem" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                        <span>داشبورد</span>
+                    </a>
+                    @if (hasCreate)
+                    {
+                        <div class="site-admin-bar-menu-heading">ایجاد سریع</div>
+                        @foreach (var link in Model.CreateLinks)
+                        {
+                            <a role="menuitem"
+                               asp-area="@link.Area"
+                               asp-controller="@link.Controller"
+                               asp-action="@link.Action">
+                                <i class="fas @(link.Icon ?? "fa-plus")" aria-hidden="true"></i>
+                                <span>@link.Label</span>
+                            </a>
+                        }
+                    }
+                    @if (hasManage)
+                    {
+                        <div class="site-admin-bar-menu-heading">مدیریت</div>
+                        @foreach (var link in Model.ManageLinks)
+                        {
+                            <a role="menuitem"
+                               asp-area="@link.Area"
+                               asp-controller="@link.Controller"
+                               asp-action="@link.Action">
+                                <i class="fas @(link.Icon ?? "fa-circle")" aria-hidden="true"></i>
+                                <span>@link.Label</span>
+                            </a>
+                        }
+                        @if (Model.CanManageSettings)
+                        {
+                            <a role="menuitem" asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                                <i class="fas fa-cog" aria-hidden="true"></i>
+                                <span>تنظیمات سایت</span>
+                            </a>
+                        }
+                    }
+                    <div class="site-admin-bar-menu-heading">حساب</div>
+                    <div class="site-admin-bar-menu-user" aria-hidden="true">@Model.DisplayName</div>
+                    <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post" class="site-admin-bar-logout">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" role="menuitem" class="site-admin-bar-menu-button">
+                            <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                            <span>خروج</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-admin-bar-group site-admin-bar-group--end">
+            <a class="site-admin-bar-item site-admin-bar-view"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Index"
+               title="مشاهده صفحه اصلی سایت">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+                <span class="site-admin-bar-label site-admin-bar-label--lg">سایت</span>
+            </a>
+
+            <div class="site-admin-bar-menu site-admin-bar-menu--desktop site-admin-bar-menu--end" data-admin-bar-menu>
+                <button type="button"
+                        class="site-admin-bar-item site-admin-bar-menu-trigger site-admin-bar-user-trigger"
+                        data-admin-bar-menu-trigger
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        title="@Model.DisplayName">
+                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    <span class="site-admin-bar-label site-admin-bar-user-name">@Model.DisplayName</span>
+                    <i class="fas fa-chevron-down site-admin-bar-caret" aria-hidden="true"></i>
+                </button>
+                <div class="site-admin-bar-menu-panel site-admin-bar-menu-panel--end" data-admin-bar-menu-panel hidden role="menu">
+                    <div class="site-admin-bar-menu-user">@Model.DisplayName</div>
+                    <a role="menuitem" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                        <span>داشبورد</span>
+                    </a>
+                    @if (hasUserExtras)
+                    {
+                        <a role="menuitem" asp-area="Admin" asp-controller="Users" asp-action="Index">
+                            <i class="fas fa-users-cog" aria-hidden="true"></i>
+                            <span>کاربران</span>
+                        </a>
+                    }
+                    <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post" class="site-admin-bar-logout">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" role="menuitem" class="site-admin-bar-menu-button">
+                            <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                            <span>خروج</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <button type="button"
+                    class="site-admin-bar-item site-admin-bar-collapse"
+                    data-admin-bar-collapse
+                    aria-expanded="true"
+                    title="مخفی کردن نوار مدیریت"
+                    aria-label="مخفی کردن نوار مدیریت">
+                <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                <span class="site-admin-bar-label site-admin-bar-label--lg">مخفی</span>
+            </button>
+        </div>
+    </div>
+</div>
+<button type="button"
+        class="site-admin-bar-restore"
+        data-admin-bar-restore
+        hidden
+        title="نمایش نوار مدیریت"
+        aria-label="نمایش نوار مدیریت">
+    <i class="fas fa-tools" aria-hidden="true"></i>
+    <span>مدیریت</span>
+</button>
+<script src="~/site/js/admin-bar.js" asp-append-version="true" defer></script>

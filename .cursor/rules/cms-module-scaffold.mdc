@@ -1,0 +1,73 @@
+---
+description: Checklist and structure for scaffolding a new CMS module
+globs: "**/CMS.Modules/**"
+alwaysApply: false
+---
+
+# CMS Module Scaffold
+
+When adding a module (Blog, Shop, Forms, or new), create the full vertical slice — do not dump logic into `CMS.Web` or core Domain.
+
+## Folder layout
+
+```
+src/CMS.Modules/{ModuleName}/
+├── Domain/
+│   ├── Entities/
+│   ├── Enums/
+│   ├── Events/
+│   └── Exceptions/
+├── Application/
+│   ├── Commands/
+│   ├── Queries/
+│   ├── DTOs/
+│   ├── Interfaces/
+│   └── Validators/
+├── Infrastructure/
+│   ├── Persistence/   # DbContext, configs, migrations
+│   └── DependencyInjection.cs
+└── Web/
+    └── Areas/Admin/   # Controllers, Views, ViewModels
+```
+
+Register the module from host `Program.cs` / composition root via `Add{Module}Module()`.
+
+## Checklist (every new module)
+
+1. **Domain** — entities with private setters; domain events if needed  
+2. **Application** — commands/queries, DTOs, FluentValidation, interfaces  
+3. **Infrastructure** — module `DbContext`, EF configs, migrations, DI registration  
+4. **Web** — Admin controllers + ViewModels + Farsi views  
+5. **Feature flag** — e.g. `"Shop"` via Feature Management  
+6. **Auth policies** — module-specific policies (see auth rule)  
+7. **Tests** — Application (at least) for critical use cases  
+
+## Boundaries
+
+- No direct DB access to another module’s tables.
+- Cross-module work: interfaces, domain events, or shared contracts — never project references that pull another module’s Infrastructure.
+- Shared kernel only in `CMS.Domain` / `CMS.Application` when truly shared (identity ids, common primitives).
+- **File uploads**: use shared `IObjectStorage` (S3). Never write module media to `wwwroot` or local disk.
+
+## Naming
+
+```
+CMS.Modules.Shop.Domain.Entities.Product
+CreateProductCommand
+IProductRepository
+ShopDbContext
+```
+
+Feature toggle name matches module: `Shop`, `Blog`, `Forms`.
+
+## Admin UI
+
+- Area `Admin`, controllers under module Web.
+- Respect admin design system + Razor + localization rules.
+- Nav entry appears only when feature enabled **and** user authorized.
+
+## Do Not
+
+- Start with only a controller and DbContext in `CMS.Web`.
+- Share one god `AppDbContext` across modules unless explicitly decided later.
+- Skip feature flag or authorization for “temporary” modules.

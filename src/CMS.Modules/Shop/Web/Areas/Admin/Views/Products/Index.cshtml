@@ -1,0 +1,105 @@
+@model ProductIndexViewModel
+@{
+    ViewData["Title"] = Localizer["Products"];
+    ViewData["SearchPlaceholder"] = Localizer["SearchProducts"].Value;
+    ViewData["FilterFieldsPartial"] = "_ProductFilters";
+    ViewBag.Search = Model.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = !string.IsNullOrWhiteSpace(Model.Search)
+        || Model.Status.HasValue
+        || Model.CategoryId.HasValue
+        || Model.BrandId.HasValue
+        || Model.ProductType.HasValue
+        || Model.IsAvailable.HasValue
+        || Model.IsPurchasable.HasValue
+        || !string.IsNullOrWhiteSpace(Model.Stock)
+        || !string.IsNullOrWhiteSpace(Model.Sort);
+    ViewBag.FilterClearRouteValues = new { area = "Admin" };
+    var hasFilters = ViewBag.HasActiveFilters as bool? == true;
+    var showPurchasable = Model.ShowPurchasable;
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreateProduct"]</span></a>
+    <a class="btn btn-secondary" asp-action="Import"><i class="fas fa-file-import" aria-hidden="true"></i><span>@Localizer["ImportProducts"]</span></a>
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.TotalCount == 0)
+{
+    <div class="admin-empty-state" role="status">
+        <p class="admin-empty-message">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoProducts"])</p>
+    </div>
+}
+else
+{
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["CoverImage"]</th>
+                <th>@Localizer["Title"]</th>
+                <th>@Localizer["Price"]</th>
+                <th class="admin-col-num">@Localizer["StockQuantity"]</th>
+                <th>@Localizer["Status"]</th>
+                <th>@Localizer["IsAvailable"]</th>
+                @if (showPurchasable)
+                {
+                    <th>@Localizer["IsPurchasable"]</th>
+                }
+                <th>@Localizer["Category"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.CoverImageUrl))
+                        {
+                            <img class="admin-table-thumb" src="@item.CoverImageUrl" alt="" />
+                        }
+                        else { <span>�</span> }
+                    </td>
+                    <td>
+                        <a asp-area="" asp-controller="Shop" asp-action="Details" asp-route-slug="@item.Slug" target="_blank" rel="noopener">
+                            @item.Title
+                        </a>
+                    </td>
+                    <td>@item.PriceDisplay</td>
+                    <td class="admin-col-num">@item.StockDisplay</td>
+                    <td>@item.Status</td>
+                    <td>@(item.IsAvailable ? Localizer["Yes"] : Localizer["No"])</td>
+                    @if (showPurchasable)
+                    {
+                        <td>@(item.IsPurchasable ? Localizer["Yes"] : Localizer["No"])</td>
+                    }
+                    <td>@(item.CategoryName ?? "�")</td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-controller="ProductSpecifications" asp-action="Index" asp-route-productId="@item.Id">
+                            <i class="fas fa-list" aria-hidden="true"></i>
+                            <span>@Localizer["ManageSpecifications"]</span>
+                            <span class="admin-badge admin-badge-muted">@item.SpecificationCount.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("fa-IR"))</span>
+                        </a>
+                        <a class="btn btn-secondary" asp-controller="ProductVariations" asp-action="Index" asp-route-productId="@item.Id">
+                            <i class="fas fa-layer-group" aria-hidden="true"></i>
+                            <span>@Localizer["ManageVariations"]</span>
+                            <span class="admin-badge admin-badge-muted">@item.VariationCount.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("fa-IR"))</span>
+                        </a>
+                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                        <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-ghost"><i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" />
+}

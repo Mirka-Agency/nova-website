@@ -1,0 +1,31 @@
+@model CustomerAddressFormViewModel
+<div class="admin-field"><label asp-for="RecipientName">نام تحویل‌گیرنده</label><input asp-for="RecipientName" /><span asp-validation-for="RecipientName"></span></div>
+<div class="admin-field"><label asp-for="RecipientPhone">موبایل تحویل‌گیرنده</label><input asp-for="RecipientPhone" /><span asp-validation-for="RecipientPhone"></span></div>
+<div class="admin-field-row" data-iran-location>
+    <div class="admin-field">
+        <label asp-for="Province">استان</label>
+        <select asp-for="Province"
+                data-iran-province
+                data-selected="@Model.Province"
+                data-placeholder="انتخاب استان"
+                required>
+            <option value="">انتخاب استان</option>
+        </select>
+        <span asp-validation-for="Province"></span>
+    </div>
+    <div class="admin-field">
+        <label asp-for="City">شهر</label>
+        <select asp-for="City"
+                data-iran-city
+                data-selected="@Model.City"
+                data-placeholder="انتخاب شهر"
+                required
+                disabled>
+            <option value="">انتخاب شهر</option>
+        </select>
+        <span asp-validation-for="City"></span>
+    </div>
+</div>
+<div class="admin-field"><label asp-for="PostalCode">کد پستی</label><input asp-for="PostalCode" /></div>
+<div class="admin-field"><label asp-for="AddressLine">آدرس</label><textarea asp-for="AddressLine" rows="3"></textarea><span asp-validation-for="AddressLine"></span></div>
+<label class="admin-check"><input asp-for="IsDefault" /> آدرس پیش‌فرض</label>

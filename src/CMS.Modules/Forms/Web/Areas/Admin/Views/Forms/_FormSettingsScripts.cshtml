@@ -1,0 +1,97 @@
+<script>
+(() => {
+    const disablePanelInputs = (panel, disabled) => {
+        panel.querySelectorAll('input, textarea, select').forEach(el => {
+            el.disabled = disabled;
+        });
+    };
+
+    const select = document.getElementById('submit-behavior-type');
+    if (select) {
+        const panels = document.querySelectorAll('.submit-behavior-panel');
+        const successHint = document.getElementById('submit-success-hint');
+        const urlLabel = document.getElementById('submit-url-label');
+        const urlInput = document.getElementById('submit-url-input');
+        const hintRedirect = document.getElementById('submit-url-hint-redirect');
+        const hintPage = document.getElementById('submit-url-hint-page');
+        const labelRedirect = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Localizer["RedirectUrl"].Value));
+        const labelPage = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Localizer["SubmitPagePath"].Value));
+
+        const sync = () => {
+            const value = (select.value || 'message').toLowerCase();
+            panels.forEach(panel => {
+                const showFor = (panel.getAttribute('data-show-for') || '').split(',');
+                const visible = showFor.includes(value);
+                panel.hidden = !visible;
+                disablePanelInputs(panel, !visible);
+            });
+
+            if (successHint) successHint.hidden = value !== 'page';
+            if (urlLabel) urlLabel.textContent = value === 'page' ? labelPage : labelRedirect;
+            if (urlInput) {
+                urlInput.placeholder = value === 'page' ? '/thanks' : 'https://...';
+                urlInput.dir = value === 'page' ? 'ltr' : '';
+            }
+            if (hintRedirect) hintRedirect.hidden = value !== 'redirect';
+            if (hintPage) hintPage.hidden = value !== 'page';
+        };
+        select.addEventListener('change', sync);
+        sync();
+    }
+
+    const antiSpamSelect = document.getElementById('antispam-provider');
+    const enableCaptcha = document.getElementById('enable-captcha-sync');
+    if (antiSpamSelect) {
+        const panels = document.querySelectorAll('.antispam-panel');
+        const syncAntiSpam = () => {
+            const value = (antiSpamSelect.value || 'honeypot').toLowerCase();
+            panels.forEach(panel => {
+                const showFor = (panel.getAttribute('data-show-for') || '').split(',');
+                const visible = showFor.includes(value);
+                panel.hidden = !visible;
+                disablePanelInputs(panel, !visible);
+            });
+            if (enableCaptcha)
+                enableCaptcha.value = value === 'simple_captcha' ? 'true' : 'false';
+        };
+        antiSpamSelect.addEventListener('change', syncAntiSpam);
+        syncAntiSpam();
+    }
+
+    // disableInputs: false keeps values in the POST body. Disabled <select>/<input>
+    // are omitted by the browser; the server then defaults AntiSpamProvider to honeypot.
+    const syncActionPanel = (toggleId, panelSelector, { disableInputs = true } = {}) => {
+        const toggle = document.getElementById(toggleId);
+        const panel = document.querySelector(panelSelector);
+        if (!toggle || !panel) return;
+        const sync = () => {
+            const on = !!toggle.checked;
+            panel.hidden = !on;
+            if (disableInputs)
+                disablePanelInputs(panel, !on);
+        };
+        toggle.addEventListener('change', sync);
+        sync();
+    };
+
+    syncActionPanel('SendEmailNotification', '[data-action-panel="notify"]');
+    syncActionPanel('AutoReplyEnabled', '[data-action-panel="autoreply"]');
+    syncActionPanel('WebhookEnabled', '[data-action-panel="webhook"]');
+    syncActionPanel('AntiSpamEnabled', '[data-action-panel="antispam"]', { disableInputs: false });
+
+    document.querySelectorAll('[data-copy-target]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+            const sel = btn.getAttribute('data-copy-target');
+            const el = sel ? document.querySelector(sel) : null;
+            if (!el) return;
+            const text = 'value' in el ? el.value : el.textContent;
+            try {
+                await navigator.clipboard.writeText(text || '');
+                const original = btn.textContent;
+                btn.textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Localizer["Copied"].Value));
+                setTimeout(() => { btn.textContent = original; }, 1500);
+            } catch { /* ignore */ }
+        });
+    });
+})();
+</script>

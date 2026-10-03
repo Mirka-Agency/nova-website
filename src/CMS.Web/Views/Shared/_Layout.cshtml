@@ -1,0 +1,258 @@
+﻿@using CMS.Application.Common.Features
+@using CMS.Application.Settings
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
+@inject ISiteSettingsService SiteSettings
+@{
+    var settings = await SiteSettings.GetAsync();
+    var brand = settings.SiteName;
+    var footer = string.IsNullOrWhiteSpace(settings.FooterText) ? settings.SiteName : settings.FooterText;
+    var pageTitle = ViewData["Title"] as string;
+    var pageMetaTitle = ViewData["MetaTitle"] as string;
+    var pageMetaDescription = ViewData["MetaDescription"] as string;
+    var documentTitle = !string.IsNullOrWhiteSpace(pageMetaTitle)
+        ? pageMetaTitle
+        : !string.IsNullOrWhiteSpace(pageTitle)
+            ? $"{pageTitle} - {brand}"
+            : (!string.IsNullOrWhiteSpace(settings.MetaTitle) ? settings.MetaTitle : brand);
+    var description = FirstNonEmpty(pageMetaDescription, settings.MetaDescription);
+    var keywords = ViewData["MetaKeywords"] as string;
+    var canonicalUrl = ViewData["CanonicalUrl"] as string;
+    var ogTitle = FirstNonEmpty(ViewData["OgTitle"] as string, pageMetaTitle, documentTitle);
+    var ogDescription = FirstNonEmpty(ViewData["OgDescription"] as string, pageMetaDescription, settings.MetaDescription);
+    var ogImage = FirstNonEmpty(ViewData["OgImage"] as string, settings.DefaultOgImageUrl);
+    var twitterCard = string.IsNullOrWhiteSpace(ogImage) ? "summary" : "summary_large_image";
+    var twitterSite = TwitterHandle(settings.TwitterUrl);
+    var robots = ViewData["Robots"] as string;
+    var schemaJson = ViewData["SchemaJson"] as string;
+    var hasSocial = !string.IsNullOrWhiteSpace(settings.InstagramUrl)
+        || !string.IsNullOrWhiteSpace(settings.TelegramUrl)
+        || !string.IsNullOrWhiteSpace(settings.TwitterUrl)
+        || !string.IsNullOrWhiteSpace(settings.LinkedInUrl)
+        || !string.IsNullOrWhiteSpace(settings.AparatUrl)
+        || !string.IsNullOrWhiteSpace(settings.FacebookUrl)
+        || !string.IsNullOrWhiteSpace(settings.YouTubeUrl)
+        || !string.IsNullOrWhiteSpace(settings.WhatsAppUrl);
+
+    static string? FirstNonEmpty(params string?[] values)
+    {
+        foreach (var value in values)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                return value.Trim();
+        }
+
+        return null;
+    }
+
+    static string? TwitterHandle(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url.Trim(), UriKind.Absolute, out var uri))
+            return null;
+
+        var host = uri.Host;
+        if (!host.Equals("x.com", StringComparison.OrdinalIgnoreCase)
+            && !host.Equals("www.x.com", StringComparison.OrdinalIgnoreCase)
+            && !host.Equals("twitter.com", StringComparison.OrdinalIgnoreCase)
+            && !host.Equals("www.twitter.com", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        var segment = uri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(segment))
+            return null;
+
+        segment = segment.TrimStart('@');
+        return string.IsNullOrWhiteSpace(segment) ? null : "@" + segment;
+    }
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@documentTitle</title>
+    @if (!string.IsNullOrWhiteSpace(description))
+    {
+        <meta name="description" content="@description" />
+    }
+    @if (!string.IsNullOrWhiteSpace(keywords))
+    {
+        <meta name="keywords" content="@keywords" />
+    }
+    @if (!string.IsNullOrWhiteSpace(robots))
+    {
+        <meta name="robots" content="@robots" />
+    }
+    @if (!string.IsNullOrWhiteSpace(canonicalUrl))
+    {
+        <link rel="canonical" href="@canonicalUrl" />
+    }
+    <meta property="og:title" content="@ogTitle" />
+    <meta property="og:type" content="website" />
+    @if (!string.IsNullOrWhiteSpace(ogDescription))
+    {
+        <meta property="og:description" content="@ogDescription" />
+    }
+    @if (!string.IsNullOrWhiteSpace(ogImage))
+    {
+        <meta property="og:image" content="@ogImage" />
+    }
+    <meta name="twitter:card" content="@twitterCard" />
+    <meta name="twitter:title" content="@ogTitle" />
+    @if (!string.IsNullOrWhiteSpace(ogDescription))
+    {
+        <meta name="twitter:description" content="@ogDescription" />
+    }
+    @if (!string.IsNullOrWhiteSpace(ogImage))
+    {
+        <meta name="twitter:image" content="@ogImage" />
+    }
+    @if (!string.IsNullOrWhiteSpace(twitterSite))
+    {
+        <meta name="twitter:site" content="@twitterSite" />
+    }
+    @if (!string.IsNullOrWhiteSpace(settings.FaviconUrl))
+    {
+        <link rel="icon" href="@settings.FaviconUrl" />
+    }
+    @if (!string.IsNullOrWhiteSpace(schemaJson))
+    {
+        <script type="application/ld+json">@Html.Raw(schemaJson)</script>
+    }
+    else
+    {
+        @await Component.InvokeAsync("SeoJsonLd")
+    }
+    <link rel="stylesheet" href="~/site/css/site.css" asp-append-version="true" />
+    @if (!string.IsNullOrWhiteSpace(settings.HeadScripts))
+    {
+        @Html.Raw(settings.HeadScripts)
+    }
+</head>
+<body class="site">
+    @await Component.InvokeAsync("AdminBar")
+    @if (!string.IsNullOrWhiteSpace(settings.BodyOpenScripts))
+    {
+        @Html.Raw(settings.BodyOpenScripts)
+    }
+    <header class="site-header">
+        <div class="site-header-inner">
+            <div class="site-brand-block">
+                <a class="site-brand" asp-controller="Home" asp-action="Index">
+                    @if (!string.IsNullOrWhiteSpace(settings.LogoUrl))
+                    {
+                        <img class="site-logo" src="@settings.LogoUrl" alt="@brand" />
+                    }
+                    else
+                    {
+                        @brand
+                    }
+                </a>
+                @if (!string.IsNullOrWhiteSpace(settings.Tagline))
+                {
+                    <p class="site-tagline">@settings.Tagline</p>
+                }
+            </div>
+            <nav class="site-nav" aria-label="منوی اصلی">
+                <a asp-controller="Home" asp-action="Index">خانه</a>
+                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Blog))
+                {
+                    <a asp-controller="Blog" asp-action="Index">وبلاگ</a>
+                }
+                @if (await FeatureManager.IsEnabledAsync(FeatureNames.News))
+                {
+                    <a asp-controller="News" asp-action="Index">رویدادها و اخبار</a>
+                }
+                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Services))
+                {
+                    <a asp-controller="Services" asp-action="Index">خدمات</a>
+                }
+                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Video))
+                {
+                    <a asp-controller="Videos" asp-action="Index">ویدیوها</a>
+                }
+                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Team))
+                {
+                    <a asp-controller="Teams" asp-action="Index">تیم</a>
+                }
+                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Shop))
+                {
+                    <a asp-controller="Shop" asp-action="Index">فروشگاه</a>
+                    @await Component.InvokeAsync("CartNav")
+                }
+                @await Component.InvokeAsync("AccountNav")
+            </nav>
+        </div>
+    </header>
+    <main class="site-main">
+        @RenderBody()
+    </main>
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <div>© @DateTime.Now.Year @footer</div>
+            @if (!string.IsNullOrWhiteSpace(settings.ContactEmail)
+                 || !string.IsNullOrWhiteSpace(settings.ContactPhone)
+                 || !string.IsNullOrWhiteSpace(settings.Address))
+            {
+                <div class="site-footer-contact">
+                    @if (!string.IsNullOrWhiteSpace(settings.Address))
+                    {
+                        <span>@settings.Address</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.ContactEmail))
+                    {
+                        <a href="mailto:@settings.ContactEmail">@settings.ContactEmail</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.ContactPhone))
+                    {
+                        <span>@settings.ContactPhone</span>
+                    }
+                </div>
+            }
+            @if (hasSocial)
+            {
+                <div class="site-footer-social">
+                    @if (!string.IsNullOrWhiteSpace(settings.InstagramUrl))
+                    {
+                        <a href="@settings.InstagramUrl" rel="noopener noreferrer" target="_blank">اینستاگرام</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.TelegramUrl))
+                    {
+                        <a href="@settings.TelegramUrl" rel="noopener noreferrer" target="_blank">تلگرام</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.TwitterUrl))
+                    {
+                        <a href="@settings.TwitterUrl" rel="noopener noreferrer" target="_blank">اکس</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.LinkedInUrl))
+                    {
+                        <a href="@settings.LinkedInUrl" rel="noopener noreferrer" target="_blank">لینکدین</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.AparatUrl))
+                    {
+                        <a href="@settings.AparatUrl" rel="noopener noreferrer" target="_blank">آپارات</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.FacebookUrl))
+                    {
+                        <a href="@settings.FacebookUrl" rel="noopener noreferrer" target="_blank">فیسبوک</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.YouTubeUrl))
+                    {
+                        <a href="@settings.YouTubeUrl" rel="noopener noreferrer" target="_blank">یوتیوب</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(settings.WhatsAppUrl))
+                    {
+                        <a href="@settings.WhatsAppUrl" rel="noopener noreferrer" target="_blank">واتس‌اپ</a>
+                    }
+                </div>
+            }
+        </div>
+    </footer>
+    @await Component.InvokeAsync("PopupHost")
+    @await RenderSectionAsync("Scripts", required: false)
+    @if (!string.IsNullOrWhiteSpace(settings.BodyCloseScripts))
+    {
+        @Html.Raw(settings.BodyCloseScripts)
+    }
+</body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Comments" xml:space="preserve"><value>نظرات</value></data>
+  <data name="NoComments" xml:space="preserve"><value>هنوز نظری ثبت نشده است.</value></data>
+  <data name="LeaveComment" xml:space="preserve"><value>ثبت نظر</value></data>
+  <data name="LoginRequired" xml:space="preserve"><value>برای ثبت نظر باید وارد حساب کاربری شوید.</value></data>
+  <data name="AuthorName" xml:space="preserve"><value>نام</value></data>
+  <data name="AuthorEmail" xml:space="preserve"><value>ایمیل</value></data>
+  <data name="AuthorPhone" xml:space="preserve"><value>تلفن</value></data>
+  <data name="Body" xml:space="preserve"><value>متن نظر</value></data>
+  <data name="Captcha" xml:space="preserve"><value>کپچا</value></data>
+  <data name="CaptchaPlaceholder" xml:space="preserve"><value>پاسخ را وارد کنید</value></data>
+  <data name="Submit" xml:space="preserve"><value>ارسال نظر</value></data>
+  <data name="CommentSubmitted" xml:space="preserve"><value>نظر شما ثبت شد و پس از تأیید نمایش داده می‌شود.</value></data>
+</root>

@@ -1,0 +1,46 @@
+---
+description: EF Core / PostgreSQL transaction and concurrency rules for inventory, coupons, and multi-write flows
+globs: "**/Infrastructure/Services/**,**/Persistence/**,**/*OrderService*,**/*CartService*,**/Domain/Entities/**"
+alwaysApply: false
+---
+
+# CMS Transactions & Concurrency
+
+## When an explicit DB transaction is required
+
+Wrap in `BeginTransactionAsync` whenever **more than one write must succeed or fail together**, especially:
+
+- Checkout: stock decrement + limited coupon redemption + order insert
+- Order cancel: restore stock + reverse coupon redemption + status change
+- Any multi-aggregate money/inventory mutation
+
+`SaveChangesAsync` alone is only atomic for the changes in **that single call**. Multiple `SaveChanges` without an outer transaction can leave partial state.
+
+## Shop inventory & coupons (locked pattern)
+
+- Limited stock is reserved at **checkout** via conditional `ExecuteUpdateAsync`  
+  (`WHERE StockQuantity >= qty` → decrement). Zero rows ⇒ reject (no oversell under concurrency).
+- Limited coupons (`MaxRedemptions`) are redeemed the same way  
+  (`WHERE RedemptionCount < MaxRedemptions` → increment). Zero rows ⇒ reject.
+- Soft cart checks are UX only; **never** rely on them for concurrency safety.
+- On **cancel** (or failed online payment compensation): restore stock and reverse redemption in the same transaction.
+- Domain helpers (`DecrementStock` / `TryRedeem`) exist for in-memory rules; **atomic SQL updates** are what stop races.
+
+## Do
+
+```csharp
+await using var tx = await _db.Database.BeginTransactionAsync(ct);
+// conditional ExecuteUpdate for stock/coupon
+_db.Orders.Add(order);
+await _db.SaveChangesAsync(ct);
+await tx.CommitAsync(ct);
+```
+
+- Keep external I/O (payment gateways, email) **outside** the DB transaction; use compensating updates on failure.
+- If `EnableRetryOnFailure` is added later, wrap user transactions with `CreateExecutionStrategy().ExecuteAsync(...)`.
+
+## Do Not
+
+- Check-then-set on `StockQuantity` / `RedemptionCount` without a conditional update or row lock.
+- Burn a limited coupon or stock before the order row is committed in the same transaction.
+- Leave reservations held forever after a failed online charge — compensate (cancel + release).

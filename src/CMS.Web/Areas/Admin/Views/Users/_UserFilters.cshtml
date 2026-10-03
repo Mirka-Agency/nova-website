@@ -1,0 +1,22 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var options = ViewBag.RoleOptions as IEnumerable<SelectListItem> ?? [];
+}
+<div class="admin-field">
+    <label for="user-filter-role">@Localizer["Roles"]</label>
+    <select id="user-filter-role" name="role">
+        <option value="">@Localizer["AllRoles"]</option>
+        @foreach (var opt in options)
+        {
+            if (opt.Selected)
+            {
+                <option value="@opt.Value" selected>@opt.Text</option>
+            }
+            else
+            {
+                <option value="@opt.Value">@opt.Text</option>
+            }
+        }
+    </select>
+</div>

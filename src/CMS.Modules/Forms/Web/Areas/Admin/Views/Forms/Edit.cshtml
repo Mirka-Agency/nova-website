@@ -1,0 +1,116 @@
+@model FormFormViewModel
+@{
+    ViewData["Title"] = Localizer["EditForm"];
+    var tab = string.IsNullOrWhiteSpace(Model.ActiveTab) ? "general" : Model.ActiveTab.Trim().ToLowerInvariant();
+    var settingsTabs = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "general", "submit", "actions", "security", "advanced" };
+    var isSettingsTab = settingsTabs.Contains(tab);
+}
+
+<nav class="admin-tabs" aria-label="@Localizer["EditForm"]" id="form-editor-tabs">
+    <a class="admin-tab @(tab == "general" ? "is-active" : null)" href="?tab=general" data-tab="general">@Localizer["TabGeneral"]</a>
+    <a class="admin-tab @(tab == "fields" ? "is-active" : null)" href="?tab=fields" data-tab="fields">@Localizer["TabFields"]</a>
+    <a class="admin-tab @(tab == "submit" ? "is-active" : null)" href="?tab=submit" data-tab="submit">@Localizer["TabSubmit"]</a>
+    <a class="admin-tab @(tab == "actions" ? "is-active" : null)" href="?tab=actions" data-tab="actions">@Localizer["TabActions"]</a>
+    <a class="admin-tab @(tab == "security" ? "is-active" : null)" href="?tab=security" data-tab="security">@Localizer["TabSecurity"]</a>
+    <a class="admin-tab @(tab == "advanced" ? "is-active" : null)" href="?tab=advanced" data-tab="advanced">@Localizer["TabAdvanced"]</a>
+    <a class="admin-tab @(tab == "responses" ? "is-active" : null)" href="?tab=responses" data-tab="responses">@Localizer["TabResponses"]</a>
+</nav>
+
+@* Settings form always mounted so Save never wipes other tabs *@
+<form asp-action="Edit" method="post" class="admin-form admin-form-narrow @(isSettingsTab ? null : "is-hidden")" id="form-settings-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ActiveTab" id="form-active-tab" />
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    <div class="form-tab-panel @(tab == "general" ? null : "is-hidden")" data-tab-panel="general">
+        <partial name="_FormTabGeneral" model="Model" />
+    </div>
+    <div class="form-tab-panel @(tab == "submit" ? null : "is-hidden")" data-tab-panel="submit">
+        <partial name="_FormTabSubmit" model="Model" />
+    </div>
+    <div class="form-tab-panel @(tab == "actions" ? null : "is-hidden")" data-tab-panel="actions">
+        <partial name="_FormTabActions" model="Model" />
+    </div>
+    <div class="form-tab-panel @(tab == "security" ? null : "is-hidden")" data-tab-panel="security">
+        <partial name="_FormTabSecurity" model="Model" />
+    </div>
+    <div class="form-tab-panel @(tab == "advanced" ? null : "is-hidden")" data-tab-panel="advanced">
+        <partial name="_FormTabAdvanced" model="Model" />
+    </div>
+
+    <div class="admin-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+        <a class="btn btn-secondary" asp-action="Index"><i class="fas fa-times" aria-hidden="true"></i><span>@Localizer["Cancel"]</span></a>
+    </div>
+</form>
+
+@if (Model.Id.HasValue)
+{
+    foreach (var version in Model.Versions)
+    {
+        var isCurrent = version.IsPublishedPointer || version.IsDraftPointer;
+        if (isCurrent) { continue; }
+        <form id="restore-version-@version.Id" asp-action="RestoreVersion" method="post" hidden>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="formId" value="@Model.Id" />
+            <input type="hidden" name="versionId" value="@version.Id" />
+        </form>
+    }
+}
+
+<div class="form-tab-panel @(tab == "fields" ? null : "is-hidden")" data-tab-panel="fields">
+    <partial name="_FormTabFields" model="Model" />
+</div>
+
+<div class="form-tab-panel @(tab == "responses" ? null : "is-hidden")" data-tab-panel="responses">
+    <partial name="_FormTabResponses" model="Model" />
+</div>
+
+<style>
+    .is-hidden { display: none !important; }
+</style>
+
+<partial name="_FormSettingsScripts" />
+
+<script>
+(() => {
+    const settingsTabs = new Set(['general', 'submit', 'actions', 'security', 'advanced']);
+    const form = document.getElementById('form-settings-form');
+    const activeInput = document.getElementById('form-active-tab');
+    const tabs = document.querySelectorAll('#form-editor-tabs [data-tab]');
+    const panels = document.querySelectorAll('[data-tab-panel]');
+
+    const activate = (name, pushUrl) => {
+        const next = (name || 'general').toLowerCase();
+        tabs.forEach(el => el.classList.toggle('is-active', el.getAttribute('data-tab') === next));
+        panels.forEach(panel => {
+            panel.classList.toggle('is-hidden', panel.getAttribute('data-tab-panel') !== next);
+        });
+        if (form) form.classList.toggle('is-hidden', !settingsTabs.has(next));
+        if (activeInput) activeInput.value = next;
+        if (pushUrl) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', next);
+            history.replaceState(null, '', url.toString());
+        }
+    };
+
+    tabs.forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            activate(el.getAttribute('data-tab'), true);
+        });
+    });
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <text>
+        const firstError = document.querySelector('.input-validation-error, .admin-field-error:not(:empty)');
+        if (firstError) {
+            const panel = firstError.closest('[data-tab-panel]');
+            if (panel) activate(panel.getAttribute('data-tab-panel'), true);
+        }
+        </text>
+    }
+})();
+</script>

@@ -1,0 +1,16 @@
+@model ServiceItemFormViewModel
+@{
+    ViewData["Title"] = Localizer["CreatePost"];
+}
+
+<form asp-action="Create" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <partial name="_ServiceItemForm" model="Model" />
+</form>
+
+<partial name="_MediaLibraryPicker" />
+
+@section Scripts {
+    <partial name="_CkEditorScripts" />
+    <partial name="_JalaliDatePickerScripts" />
+}

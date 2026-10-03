@@ -1,0 +1,84 @@
+@model CartPageViewModel
+@using CMS.Modules.Shop.Web.ViewModels
+@{
+    ViewData["Title"] = Localizer["Cart"];
+}
+
+<section class="shop-page">
+    <header class="blog-page-header">
+        <h1>@Localizer["Cart"]</h1>
+        <p class="blog-meta"><a asp-controller="Shop" asp-action="Index">@Localizer["BackToShop"]</a></p>
+    </header>
+
+    @if (TempData["Success"] is string success) { <p class="blog-meta">@success</p> }
+    @if (TempData["Error"] is string error) { <p class="blog-meta">@error</p> }
+
+    @if (Model.Cart.Items.Count == 0)
+    {
+        <p class="blog-empty">@Localizer["CartEmpty"]</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead><tr><th>@Localizer["Product"]</th><th>@Localizer["Price"]</th><th>@Localizer["Quantity"]</th><th>@Localizer["Total"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var item in Model.Cart.Items)
+            {
+                <tr>
+                    <td><a asp-controller="Shop" asp-action="Details" asp-route-slug="@item.Slug">@item.Title</a>@if (!string.IsNullOrWhiteSpace(item.Sku)) { <small> (@item.Sku)</small> }</td>
+                    <td>@item.UnitPrice.ToString("N0") @item.Currency</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="Update" method="post" class="admin-inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            @if (item.VariationId.HasValue) { <input type="hidden" name="variationId" value="@item.VariationId" /> }
+                            @if (item.MaxQuantity.HasValue)
+                            {
+                                <input type="number" name="quantity" value="@item.Quantity" min="0" max="@item.MaxQuantity.Value" style="width:4rem;" />
+                            }
+                            else
+                            {
+                                <input type="number" name="quantity" value="@item.Quantity" min="0" style="width:4rem;" />
+                            }
+                            <button type="submit" class="btn btn-secondary">@Localizer["Update"]</button>
+                        </form>
+                    </td>
+                    <td>@item.LineTotal.ToString("N0") @item.Currency</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="Remove" method="post" class="admin-inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            @if (item.VariationId.HasValue) { <input type="hidden" name="variationId" value="@item.VariationId" /> }
+                            <button type="submit" class="btn btn-text-danger">@Localizer["Remove"]</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <div class="admin-form admin-form-narrow" style="margin-top:1rem;">
+            <form asp-controller="Cart" asp-action="ApplyCoupon" method="post" class="admin-inline-form">
+                @Html.AntiForgeryToken()
+                <label>@Localizer["CouponCode"]</label>
+                <input name="couponCode" value="@Model.CouponCode" placeholder="@Localizer["CouponCode"]" />
+                <button type="submit" class="btn btn-secondary">@Localizer["ApplyCoupon"]</button>
+            </form>
+        </div>
+
+        <div class="admin-card" style="margin-top:1rem;max-width:24rem;">
+            <p>@Localizer["Subtotal"]: @Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</p>
+            @if (Model.Cart.DiscountAmount > 0) { <p>@Localizer["Discount"]: −@Model.Cart.DiscountAmount.ToString("N0") @Model.Cart.Currency</p> }
+            @if (Model.Cart.ShippingAmount > 0) { <p>@Localizer["Shipping"]: @Model.Cart.ShippingAmount.ToString("N0") @Model.Cart.Currency</p> }
+            @if (Model.Cart.VatAmount > 0)
+            {
+                <p>@Localizer["Vat"]@(Model.Cart.VatPercent.HasValue ? $" ({Model.Cart.VatPercent.Value.ToString("0.##")}%)" : ""): @Model.Cart.VatAmount.ToString("N0") @Model.Cart.Currency</p>
+            }
+            <p><strong>@Localizer["Total"]: @Model.Cart.Total.ToString("N0") @Model.Cart.Currency</strong></p>
+        </div>
+
+        <p style="margin-top:1rem;">
+            <a class="btn btn-primary" asp-controller="Cart" asp-action="Checkout">@Localizer["Checkout"]</a>
+        </p>
+    }
+</section>

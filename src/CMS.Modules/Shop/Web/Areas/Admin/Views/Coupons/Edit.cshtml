@@ -1,0 +1,47 @@
+@model CouponFormViewModel
+@{ ViewData["Title"] = Localizer["EditCoupon"]; }
+<form asp-action="Edit" method="post" class="admin-form admin-form-narrow">
+@Html.AntiForgeryToken()
+<div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+<div class="admin-field"><label asp-for="Code">@Localizer["Code"]</label><input asp-for="Code" /><span asp-validation-for="Code"></span></div>
+<div class="admin-field"><label asp-for="Name">@Localizer["Name"]</label><input asp-for="Name" /><span asp-validation-for="Name"></span></div>
+<div class="admin-field"><label asp-for="DiscountType">@Localizer["DiscountType"]</label><select asp-for="DiscountType" asp-items="Model.DiscountTypeOptions"></select></div>
+<div class="admin-field"><label asp-for="Amount">@Localizer["DiscountValue"]</label><input asp-for="Amount" type="number" step="0.01" min="0" /><p class="admin-hint">@Localizer["DiscountValueHint"]</p><span asp-validation-for="Amount"></span></div>
+<div class="admin-field"><label asp-for="MinOrderAmount">@Localizer["MinOrderAmount"]</label><input asp-for="MinOrderAmount" type="number" step="1" min="0" /><p class="admin-hint">@Localizer["MinOrderAmountHint"]</p><span asp-validation-for="MinOrderAmount"></span></div>
+<div class="admin-field">
+    <label asp-for="StartsAtLocal">@Localizer["CouponStartsAt"]</label>
+    <input asp-for="StartsAtLocal"
+           type="text"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19 14:30"
+           inputmode="numeric" />
+    <span asp-validation-for="StartsAtLocal"></span>
+</div>
+<div class="admin-field">
+    <label asp-for="EndsAtLocal">@Localizer["CouponEndsAt"]</label>
+    <input asp-for="EndsAtLocal"
+           type="text"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19 14:30"
+           inputmode="numeric" />
+    <p class="admin-hint">@Localizer["CouponEndsAtHint"]</p>
+    <span asp-validation-for="EndsAtLocal"></span>
+</div>
+<div class="admin-field"><label asp-for="MaxRedemptions">@Localizer["MaxRedemptions"]</label><input asp-for="MaxRedemptions" type="number" min="1" step="1" /><p class="admin-hint">@Localizer["MaxRedemptionsHint"]</p></div>
+<div class="admin-field">
+    <label asp-for="AllowedUserEmail">@Localizer["CouponAllowedUserEmail"]</label>
+    <input asp-for="AllowedUserEmail" type="email" autocomplete="off" dir="ltr" class="admin-input-ltr" />
+    <p class="admin-hint">@Localizer["CouponAllowedUserEmailHint"]</p>
+    <span asp-validation-for="AllowedUserEmail"></span>
+</div>
+<label class="admin-check"><input asp-for="IsActive" /> @Localizer["IsActive"]</label>
+<div class="admin-actions"><button type="submit" class="btn btn-primary">@Localizer["Save"]</button><a class="btn btn-secondary" asp-action="Index">@Localizer["Cancel"]</a></div>
+</form>
+
+@section Scripts {
+    <partial name="_JalaliDatePickerScripts" />
+}

@@ -1,0 +1,83 @@
+@model OrderIndexViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["SearchPlaceholder"] = Localizer["SearchOrders"].Value;
+    ViewData["FilterFieldsPartial"] = "_OrderFilters";
+    ViewBag.Search = Model.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = !string.IsNullOrWhiteSpace(Model.Search)
+        || !string.IsNullOrWhiteSpace(Model.Status)
+        || Model.PaymentStatus.HasValue
+        || Model.PaymentMethod.HasValue
+        || Model.IsWholesale.HasValue
+        || !string.IsNullOrWhiteSpace(Model.FromLocal)
+        || !string.IsNullOrWhiteSpace(Model.ToLocal)
+        || !string.IsNullOrWhiteSpace(Model.Sort);
+    ViewBag.FilterClearRouteValues = new { area = "Admin" };
+    var hasFilters = ViewBag.HasActiveFilters as bool? == true;
+}
+
+<div class="admin-toolbar">
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.TotalCount == 0)
+{
+    <p class="admin-lead">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoOrders"])</p>
+}
+else
+{
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["OrderNumber"]</th>
+                <th>@Localizer["CustomerName"]</th>
+                <th>@Localizer["CustomerEmail"]</th>
+                <th>@Localizer["Status"]</th>
+                <th>@Localizer["PaymentDeadline"]</th>
+                <th>@Localizer["Total"]</th>
+                <th>@Localizer["CreatedAt"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.OrderNumber</td>
+                    <td>@item.CustomerName</td>
+                    <td>@item.CustomerEmail</td>
+                    <td>@item.StatusDisplay</td>
+                    <td>
+                        @if (item.Status == OrderStatus.Pending && item.PaymentExpiresAtUtc.HasValue)
+                        {
+                            <span class="admin-payment-timer"
+                                  data-expires-utc="@item.PaymentExpiresAtUtc.Value.ToUniversalTime().ToString("o")"
+                                  data-expired-label="@Localizer["PaymentDeadlineExpired"]">—</span>
+                        }
+                        else
+                        {
+                            <span>—</span>
+                        }
+                    </td>
+                    <td>@item.TotalDisplay</td>
+                    <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-action="Details" asp-route-id="@item.Id"><i class="fas fa-eye" aria-hidden="true"></i><span>@Localizer["View"]</span></a>
+                        <a class="btn btn-secondary" asp-action="PrintInvoice" asp-route-id="@item.Id" target="_blank" rel="noopener" title="@Localizer["PrintInvoice"]"><i class="fas fa-file-invoice" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" />
+}
+
+@section Scripts {
+    <partial name="_JalaliDatePickerScripts" />
+    <script src="~/admin/js/payment-timer.js" asp-append-version="true"></script>
+}

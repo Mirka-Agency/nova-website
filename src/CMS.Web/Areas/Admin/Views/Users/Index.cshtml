@@ -1,0 +1,85 @@
+﻿@model IReadOnlyList<CMS.Web.Areas.Admin.ViewModels.UserListItemViewModel>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["Users"];
+    ViewData["SearchPlaceholder"] = Localizer["SearchUsers"].Value;
+    ViewData["FilterFieldsPartial"] = "_UserFilters";
+    var totalCount = ViewBag.TotalCount is int tc ? tc : Model.Count;
+    var hasFilters = ViewBag.HasActiveFilters as bool? == true;
+    var empty = new CMS.Web.Areas.Admin.ViewModels.EmptyStateViewModel(
+        hasFilters ? Localizer["NoSearchResults"].Value : Localizer["NoUsers"].Value,
+        hasFilters ? null : Url.Action("Create"),
+        hasFilters ? null : Localizer["CreateUser"].Value);
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreateUser"]</span></a>
+    <partial name="_FilterPanel" />
+</div>
+
+@if (totalCount == 0)
+{
+    <partial name="_EmptyState" model="empty" />
+}
+else
+{
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>@Localizer["Email"]</th>
+                    <th>@Localizer["FullName"]</th>
+                    <th>@Localizer["PhoneNumber"]</th>
+                    <th>@Localizer["Roles"]</th>
+                    <th>@Localizer["Status"]</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td class="admin-user-list-avatar-cell">
+                        <span class="admin-user-list-avatar">
+                            <img src="@user.AvatarDisplayUrl" alt="" width="32" height="32" />
+                        </span>
+                    </td>
+                    <td>@user.Email</td>
+                    <td>@(user.FullName ?? "—")</td>
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+                        {
+                            <span>—</span>
+                        }
+                        else
+                        {
+                            <span class="admin-phone-cell">
+                                <span>@user.PhoneNumber</span>
+                                @if (user.PhoneNumberConfirmed)
+                                {
+                                    <i class="fas fa-check-circle admin-phone-verified"
+                                       title="@Localizer["PhoneVerified"]"
+                                       aria-label="@Localizer["PhoneVerified"]"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-times-circle admin-phone-unverified"
+                                       title="@Localizer["PhoneUnverified"]"
+                                       aria-label="@Localizer["PhoneUnverified"]"></i>
+                                }
+                            </span>
+                        }
+                    </td>
+                    <td>@(user.Roles.Count == 0 ? "—" : string.Join("، ", user.Roles))</td>
+                    <td>@(user.IsLockedOut ? Localizer["Locked"] : Localizer["Active"])</td>
+                    <td>
+                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@user.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" />
+}

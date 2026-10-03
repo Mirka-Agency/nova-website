@@ -1,0 +1,44 @@
+@model IReadOnlyList<CMS.Modules.Shop.Application.Promotions.CouponDto>
+@{ ViewData["Title"] = Localizer["Coupons"]; }
+<div class="admin-toolbar"><a class="btn btn-primary" asp-action="Create">@Localizer["CreateCoupon"]</a></div>
+<div class="admin-table-wrap">
+<table class="admin-table">
+<thead>
+<tr>
+<th>@Localizer["Code"]</th>
+<th>@Localizer["Name"]</th>
+<th>@Localizer["DiscountType"]</th>
+<th>@Localizer["DiscountValue"]</th>
+<th>@Localizer["MinOrderAmount"]</th>
+<th>@Localizer["CouponEndsAt"]</th>
+<th>@Localizer["CouponAllowedUser"]</th>
+<th>@Localizer["IsActive"]</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+@foreach (var c in Model)
+{
+    var typeLabel = c.DiscountType == CMS.Modules.Shop.Domain.Enums.DiscountType.FixedAmount
+        ? Localizer["DiscountTypeFixedAmount"]
+        : Localizer["DiscountTypePercentage"];
+    var amountLabel = c.DiscountType == CMS.Modules.Shop.Domain.Enums.DiscountType.Percentage
+        ? $"{c.Amount:0.##}%"
+        : $"{c.Amount:N0}";
+    <tr>
+        <td>@c.Code</td>
+        <td>@c.Name</td>
+        <td>@typeLabel</td>
+        <td>@amountLabel</td>
+        <td>@(c.MinOrderAmount.HasValue ? c.MinOrderAmount.Value.ToString("N0") : "—")</td>
+        <td>@(c.EndsAtUtc.HasValue ? c.EndsAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm") : "—")</td>
+        <td>@(string.IsNullOrWhiteSpace(c.AllowedUserId) ? "—" : Localizer["Yes"])</td>
+        <td>@(c.IsActive ? Localizer["Yes"] : Localizer["No"])</td>
+        <td><a class="btn btn-secondary" asp-action="Edit" asp-route-id="@c.Id">@Localizer["Edit"]</a></td>
+    </tr>
+}
+</tbody>
+</table>
+</div>
+<partial name="_Pager" />
+

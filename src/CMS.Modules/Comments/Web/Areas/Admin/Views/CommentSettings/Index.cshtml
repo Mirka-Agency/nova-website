@@ -1,0 +1,77 @@
+@model CommentSettingsFormViewModel
+@{
+    ViewData["Title"] = Localizer["CommentSettings"];
+}
+
+<form asp-action="Index" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation-summary"></div>
+
+    <fieldset class="admin-fieldset">
+        <legend>@Localizer["AccessSettings"]</legend>
+        <label class="admin-checkbox">
+            <input asp-for="AllowAnonymous" />
+            <span>@Localizer["AllowAnonymous"]</span>
+        </label>
+        <p class="admin-hint">@Localizer["AllowAnonymousHint"]</p>
+    </fieldset>
+
+    <fieldset class="admin-fieldset">
+        <legend>@Localizer["EnableTargets"]</legend>
+        <label class="admin-checkbox">
+            <input asp-for="EnableOnBlog" />
+            <span>@Localizer["EnableOnBlog"]</span>
+        </label>
+        <label class="admin-checkbox">
+            <input asp-for="EnableOnEvents" />
+            <span>@Localizer["EnableOnEvents"]</span>
+        </label>
+        <label class="admin-checkbox">
+            <input asp-for="EnableOnProducts" />
+            <span>@Localizer["EnableOnProducts"]</span>
+        </label>
+        <label class="admin-checkbox">
+            <input asp-for="EnableOnProductCategories" />
+            <span>@Localizer["EnableOnProductCategories"]</span>
+        </label>
+    </fieldset>
+
+    <fieldset class="admin-fieldset">
+        <legend>@Localizer["FieldSettings"]</legend>
+        <label class="admin-checkbox">
+            <input asp-for="ShowEmail" />
+            <span>@Localizer["ShowEmail"]</span>
+        </label>
+        <label class="admin-checkbox">
+            <input asp-for="RequireEmail" />
+            <span>@Localizer["RequireEmail"]</span>
+        </label>
+        <label class="admin-checkbox">
+            <input asp-for="ShowPhone" />
+            <span>@Localizer["ShowPhone"]</span>
+        </label>
+        <label class="admin-checkbox">
+            <input asp-for="RequirePhone" />
+            <span>@Localizer["RequirePhone"]</span>
+        </label>
+        <p class="admin-hint">@Localizer["NameAndBodyAlwaysRequired"]</p>
+    </fieldset>
+
+    <fieldset class="admin-fieldset">
+        <legend>@Localizer["CaptchaSettings"]</legend>
+        <label class="admin-checkbox">
+            <input asp-for="EnableCaptcha" />
+            <span>@Localizer["EnableCaptcha"]</span>
+        </label>
+        <div class="admin-field">
+            <label asp-for="CaptchaProvider">@Localizer["CaptchaProvider"]</label>
+            <select asp-for="CaptchaProvider" asp-items="ViewBag.CaptchaProviders"></select>
+        </div>
+        <p class="admin-hint">@Localizer["ExternalCaptchaHint"]</p>
+    </fieldset>
+
+    <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">@Localizer["Save"]</button>
+        <a class="btn btn-secondary" asp-controller="Comments" asp-action="Index">@Localizer["BackToComments"]</a>
+    </div>
+</form>

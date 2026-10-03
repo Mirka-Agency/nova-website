@@ -1,0 +1,10 @@
+@model PriceRuleFormViewModel
+@{ ViewData["Title"] = Localizer["EditPriceRule"]; }
+<form asp-action="Edit" method="post" class="admin-form admin-form-narrow">
+@Html.AntiForgeryToken()
+<div class="admin-field"><label asp-for="Name">@Localizer["Name"]</label><input asp-for="Name" /></div>
+<div class="admin-field"><label asp-for="RuleType">@Localizer["RuleType"]</label><select asp-for="RuleType" asp-items="Model.RuleTypeOptions"></select></div>
+<div class="admin-field"><label asp-for="CustomerGroupId">@Localizer["CustomerGroup"]</label><select asp-for="CustomerGroupId" asp-items="Model.GroupOptions"><option value="">—</option></select></div>
+<label class="admin-check"><input asp-for="IsActive" /> @Localizer["IsActive"]</label>
+<div class="admin-actions"><button type="submit" class="btn btn-primary">@Localizer["Save"]</button><a class="btn btn-secondary" asp-action="Index">@Localizer["Cancel"]</a></div>
+</form>

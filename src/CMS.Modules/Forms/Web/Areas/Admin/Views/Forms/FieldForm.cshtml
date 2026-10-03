@@ -1,0 +1,329 @@
+﻿@model FormFieldFormViewModel
+@{
+    ViewData["Title"] = Model.FieldId.HasValue ? Localizer["EditField"] : Localizer["AddField"];
+    var fieldFormAction = Model.FieldId.HasValue ? "EditField" : "AddField";
+}
+
+<form asp-action="@fieldFormAction" method="post" class="admin-form admin-form-narrow" id="field-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="FormId" />
+    <input type="hidden" asp-for="FieldId" />
+    <input type="hidden" asp-for="SortOrder" />
+
+    <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+    @if (Model.IsSystem)
+    {
+        <p class="admin-hint">@Localizer["SystemFieldEditHint"]</p>
+        <input type="hidden" asp-for="Key" />
+        <input type="hidden" asp-for="FieldType" />
+        <input type="hidden" asp-for="IsRequired" />
+        <input type="hidden" asp-for="OptionsCsv" />
+        <input type="hidden" asp-for="IsSystem" />
+    }
+
+    <div class="admin-field">
+        <label asp-for="Label">@Localizer["FieldLabel"]</label>
+        <input asp-for="Label" />
+        <span asp-validation-for="Label" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="Key">@Localizer["FieldKey"]</label>
+        @if (Model.IsSystem)
+        {
+            <input asp-for="Key" readonly class="admin-input-readonly" />
+            <p class="admin-hint">@Localizer["SystemFieldContractHint"]</p>
+        }
+        else
+        {
+            <input asp-for="Key" />
+            <p class="admin-hint">@Localizer["FieldKeyHint"]</p>
+        }
+        <span asp-validation-for="Key" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="FieldType">@Localizer["FieldType"]</label>
+        @if (Model.IsSystem)
+        {
+            <select asp-for="FieldType" asp-items="Model.FieldTypeOptions" id="FieldType" disabled></select>
+        }
+        else
+        {
+            <select asp-for="FieldType" asp-items="Model.FieldTypeOptions" id="FieldType"></select>
+        }
+        <span asp-validation-for="FieldType" class="admin-field-error"></span>
+    </div>
+
+    @if (Model.IsSystem)
+    {
+        <label class="admin-check field-panel" data-hide-for="Heading,Paragraph,Divider">
+            <input asp-for="IsRequired" disabled />
+            @Localizer["Required"]
+        </label>
+    }
+    else
+    {
+        <label class="admin-check field-panel" data-hide-for="Heading,Paragraph,Divider">
+            <input asp-for="IsRequired" />
+            @Localizer["Required"]
+        </label>
+    }
+
+    <div class="admin-field field-panel" data-show-for="Text,TextArea,Email,Phone,Url,Number,Select,Radio,Date,Time,DateTime,Hidden,FileUpload">
+        <label asp-for="Placeholder">@Localizer["Placeholder"]</label>
+        <input asp-for="Placeholder" />
+    </div>
+
+    <div class="admin-field">
+        <label asp-for="HelpText">@Localizer["HelpText"]</label>
+        <input asp-for="HelpText" />
+    </div>
+
+    <div class="admin-field field-panel" data-show-for="Text,TextArea,Email,Phone,Url,Number,Select,Radio,Checkbox,CheckboxGroup,Date,Time,DateTime,Hidden,Consent,FileUpload">
+        <label asp-for="LayoutWidth">@Localizer["LayoutWidth"]</label>
+        <select asp-for="LayoutWidth" asp-items="Model.LayoutWidthOptions"></select>
+    </div>
+
+    <div class="admin-field field-panel" data-show-for="Text,TextArea,Email,Phone,Url,Number,Select,Radio,Checkbox,Date,Time,DateTime,Hidden,Consent">
+        <label asp-for="DefaultValue">@Localizer["DefaultValue"]</label>
+        <input asp-for="DefaultValue" />
+    </div>
+
+    <div class="admin-field field-panel" data-show-for="Select,Radio,CheckboxGroup">
+        <label asp-for="OptionsCsv">@Localizer["OptionsCsv"]</label>
+        @if (Model.IsSystem)
+        {
+            <textarea asp-for="OptionsCsv" rows="4" readonly class="admin-input-readonly"></textarea>
+            <p class="admin-hint">@Localizer["SystemFieldContractHint"]</p>
+        }
+        else
+        {
+            <textarea asp-for="OptionsCsv" rows="4" placeholder="بله&#10;خیر&#10;yes:بله|no:خیر"></textarea>
+            <p class="admin-hint">@Localizer["OptionsHint"]</p>
+        }
+        <span asp-validation-for="OptionsCsv" class="admin-field-error"></span>
+    </div>
+
+    <div class="admin-field field-panel" data-show-for="CheckboxGroup">
+        <label asp-for="MinSelections">@Localizer["MinSelections"]</label>
+        <input asp-for="MinSelections" type="number" min="0" />
+    </div>
+    <div class="admin-field field-panel" data-show-for="CheckboxGroup">
+        <label asp-for="MaxSelections">@Localizer["MaxSelections"]</label>
+        <input asp-for="MaxSelections" type="number" min="0" />
+    </div>
+
+    <div class="admin-field field-panel" data-show-for="Number">
+        <label asp-for="Min">@Localizer["MinValue"]</label>
+        <input asp-for="Min" type="number" step="any" />
+    </div>
+    <div class="admin-field field-panel" data-show-for="Number">
+        <label asp-for="Max">@Localizer["MaxValue"]</label>
+        <input asp-for="Max" type="number" step="any" />
+    </div>
+
+    <details class="admin-field field-panel" data-show-for="Text,TextArea,Email,Phone,Url">
+        <summary>@Localizer["AdvancedValidation"]</summary>
+        <div class="admin-field">
+            <label asp-for="MinLength">@Localizer["MinLength"]</label>
+            <input asp-for="MinLength" type="number" min="0" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="MaxLength">@Localizer["MaxLength"]</label>
+            <input asp-for="MaxLength" type="number" min="0" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="Pattern">@Localizer["Pattern"]</label>
+            <input asp-for="Pattern" />
+            <p class="admin-hint">@Localizer["PatternHint"]</p>
+        </div>
+    </details>
+
+    <div class="admin-field field-panel" data-show-for="FileUpload">
+        <label asp-for="AllowedExtensions">@Localizer["AllowedExtensions"]</label>
+        <input asp-for="AllowedExtensions" placeholder="pdf|jpg|png" />
+        <p class="admin-hint">@Localizer["AllowedExtensionsHint"]</p>
+    </div>
+    <div class="admin-field field-panel" data-show-for="FileUpload">
+        <label asp-for="MaxFileSizeMb">@Localizer["MaxFileSizeMb"]</label>
+        <input asp-for="MaxFileSizeMb" type="number" step="0.1" min="0.1" />
+    </div>
+
+    <fieldset class="admin-field field-panel" data-hide-for="Heading,Paragraph,Divider">
+        <legend>@Localizer["VisibilitySection"]</legend>
+        <div class="admin-field">
+            <label asp-for="VisibilityMode">@Localizer["VisibilityMode"]</label>
+            <select asp-for="VisibilityMode" asp-items="Model.VisibilityModeOptions" id="VisibilityMode"></select>
+            <p class="admin-hint">@Localizer["VisibilityModeHint"]</p>
+        </div>
+        <div class="visibility-depends" id="visibility-conditions">
+            @for (var i = 0; i < Model.VisibilityConditions.Count; i++)
+            {
+                <div class="visibility-condition-row" data-index="@i">
+                    <div class="admin-field">
+                        <label asp-for="VisibilityConditions[i].FieldId">@Localizer["VisibilityDependsOnFieldId"]</label>
+                        <select asp-for="VisibilityConditions[i].FieldId" asp-items="Model.VisibilityFieldOptions">
+                            <option value="">—</option>
+                        </select>
+                    </div>
+                    <div class="admin-field">
+                        <label asp-for="VisibilityConditions[i].Operator">@Localizer["VisibilityOperator"]</label>
+                        <select asp-for="VisibilityConditions[i].Operator" asp-items="Model.VisibilityOperatorOptions" class="visibility-operator"></select>
+                    </div>
+                    <div class="admin-field visibility-value">
+                        <label asp-for="VisibilityConditions[i].Value">@Localizer["VisibilityValue"]</label>
+                        <input asp-for="VisibilityConditions[i].Value" />
+                    </div>
+                    <button type="button" class="btn btn-secondary visibility-remove-row" aria-label="@Localizer["VisibilityRemoveCondition"]">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            }
+            <button type="button" class="btn btn-secondary" id="visibility-add-row">@Localizer["VisibilityAddCondition"]</button>
+        </div>
+        <template id="visibility-condition-template">
+            <div class="visibility-condition-row">
+                <div class="admin-field">
+                    <label>@Localizer["VisibilityDependsOnFieldId"]</label>
+                    <select data-name="FieldId">
+                        <option value="">—</option>
+                        @foreach (var opt in Model.VisibilityFieldOptions)
+                        {
+                            <option value="@opt.Value">@opt.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="admin-field">
+                    <label>@Localizer["VisibilityOperator"]</label>
+                    <select data-name="Operator" class="visibility-operator">
+                        @foreach (var opt in Model.VisibilityOperatorOptions)
+                        {
+                            <option value="@opt.Value">@opt.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="admin-field visibility-value">
+                    <label>@Localizer["VisibilityValue"]</label>
+                    <input data-name="Value" type="text" />
+                </div>
+                <button type="button" class="btn btn-secondary visibility-remove-row" aria-label="@Localizer["VisibilityRemoveCondition"]">
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+        </template>
+    </fieldset>
+
+    <div class="admin-field field-panel" data-show-for="Captcha">
+        <label asp-for="SettingsJson">@Localizer["SettingsJson"]</label>
+        <textarea asp-for="SettingsJson" rows="3" placeholder='{"expected":"4"}'></textarea>
+        <p class="admin-hint">@Localizer["SettingsJsonHint"]</p>
+    </div>
+
+    <div class="admin-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.FormId" asp-route-tab="fields"><i class="fas fa-times" aria-hidden="true"></i><span>@Localizer["Cancel"]</span></a>
+    </div>
+</form>
+
+<script>
+(function () {
+    var select = document.getElementById('FieldType');
+    var modeSelect = document.getElementById('VisibilityMode');
+    var container = document.getElementById('visibility-conditions');
+    var addBtn = document.getElementById('visibility-add-row');
+    var template = document.getElementById('visibility-condition-template');
+    if (!select) return;
+
+    function reindexRows() {
+        if (!container) return;
+        var rows = container.querySelectorAll('.visibility-condition-row');
+        rows.forEach(function (row, i) {
+            row.setAttribute('data-index', String(i));
+            row.querySelectorAll('[name], [data-name]').forEach(function (el) {
+                var prop = el.getAttribute('data-name');
+                if (!prop && el.name) {
+                    var m = el.name.match(/VisibilityConditions\[\d+\]\.(.+)$/);
+                    prop = m ? m[1] : null;
+                }
+                if (!prop) return;
+                el.name = 'VisibilityConditions[' + i + '].' + prop;
+                if (el.id !== undefined) el.id = 'VisibilityConditions_' + i + '__' + prop;
+            });
+        });
+    }
+
+    function syncRowValue(row) {
+        var op = row.querySelector('.visibility-operator');
+        var valueEl = row.querySelector('.visibility-value');
+        if (!valueEl) return;
+        var needsValue = op && op.value !== 'is_empty' && op.value !== 'is_not_empty';
+        valueEl.style.display = needsValue ? '' : 'none';
+    }
+
+    function syncVisibility() {
+        var mode = modeSelect ? modeSelect.value : 'always';
+        var active = mode === 'all' || mode === 'any';
+        document.querySelectorAll('.visibility-depends').forEach(function (el) {
+            el.style.display = active ? '' : 'none';
+        });
+        if (active && container && container.querySelectorAll('.visibility-condition-row').length === 0 && template) {
+            addRow();
+        }
+        if (container) {
+            container.querySelectorAll('.visibility-condition-row').forEach(syncRowValue);
+        }
+    }
+
+    function addRow() {
+        if (!container || !template) return;
+        var node = template.content.cloneNode(true);
+        var row = node.querySelector('.visibility-condition-row');
+        container.insertBefore(node, addBtn);
+        if (row) {
+            var op = row.querySelector('.visibility-operator');
+            if (op) op.addEventListener('change', function () { syncRowValue(row); });
+            syncRowValue(row);
+        }
+        reindexRows();
+    }
+
+    function syncType() {
+        var type = select.value;
+        document.querySelectorAll('.field-panel').forEach(function (el) {
+            var show = el.getAttribute('data-show-for');
+            var hide = el.getAttribute('data-hide-for');
+            var visible = true;
+            if (show) visible = show.split(',').indexOf(type) >= 0;
+            if (hide && hide.split(',').indexOf(type) >= 0) visible = false;
+            el.style.display = visible ? '' : 'none';
+            el.querySelectorAll('input, textarea, select').forEach(function (input) {
+                if (input.type === 'hidden') return;
+                input.disabled = !visible;
+            });
+        });
+        syncVisibility();
+    }
+
+    select.addEventListener('change', syncType);
+    if (modeSelect) modeSelect.addEventListener('change', syncVisibility);
+    if (addBtn) addBtn.addEventListener('click', function () { addRow(); });
+    if (container) {
+        container.addEventListener('click', function (e) {
+            var btn = e.target.closest('.visibility-remove-row');
+            if (!btn) return;
+            var row = btn.closest('.visibility-condition-row');
+            if (row) row.remove();
+            reindexRows();
+            syncVisibility();
+        });
+        container.querySelectorAll('.visibility-condition-row').forEach(function (row) {
+            var op = row.querySelector('.visibility-operator');
+            if (op) op.addEventListener('change', function () { syncRowValue(row); });
+        });
+    }
+    reindexRows();
+    syncType();
+})();
+</script>

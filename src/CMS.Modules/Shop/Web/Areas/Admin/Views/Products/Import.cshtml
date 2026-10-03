@@ -1,0 +1,74 @@
+@model ProductImportViewModel
+@{
+    ViewData["Title"] = Localizer["ImportProducts"];
+    var fa = System.Globalization.CultureInfo.GetCultureInfo("fa-IR");
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-secondary" asp-action="Index">
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <span>@Localizer["BackToProducts"]</span>
+    </a>
+    <a class="btn btn-secondary" asp-action="SampleCsv">
+        <i class="fas fa-download" aria-hidden="true"></i>
+        <span>@Localizer["DownloadSampleCsv"]</span>
+    </a>
+</div>
+
+<div class="admin-card" style="max-width: 48rem;">
+    <p class="admin-hint">@Localizer["ImportProductsHint"]</p>
+
+    <form asp-action="Import" method="post" enctype="multipart/form-data" class="admin-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+        <div class="admin-field">
+            <label asp-for="File">@Localizer["ImportCsvFile"]</label>
+            <input asp-for="File" type="file" accept=".csv,text/csv" />
+            <p class="admin-hint">@Localizer["ImportCsvFileHint"]</p>
+            <span asp-validation-for="File" class="admin-field-error"></span>
+        </div>
+
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-file-import" aria-hidden="true"></i>
+                <span>@Localizer["ImportProducts"]</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+@if (Model.Result is not null)
+{
+    <div class="admin-card" style="margin-block-start: 1.5rem;">
+        <h2 class="admin-section-title">@Localizer["ImportProductsResult"]</h2>
+        <ul class="admin-hint" style="margin-block-end: 1rem;">
+            <li>@string.Format(Localizer["ImportResultTotal"].Value, Model.Result.TotalRows.ToString("N0", fa))</li>
+            <li>@string.Format(Localizer["ImportResultCreated"].Value, Model.Result.CreatedCount.ToString("N0", fa))</li>
+            <li>@string.Format(Localizer["ImportResultFailed"].Value, Model.Result.FailedCount.ToString("N0", fa))</li>
+        </ul>
+
+        @if (Model.Result.Errors.Count > 0)
+        {
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>@Localizer["ImportRowNumber"]</th>
+                        <th>@Localizer["ImportErrorMessage"]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var error in Model.Result.Errors)
+                    {
+                        <tr>
+                            <td>@(error.RowNumber > 0 ? error.RowNumber.ToString("N0", fa) : "—")</td>
+                            <td>@error.Message</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

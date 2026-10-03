@@ -1,0 +1,334 @@
+@using CMS.Modules.Forms.Application.Common
+@using CMS.Modules.Forms.Application.Fields
+@using System.Text.Json
+@model PublicFormSubmitViewModel
+@{
+    var idPrefix = ViewData["FieldIdPrefix"] as string ?? "field";
+    var showValidation = ViewData["ShowFieldValidation"] as bool? ?? true;
+    var visibilityJsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    var needsJalaliPicker = Model.Fields.Any(f =>
+    {
+        var t = string.IsNullOrWhiteSpace(f.TypeId) ? "text" : f.TypeId.Trim().ToLowerInvariant();
+        return t is FormFieldTypeIds.Date or FormFieldTypeIds.DateTime;
+    });
+}
+
+@foreach (var field in Model.Fields)
+{
+    var typeId = string.IsNullOrWhiteSpace(field.TypeId) ? "text" : field.TypeId.Trim().ToLowerInvariant();
+    var value = Model.Values.TryGetValue(field.Key, out var current) ? current : (field.Value ?? field.DefaultValue);
+    var width = string.Equals(field.LayoutWidth, "half", StringComparison.OrdinalIgnoreCase) ? "half" : "full";
+    var widthClass = width == "half" ? "public-form-field public-form-field--half" : "public-form-field";
+    var selectedSet = string.IsNullOrWhiteSpace(value)
+        ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        : value.Split(['|', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var inputId = $"{idPrefix}-{field.Key}";
+    var hasVisibility = field.Visibility?.Conditions is { Count: > 0 };
+    var visibilityMode = hasVisibility ? field.Visibility!.Mode : null;
+    var visibilityJson = hasVisibility
+        ? JsonSerializer.Serialize(field.Visibility!.Conditions, visibilityJsonOptions)
+        : null;
+
+    if (typeId is FormFieldTypeIds.Heading)
+    {
+        <div class="@widthClass" data-field-id="@field.Id" data-field-key="@field.Key" data-field-type="@typeId" data-width="@width">
+            <h2 class="public-form-heading">@field.Label</h2>
+            @if (!string.IsNullOrWhiteSpace(field.HelpText))
+            {
+                <p class="public-form-hint">@field.HelpText</p>
+            }
+        </div>
+        continue;
+    }
+
+    if (typeId is FormFieldTypeIds.Paragraph)
+    {
+        <div class="@widthClass" data-field-id="@field.Id" data-field-key="@field.Key" data-field-type="@typeId" data-width="@width">
+            <p class="public-form-paragraph">@field.Label</p>
+            @if (!string.IsNullOrWhiteSpace(field.HelpText))
+            {
+                <p class="public-form-hint">@field.HelpText</p>
+            }
+        </div>
+        continue;
+    }
+
+    if (typeId is FormFieldTypeIds.Divider)
+    {
+        <div class="@widthClass" data-field-id="@field.Id" data-field-key="@field.Key" data-field-type="@typeId" data-width="@width">
+            <hr class="public-form-divider" aria-hidden="true" />
+        </div>
+        continue;
+    }
+
+    if (typeId is FormFieldTypeIds.Hidden)
+    {
+        <input type="hidden" name="Values[@field.Key]" value="@(value ?? field.DefaultValue)" data-field-id="@field.Id" data-field-key="@field.Key" data-field-type="@typeId" />
+        continue;
+    }
+
+    <div class="@widthClass"
+         data-field-id="@field.Id"
+         data-field-key="@field.Key"
+         data-field-type="@typeId"
+         data-width="@width"
+         @if (hasVisibility)
+         {
+             <text>data-visibility-mode="@visibilityMode" data-visibility-json="@visibilityJson"</text>
+         }>
+        @if (typeId is not FormFieldTypeIds.Checkbox and not FormFieldTypeIds.Consent and not FormFieldTypeIds.Captcha)
+        {
+            <label for="@inputId">
+                @field.Label
+                @if (field.IsRequired)
+                {
+                    <span class="public-form-required">*</span>
+                }
+            </label>
+        }
+
+        @switch (typeId)
+        {
+            case FormFieldTypeIds.TextArea:
+                <textarea id="@inputId" name="Values[@field.Key]" rows="4" placeholder="@field.Placeholder">@value</textarea>
+                break;
+            case FormFieldTypeIds.Select:
+                <select id="@inputId" name="Values[@field.Key]">
+                    <option value="">—</option>
+                    @foreach (var option in field.Options)
+                    {
+                        if (string.Equals(value, option.Value, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@option.Value" selected>@option.Label</option>
+                        }
+                        else
+                        {
+                            <option value="@option.Value">@option.Label</option>
+                        }
+                    }
+                </select>
+                break;
+            case FormFieldTypeIds.Radio:
+                <div class="public-form-radio-group">
+                    @foreach (var option in field.Options)
+                    {
+                        <label class="public-form-check">
+                            <input type="radio"
+                                   name="Values[@field.Key]"
+                                   value="@option.Value"
+                                   @(string.Equals(value, option.Value, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                            <span>@option.Label</span>
+                        </label>
+                    }
+                </div>
+                break;
+            case FormFieldTypeIds.CheckboxGroup:
+                <div class="public-form-checkbox-group">
+                    @foreach (var option in field.Options)
+                    {
+                        <label class="public-form-check">
+                            <input type="checkbox"
+                                   name="Values[@field.Key]"
+                                   value="@option.Value"
+                                   @(selectedSet.Contains(option.Value) ? "checked" : null) />
+                            <span>@option.Label</span>
+                        </label>
+                    }
+                </div>
+                break;
+            case FormFieldTypeIds.Checkbox:
+            case FormFieldTypeIds.Consent:
+                <label class="public-form-check" for="@inputId">
+                    <input id="@inputId"
+                           type="checkbox"
+                           name="Values[@field.Key]"
+                           value="true"
+                           @(string.Equals(value, "true", StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                    <span>@field.Label</span>
+                    @if (field.IsRequired)
+                    {
+                        <span class="public-form-required">*</span>
+                    }
+                </label>
+                break;
+            case FormFieldTypeIds.Email:
+                <input id="@inputId" type="email" name="Values[@field.Key]" value="@value" placeholder="@field.Placeholder" />
+                break;
+            case FormFieldTypeIds.Number:
+                <input id="@inputId" type="number" name="Values[@field.Key]" value="@value" placeholder="@field.Placeholder" />
+                break;
+            case FormFieldTypeIds.Tel:
+                <input id="@inputId" type="tel" name="Values[@field.Key]" value="@value" placeholder="@field.Placeholder" />
+                break;
+            case FormFieldTypeIds.Url:
+                <input id="@inputId" type="url" name="Values[@field.Key]" value="@value" placeholder="@field.Placeholder" />
+                break;
+            case FormFieldTypeIds.Date:
+                <input id="@inputId"
+                       type="text"
+                       name="Values[@field.Key]"
+                       value="@JalaliDateHelper.ToInputValue(value, includeTime: false)"
+                       data-jdp
+                       data-jdp-only-date
+                       class="public-form-input-ltr"
+                       autocomplete="off"
+                       placeholder="@(field.Placeholder ?? "1404/05/19")"
+                       inputmode="numeric" />
+                break;
+            case FormFieldTypeIds.Time:
+                <input id="@inputId" type="time" name="Values[@field.Key]" value="@value" />
+                break;
+            case FormFieldTypeIds.DateTime:
+                <input id="@inputId"
+                       type="text"
+                       name="Values[@field.Key]"
+                       value="@JalaliDateHelper.ToInputValue(value, includeTime: true)"
+                       data-jdp
+                       class="public-form-input-ltr"
+                       autocomplete="off"
+                       placeholder="@(field.Placeholder ?? "1404/05/19 14:30")"
+                       inputmode="numeric" />
+                break;
+            case FormFieldTypeIds.File:
+                {
+                    var extensions = field.AllowedExtensions is { Count: > 0 }
+                        ? field.AllowedExtensions
+                        : new[] { "pdf", "doc", "docx", "txt", "jpg", "jpeg", "png", "webp" };
+                    var acceptParts = extensions
+                        .Select(ext =>
+                        {
+                            var clean = ext.Trim().TrimStart('.');
+                            return string.IsNullOrWhiteSpace(clean) ? null : $".{clean}";
+                        })
+                        .Where(x => x is not null)
+                        .Cast<string>()
+                        .ToList();
+                    if (extensions.Any(e => e.Contains("jpg", StringComparison.OrdinalIgnoreCase)
+                                            || e.Contains("jpeg", StringComparison.OrdinalIgnoreCase)
+                                            || e.Contains("png", StringComparison.OrdinalIgnoreCase)
+                                            || e.Contains("webp", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        acceptParts.Add("image/*");
+                    }
+                    if (extensions.Any(e => e.Contains("pdf", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        acceptParts.Add("application/pdf");
+                    }
+                    var accept = string.Join(',', acceptParts.Distinct(StringComparer.OrdinalIgnoreCase));
+                    var maxMb = field.MaxFileSizeBytes is > 0
+                        ? Math.Round(field.MaxFileSizeBytes.Value / (1024d * 1024d), 1)
+                        : 10d;
+                    var extLabel = string.Join("، ", extensions.Select(e => e.Trim().TrimStart('.').ToUpperInvariant()));
+                    <input id="@inputId"
+                           type="file"
+                           name="@field.Key"
+                           accept="@accept" />
+                    <p class="public-form-hint">@Localizer["FileUploadHint", extLabel, maxMb]</p>
+                }
+                break;
+            case FormFieldTypeIds.Captcha:
+                <label for="@inputId">
+                    @(string.IsNullOrWhiteSpace(field.Label) ? Localizer["Captcha"] : field.Label)
+                    <span class="public-form-required">*</span>
+                </label>
+                <input id="@inputId"
+                       type="text"
+                       name="Values[@field.Key]"
+                       value="@value"
+                       placeholder="@(field.Placeholder ?? Localizer["CaptchaPlaceholder"].Value)"
+                       autocomplete="off" />
+                break;
+            default:
+                <input id="@inputId" type="text" name="Values[@field.Key]" value="@value" placeholder="@field.Placeholder" />
+                break;
+        }
+
+        @if (!string.IsNullOrWhiteSpace(field.HelpText) && typeId is not FormFieldTypeIds.Heading and not FormFieldTypeIds.Paragraph)
+        {
+            <p class="public-form-hint">@field.HelpText</p>
+        }
+
+        @if (showValidation)
+        {
+            <span class="field-validation-valid" data-valmsg-for="Values[@field.Key]"></span>
+            @foreach (var error in ViewData.ModelState[$"Values[{field.Key}]"]?.Errors ?? [])
+            {
+                <span class="public-form-field-error">@error.ErrorMessage</span>
+            }
+        }
+    </div>
+}
+
+@if (Model.AntiSpamEnabled
+     && (Model.EnableCaptcha
+         || string.Equals(Model.AntiSpamProvider, "simple_captcha", StringComparison.OrdinalIgnoreCase))
+     && Model.Fields.All(f => !string.Equals(f.TypeId, FormFieldTypeIds.Captcha, StringComparison.OrdinalIgnoreCase)))
+{
+    <div class="public-form-field" data-field-type="simple_captcha">
+        <label asp-for="CaptchaAnswer">@Localizer["Captcha"] <span class="public-form-required">*</span></label>
+        <input asp-for="CaptchaAnswer" autocomplete="off" placeholder="@Localizer["CaptchaPlaceholder"]" />
+        <span asp-validation-for="CaptchaAnswer" class="public-form-field-error"></span>
+    </div>
+}
+
+@{
+    var externalProvider = Model.AntiSpamProvider?.Trim().ToLowerInvariant();
+    var isExternal = Model.AntiSpamEnabled && externalProvider is "turnstile" or "recaptcha" or "hcaptcha";
+    var siteKey = Model.AntiSpamSiteKey?.Trim();
+}
+@if (isExternal)
+{
+    <div class="public-form-field"
+         data-antispam-provider="@externalProvider"
+         data-antispam-sitekey="@siteKey">
+        <input type="hidden" name="AntiSpamToken" id="AntiSpamToken" value="" />
+        @if (string.IsNullOrWhiteSpace(siteKey))
+        {
+            <p class="public-form-field-error">@Localizer["AntiSpamMissingSiteKey"]</p>
+        }
+        else if (externalProvider == "turnstile")
+        {
+            <div class="cf-turnstile"
+                 data-sitekey="@siteKey"
+                 data-callback="formsAntiSpamOnToken"
+                 data-expired-callback="formsAntiSpamOnExpire"
+                 data-error-callback="formsAntiSpamOnExpire"></div>
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        }
+        else if (externalProvider == "recaptcha")
+        {
+            <div data-recaptcha-v3
+                 data-recaptcha-sitekey="@siteKey"
+                 data-recaptcha-action="form"
+                 data-recaptcha-token="AntiSpamToken"></div>
+            <script src="https://www.google.com/recaptcha/api.js?render=@siteKey" async defer></script>
+            <script src="~/js/recaptcha-v3.js" asp-append-version="true" defer></script>
+        }
+        else if (externalProvider == "hcaptcha")
+        {
+            <div class="h-captcha"
+                 data-sitekey="@siteKey"
+                 data-callback="formsAntiSpamOnToken"
+                 data-expired-callback="formsAntiSpamOnExpire"
+                 data-error-callback="formsAntiSpamOnExpire"></div>
+            <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+        }
+        <span asp-validation-for="AntiSpamToken" class="public-form-field-error"></span>
+    </div>
+    <script>
+        window.formsAntiSpamOnToken = function (token) {
+            var el = document.getElementById('AntiSpamToken');
+            if (el) el.value = token || '';
+        };
+        window.formsAntiSpamOnExpire = function () {
+            var el = document.getElementById('AntiSpamToken');
+            if (el) el.value = '';
+        };
+    </script>
+}
+
+@if (needsJalaliPicker)
+{
+    <partial name="_PublicJalaliDatePickerScripts" />
+}

@@ -1,0 +1,67 @@
+@model ServiceItemFormViewModel
+@{
+    ViewData["Title"] = Model.Publish ? Localizer["EditPost"] : Localizer["CreatePost"];
+    var autosaveUrl = Model.Id.HasValue
+        ? Url.Content($"~/api/v1/admin/services/items/{Model.Id.Value}")
+        : null;
+    var resumeDraft = ViewBag.ResumeDraft is true;
+    var editLocked = ViewBag.EditLockOwned is false;
+}
+
+<partial name="_EditLock" />
+
+<form asp-action="Edit"
+      method="post"
+      class="admin-form"
+      data-post-autosave
+      data-post-id="@Model.Id"
+      data-autosave-url="@autosaveUrl"
+      data-autosave-interval="5000"
+      data-autosave-hold="@(resumeDraft || editLocked ? "true" : null)"
+      data-msg-saving="@Localizer["AutosaveSaving"]"
+      data-msg-saved="@Localizer["AutosaveSaved"]"
+      data-msg-failed="@Localizer["AutosaveFailed"]"
+      data-msg-paused="@Localizer["AutosavePausedPublish"]"
+      data-draft-title="@CMS.Modules.Services.Application.ServiceItems.ServiceItemDraftDefaults.Title">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <partial name="_ServiceItemForm" model="Model" />
+</form>
+
+@if (resumeDraft && Model.Id.HasValue && !editLocked)
+{
+    <div class="admin-modal" id="draft-resume-modal" role="dialog" aria-modal="true" aria-labelledby="draft-resume-title">
+        <div class="admin-modal-backdrop" data-draft-resume-continue></div>
+        <div class="admin-modal-dialog admin-draft-resume-dialog">
+            <div class="admin-modal-header">
+                <h2 id="draft-resume-title">@Localizer["DraftResumeTitle"]</h2>
+            </div>
+            <p class="admin-lead">@Localizer["DraftResumeMessage"]</p>
+            <div class="admin-actions admin-draft-resume-actions">
+                <button type="button" class="btn btn-primary" data-draft-resume-continue>
+                    @Localizer["DraftResumeYes"]
+                </button>
+                <form asp-action="DiscardDraft" method="post" class="admin-inline-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-text-danger">@Localizer["DraftResumeDiscard"]</button>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<partial name="_MediaLibraryPicker" />
+
+@section Scripts {
+    <partial name="_CkEditorScripts" />
+    <partial name="_JalaliDatePickerScripts" />
+    @if (!editLocked)
+    {
+        <script src="~/admin/js/post-autosave.js" asp-append-version="true"></script>
+        @if (resumeDraft)
+        {
+            <script src="~/admin/js/post-draft-resume.js" asp-append-version="true"></script>
+        }
+    }
+}

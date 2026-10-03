@@ -1,0 +1,92 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["Login"];
+    Layout = "_AdminAuthLayout";
+    var captchaProvider = (Model.CaptchaProvider ?? string.Empty).Trim().ToLowerInvariant();
+}
+@model CMS.Web.Areas.Admin.ViewModels.LoginViewModel
+
+<div class="admin-auth-card">
+    <h1 class="admin-auth-title">@Localizer["LoginTitle"]</h1>
+    <form asp-area="Admin" asp-controller="Account" asp-action="Login" method="post" class="admin-form">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+        <div class="admin-field">
+            <label asp-for="Email">@Localizer["Email"]</label>
+            <input asp-for="Email" autocomplete="username" />
+            <span asp-validation-for="Email" class="admin-field-error"></span>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="Password">@Localizer["Password"]</label>
+            <input asp-for="Password" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="admin-field-error"></span>
+        </div>
+
+        <div class="admin-field admin-field-inline">
+            <label>
+                <input asp-for="RememberMe" />
+                @Localizer["RememberMe"]
+            </label>
+        </div>
+
+        @if (Model.CaptchaEnabled)
+        {
+            <div class="admin-field" data-admin-login-captcha="@captchaProvider">
+                @if (captchaProvider != "recaptcha")
+                {
+                    <input type="hidden" asp-for="CaptchaToken" id="CaptchaToken" />
+                }
+                @if (string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
+                {
+                    <p class="admin-field-error">@Localizer["LoginCaptchaMissingSiteKey"]</p>
+                }
+                else if (captchaProvider == "turnstile")
+                {
+                    <div class="cf-turnstile"
+                         data-sitekey="@Model.CaptchaSiteKey"
+                         data-callback="adminLoginCaptchaOnToken"
+                         data-expired-callback="adminLoginCaptchaOnExpire"
+                         data-error-callback="adminLoginCaptchaOnExpire"></div>
+                    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                }
+                else if (captchaProvider == "recaptcha")
+                {
+                    <input type="hidden" name="CaptchaToken" id="CaptchaToken" value="" />
+                    <div data-recaptcha-v3
+                         data-recaptcha-sitekey="@Model.CaptchaSiteKey"
+                         data-recaptcha-action="login"
+                         data-recaptcha-token="CaptchaToken"></div>
+                    <script src="https://www.google.com/recaptcha/api.js?render=@Model.CaptchaSiteKey" async defer></script>
+                    <script src="~/js/recaptcha-v3.js" asp-append-version="true" defer></script>
+                }
+                else if (captchaProvider == "hcaptcha")
+                {
+                    <div class="h-captcha"
+                         data-sitekey="@Model.CaptchaSiteKey"
+                         data-callback="adminLoginCaptchaOnToken"
+                         data-expired-callback="adminLoginCaptchaOnExpire"
+                         data-error-callback="adminLoginCaptchaOnExpire"></div>
+                    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+                }
+                <span asp-validation-for="CaptchaToken" class="admin-field-error"></span>
+            </div>
+            <script>
+                window.adminLoginCaptchaOnToken = function (token) {
+                    var el = document.getElementById('CaptchaToken');
+                    if (el) el.value = token || '';
+                };
+                window.adminLoginCaptchaOnExpire = function () {
+                    var el = document.getElementById('CaptchaToken');
+                    if (el) el.value = '';
+                };
+            </script>
+        }
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+            <span>@Localizer["Login"]</span>
+        </button>
+    </form>
+</div>

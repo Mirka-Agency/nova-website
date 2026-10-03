@@ -1,0 +1,68 @@
+---
+description: Auth, roles, policies, and feature gates for CMS admin and APIs
+globs: "**/*Auth*,**/*Permission*,**/*Policy*,**/Areas/Admin/**/*.cs,**/Program.cs"
+alwaysApply: false
+---
+
+# CMS Auth & Permissions
+
+Secure by default. Admin and APIs never rely on UI hiding alone.
+
+## Basics
+
+- ASP.NET Core Identity (or equivalent) for users/roles.
+- Cookie auth for Admin; JWT/Bearer only if a separate API client needs it.
+- Every Admin controller/action: `[Authorize]`. Prefer policies over role-name checks in code.
+- Antiforgery on all state-changing Admin POSTs.
+- Never store or log plain passwords.
+
+## Roles (starter set)
+
+| Role | Access |
+|------|--------|
+| `Admin` | Full CMS |
+| `Editor` | Content modules (e.g. Blog) |
+| `ShopManager` | Shop module |
+| `Viewer` | Read-only admin |
+
+Add roles when a module needs them; do not invent ad-hoc role strings in views.
+
+## Policies
+
+Define named policies in one place (e.g. `CMS.Infrastructure` / `DependencyInjection`):
+
+```csharp
+options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+options.AddPolicy("ManageShop", p => p.RequireRole("Admin", "ShopManager"));
+options.AddPolicy("ManageBlog", p => p.RequireRole("Admin", "Editor"));
+```
+
+Use:
+
+```csharp
+[Authorize(Policy = "ManageShop")]
+public class ProductsController : Controller { }
+```
+
+## Feature toggles + auth
+
+- Feature off → module routes/UI unavailable (404 or hidden nav).
+- Feature on → still require the correct policy.
+- Check features with `IFeatureManager`, not `if (shopEnabled)` flags.
+
+```csharp
+if (!await _features.IsEnabledAsync("Shop"))
+    return NotFound();
+```
+
+## UI
+
+- Hide nav items the user cannot access (policy + feature).
+- Still enforce authorization on the server for every action.
+- Forbidden → consistent Admin error page (Persian), not a stack trace.
+
+## Do Not
+
+- Authorize only in JavaScript or by omitting a sidebar link.
+- Put permission logic inside Domain entities.
+- Hardcode user IDs or emails for access control.

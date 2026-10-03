@@ -1,0 +1,103 @@
+@model FormIndexViewModel
+@using CMS.Modules.Forms.Application.Forms
+@{
+    ViewData["Title"] = Localizer["Forms"];
+    ViewData["SearchPlaceholder"] = Localizer["SearchForms"].Value;
+    ViewData["FilterFieldsPartial"] = "_FormFilters";
+    ViewBag.Search = Model.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = !string.IsNullOrWhiteSpace(Model.Search)
+        || Model.Status.HasValue;
+    var templates = ViewData["Templates"] as IReadOnlyList<FormTemplateInfoDto> ?? [];
+    var hasFilters = ViewBag.HasActiveFilters as bool? == true;
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreateForm"]</span></a>
+    <a class="btn btn-secondary" asp-controller="FormSubmissions" asp-action="Index"><i class="fas fa-inbox" aria-hidden="true"></i><span>@Localizer["Submissions"]</span></a>
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.Items.Count == 0)
+{
+    @if (!hasFilters && templates.Count > 0)
+    {
+        <p class="admin-lead">@Localizer["TemplatesHint"]</p>
+        <div class="admin-toolbar admin-row-actions" style="justify-content: flex-start;">
+            @foreach (var template in templates)
+            {
+                <form asp-action="CreateFromTemplate" method="post" class="admin-inline-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="template" value="@template.Kind" />
+                    <button type="submit" class="btn btn-secondary" title="@template.Description">@template.Name</button>
+                </form>
+            }
+        </div>
+    }
+    <div class="admin-empty-state" role="status">
+        <p class="admin-empty-message">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoForms"])</p>
+        @if (!hasFilters)
+        {
+            <a class="btn btn-primary" asp-action="Create">@Localizer["CreateForm"]</a>
+        }
+    </div>
+}
+else
+{
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Key"]</th>
+                <th>@Localizer["Slug"]</th>
+                <th>@Localizer["Status"]</th>
+                <th>@Localizer["FieldCount"]</th>
+                <th>@Localizer["SubmissionCount"]</th>
+                <th>@Localizer["CreatedAt"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                        @if (item.IsSystem)
+                        {
+                            <span class="admin-badge admin-badge-muted">@Localizer["SystemBadge"]</span>
+                        }
+                    </td>
+                    <td>@item.Key</td>
+                    <td>@item.Slug</td>
+                    <td>@item.StatusLabel</td>
+                    <td>@item.FieldCount</td>
+                    <td>@item.SubmissionCount</td>
+                    <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                        <a class="btn btn-ghost" asp-controller="FormSubmissions" asp-action="Index" asp-route-formId="@item.Id"><i class="fas fa-inbox" aria-hidden="true"></i><span>@Localizer["Inbox"]</span></a>
+                        <form asp-action="Duplicate" method="post" class="admin-inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-ghost"><i class="fas fa-copy" aria-hidden="true"></i><span>@Localizer["Duplicate"]</span></button>
+                        </form>
+                        @if (!item.IsSystem)
+                        {
+                            <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn btn-ghost"><i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span></button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" />
+}

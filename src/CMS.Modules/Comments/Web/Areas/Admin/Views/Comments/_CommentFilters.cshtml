@@ -1,0 +1,70 @@
+@{
+    var filter = (CommentListFilterViewModel)ViewBag.Filter;
+}
+
+<div class="admin-field">
+    <label for="comment-filter-target">@Localizer["Target"]</label>
+    <select id="comment-filter-target" name="targetType" asp-items="ViewBag.TargetOptions"></select>
+</div>
+
+<div class="admin-field">
+    <label for="comment-filter-status">@Localizer["Status"]</label>
+    <select id="comment-filter-status" name="status" asp-items="ViewBag.StatusOptions"></select>
+</div>
+
+<div class="admin-field">
+    <label for="comment-filter-from">@Localizer["FromDate"]</label>
+    <input id="comment-filter-from"
+           type="text"
+           name="from"
+           value="@filter.FromLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="comment-filter-to">@Localizer["ToDate"]</label>
+    <input id="comment-filter-to"
+           type="text"
+           name="to"
+           value="@filter.ToLocal"
+           data-jdp
+           class="admin-input-ltr"
+           autocomplete="off"
+           placeholder="1404/05/19"
+           inputmode="numeric" />
+</div>
+
+<div class="admin-field">
+    <label for="comment-filter-sort">@Localizer["Sort"]</label>
+    <select id="comment-filter-sort" name="sort">
+        @{
+            var sortOptions = new (string Value, string Key)[]
+            {
+                ("", "SortNewest"),
+                ("oldest", "SortOldest"),
+                ("published", "SortPublished"),
+                ("published_asc", "SortPublishedAsc"),
+                ("author", "SortAuthor"),
+                ("author_desc", "SortAuthorDesc")
+            };
+        }
+        @foreach (var opt in sortOptions)
+        {
+            var selected = string.IsNullOrEmpty(opt.Value)
+                ? string.IsNullOrEmpty(filter.Sort)
+                : string.Equals(filter.Sort, opt.Value, StringComparison.OrdinalIgnoreCase);
+            if (selected)
+            {
+                <option value="@opt.Value" selected>@Localizer[opt.Key]</option>
+            }
+            else
+            {
+                <option value="@opt.Value">@Localizer[opt.Key]</option>
+            }
+        }
+    </select>
+</div>

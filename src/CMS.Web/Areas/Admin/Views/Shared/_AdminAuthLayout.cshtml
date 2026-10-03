@@ -1,0 +1,18 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @Localizer["AdminPanel"]</title>
+    <link rel="stylesheet" href="~/admin/vendor/abar-font/abar-mid-fanum.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin/vendor/fontawesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/admin/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin admin-auth">
+    <main class="admin-auth-main">
+        <div class="admin-brand admin-auth-brand">@Localizer["Brand"]</div>
+        @RenderBody()
+    </main>
+</body>
+</html>

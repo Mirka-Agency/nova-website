@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Brand" xml:space="preserve"><value>میرکا CMS</value></data>
+  <data name="AdminPanel" xml:space="preserve"><value>پنل مدیریت</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>داشبورد</value></data>
+  <data name="Blog" xml:space="preserve"><value>وبلاگ</value></data>
+  <data name="News" xml:space="preserve"><value>رویدادها و اخبار</value></data>
+  <data name="NewsArticles" xml:space="preserve"><value>اخبار و رویدادها</value></data>
+  <data name="NewsCategories" xml:space="preserve"><value>دسته‌های اخبار</value></data>
+  <data name="Services" xml:space="preserve"><value>خدمات</value></data>
+  <data name="ServiceItems" xml:space="preserve"><value>خدمات</value></data>
+  <data name="Video" xml:space="preserve"><value>ویدیو</value></data>
+  <data name="VideoItems" xml:space="preserve"><value>ویدیوها</value></data>
+  <data name="VideoCategories" xml:space="preserve"><value>دسته‌های ویدیو</value></data>
+  <data name="ManageVideoItems" xml:space="preserve"><value>مدیریت ویدیوها</value></data>
+  <data name="Team" xml:space="preserve"><value>تیم</value></data>
+  <data name="TeamItems" xml:space="preserve"><value>اعضای تیم</value></data>
+  <data name="TeamCategories" xml:space="preserve"><value>دسته‌های تیم</value></data>
+  <data name="ManageTeamItems" xml:space="preserve"><value>مدیریت تیم</value></data>
+  <data name="ServiceCategories" xml:space="preserve"><value>دسته‌های خدمات</value></data>
+  <data name="Posts" xml:space="preserve"><value>مطالب</value></data>
+  <data name="Categories" xml:space="preserve"><value>دسته‌ها</value></data>
+  <data name="Tags" xml:space="preserve"><value>برچسب‌ها</value></data>
+  <data name="Shop" xml:space="preserve"><value>فروشگاه</value></data>
+  <data name="ShopHome" xml:space="preserve"><value>داشبورد</value></data>
+  <data name="Products" xml:space="preserve"><value>محصولات</value></data>
+  <data name="AllProducts" xml:space="preserve"><value>همه محصولات</value></data>
+  <data name="AddProduct" xml:space="preserve"><value>افزودن محصول</value></data>
+  <data name="ShopCategories" xml:space="preserve"><value>دسته‌های فروشگاه</value></data>
+  <data name="ProductCategories" xml:space="preserve"><value>دسته‌ها</value></data>
+  <data name="CategoriesAndBrands" xml:space="preserve"><value>دسته‌ها و برند ها</value></data>
+  <data name="ShopSettings" xml:space="preserve"><value>تنظیمات</value></data>
+  <data name="Coupons" xml:space="preserve"><value>کد تخفیف</value></data>
+  <data name="ShippingMethods" xml:space="preserve"><value>روش‌های ارسال</value></data>
+  <data name="PaymentProviders" xml:space="preserve"><value>درگاه‌های پرداخت</value></data>
+  <data name="Orders" xml:space="preserve"><value>سفارش‌ها</value></data>
+  <data name="AllOrders" xml:space="preserve"><value>همه سفارش‌ها</value></data>
+  <data name="OrdersPending" xml:space="preserve"><value>در انتظار پرداخت</value></data>
+  <data name="OrdersProcessing" xml:space="preserve"><value>در حال آماده‌سازی</value></data>
+  <data name="OrdersShipped" xml:space="preserve"><value>ارسال‌شده</value></data>
+  <data name="OrdersCompleted" xml:space="preserve"><value>تکمیل‌شده</value></data>
+  <data name="OrdersCancelled" xml:space="preserve"><value>لغو شده</value></data>
+  <data name="System" xml:space="preserve"><value>سیستم</value></data>
+  <data name="MediaLibrary" xml:space="preserve"><value>رسانه</value></data>
+  <data name="MediaLibraryEmpty" xml:space="preserve"><value>کتابخانه خالی است. ابتدا از بخش رسانه فایل آپلود کنید.</value></data>
+  <data name="SiteSettings" xml:space="preserve"><value>تنظیمات سایت</value></data>
+  <data name="SiteSettingsUpdated" xml:space="preserve"><value>تنظیمات سایت ذخیره شد.</value></data>
+  <data name="SiteName" xml:space="preserve"><value>نام سایت</value></data>
+  <data name="Tagline" xml:space="preserve"><value>شعار</value></data>
+  <data name="ContactEmail" xml:space="preserve"><value>ایمیل تماس</value></data>
+  <data name="ContactPhone" xml:space="preserve"><value>تلفن تماس</value></data>
+  <data name="Address" xml:space="preserve"><value>آدرس</value></data>
+  <data name="FooterText" xml:space="preserve"><value>متن فوتر</value></data>
+  <data name="SettingsSectionIdentity" xml:space="preserve"><value>هویت برند</value></data>
+  <data name="SettingsSectionContact" xml:space="preserve"><value>تماس و فوتر</value></data>
+  <data name="SettingsSectionSeo" xml:space="preserve"><value>سئو و اشتراک‌گذاری</value></data>
+  <data name="SettingsSectionSocial" xml:space="preserve"><value>شبکه‌های اجتماعی</value></data>
+  <data name="SettingsSectionAdvanced" xml:space="preserve"><value>نگهداری</value></data>
+  <data name="LogoUrl" xml:space="preserve"><value>لوگو</value></data>
+  <data name="FaviconUrl" xml:space="preserve"><value>فاویکون</value></data>
+  <data name="ImageUploadHint" xml:space="preserve"><value>JPEG، PNG، WebP یا GIF تا ۵ مگابایت — اصلی نگه داشته و به WebP تبدیل می‌شود</value></data>
+  <data name="CustomizeOptimize" xml:space="preserve"><value>تنظیم اختیاری تغییر اندازه و فشرده‌سازی</value></data>
+  <data name="CustomizeOptimizeHint" xml:space="preserve"><value>در صورت خالی بودن، حداکثر بعد ۲۵۶۰ پیکسل و کیفیت ۸۲ استفاده می‌شود</value></data>
+  <data name="MaxWidth" xml:space="preserve"><value>حداکثر عرض/ارتفاع (پیکسل)</value></data>
+  <data name="MaxWidthHint" xml:space="preserve"><value>بزرگ‌ترین ضلع تصویر نمایشی؛ خالی = پیش‌فرض</value></data>
+  <data name="CompressQuality" xml:space="preserve"><value>کیفیت فشرده‌سازی WebP</value></data>
+  <data name="CompressQualityHint" xml:space="preserve"><value>۴۰ تا ۱۰۰؛ عدد کمتر = حجم کمتر؛ خالی = پیش‌فرض</value></data>
+  <data name="InvalidImageType" xml:space="preserve"><value>فقط تصویر مجاز است.</value></data>
+  <data name="ImageTooLarge" xml:space="preserve"><value>حجم تصویر حداکثر ۵ مگابایت است.</value></data>
+  <data name="MetaTitle" xml:space="preserve"><value>عنوان متا (پیش‌فرض)</value></data>
+  <data name="MetaTitleHelp" xml:space="preserve"><value>اگر خالی باشد، نام سایت به‌عنوان عنوان استفاده می‌شود.</value></data>
+  <data name="MetaDescription" xml:space="preserve"><value>توضیح متا</value></data>
+  <data name="DefaultOgImageUrl" xml:space="preserve"><value>تصویر پیش‌فرض اشتراک‌گذاری (OG)</value></data>
+  <data name="InstagramUrl" xml:space="preserve"><value>اینستاگرام</value></data>
+  <data name="TelegramUrl" xml:space="preserve"><value>تلگرام</value></data>
+  <data name="TwitterUrl" xml:space="preserve"><value>اکس / توییتر</value></data>
+  <data name="LinkedInUrl" xml:space="preserve"><value>لینکدین</value></data>
+  <data name="SiteScripts" xml:space="preserve"><value>اسکریپت‌ها</value></data>
+  <data name="SiteScriptsUpdated" xml:space="preserve"><value>اسکریپت‌های سایت ذخیره شد.</value></data>
+  <data name="SiteScriptsIntro" xml:space="preserve"><value>فقط کد مورد اعتماد وارد کنید؛ این مقادیر بدون فیلتر در صفحات عمومی تزریق می‌شوند.</value></data>
+  <data name="HeadScripts" xml:space="preserve"><value>اسکریپت‌های head</value></data>
+  <data name="HeadScriptsHelp" xml:space="preserve"><value>قبل از بسته شدن تگ &lt;/head&gt; قرار می‌گیرد. مناسب Analytics، متاتگ‌ها و استایل‌های سفارشی.</value></data>
+  <data name="BodyOpenScripts" xml:space="preserve"><value>اسکریپت‌های بعد از body</value></data>
+  <data name="BodyOpenScriptsHelp" xml:space="preserve"><value>بلافاصله بعد از باز شدن تگ &lt;body&gt; قرار می‌گیرد. مناسب noscript و تگ‌های ابتدای صفحه.</value></data>
+  <data name="BodyCloseScripts" xml:space="preserve"><value>اسکریپت‌های انتهای body</value></data>
+  <data name="BodyCloseScriptsHelp" xml:space="preserve"><value>قبل از بسته شدن تگ &lt;/body&gt; قرار می‌گیرد. مناسب ویجت‌ها و اسکریپت‌های انتهای صفحه.</value></data>
+  <data name="MaintenanceMode" xml:space="preserve"><value>حالت تعمیر و نگهداری</value></data>
+  <data name="MaintenanceModeHelp" xml:space="preserve"><value>با فعال‌سازی، بازدیدکنندگان عمومی سایت را نمی‌بینند؛ ادمین همچنان دسترسی دارد.</value></data>
+  <data name="MaintenanceMessage" xml:space="preserve"><value>پیام حالت تعمیر</value></data>
+  <data name="SelectFromLibrary" xml:space="preserve"><value>انتخاب از کتابخانه</value></data>
+  <data name="NavigationMenu" xml:space="preserve"><value>منوی سایت</value></data>
+  <data name="AddNavigationItem" xml:space="preserve"><value>افزودن آیتم منو</value></data>
+  <data name="NavigationItemCreated" xml:space="preserve"><value>آیتم منو اضافه شد.</value></data>
+  <data name="NavigationItemUpdated" xml:space="preserve"><value>آیتم منو به‌روز شد.</value></data>
+  <data name="NavigationItemDeleted" xml:space="preserve"><value>آیتم منو حذف شد.</value></data>
+  <data name="NavigationEmpty" xml:space="preserve"><value>منوی سفارشی تعریف نشده؛ منوی پیش‌فرض نمایش داده می‌شود.</value></data>
+  <data name="AuditLog" xml:space="preserve"><value>گزارش فعالیت</value></data>
+  <data name="AuditEmpty" xml:space="preserve"><value>هنوز فعالیتی ثبت نشده است.</value></data>
+  <data name="AdminSearch" xml:space="preserve"><value>جستجوی سراسری</value></data>
+  <data name="Search" xml:space="preserve"><value>جستجو</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>عنوان، نامک یا فایل…</value></data>
+  <data name="SearchHint" xml:space="preserve"><value>در مطالب، محصولات، فرم‌ها و رسانه جستجو کنید.</value></data>
+  <data name="SearchNoResults" xml:space="preserve"><value>نتیجه‌ای یافت نشد.</value></data>
+  <data name="Module" xml:space="preserve"><value>ماژول</value></data>
+  <data name="Open" xml:space="preserve"><value>باز کردن</value></data>
+  <data name="Label" xml:space="preserve"><value>برچسب</value></data>
+  <data name="Url" xml:space="preserve"><value>آدرس</value></data>
+  <data name="SortOrder" xml:space="preserve"><value>ترتیب</value></data>
+  <data name="Visible" xml:space="preserve"><value>نمایش</value></data>
+  <data name="OpenInNewTab" xml:space="preserve"><value>باز شدن در تب جدید</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="Time" xml:space="preserve"><value>زمان</value></data>
+  <data name="User" xml:space="preserve"><value>کاربر</value></data>
+  <data name="Action" xml:space="preserve"><value>عملیات</value></data>
+  <data name="Entity" xml:space="preserve"><value>موجودیت</value></data>
+  <data name="Details" xml:space="preserve"><value>جزئیات</value></data>
+  <data name="Forms" xml:space="preserve"><value>فرم‌ها</value></data>
+  <data name="Popups" xml:space="preserve"><value>پاپ‌آپ‌ها</value></data>
+  <data name="ManagePopups" xml:space="preserve"><value>مدیریت پاپ‌آپ‌ها</value></data>
+  <data name="Seo" xml:space="preserve"><value>سئو</value></data>
+  <data name="SeoSettings" xml:space="preserve"><value>تنظیمات سئو</value></data>
+  <data name="SeoRedirects" xml:space="preserve"><value>ریدایرکت‌ها</value></data>
+  <data name="ManageSeo" xml:space="preserve"><value>مدیریت سئو</value></data>
+  <data name="FormSubmissions" xml:space="preserve"><value>پاسخ‌های فرم</value></data>
+  <data name="FormSubmissionsArchive" xml:space="preserve"><value>بایگانی</value></data>
+  <data name="UnreadFormSubmissions" xml:space="preserve"><value>{0} پاسخ خوانده‌نشده</value></data>
+  <data name="NewOrders" xml:space="preserve"><value>{0} سفارش جدید</value></data>
+  <data name="Comments" xml:space="preserve"><value>کامنت‌ها</value></data>
+  <data name="AllComments" xml:space="preserve"><value>همه کامنت‌ها</value></data>
+  <data name="BlogComments" xml:space="preserve"><value>کامنت‌های وبلاگ</value></data>
+  <data name="EventComments" xml:space="preserve"><value>کامنت‌های رویداد</value></data>
+  <data name="ProductComments" xml:space="preserve"><value>کامنت‌های محصول</value></data>
+  <data name="ProductCategoryComments" xml:space="preserve"><value>کامنت‌های دسته محصول</value></data>
+  <data name="CommentSettings" xml:space="preserve"><value>تنظیمات کامنت</value></data>
+  <data name="Users" xml:space="preserve"><value>کاربران</value></data>
+  <data name="Features" xml:space="preserve"><value>امکانات</value></data>
+  <data name="Logout" xml:space="preserve"><value>خروج</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Cancel" xml:space="preserve"><value>انصراف</value></data>
+  <data name="CreateUser" xml:space="preserve"><value>ایجاد کاربر</value></data>
+  <data name="EditUser" xml:space="preserve"><value>ویرایش کاربر</value></data>
+  <data name="LoginTitle" xml:space="preserve"><value>ورود به پنل مدیریت</value></data>
+  <data name="Login" xml:space="preserve"><value>ورود</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>مرا به خاطر بسپار</value></data>
+  <data name="LoginFailed" xml:space="preserve"><value>ایمیل یا رمز عبور نادرست است.</value></data>
+  <data name="LoginCaptchaFailed" xml:space="preserve"><value>تأیید امنیتی ناموفق بود.</value></data>
+  <data name="LoginCaptchaMissingSiteKey" xml:space="preserve"><value>کلید سایت کپچای ورود ادمین پیکربندی نشده است.</value></data>
+  <data name="AccountLocked" xml:space="preserve"><value>حساب شما موقتاً قفل شده است. لطفاً بعداً تلاش کنید.</value></data>
+  <data name="AccessDeniedTitle" xml:space="preserve"><value>دسترسی غیرمجاز</value></data>
+  <data name="AccessDeniedMessage" xml:space="preserve"><value>شما مجوز مشاهده این بخش را ندارید.</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>بازگشت به داشبورد</value></data>
+  <data name="Welcome" xml:space="preserve"><value>به پنل مدیریت خوش آمدید.</value></data>
+  <data name="Email" xml:space="preserve"><value>ایمیل</value></data>
+  <data name="FullName" xml:space="preserve"><value>نام کامل</value></data>
+  <data name="PhoneNumber" xml:space="preserve"><value>شماره موبایل</value></data>
+  <data name="Password" xml:space="preserve"><value>رمز عبور</value></data>
+  <data name="Roles" xml:space="preserve"><value>نقش‌ها</value></data>
+  <data name="AllRoles" xml:space="preserve"><value>همه نقش‌ها</value></data>
+  <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
+  <data name="Active" xml:space="preserve"><value>فعال</value></data>
+  <data name="Locked" xml:space="preserve"><value>قفل‌شده</value></data>
+  <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
+  <data name="LockAccount" xml:space="preserve"><value>قفل حساب</value></data>
+  <data name="NoUsers" xml:space="preserve"><value>هنوز کاربری ثبت نشده است.</value></data>
+  <data name="UserCreated" xml:space="preserve"><value>کاربر با موفقیت ایجاد شد.</value></data>
+  <data name="UserUpdated" xml:space="preserve"><value>کاربر به‌روزرسانی شد.</value></data>
+  <data name="EmailExists" xml:space="preserve"><value>این ایمیل قبلاً ثبت شده است. برای تغییر مشخصات از ویرایش کاربر استفاده کنید.</value></data>
+  <data name="LastAdminRole" xml:space="preserve"><value>نمی‌توان نقش مدیر را از آخرین کاربر مدیر حذف کرد.</value></data>
+  <data name="FeatureName" xml:space="preserve"><value>امکان</value></data>
+  <data name="Enabled" xml:space="preserve"><value>فعال</value></data>
+  <data name="Disabled" xml:space="preserve"><value>غیرفعال</value></data>
+  <data name="Enable" xml:space="preserve"><value>فعال‌سازی</value></data>
+  <data name="Disable" xml:space="preserve"><value>غیرفعال‌سازی</value></data>
+  <data name="FeatureUpdated" xml:space="preserve"><value>وضعیت امکان به‌روزرسانی شد.</value></data>
+  <data name="FeaturesTitle" xml:space="preserve"><value>مدیریت امکانات</value></data>
+  <data name="FeaturesHelp" xml:space="preserve"><value>فعال یا غیرفعال کردن یک امکان، دسترسی ادمین و صفحات عمومی همان بخش را تغییر می‌دهد.</value></data>
+  <data name="ConfirmDisableFeature" xml:space="preserve"><value>آیا از غیرفعال‌سازی «{0}» مطمئن هستید؟ این بخش از پنل و سایت عمومی پنهان می‌شود.</value></data>
+  <data name="ConfirmEnableFeature" xml:space="preserve"><value>آیا از فعال‌سازی «{0}» مطمئن هستید؟</value></data>
+  <data name="SkipToContent" xml:space="preserve"><value>پرش به محتوا</value></data>
+  <data name="CloseMenu" xml:space="preserve"><value>بستن منو</value></data>
+  <data name="Menu" xml:space="preserve"><value>منو</value></data>
+  <data name="Dismiss" xml:space="preserve"><value>بستن</value></data>
+  <data name="AdminNav" xml:space="preserve"><value>ناوبری مدیریت</value></data>
+  <data name="DashboardEmpty" xml:space="preserve"><value>برای نقش شما هنوز میانبری در داشبورد تعریف نشده است.</value></data>
+  <data name="ManagePosts" xml:space="preserve"><value>مدیریت مطالب</value></data>
+  <data name="ManageNewsArticles" xml:space="preserve"><value>مدیریت اخبار و رویدادها</value></data>
+  <data name="ManageServiceItems" xml:space="preserve"><value>مدیریت خدمات</value></data>
+  <data name="ManageProducts" xml:space="preserve"><value>مدیریت محصولات</value></data>
+  <data name="ManageOrders" xml:space="preserve"><value>مدیریت سفارش‌ها</value></data>
+  <data name="ManageForms" xml:space="preserve"><value>مدیریت فرم‌ها</value></data>
+  <data name="ViewSubmissions" xml:space="preserve"><value>مشاهده پاسخ‌ها</value></data>
+  <data name="ManageMedia" xml:space="preserve"><value>مدیریت رسانه</value></data>
+  <data name="ManageUsers" xml:space="preserve"><value>مدیریت کاربران</value></data>
+  <data name="SearchUsers" xml:space="preserve"><value>جستجوی کاربر…</value></data>
+  <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
+  <data name="Filters" xml:space="preserve"><value>فیلترها</value></data>
+  <data name="ApplyFilters" xml:space="preserve"><value>اعمال فیلتر</value></data>
+  <data name="ClearFilters" xml:space="preserve"><value>پاک کردن</value></data>
+  <data name="AccountMenu" xml:space="preserve"><value>منوی حساب کاربری</value></data>
+  <data name="EditProfile" xml:space="preserve"><value>ویرایش پروفایل</value></data>
+  <data name="ChangePassword" xml:space="preserve"><value>تغییر رمز عبور</value></data>
+  <data name="CurrentPassword" xml:space="preserve"><value>رمز عبور فعلی</value></data>
+  <data name="NewPassword" xml:space="preserve"><value>رمز عبور جدید</value></data>
+  <data name="ConfirmPassword" xml:space="preserve"><value>تکرار رمز عبور جدید</value></data>
+  <data name="ProfileUpdated" xml:space="preserve"><value>پروفایل با موفقیت به‌روزرسانی شد.</value></data>
+  <data name="PasswordChanged" xml:space="preserve"><value>رمز عبور با موفقیت تغییر کرد.</value></data>
+  <data name="Role_Admin" xml:space="preserve"><value>مدیر</value></data>
+  <data name="Role_Editor" xml:space="preserve"><value>ویرایشگر</value></data>
+  <data name="Role_ShopManager" xml:space="preserve"><value>مدیر فروشگاه</value></data>
+  <data name="Role_Viewer" xml:space="preserve"><value>بازدیدکننده</value></data>
+  <data name="SetUserPassword" xml:space="preserve"><value>تغییر رمز عبور</value></data>
+  <data name="SetUserPasswordFor" xml:space="preserve"><value>تنظیم رمز عبور برای</value></data>
+  <data name="UserPasswordChanged" xml:space="preserve"><value>رمز عبور کاربر با موفقیت تغییر کرد.</value></data>
+  <data name="PhoneVerified" xml:space="preserve"><value>موبایل تأیید شده</value></data>
+  <data name="PhoneUnverified" xml:space="preserve"><value>موبایل تأیید نشده</value></data>
+  <data name="SelectImage" xml:space="preserve"><value>انتخاب تصویر</value></data>
+  <data name="RemoveImage" xml:space="preserve"><value>حذف تصویر</value></data>
+  <data name="SelectImageHint" xml:space="preserve"><value>کتابخانه رسانه را باز کنید تا از تصاویر موجود انتخاب کنید یا فایل جدید آپلود کنید.</value></data>
+  <data name="MediaLibraryTab" xml:space="preserve"><value>کتابخانه رسانه</value></data>
+  <data name="UploadTab" xml:space="preserve"><value>آپلود فایل</value></data>
+  <data name="UploadAndSelect" xml:space="preserve"><value>آپلود و انتخاب</value></data>
+  <data name="Uploading" xml:space="preserve"><value>در حال آپلود…</value></data>
+  <data name="LoadingMedia" xml:space="preserve"><value>در حال بارگذاری…</value></data>
+  <data name="SelectFile" xml:space="preserve"><value>انتخاب فایل</value></data>
+  <data name="Title" xml:space="preserve"><value>عنوان</value></data>
+  <data name="Avatar" xml:space="preserve"><value>آواتار</value></data>
+  <data name="AvatarHint" xml:space="preserve"><value>اختیاری؛ اگر خالی باشد از Gravatar بر اساس ایمیل استفاده می‌شود.</value></data>
+  <data name="UseGravatar" xml:space="preserve"><value>استفاده از Gravatar</value></data>
+  <data name="MessageLogs" xml:space="preserve"><value>آمار پیامک و ایمیل</value></data>
+  <data name="MessageLogsEmpty" xml:space="preserve"><value>هنوز پیامکی یا ایمیلی ثبت نشده است.</value></data>
+  <data name="Period" xml:space="preserve"><value>بازه زمانی</value></data>
+  <data name="PeriodToday" xml:space="preserve"><value>امروز</value></data>
+  <data name="PeriodLast7Days" xml:space="preserve"><value>۷ روز اخیر</value></data>
+  <data name="PeriodLast30Days" xml:space="preserve"><value>۳۰ روز اخیر</value></data>
+  <data name="PeriodLast90Days" xml:space="preserve"><value>۹۰ روز اخیر</value></data>
+  <data name="PeriodCustom" xml:space="preserve"><value>بازه دلخواه</value></data>
+  <data name="FromDate" xml:space="preserve"><value>از تاریخ</value></data>
+  <data name="ToDate" xml:space="preserve"><value>تا تاریخ</value></data>
+  <data name="SmsSent" xml:space="preserve"><value>پیامک ارسال‌شده</value></data>
+  <data name="EmailSent" xml:space="preserve"><value>ایمیل ارسال‌شده</value></data>
+  <data name="MessageFailed" xml:space="preserve"><value>ناموفق</value></data>
+  <data name="MessageSkipped" xml:space="preserve"><value>ردشده / پیکربندی‌نشده</value></data>
+  <data name="DailyBreakdown" xml:space="preserve"><value>آمار روزانه</value></data>
+  <data name="RecentMessages" xml:space="preserve"><value>آخرین پیام‌ها</value></data>
+  <data name="Channel" xml:space="preserve"><value>کانال</value></data>
+  <data name="Recipient" xml:space="preserve"><value>گیرنده</value></data>
+  <data name="Sms" xml:space="preserve"><value>پیامک</value></data>
+  <data name="Succeeded" xml:space="preserve"><value>موفق</value></data>
+  <data name="Failed" xml:space="preserve"><value>ناموفق</value></data>
+  <data name="Skipped" xml:space="preserve"><value>ردشده</value></data>
+  <data name="Date" xml:space="preserve"><value>تاریخ</value></data>
+  <data name="EditLockedTitle" xml:space="preserve"><value>در حال ویرایش توسط کاربر دیگر</value></data>
+  <data name="EditLockedBy" xml:space="preserve"><value>کاربر «{0}» در حال ویرایش این مورد است. فعلاً امکان ویرایش وجود ندارد.</value></data>
+  <data name="EditLockedHint" xml:space="preserve"><value>اگر صفحهٔ آن کاربر بسته شود، حداکثر تا ۱ دقیقه دیگر قفل آزاد می‌شود.</value></data>
+  <data name="EditLockLost" xml:space="preserve"><value>قفل ویرایش شما منقضی شده یا این مورد توسط کاربر دیگری گرفته شده است.</value></data>
+</root>

@@ -1,0 +1,9 @@
+@font-face {
+  font-family: "Abar Mid Fanum";
+  src:
+    url("woff2/abarfanum-vf.woff2") format("woff2"),
+    url("woff/abarfanum-vf.woff") format("woff");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}

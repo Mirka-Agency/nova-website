@@ -1,0 +1,356 @@
+@model OrderShipmentPrintViewModel
+@{
+    Layout = null;
+    var dash = "—";
+    var sellerCity = string.Join("، ", new[] { Model.SellerProvince, Model.SellerCity }.Where(s => !string.IsNullOrWhiteSpace(s)));
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@Localizer["PrintShipment"]</title>
+    <link rel="stylesheet" href="~/admin/vendor/vazirmatn/vazirmatn.css" asp-append-version="true" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        body {
+            font-family: "Vazirmatn", "IRANSans", Tahoma, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #111;
+            background: #eef2f7;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        body.paper-a4 .print-toolbar,
+        body.paper-a4 .shipment-sheet { width: 297mm; }
+        body.paper-a5 .print-toolbar,
+        body.paper-a5 .shipment-sheet { width: 210mm; }
+
+        .print-toolbar {
+            margin: 0 0 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .print-toolbar button,
+        .print-toolbar a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            color: #111;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            font-size: 13px;
+        }
+        .print-toolbar button.primary {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #fff;
+        }
+        .print-toolbar button.is-active {
+            background: #111;
+            border-color: #111;
+            color: #fff;
+        }
+        .paper-size-group {
+            display: inline-flex;
+            gap: 4px;
+            margin-inline-start: auto;
+        }
+
+        .shipment-sheet {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+            padding: 8mm 10mm;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        body.paper-a5 .shipment-sheet { min-height: 148mm; }
+        body.paper-a4 .shipment-sheet { min-height: 210mm; }
+
+        .label-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #111;
+            flex-shrink: 0;
+        }
+        .label-brand img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        .label-brand-text h1 {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .parties-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex: 1;
+            border: 2px solid #111;
+            border-radius: 6px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .party-block {
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .party-block--sender {
+            background: #f8fafc;
+            border-inline-start: 2px solid #111;
+        }
+        .party-block--recipient {
+            background: #fff;
+        }
+
+        .party-block h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            color: #111;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #111;
+            line-height: 1.2;
+        }
+
+        .party-fields {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-row {
+            margin-bottom: 8px;
+        }
+        .field-row .label {
+            display: block;
+            font-size: 10px;
+            color: #64748b;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+        .field-row .value {
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .party-block--sender .field-row--name .value { font-size: 14px; }
+        .party-block--sender .field-row--phone .value,
+        .party-block--sender .field-row--address .value { font-size: 13px; font-weight: 700; }
+
+        .party-block--recipient .field-row--name .value { font-size: 22px; font-weight: 800; line-height: 1.35; }
+        .party-block--recipient .field-row--phone .value {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+        .party-block--recipient .field-row--city .value { font-size: 16px; font-weight: 700; }
+        .party-block--recipient .field-row--address .value {
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .postal-code-box {
+            margin-top: auto;
+            padding-top: 10px;
+        }
+        .postal-code-box .label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+        .postal-code-box .value {
+            display: block;
+            padding: 8px 10px;
+            border: 2px solid #111;
+            border-radius: 6px;
+            text-align: center;
+            background: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            direction: ltr;
+            font-variant-numeric: tabular-nums;
+        }
+        .party-block--sender .postal-code-box .value { font-size: 15px; letter-spacing: 0.12em; }
+        .party-block--recipient .postal-code-box .value {
+            font-size: 24px;
+            letter-spacing: 0.2em;
+            background: #f8fafc;
+        }
+
+        @@page {
+            margin: 6mm;
+        }
+        @@media print {
+            html, body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                display: block;
+            }
+            .print-toolbar { display: none !important; }
+            .shipment-sheet {
+                width: 100% !important;
+                min-height: 0 !important;
+                height: 100%;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+        body.paper-a5 @@page { size: A5 landscape; }
+        body.paper-a4 @@page { size: A4 landscape; }
+
+        @@media screen and (max-width: 220mm) {
+            body { padding: 10px; }
+            body.paper-a4 .print-toolbar,
+            body.paper-a4 .shipment-sheet,
+            body.paper-a5 .print-toolbar,
+            body.paper-a5 .shipment-sheet {
+                width: 100%;
+                min-width: 0;
+            }
+            body.paper-a4 .shipment-sheet,
+            body.paper-a5 .shipment-sheet { min-height: auto; }
+            .parties-grid { grid-template-columns: 1fr; }
+            .party-block--sender { border-inline-start: none; border-top: 2px solid #111; }
+        }
+    </style>
+</head>
+<body class="paper-a5">
+    <div class="print-toolbar">
+        <button type="button" class="primary" onclick="window.print()">@Localizer["Print"]</button>
+        <a href="javascript:history.back()">@Localizer["Back"]</a>
+        <div class="paper-size-group" role="group" aria-label="@Localizer["ShipmentPaperSize"]">
+            <button type="button" class="paper-btn is-active" data-paper="a5" onclick="setPaperSize('a5')">A5</button>
+            <button type="button" class="paper-btn" data-paper="a4" onclick="setPaperSize('a4')">A4</button>
+        </div>
+    </div>
+
+    <article class="shipment-sheet">
+        <header class="label-brand">
+            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+            {
+                <img src="@Model.LogoUrl" alt="@(Model.SiteName ?? Model.SellerName ?? Localizer["Shop"].Value)" />
+            }
+            <div class="label-brand-text">
+                <h1>@(Model.SellerName ?? Model.SiteName ?? Localizer["Shop"].Value)</h1>
+            </div>
+        </header>
+
+        <div class="parties-grid">
+            <section class="party-block party-block--recipient">
+                <h2>@Localizer["Recipient"]</h2>
+                <div class="party-fields">
+                    <div class="field-row field-row--name">
+                        <span class="label">@Localizer["Name"]</span>
+                        <span class="value">@Model.RecipientName</span>
+                    </div>
+                    <div class="field-row field-row--phone">
+                        <span class="label">@Localizer["CustomerPhone"]</span>
+                        <span class="value" dir="ltr">@(Model.RecipientPhone ?? dash)</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.ShippingCity))
+                    {
+                        <div class="field-row field-row--city">
+                            <span class="label">@Localizer["ShippingCity"]</span>
+                            <span class="value">@Model.ShippingCity</span>
+                        </div>
+                    }
+                    <div class="field-row field-row--address">
+                        <span class="label">@Localizer["ShippingAddress"]</span>
+                        <span class="value">@(Model.ShippingAddress ?? dash)</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.RecipientPostalCode))
+                    {
+                        <div class="postal-code-box">
+                            <span class="label">@Localizer["PostalCode"]</span>
+                            <span class="value">@Model.RecipientPostalCode</span>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <section class="party-block party-block--sender">
+                <h2>@Localizer["Sender"]</h2>
+                <div class="party-fields">
+                    <div class="field-row field-row--name">
+                        <span class="label">@Localizer["Name"]</span>
+                        <span class="value">@(Model.SellerName ?? dash)</span>
+                    </div>
+                    <div class="field-row field-row--phone">
+                        <span class="label">@Localizer["CustomerPhone"]</span>
+                        <span class="value" dir="ltr">@(Model.SellerPhone ?? dash)</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(sellerCity))
+                    {
+                        <div class="field-row">
+                            <span class="label">@Localizer["ShippingCity"]</span>
+                            <span class="value">@sellerCity</span>
+                        </div>
+                    }
+                    <div class="field-row field-row--address">
+                        <span class="label">@Localizer["SellerAddress"]</span>
+                        <span class="value">@(Model.SellerAddress ?? dash)</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.SellerPostalCode))
+                    {
+                        <div class="postal-code-box">
+                            <span class="label">@Localizer["PostalCode"]</span>
+                            <span class="value">@Model.SellerPostalCode</span>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+    </article>
+
+    <script>
+        (function () {
+            var key = "cms-shipment-paper";
+            var saved = localStorage.getItem(key);
+            if (saved === "a4" || saved === "a5") setPaperSize(saved, false);
+        })();
+
+        function setPaperSize(size, persist) {
+            if (persist !== false) localStorage.setItem("cms-shipment-paper", size);
+            document.body.classList.remove("paper-a4", "paper-a5");
+            document.body.classList.add(size === "a4" ? "paper-a4" : "paper-a5");
+            document.querySelectorAll(".paper-btn").forEach(function (btn) {
+                btn.classList.toggle("is-active", btn.getAttribute("data-paper") === size);
+            });
+        }
+    </script>
+</body>
+</html>

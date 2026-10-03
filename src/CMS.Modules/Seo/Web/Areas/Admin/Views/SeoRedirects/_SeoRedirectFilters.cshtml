@@ -1,0 +1,9 @@
+@model SeoRedirectIndexViewModel
+<div class="admin-field">
+    <label for="filter-active">@Localizer["Status"]</label>
+    <select id="filter-active" name="active">
+        <option value="">@Localizer["AllStatuses"]</option>
+        <option value="true" selected="@(Model.IsActive == true)">@Localizer["Active"]</option>
+        <option value="false" selected="@(Model.IsActive == false)">@Localizer["Inactive"]</option>
+    </select>
+</div>

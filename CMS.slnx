@@ -1,0 +1,137 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CMS.Application/CMS.Application.csproj" />
+    <Project Path="src/CMS.Domain/CMS.Domain.csproj" />
+    <Project Path="src/CMS.Infrastructure/CMS.Infrastructure.csproj" />
+    <Project Path="src/CMS.Web/CMS.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/" />
+  <Folder Name="/src/CMS.Modules/Blog/" />
+  <Folder Name="/src/CMS.Modules/Blog/Application/">
+    <Project Path="src/CMS.Modules/Blog/Application/CMS.Modules.Blog.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Blog/Domain/">
+    <Project Path="src/CMS.Modules/Blog/Domain/CMS.Modules.Blog.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Blog/Infrastructure/">
+    <Project Path="src/CMS.Modules/Blog/Infrastructure/CMS.Modules.Blog.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Blog/Web/">
+    <Project Path="src/CMS.Modules/Blog/Web/CMS.Modules.Blog.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Services/" />
+  <Folder Name="/src/CMS.Modules/Services/Application/">
+    <Project Path="src/CMS.Modules/Services/Application/CMS.Modules.Services.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Services/Domain/">
+    <Project Path="src/CMS.Modules/Services/Domain/CMS.Modules.Services.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Services/Infrastructure/">
+    <Project Path="src/CMS.Modules/Services/Infrastructure/CMS.Modules.Services.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Services/Web/">
+    <Project Path="src/CMS.Modules/Services/Web/CMS.Modules.Services.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Video/" />
+  <Folder Name="/src/CMS.Modules/Video/Application/">
+    <Project Path="src/CMS.Modules/Video/Application/CMS.Modules.Video.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Video/Domain/">
+    <Project Path="src/CMS.Modules/Video/Domain/CMS.Modules.Video.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Video/Infrastructure/">
+    <Project Path="src/CMS.Modules/Video/Infrastructure/CMS.Modules.Video.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Video/Web/">
+    <Project Path="src/CMS.Modules/Video/Web/CMS.Modules.Video.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Team/" />
+  <Folder Name="/src/CMS.Modules/Team/Application/">
+    <Project Path="src/CMS.Modules/Team/Application/CMS.Modules.Team.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Team/Domain/">
+    <Project Path="src/CMS.Modules/Team/Domain/CMS.Modules.Team.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Team/Infrastructure/">
+    <Project Path="src/CMS.Modules/Team/Infrastructure/CMS.Modules.Team.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Team/Web/">
+    <Project Path="src/CMS.Modules/Team/Web/CMS.Modules.Team.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Forms/" />
+  <Folder Name="/src/CMS.Modules/Forms/Application/">
+    <Project Path="src/CMS.Modules/Forms/Application/CMS.Modules.Forms.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Forms/Domain/">
+    <Project Path="src/CMS.Modules/Forms/Domain/CMS.Modules.Forms.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Forms/Infrastructure/">
+    <Project Path="src/CMS.Modules/Forms/Infrastructure/CMS.Modules.Forms.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Forms/Web/">
+    <Project Path="src/CMS.Modules/Forms/Web/CMS.Modules.Forms.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Popup/" />
+  <Folder Name="/src/CMS.Modules/Popup/Application/">
+    <Project Path="src/CMS.Modules/Popup/Application/CMS.Modules.Popup.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Popup/Domain/">
+    <Project Path="src/CMS.Modules/Popup/Domain/CMS.Modules.Popup.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Popup/Infrastructure/">
+    <Project Path="src/CMS.Modules/Popup/Infrastructure/CMS.Modules.Popup.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Popup/Web/">
+    <Project Path="src/CMS.Modules/Popup/Web/CMS.Modules.Popup.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Seo/" />
+  <Folder Name="/src/CMS.Modules/Seo/Application/">
+    <Project Path="src/CMS.Modules/Seo/Application/CMS.Modules.Seo.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Seo/Domain/">
+    <Project Path="src/CMS.Modules/Seo/Domain/CMS.Modules.Seo.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Seo/Infrastructure/">
+    <Project Path="src/CMS.Modules/Seo/Infrastructure/CMS.Modules.Seo.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Seo/Web/">
+    <Project Path="src/CMS.Modules/Seo/Web/CMS.Modules.Seo.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Shop/" />
+  <Folder Name="/src/CMS.Modules/Shop/Application/">
+    <Project Path="src/CMS.Modules/Shop/Application/CMS.Modules.Shop.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Shop/Domain/">
+    <Project Path="src/CMS.Modules/Shop/Domain/CMS.Modules.Shop.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Shop/Infrastructure/">
+    <Project Path="src/CMS.Modules/Shop/Infrastructure/CMS.Modules.Shop.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Shop/Web/">
+    <Project Path="src/CMS.Modules/Shop/Web/CMS.Modules.Shop.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Media/" />
+  <Folder Name="/src/CMS.Modules/Media/Application/">
+    <Project Path="src/CMS.Modules/Media/Application/CMS.Modules.Media.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Media/Domain/">
+    <Project Path="src/CMS.Modules/Media/Domain/CMS.Modules.Media.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Media/Infrastructure/">
+    <Project Path="src/CMS.Modules/Media/Infrastructure/CMS.Modules.Media.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/CMS.Modules/Media/Web/">
+    <Project Path="src/CMS.Modules/Media/Web/CMS.Modules.Media.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CMS.Application.Tests/CMS.Application.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Forms.Application.Tests/CMS.Modules.Forms.Application.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Forms.Domain.Tests/CMS.Modules.Forms.Domain.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Media.Domain.Tests/CMS.Modules.Media.Domain.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Media.Infrastructure.Tests/CMS.Modules.Media.Infrastructure.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Shop.Application.Tests/CMS.Modules.Shop.Application.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Shop.Domain.Tests/CMS.Modules.Shop.Domain.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Seo.Domain.Tests/CMS.Modules.Seo.Domain.Tests.csproj" />
+    <Project Path="tests/CMS.Web.Integration.Tests/CMS.Web.Integration.Tests.csproj" />
+  </Folder>
+</Solution>

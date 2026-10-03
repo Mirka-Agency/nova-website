@@ -1,0 +1,51 @@
+---
+description: Admin list filters — filter icon + popup panel pattern for all Index pages
+globs: "**/Areas/Admin/**/*.{cshtml,cs,js,css},**/wwwroot/admin/**"
+alwaysApply: false
+---
+
+# CMS Admin Filters
+
+Every Admin **list/Index** screen uses one shared filter UX. Do not invent per-page search bars.
+
+## UX
+
+- Toolbar shows a **filter icon button** (`fas fa-filter`), not an always-visible search input.
+- Click opens a **popup panel** with that page’s filters.
+- Active filters show a small **dot badge** on the icon.
+- Panel actions: **اعمال فیلتر** (submit GET) and **پاک کردن** (link to Index without filter query).
+
+## Markup
+
+Use the shared partial in the toolbar (usually after primary actions):
+
+```cshtml
+<div class="admin-toolbar">
+  <a class="btn btn-primary" asp-action="Create">…</a>
+  @{
+    ViewData["SearchPlaceholder"] = Localizer["SearchPosts"].Value;
+    // Optional page-specific fields:
+    // ViewData["FilterFieldsPartial"] = "_PostFilters";
+    // ViewBag.HasActiveFilters = hasSearch || hasStatus;
+  }
+  <partial name="_FilterPanel" />
+</div>
+```
+
+- Default field: text search `q` (label from `ViewData["SearchPlaceholder"]`).
+- Extra fields: set `ViewData["FilterFieldsPartial"]` to a page partial rendered **inside** the filter form.
+- Hide default search only when needed: `ViewData["FilterHideSearch"] = true`.
+- Set `ViewBag.HasActiveFilters = true` when any non-`q` filter is active (or leave unset if only `q` matters).
+
+## Controllers
+
+- Filters are **GET** query params (`q`, `status`, …). Reset `page` to 1 when filters change (omit `page` from the form).
+- Pass `ViewBag.Search = q` (and other filter values) so the panel can rebind.
+- Empty-state copy: use `NoSearchResults` when filters are active and the list is empty.
+
+## Do Not
+
+- Put a permanent search input in the toolbar.
+- Duplicate filter popup markup per module — extend `_FilterPanel` / a fields partial.
+- Use POST for list filtering.
+- Mix public-site filter UI with Admin (`wwwroot/admin` only).

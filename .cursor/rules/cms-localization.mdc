@@ -1,0 +1,59 @@
+---
+description: Farsi localization conventions for CMS admin and shared UI strings
+globs: "**/*.resx,**/Resources/**,**/*Localizer*,**/Areas/Admin/**/*.cshtml"
+alwaysApply: false
+---
+
+# CMS Localization (Farsi)
+
+Admin UI is **Farsi-first, RTL**. Public site strings are customer-specific later — do not mix site theme resources with admin resources.
+
+## Stack
+
+- Use `IStringLocalizer<T>` / `IViewLocalizer` for all user-visible text.
+- Resource files: `Resources/{Name}.resx` (+ `.fa.resx` / `.fa-IR.resx`) or shared `Resources/AdminShared*.resx`.
+- Marker class `T` must live in the **assembly root namespace** (e.g. `CMS.Modules.Blog.Web.BlogAdmin`), **not** in a `Resources` namespace — with `ResourcesPath = "Resources"`, a marker in `….Web.Resources` looks up `….Web.Resources.Resources.*` and falls back to English keys.
+- Default culture: `fa-IR`. Support `fa` as fallback.
+
+```csharp
+builder.Services.Configure<RequestLocalizationOptions>(o =>
+{
+    var culture = new CultureInfo("fa-IR");
+    o.DefaultRequestCulture = new RequestCulture(culture);
+    o.SupportedCultures = new[] { culture };
+    o.SupportedUICultures = new[] { culture };
+});
+```
+
+## Keys & Copy
+
+- Keys are **English identifiers**; values are Persian:
+
+```
+Save = ذخیره
+Cancel = انصراف
+NotFound = مورد یافت نشد
+```
+
+- Prefer short, clear Persian. Avoid literal machine-translated tone.
+- Use Persian digits in UI copy where natural; keep Latin for IDs, codes, emails, URLs.
+
+## In Views & Code
+
+```cshtml
+@inject IViewLocalizer Localizer
+<button>@Localizer["Save"]</button>
+```
+
+```csharp
+_localizer["ProductCreated"]
+```
+
+- Validation messages (FluentValidation / DataAnnotations) must resolve to Persian resources.
+- Never hardcode Persian or English UI strings in controllers for user-facing messages — use localizer keys.
+
+## Do Not
+
+- Concatenate sentences in code for grammar-sensitive Persian; use full resource strings with placeholders: `"{0} ذخیره شد"`.
+- Put public-website marketing copy in Admin resource files.
+- Assume LTR date/number formatting — use `fa-IR` culture formatting.

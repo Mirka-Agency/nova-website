@@ -1,0 +1,6 @@
+@{ ViewData["Title"] = Localizer["WholesaleApply"]; }
+<section class="shop-page">
+    <h1>@Localizer["WholesaleSubmitted"]</h1>
+    @if (TempData["Success"] is string msg) { <p>@msg</p> }
+    <p><a asp-controller="Shop" asp-action="Index">@Localizer["BackToShop"]</a></p>
+</section>

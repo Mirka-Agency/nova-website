@@ -1,0 +1,10 @@
+@{
+    ViewData["Title"] = ViewData["Title"] ?? "خطا";
+    Layout = "_AdminAuthLayout";
+}
+
+<div class="admin-auth-card">
+    <h1 class="admin-auth-title">@ViewData["Title"]</h1>
+    <p class="admin-lead">@ViewData["Message"]</p>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">بازگشت به داشبورد</a>
+</div>

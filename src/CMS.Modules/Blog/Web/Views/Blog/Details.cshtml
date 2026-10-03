@@ -1,0 +1,102 @@
+@model PublicPostDetailDto
+@using System.Text.Json
+@using CMS.Modules.Blog.Application.Posts
+@{
+    ViewData["Title"] = Model.Title;
+    var faqItems = PostFaqJson.Parse(Model.FaqJson);
+    string? faqJsonLd = null;
+    if (faqItems.Count > 0)
+    {
+        var schema = new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "FAQPage",
+            ["mainEntity"] = faqItems.Select(item => new Dictionary<string, object?>
+            {
+                ["@type"] = "Question",
+                ["name"] = item.Question,
+                ["acceptedAnswer"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Answer",
+                    ["text"] = item.Answer
+                }
+            }).ToList()
+        };
+        faqJsonLd = JsonSerializer.Serialize(schema);
+    }
+}
+
+<article class="blog-page blog-detail">
+    <p class="blog-back">
+        <a asp-controller="Blog" asp-action="Index">@Localizer["BackToBlog"]</a>
+    </p>
+
+    <header class="blog-page-header">
+        <h1>@Model.Title</h1>
+        <p class="blog-meta">
+            <span>@Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
+            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
+            {
+                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
+            {
+                <span>· @Localizer["Category"]: @Model.CategoryName</span>
+            }
+        </p>
+        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+        {
+            <p class="blog-excerpt">@Model.Excerpt</p>
+        }
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Model.CoverVideoUrl))
+    {
+        <div class="video-player-wrap">
+            @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+            {
+                <video class="video-player" controls playsinline preload="metadata"
+                       src="@Model.CoverVideoUrl" poster="@Model.CoverImageUrl"></video>
+            }
+            else
+            {
+                <video class="video-player" controls playsinline preload="metadata"
+                       src="@Model.CoverVideoUrl"></video>
+            }
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+    {
+        <figure class="blog-cover">
+            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
+        </figure>
+    }
+
+    <div class="blog-content">@Html.Raw(Model.Body)</div>
+
+    @if (faqItems.Count > 0)
+    {
+        <section class="blog-faq" aria-labelledby="blog-faq-heading">
+            <h2 id="blog-faq-heading">@Localizer["Faq"]</h2>
+            <div class="blog-faq-list">
+                @foreach (var item in faqItems)
+                {
+                    <details class="blog-faq-item">
+                        <summary>@item.Question</summary>
+                        <div class="blog-faq-answer">@item.Answer</div>
+                    </details>
+                }
+            </div>
+        </section>
+
+        <script type="application/ld+json">
+@Html.Raw(faqJsonLd)
+        </script>
+    }
+
+    @await Component.InvokeAsync("Comments", new {
+        targetType = 0,
+        targetId = Model.Id,
+        targetTitle = Model.Title
+    })
+</article>

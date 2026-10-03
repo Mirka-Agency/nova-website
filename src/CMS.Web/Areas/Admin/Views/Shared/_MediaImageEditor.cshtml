@@ -1,0 +1,59 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Modules.Media.Web.MediaAdmin> MediaLocalizer
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> SharedLocalizer
+@{
+    var canManage = ViewBag.MediaEditorCanManage is bool manage ? manage : true;
+}
+<div class="admin-modal"
+     id="media-image-editor"
+     hidden
+     data-content-url="@Url.Action("Content", "Media", new { area = "Admin" })"
+     data-details-url="@Url.Action("Details", "Media", new { area = "Admin" })"
+     data-replace-url="@Url.Action("ReplaceImage", "Media", new { area = "Admin" })"
+     data-resolve-url="@Url.Action("Resolve", "Media", new { area = "Admin" })"
+     data-can-manage="@canManage.ToString().ToLowerInvariant()">
+    <div class="admin-modal-backdrop" data-media-editor-close></div>
+    <div class="admin-modal-dialog media-editor-dialog" role="dialog" aria-modal="true" aria-labelledby="media-editor-title">
+        <div class="admin-modal-header">
+            <h2 id="media-editor-title">@MediaLocalizer["EditImage"]</h2>
+            <button type="button" class="btn btn-ghost" data-media-editor-close aria-label="@SharedLocalizer["Cancel"]">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="media-editor-toolbar">
+            <button type="button" class="btn btn-secondary" data-editor-rotate-left title="@MediaLocalizer["RotateLeft"]"><i class="fas fa-undo" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-secondary" data-editor-rotate-right title="@MediaLocalizer["RotateRight"]"><i class="fas fa-redo" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-secondary" data-editor-flip-h title="@MediaLocalizer["FlipHorizontal"]"><i class="fas fa-arrows-alt-h" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-secondary" data-editor-flip-v title="@MediaLocalizer["FlipVertical"]"><i class="fas fa-arrows-alt-v" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-secondary" data-editor-crop-apply>@MediaLocalizer["ApplyCrop"]</button>
+            <button type="button" class="btn btn-ghost" data-editor-reset>@MediaLocalizer["Reset"]</button>
+        </div>
+        <div class="media-editor-stage" data-editor-stage>
+            <div class="media-editor-size-badge" data-editor-size-badge>—</div>
+            <canvas data-editor-canvas></canvas>
+            <div class="media-editor-crop" data-editor-crop hidden></div>
+        </div>
+        <div class="media-editor-resize">
+            <label>
+                @MediaLocalizer["Width"]
+                <input type="number" min="1" max="8000" data-editor-width />
+            </label>
+            <label class="admin-check">
+                <input type="checkbox" data-editor-lock-ratio checked />
+                @MediaLocalizer["LockAspect"]
+            </label>
+            <label>
+                @MediaLocalizer["Height"]
+                <input type="number" min="1" max="8000" data-editor-height />
+            </label>
+            <button type="button" class="btn btn-secondary" data-editor-resize-apply>@MediaLocalizer["ApplyResize"]</button>
+        </div>
+        <p class="admin-hint">@MediaLocalizer["ResizeHint"]</p>
+        <p class="admin-hint">@MediaLocalizer["CropHint"]</p>
+        <div class="admin-actions">
+            <button type="button" class="btn btn-primary" data-editor-save>@MediaLocalizer["SaveEditedImage"]</button>
+            <button type="button" class="btn btn-secondary" data-media-editor-close>@SharedLocalizer["Cancel"]</button>
+        </div>
+        <p class="admin-hint" data-editor-status hidden></p>
+    </div>
+</div>
+<script src="~/admin/js/media-image-editor.js" asp-append-version="true"></script>

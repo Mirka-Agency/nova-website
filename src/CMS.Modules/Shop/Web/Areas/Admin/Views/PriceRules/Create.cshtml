@@ -1,0 +1,12 @@
+@model PriceRuleFormViewModel
+@{ ViewData["Title"] = Model.Id.HasValue ? Localizer["EditPriceRule"] : Localizer["CreatePriceRule"]; }
+<form asp-action="@(Model.Id.HasValue ? "Edit" : "Create")" method="post" class="admin-form admin-form-narrow">
+@Html.AntiForgeryToken()
+<div class="admin-field"><label asp-for="Name">@Localizer["Name"]</label><input asp-for="Name" /></div>
+<div class="admin-field"><label asp-for="RuleType">@Localizer["RuleType"]</label><select asp-for="RuleType" asp-items="Model.RuleTypeOptions"></select></div>
+<div class="admin-field"><label asp-for="CustomerGroupId">@Localizer["CustomerGroup"]</label><select asp-for="CustomerGroupId" asp-items="Model.GroupOptions"><option value="">—</option></select></div>
+<div class="admin-field"><label asp-for="DiscountPercent">@Localizer["DiscountPercent"]</label><input asp-for="DiscountPercent" type="number" step="0.01" /></div>
+<div class="admin-field"><label asp-for="FixedPrice">@Localizer["FixedPrice"]</label><input asp-for="FixedPrice" type="number" step="1" /></div>
+<label class="admin-check"><input asp-for="IsActive" /> @Localizer["IsActive"]</label>
+<div class="admin-actions"><button type="submit" class="btn btn-primary">@Localizer["Save"]</button><a class="btn btn-secondary" asp-action="Index">@Localizer["Cancel"]</a></div>
+</form>

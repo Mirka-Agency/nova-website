@@ -1,0 +1,9 @@
+@model CMS.Web.Areas.Admin.ViewModels.EmptyStateViewModel
+
+<div class="admin-empty-state" role="status">
+    <p class="admin-empty-message">@Model.Message</p>
+    @if (!string.IsNullOrWhiteSpace(Model.ActionUrl) && !string.IsNullOrWhiteSpace(Model.ActionLabel))
+    {
+        <a class="btn btn-primary" href="@Model.ActionUrl">@Model.ActionLabel</a>
+    }
+</div>

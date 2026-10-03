@@ -1,0 +1,49 @@
+@model FormFormViewModel
+
+@if (Model.IsSystem)
+{
+    <p class="admin-hint">@Localizer["SystemFormHint"]</p>
+}
+
+<div class="admin-field">
+    <label asp-for="Name">@Localizer["Name"]</label>
+    <input asp-for="Name" />
+    <span asp-validation-for="Name" class="admin-field-error"></span>
+</div>
+
+@if (!Model.Id.HasValue)
+{
+    <div class="admin-field">
+        <label asp-for="Key">@Localizer["Key"]</label>
+        <input asp-for="Key" />
+        <p class="admin-hint">@Localizer["KeyHint"]</p>
+        <span asp-validation-for="Key" class="admin-field-error"></span>
+    </div>
+}
+
+<div class="admin-field">
+    <label asp-for="Slug">@Localizer["Slug"]</label>
+    @if (Model.IsSystem)
+    {
+        <input asp-for="Slug" readonly class="admin-input-readonly" />
+        <p class="admin-hint">@Localizer["SystemSlugReadonlyHint"]</p>
+    }
+    else
+    {
+        <input asp-for="Slug" />
+        <p class="admin-hint">@Localizer["SlugHint"]</p>
+    }
+    <span asp-validation-for="Slug" class="admin-field-error"></span>
+</div>
+
+<div class="admin-field">
+    <label asp-for="Description">@Localizer["Description"]</label>
+    <textarea asp-for="Description" rows="4"></textarea>
+    <span asp-validation-for="Description" class="admin-field-error"></span>
+</div>
+
+<label class="admin-check">
+    <input asp-for="Publish" />
+    @Localizer["PublicView"]
+</label>
+<p class="admin-hint">@Localizer["PublicViewHint"]</p>
