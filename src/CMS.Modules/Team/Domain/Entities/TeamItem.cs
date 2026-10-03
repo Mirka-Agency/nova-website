@@ -23,6 +23,8 @@ public class TeamItem : BaseEntity
     public string? EducationPathJson { get; private set; }
     /// <summary>JSON array of FAQ items (question + answer) for doctor-faq.</summary>
     public string? FaqJson { get; private set; }
+    /// <summary>JSON array of scientific activity items (text) for doctor-activity.</summary>
+    public string? ScientificActivityJson { get; private set; }
     public TeamStatus Status { get; private set; } = TeamStatus.Draft;
     public string? CoverImageUrl { get; private set; }
     public string? AvatarImageUrl { get; private set; }
@@ -51,6 +53,7 @@ public class TeamItem : BaseEntity
         string? specialtyPathJson,
         string? educationPathJson,
         string? faqJson,
+        string? scientificActivityJson,
         Guid? categoryId,
         string? coverImageUrl,
         string? avatarImageUrl,
@@ -67,6 +70,7 @@ public class TeamItem : BaseEntity
         var item = new TeamItem();
         item.ApplyContent(
             title, subtitle, slug, body, excerpt, highlights, specialtyPathJson, educationPathJson, faqJson,
+            scientificActivityJson,
             categoryId, coverImageUrl, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
@@ -84,6 +88,7 @@ public class TeamItem : BaseEntity
         string? specialtyPathJson,
         string? educationPathJson,
         string? faqJson,
+        string? scientificActivityJson,
         Guid? categoryId,
         string? coverImageUrl,
         string? avatarImageUrl,
@@ -99,6 +104,7 @@ public class TeamItem : BaseEntity
     {
         ApplyContent(
             title, subtitle, slug, body, excerpt, highlights, specialtyPathJson, educationPathJson, faqJson,
+            scientificActivityJson,
             categoryId, coverImageUrl, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
@@ -151,6 +157,7 @@ public class TeamItem : BaseEntity
         string? specialtyPathJson,
         string? educationPathJson,
         string? faqJson,
+        string? scientificActivityJson,
         Guid? categoryId,
         string? coverImageUrl,
         string? avatarImageUrl,
@@ -186,6 +193,8 @@ public class TeamItem : BaseEntity
             throw new DomainException("مسیر تخصصی خیلی طولانی است.");
         if (faqJson is { Length: > 100_000 })
             throw new DomainException("سوالات متداول خیلی طولانی است.");
+        if (scientificActivityJson is { Length: > 50_000 })
+            throw new DomainException("فعالیت علمی خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
         if (avatarImageUrl is { Length: > 1000 })
@@ -218,6 +227,7 @@ public class TeamItem : BaseEntity
         SpecialtyPathJson = NullIfWhiteSpace(specialtyPathJson);
         EducationPathJson = NullIfWhiteSpace(educationPathJson);
         FaqJson = NullIfWhiteSpace(faqJson);
+        ScientificActivityJson = NullIfWhiteSpace(scientificActivityJson);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
         AvatarImageUrl = NullIfWhiteSpace(avatarImageUrl);

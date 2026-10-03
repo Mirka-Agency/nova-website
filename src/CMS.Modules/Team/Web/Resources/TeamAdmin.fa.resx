@@ -77,6 +77,12 @@
   <data name="EducationPathPlacePlaceholder" xml:space="preserve"><value>مثلاً دانشگاه علوم پزشکی تهران</value></data>
   <data name="EducationPathEmpty" xml:space="preserve"><value>هنوز موردی برای مسیر تخصصی ثبت نشده است.</value></data>
   <data name="AddEducationPathItem" xml:space="preserve"><value>افزودن مورد</value></data>
+  <data name="ScientificActivity" xml:space="preserve"><value>فعالیت علمی</value></data>
+  <data name="ScientificActivityHint" xml:space="preserve"><value>کنگره‌ها، پنل‌ها و سوابق علمی؛ در صفحه پروفایل نمایش داده می‌شود.</value></data>
+  <data name="ScientificActivityText" xml:space="preserve"><value>مورد</value></data>
+  <data name="ScientificActivityTextPlaceholder" xml:space="preserve"><value>مثلاً مسئول پنل عوارض جراحی تیروئید در جامعه جراحان ایران – ۱۴۰۴</value></data>
+  <data name="ScientificActivityEmpty" xml:space="preserve"><value>هنوز موردی برای فعالیت علمی ثبت نشده است.</value></data>
+  <data name="AddScientificActivityItem" xml:space="preserve"><value>افزودن مورد</value></data>
   <data name="FaqSettings" xml:space="preserve"><value>سوالات متداول</value></data>
   <data name="FaqSettingsHint" xml:space="preserve"><value>اختیاری؛ در صفحه پروفایل پزشک نمایش داده می‌شود.</value></data>
   <data name="FaqQuestion" xml:space="preserve"><value>سوال</value></data>

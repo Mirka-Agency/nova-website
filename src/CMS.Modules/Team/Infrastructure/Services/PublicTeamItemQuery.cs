@@ -92,6 +92,7 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
             post.SpecialtyPathJson,
             post.EducationPathJson,
             post.FaqJson,
+            post.ScientificActivityJson,
             post.AuthorDisplayName,
             post.MetaTitle,
             post.MetaDescription,

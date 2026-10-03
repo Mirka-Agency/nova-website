@@ -140,6 +140,9 @@ namespace CMS.Modules.Team.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("PublishedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ScientificActivityJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("SeoKeywords")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");

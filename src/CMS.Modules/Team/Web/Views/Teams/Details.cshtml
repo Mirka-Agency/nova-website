@@ -28,6 +28,7 @@
     var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
     var specialtyPathItems = TeamSpecialtyPathJson.Parse(Model.SpecialtyPathJson);
     var educationPathItems = TeamEducationPathJson.Parse(Model.EducationPathJson);
+    var scientificActivityItems = TeamScientificActivityJson.Parse(Model.ScientificActivityJson);
     var faqItems = TeamFaqJson.Parse(Model.FaqJson);
     var metaChips = TeamHighlights.Parse(Model.Highlights).ToList();
     if (metaChips.Count == 0)
@@ -258,6 +259,26 @@
       </div>
     </div>
   </section>
+}
+
+@if (scientificActivityItems.Count > 0)
+{
+<section class="doctor-activity" aria-labelledby="doctor-activity-heading">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-kicker">فعالیت علمی</p>
+      <h2 class="section-heading" id="doctor-activity-heading">فعالیت‌های علمی و تخصصی</h2>
+      <p class="section-lead">حضور در کنگره‌ها و برنامه‌های علمی مرتبط با تخصص @Model.Title.</p>
+    </div>
+
+    <ul class="doctor-activity__list">
+      @foreach (var item in scientificActivityItems)
+      {
+      <li class="reveal">@item.Text</li>
+      }
+    </ul>
+  </div>
+</section>
 }
 
 @if (faqItems.Count > 0)

@@ -57,6 +57,8 @@ public class TeamItemFormViewModel
 
     public List<TeamEducationPathItemViewModel> EducationPathItems { get; set; } = [];
 
+    public List<TeamScientificActivityItemViewModel> ScientificActivityItems { get; set; } = [];
+
     public List<TeamFaqItemViewModel> FaqItems { get; set; } = [];
 
     [MaxLength(1000, ErrorMessage = "آدرس تصویر شاخص حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
@@ -119,6 +121,12 @@ public class TeamEducationPathItemViewModel
 
     [MaxLength(300, ErrorMessage = "محل مسیر تخصصی حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
     public string Place { get; set; } = string.Empty;
+}
+
+public class TeamScientificActivityItemViewModel
+{
+    [MaxLength(1000, ErrorMessage = "فعالیت علمی حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string Text { get; set; } = string.Empty;
 }
 
 public class TeamFaqItemViewModel

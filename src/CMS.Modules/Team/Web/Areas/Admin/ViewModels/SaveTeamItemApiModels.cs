@@ -28,6 +28,8 @@ public sealed class SaveTeamItemApiRequest
 
     public string? FaqJson { get; set; }
 
+    public string? ScientificActivityJson { get; set; }
+
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
 

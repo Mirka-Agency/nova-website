@@ -218,6 +218,9 @@ public class TeamItemsController : Controller
             EducationPathItems = TeamEducationPathJson.Parse(post.EducationPathJson)
                 .Select(x => new TeamEducationPathItemViewModel { Year = x.Year, Title = x.Title, Place = x.Place })
                 .ToList(),
+            ScientificActivityItems = TeamScientificActivityJson.Parse(post.ScientificActivityJson)
+                .Select(x => new TeamScientificActivityItemViewModel { Text = x.Text })
+                .ToList(),
             FaqItems = TeamFaqJson.Parse(post.FaqJson)
                 .Select(x => new TeamFaqItemViewModel { Question = x.Question, Answer = x.Answer })
                 .ToList(),
@@ -323,6 +326,9 @@ public class TeamItemsController : Controller
         var educationPathJson = TeamEducationPathJson.Serialize(
             (model.EducationPathItems ?? [])
                 .Select(x => new TeamEducationPathItemDto(x.Year, x.Title, x.Place)));
+        var scientificActivityJson = TeamScientificActivityJson.Serialize(
+            (model.ScientificActivityItems ?? [])
+                .Select(x => new TeamScientificActivityItemDto(x.Text)));
         var faqJson = TeamFaqJson.Serialize(
             (model.FaqItems ?? [])
                 .Select(x => new TeamFaqItemDto(x.Question, x.Answer)));
@@ -337,6 +343,7 @@ public class TeamItemsController : Controller
             specialtyPathJson,
             educationPathJson,
             faqJson,
+            scientificActivityJson,
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
             NullIfWhiteSpace(model.AvatarImageUrl),
@@ -375,6 +382,7 @@ public class TeamItemsController : Controller
 
         model.SpecialtyPathItems ??= [];
         model.EducationPathItems ??= [];
+        model.ScientificActivityItems ??= [];
         model.FaqItems ??= [];
         return model;
     }

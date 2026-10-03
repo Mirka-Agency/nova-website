@@ -146,6 +146,7 @@ public sealed class TeamItemService : ITeamItemService
             specialtyPathJson: null,
             educationPathJson: null,
             faqJson: null,
+            scientificActivityJson: null,
             categoryId: null,
             coverImageUrl: null,
             avatarImageUrl: null,
@@ -196,6 +197,7 @@ public sealed class TeamItemService : ITeamItemService
         var specialtyPathJson = TeamSpecialtyPathJson.NormalizeJson(command.SpecialtyPathJson);
         var educationPathJson = TeamEducationPathJson.NormalizeJson(command.EducationPathJson);
         var faqJson = TeamFaqJson.NormalizeJson(command.FaqJson);
+        var scientificActivityJson = TeamScientificActivityJson.NormalizeJson(command.ScientificActivityJson);
         var item = TeamItem.Create(
             command.Title,
             command.Subtitle,
@@ -206,6 +208,7 @@ public sealed class TeamItemService : ITeamItemService
             specialtyPathJson,
             educationPathJson,
             faqJson,
+            scientificActivityJson,
             command.CategoryId,
             command.CoverImageUrl,
             command.AvatarImageUrl,
@@ -243,6 +246,7 @@ public sealed class TeamItemService : ITeamItemService
         var specialtyPathJson = TeamSpecialtyPathJson.NormalizeJson(command.SpecialtyPathJson);
         var educationPathJson = TeamEducationPathJson.NormalizeJson(command.EducationPathJson);
         var faqJson = TeamFaqJson.NormalizeJson(command.FaqJson);
+        var scientificActivityJson = TeamScientificActivityJson.NormalizeJson(command.ScientificActivityJson);
         item.Update(
             command.Title,
             command.Subtitle,
@@ -253,6 +257,7 @@ public sealed class TeamItemService : ITeamItemService
             specialtyPathJson,
             educationPathJson,
             faqJson,
+            scientificActivityJson,
             command.CategoryId,
             command.CoverImageUrl,
             command.AvatarImageUrl,
@@ -292,6 +297,7 @@ public sealed class TeamItemService : ITeamItemService
             item.SpecialtyPathJson,
             item.EducationPathJson,
             item.FaqJson,
+            item.ScientificActivityJson,
             item.Status,
             item.CoverImageUrl,
             item.AvatarImageUrl,

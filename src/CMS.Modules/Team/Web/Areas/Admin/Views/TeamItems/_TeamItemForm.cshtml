@@ -198,6 +198,64 @@
             </template>
         </fieldset>
 
+        <fieldset class="admin-fieldset" data-team-scientific-activity>
+            <legend>@Localizer["ScientificActivity"]</legend>
+            <p class="admin-hint">@Localizer["ScientificActivityHint"]</p>
+
+            <div class="admin-faq-list">
+                <div class="admin-faq-rows" data-scientific-activity-list>
+                    @for (var i = 0; i < Model.ScientificActivityItems.Count; i++)
+                    {
+                        <div class="admin-faq-row" data-scientific-activity-row>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="ScientificActivityItems[i].Text">@Localizer["ScientificActivityText"]</label>
+                                <input asp-for="ScientificActivityItems[i].Text"
+                                       placeholder="@Localizer["ScientificActivityTextPlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="1000" />
+                                <span asp-validation-for="ScientificActivityItems[i].Text" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-faq-row-actions">
+                                <button type="button" class="btn btn-text-danger" data-scientific-activity-remove>
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                    <span>@Localizer["Delete"]</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <p class="admin-hint" data-scientific-activity-empty @(Model.ScientificActivityItems.Count > 0 ? "hidden" : null)>
+                    @Localizer["ScientificActivityEmpty"]
+                </p>
+
+                <div class="admin-faq-add-row">
+                    <button type="button" class="btn btn-secondary" data-scientific-activity-add>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span>@Localizer["AddScientificActivityItem"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <template id="team-scientific-activity-row-template">
+                <div class="admin-faq-row" data-scientific-activity-row>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["ScientificActivityText"]</label>
+                        <input name="ScientificActivityItems[__INDEX__].Text"
+                               placeholder="@Localizer["ScientificActivityTextPlaceholder"]"
+                               autocomplete="off"
+                               maxlength="1000" />
+                    </div>
+                    <div class="admin-faq-row-actions">
+                        <button type="button" class="btn btn-text-danger" data-scientific-activity-remove>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </fieldset>
+
         <fieldset class="admin-fieldset" data-post-faq>
             <legend>@Localizer["FaqSettings"]</legend>
             <p class="admin-hint">@Localizer["FaqSettingsHint"]</p>

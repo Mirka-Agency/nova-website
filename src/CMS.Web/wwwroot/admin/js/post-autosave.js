@@ -106,6 +106,17 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function scientificActivityJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-scientific-activity-row]"));
+    const items = [];
+    for (const row of rows) {
+      const text = (row.querySelector("[name$='.Text']")?.value || "").trim();
+      if (!text) continue;
+      items.push({ text });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
   function galleryJsonValue() {
     const rows = Array.from(form.querySelectorAll("[data-article-gallery-item]"));
     const items = [];
@@ -150,6 +161,7 @@
       highlights: (fieldValue("Highlights") || "").trim() || null,
       specialtyPathJson: specialtyPathJsonValue(),
       educationPathJson: educationPathJsonValue(),
+      scientificActivityJson: scientificActivityJsonValue(),
       coverImageUrl: (fieldValue("CoverImageUrl") || "").trim() || null,
       avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,

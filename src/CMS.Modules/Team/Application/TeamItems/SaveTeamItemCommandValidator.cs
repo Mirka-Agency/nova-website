@@ -65,6 +65,16 @@ public sealed class SaveTeamItemCommandValidator : AbstractValidator<SaveTeamIte
                 return error ?? "سوالات متداول نامعتبر است.";
             });
 
+        RuleFor(x => x.ScientificActivityJson)
+            .MaximumLength(TeamScientificActivityJson.MaxJsonLength)
+            .Must(value => TeamScientificActivityJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.ScientificActivityJson))
+            .WithMessage(x =>
+            {
+                TeamScientificActivityJson.TryValidate(x.ScientificActivityJson, out var error);
+                return error ?? "فعالیت علمی نامعتبر است.";
+            });
+
         RuleFor(x => x.CoverImageUrl)
             .MaximumLength(1000)
             .Must(BeValidUrlOrPath)
