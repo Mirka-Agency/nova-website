@@ -1,59 +1,195 @@
 @model PublicVideoItemDetailDto
+@using System.Text.RegularExpressions
+@inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
+    ViewData["NavActive"] = "videos";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var topic = string.IsNullOrWhiteSpace(Model.CategoryName) ? "ویدئو آموزشی" : Model.CategoryName;
+    var presenter = string.IsNullOrWhiteSpace(Model.AuthorDisplayName) ? brand : Model.AuthorDisplayName;
+    var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
+        ? $"ویدئوی آموزشی «{Model.Title}» از {brand}."
+        : Model.Excerpt;
+    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
+        ? Url.Content("~/template/assets/images/videos/endocrine.webp")
+        : Model.CoverImageUrl;
+    var related = (ViewBag.Related as IReadOnlyList<PublicVideoItemSummaryDto>)
+        ?? Array.Empty<PublicVideoItemSummaryDto>();
+    var embedUrl = ResolveEmbedUrl(Model.VideoUrl);
+    var hasFileVideo = string.IsNullOrWhiteSpace(embedUrl) && !string.IsNullOrWhiteSpace(Model.VideoUrl);
+    var hasPlayer = !string.IsNullOrWhiteSpace(embedUrl) || hasFileVideo;
+
+    string? ResolveEmbedUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return null;
+        var raw = url.Trim();
+
+        if (raw.Contains("aparat.com/video/video/embed/", StringComparison.OrdinalIgnoreCase)
+            || raw.Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase)
+            || raw.Contains("player.vimeo.com/video/", StringComparison.OrdinalIgnoreCase))
+            return raw;
+
+        var aparat = Regex.Match(raw, @"aparat\.com/(?:v/|video/video/embed/videohash/)([A-Za-z0-9]+)", RegexOptions.IgnoreCase);
+        if (aparat.Success)
+            return $"https://www.aparat.com/video/video/embed/videohash/{aparat.Groups[1].Value}/vt/frame";
+
+        var ytWatch = Regex.Match(raw, @"(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{6,})", RegexOptions.IgnoreCase);
+        if (ytWatch.Success)
+            return $"https://www.youtube.com/embed/{ytWatch.Groups[1].Value}";
+
+        return null;
+    }
 }
 
-<article class="blog-page blog-detail">
-    <p class="blog-back">
-        <a asp-controller="Videos" asp-action="Index">@Localizer["BackToVideos"]</a>
-    </p>
+<section class="page-hero page-hero--video-single" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <a asp-controller="Videos" asp-action="Index">ویدئوها</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">@Model.Title</span>
+    </nav>
 
-    <header class="blog-page-header">
-        <h1>@Model.Title</h1>
-        <p class="blog-meta">
-            <span>@Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
-            {
-                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
-            }
-            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
-            {
-                <span>· @Localizer["Category"]: @Model.CategoryName</span>
-            }
-        </p>
-        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+    <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
+    <p class="page-hero__lead reveal">@lead</p>
+
+    <ul class="video-single-meta reveal" aria-label="اطلاعات ویدئو">
+      <li>
+        <span class="video-single-meta__label">موضوع</span>
+        <span class="video-single-meta__value">@topic</span>
+      </li>
+      <li>
+        <span class="video-single-meta__label">ارائه‌دهنده</span>
+        <span class="video-single-meta__value">@presenter</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="video-player-section" aria-label="پخش ویدئو">
+  <div class="container">
+    <div class="video-player reveal">
+      @if (!string.IsNullOrWhiteSpace(embedUrl))
+      {
+        <iframe
+          src="@embedUrl"
+          title="ویدئو @Model.Title"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+      }
+      else if (hasFileVideo)
+      {
+        <video controls playsinline preload="metadata" poster="@cover" src="@Model.VideoUrl" title="@Model.Title"></video>
+      }
+      else
+      {
+        <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
+      }
+    </div>
+  </div>
+</section>
+
+<section class="video-detail" aria-labelledby="video-detail-heading">
+  <div class="container">
+    <div class="video-detail__layout">
+      <div class="video-detail__main">
+        <article class="video-prose reveal">
+          <p class="section-kicker">توضیحات ویدئو</p>
+          <h2 class="section-heading" id="video-detail-heading">@Model.Title</h2>
+          @if (!string.IsNullOrWhiteSpace(Model.Body))
+          {
+            <div class="video-prose__body">
+              @Html.Raw(Model.Body)
+            </div>
+          }
+          else
+          {
+            <p>@lead</p>
+          }
+        </article>
+      </div>
+
+      <aside class="video-detail__aside reveal" aria-label="اطلاعات ویدئو">
+        <h3 class="video-detail__aside-title">اطلاعات ویدئو</h3>
+        <ul class="video-info-list">
+          <li>
+            <span class="video-info-list__label">موضوع</span>
+            <span class="video-info-list__value">@topic</span>
+          </li>
+          <li>
+            <span class="video-info-list__label">عنوان</span>
+            <span class="video-info-list__value">@Model.Title</span>
+          </li>
+          <li>
+            <span class="video-info-list__label">ارائه‌دهنده</span>
+            <span class="video-info-list__value">@presenter</span>
+          </li>
+          <li>
+            <span class="video-info-list__label">نوع محتوا</span>
+            <span class="video-info-list__value">ویدئو آموزشی</span>
+          </li>
+          @if (hasPlayer)
+          {
+            <li>
+              <span class="video-info-list__label">پخش</span>
+              <span class="video-info-list__value">@(string.IsNullOrWhiteSpace(embedUrl) ? "فایل ویدئو" : "پخش آنلاین")</span>
+            </li>
+          }
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+@if (related.Count > 0)
+{
+  <section class="video-related" aria-labelledby="video-related-heading">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-kicker">ادامه مشاهده</p>
+        <h2 class="section-heading" id="video-related-heading">ویدئوهای مرتبط</h2>
+      </div>
+
+      <div class="videos-grid videos-grid--related">
+        @foreach (var item in related)
         {
-            <p class="blog-excerpt">@Model.Excerpt</p>
+          var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? cover : item.CoverImageUrl;
+          var itemType = string.IsNullOrWhiteSpace(item.CategoryName) ? "ویدئو" : item.CategoryName;
+          <article class="video-card reveal">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos"
+              asp-action="Details"
+              asp-route-slug="@item.Slug"
+              aria-label="مشاهده ویدئو: @item.Title"
+            >
+              <span class="video-card__media">
+                <img
+                  src="@itemCover"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">@itemType</span>
+                <h3 class="video-card__title">@item.Title</h3>
+              </span>
+            </a>
+          </article>
         }
-    </header>
-
-    @if (!string.IsNullOrWhiteSpace(Model.VideoUrl))
-    {
-        <div class="video-player-wrap">
-            @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-            {
-                <video class="video-player" controls playsinline preload="metadata"
-                       src="@Model.VideoUrl" poster="@Model.CoverImageUrl"></video>
-            }
-            else
-            {
-                <video class="video-player" controls playsinline preload="metadata"
-                       src="@Model.VideoUrl"></video>
-            }
-        </div>
-    }
-    else if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-    {
-        <figure class="blog-cover">
-            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
-        </figure>
-    }
-
-    <div class="blog-content">@Html.Raw(Model.Body)</div>
-
-    @await Component.InvokeAsync("Comments", new {
-        targetType = 0,
-        targetId = Model.Id,
-        targetTitle = Model.Title
-    })
-</article>
+      </div>
+    </div>
+  </section>
+}

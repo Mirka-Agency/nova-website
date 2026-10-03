@@ -65,6 +65,7 @@ public class NewsController : Controller
             return RedirectToActionPermanent("Details", "Events", new { slug = post.Slug });
 
         ViewData["Title"] = post.Title;
+        ViewData["NavActive"] = "articles";
         ViewData["MetaTitle"] = FirstNonEmpty(post.MetaTitle, post.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(post.MetaDescription, post.Excerpt);
         ViewData["MetaKeywords"] = post.SeoKeywords;
@@ -73,6 +74,12 @@ public class NewsController : Controller
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("NewsArticles", post.Id, "ویرایش خبر", "ManageNews");
+
+        var related = await _articles.ListPublishedByKindPagedAsync(ArticleKind.News, 1, 8, cancellationToken);
+        ViewBag.Related = related.Items
+            .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
+            .Take(6)
+            .ToList();
 
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {

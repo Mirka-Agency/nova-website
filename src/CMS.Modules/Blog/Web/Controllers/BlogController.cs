@@ -61,6 +61,7 @@ public class BlogController : Controller
             return NotFound();
 
         ViewData["Title"] = post.Title;
+        ViewData["NavActive"] = "blog";
         ViewData["MetaTitle"] = FirstNonEmpty(post.MetaTitle, post.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(post.MetaDescription, post.Excerpt);
         ViewData["MetaKeywords"] = post.SeoKeywords;
@@ -69,6 +70,12 @@ public class BlogController : Controller
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("Posts", post.Id, "ویرایش نوشته", "ManageBlog");
+
+        var related = await _posts.ListPublishedPagedAsync(1, 8, cancellationToken);
+        ViewBag.Related = related.Items
+            .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
+            .Take(3)
+            .ToList();
 
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {

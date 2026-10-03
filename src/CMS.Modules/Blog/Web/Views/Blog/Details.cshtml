@@ -1,9 +1,68 @@
 @model PublicPostDetailDto
+@using System.Globalization
+@using System.Net
 @using System.Text.Json
+@using System.Text.RegularExpressions
+@using CMS.Application.Settings
 @using CMS.Modules.Blog.Application.Posts
+@inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
+    ViewData["NavActive"] = "blog";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var topic = string.IsNullOrWhiteSpace(Model.CategoryName) ? "آموزشی" : Model.CategoryName;
+    var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
+        ? $"مطلب آموزشی «{Model.Title}» از {brand}."
+        : Model.Excerpt;
+    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
+        ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
+        : Model.CoverImageUrl;
+    var related = (ViewBag.Related as IReadOnlyList<PublicPostSummaryDto>)
+        ?? Array.Empty<PublicPostSummaryDto>();
     var faqItems = PostFaqJson.Parse(Model.FaqJson);
+    var fa = CultureInfo.GetCultureInfo("fa-IR");
+    var publishedLocal = Model.PublishedAtUtc.Kind == DateTimeKind.Utc
+        ? Model.PublishedAtUtc.ToLocalTime()
+        : Model.PublishedAtUtc;
+    var dateAttr = publishedLocal.ToString("yyyy-MM-dd");
+    var dateLabel = publishedLocal.ToString("d MMMM yyyy", fa);
+
+    var plainBody = Regex.Replace(Model.Body ?? string.Empty, "<[^>]+>", " ");
+    plainBody = WebUtility.HtmlDecode(plainBody);
+    var wordCount = plainBody.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
+    var readMinutes = Math.Max(1, (int)Math.Ceiling(wordCount / 200.0));
+    var readLabel = readMinutes.ToString(fa) + " دقیقه";
+
+    var toc = new List<(string Id, string Text)>();
+    var headingIndex = 0;
+    var processedBody = Regex.Replace(
+        Model.Body ?? string.Empty,
+        @"<h2(\s[^>]*)?>(.*?)</h2>",
+        match =>
+        {
+            headingIndex++;
+            var id = $"section-{headingIndex}";
+            var text = WebUtility.HtmlDecode(Regex.Replace(match.Groups[2].Value, "<.*?>", string.Empty)).Trim();
+            if (!string.IsNullOrWhiteSpace(text))
+                toc.Add((id, text));
+
+            var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
+            if (attrs.Contains("id=", StringComparison.OrdinalIgnoreCase))
+                return match.Value;
+
+            return $"<h2 id=\"{id}\"{attrs}>{match.Groups[2].Value}</h2>";
+        },
+        RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+    if (faqItems.Count > 0)
+        toc.Add(("blog-faq-heading", "سوالات متداول"));
+
     string? faqJsonLd = null;
     if (faqItems.Count > 0)
     {
@@ -26,77 +85,227 @@
     }
 }
 
-<article class="blog-page blog-detail">
-    <p class="blog-back">
-        <a asp-controller="Blog" asp-action="Index">@Localizer["BackToBlog"]</a>
-    </p>
+<section class="page-hero page-hero--blog-single" aria-labelledby="page-hero-title">
+  <div class="container blog-single-hero">
+    <div class="blog-single-hero__copy">
+      <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+        <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+        <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+        <a asp-controller="Blog" asp-action="Index">وبلاگ</a>
+        <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+        <span aria-current="page">@Model.Title</span>
+      </nav>
 
-    <header class="blog-page-header">
-        <h1>@Model.Title</h1>
-        <p class="blog-meta">
-            <span>@Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
-            {
-                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
-            }
-            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
-            {
-                <span>· @Localizer["Category"]: @Model.CategoryName</span>
-            }
-        </p>
-        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
-        {
-            <p class="blog-excerpt">@Model.Excerpt</p>
+      <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
+
+      <ul class="blog-single-meta reveal" aria-label="اطلاعات مطلب">
+        <li><time datetime="@dateAttr">@dateLabel</time></li>
+        <li>موضوع: @topic</li>
+        <li>زمان مطالعه: @readLabel</li>
+      </ul>
+
+      <p class="page-hero__lead reveal">@lead</p>
+    </div>
+
+    <figure class="blog-single-hero__media reveal">
+      @if (!string.IsNullOrWhiteSpace(Model.CoverVideoUrl))
+      {
+        <video controls playsinline preload="metadata" poster="@cover" src="@Model.CoverVideoUrl" title="@Model.Title"></video>
+      }
+      else
+      {
+        <img
+          src="@cover"
+          width="960"
+          height="640"
+          alt="@Model.Title"
+          loading="eager"
+          decoding="async"
+        >
+      }
+    </figure>
+  </div>
+</section>
+
+<section class="blog-post" aria-label="محتوای مطلب وبلاگ">
+  <div class="container">
+    <div class="blog-post__layout@(toc.Count == 0 ? " blog-post__layout--no-toc" : null)">
+      @if (toc.Count > 0)
+      {
+        <aside class="blog-toc" aria-label="فهرست مطالب">
+          <div class="blog-toc__panel">
+            <h2 class="blog-toc__title">فهرست مطالب</h2>
+            <ol class="blog-toc__list">
+              @foreach (var item in toc)
+              {
+                <li><a href="#@item.Id">@item.Text</a></li>
+              }
+            </ol>
+          </div>
+        </aside>
+      }
+
+      <div class="blog-post__content">
+        <article class="blog-prose">
+          @if (!string.IsNullOrWhiteSpace(processedBody))
+          {
+            @Html.Raw(processedBody)
+          }
+          else
+          {
+            <p>@lead</p>
+          }
+        </article>
+
+        @await Component.InvokeAsync("Comments", new {
+            targetType = 0,
+            targetId = Model.Id,
+            targetTitle = Model.Title
+        })
+      </div>
+    </div>
+  </div>
+</section>
+
+@if (faqItems.Count > 0)
+{
+  <section class="faq-section blog-faq" aria-labelledby="blog-faq-heading">
+    <div class="container">
+      <div class="section-header section-header--center reveal">
+        <p class="section-kicker">راهنما</p>
+        <h2 class="section-heading" id="blog-faq-heading">سوالات متداول</h2>
+        <p class="section-lead">پاسخ به پرسش‌های پرتکرار درباره این مطلب.</p>
+      </div>
+
+      <div class="faq-list reveal">
+        @{
+          var faqIndex = 0;
         }
-    </header>
-
-    @if (!string.IsNullOrWhiteSpace(Model.CoverVideoUrl))
-    {
-        <div class="video-player-wrap">
-            @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-            {
-                <video class="video-player" controls playsinline preload="metadata"
-                       src="@Model.CoverVideoUrl" poster="@Model.CoverImageUrl"></video>
-            }
-            else
-            {
-                <video class="video-player" controls playsinline preload="metadata"
-                       src="@Model.CoverVideoUrl"></video>
-            }
-        </div>
-    }
-    else if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-    {
-        <figure class="blog-cover">
-            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
-        </figure>
-    }
-
-    <div class="blog-content">@Html.Raw(Model.Body)</div>
-
-    @if (faqItems.Count > 0)
-    {
-        <section class="blog-faq" aria-labelledby="blog-faq-heading">
-            <h2 id="blog-faq-heading">@Localizer["Faq"]</h2>
-            <div class="blog-faq-list">
-                @foreach (var item in faqItems)
-                {
-                    <details class="blog-faq-item">
-                        <summary>@item.Question</summary>
-                        <div class="blog-faq-answer">@item.Answer</div>
-                    </details>
-                }
+        @foreach (var item in faqItems)
+        {
+          var isOpen = faqIndex == 0;
+          <div class="faq-item@(isOpen ? " is-open" : null)">
+            <button class="faq-item__question" type="button" aria-expanded="@(isOpen ? "true" : "false")">
+              @item.Question
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-item__answer">
+              @item.Answer
             </div>
-        </section>
+          </div>
+          faqIndex++;
+        }
+      </div>
+    </div>
+  </section>
 
-        <script type="application/ld+json">
+  @if (!string.IsNullOrWhiteSpace(faqJsonLd))
+  {
+    <script type="application/ld+json">
 @Html.Raw(faqJsonLd)
-        </script>
-    }
+    </script>
+  }
+}
 
-    @await Component.InvokeAsync("Comments", new {
-        targetType = 0,
-        targetId = Model.Id,
-        targetTitle = Model.Title
-    })
-</article>
+@if (related.Count > 0)
+{
+  <section class="blog-related" aria-labelledby="blog-related-heading">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-kicker">ادامه مطالعه</p>
+        <h2 class="section-heading" id="blog-related-heading">مطالب مرتبط</h2>
+      </div>
+
+      <div class="blog-grid blog-grid--related">
+        @{
+          var relatedFallback = Url.Content("~/template/assets/images/blog/thyroid-risks.webp");
+        }
+        @foreach (var item in related)
+        {
+          var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? relatedFallback : item.CoverImageUrl;
+          var itemLocal = item.PublishedAtUtc.Kind == DateTimeKind.Utc
+              ? item.PublishedAtUtc.ToLocalTime()
+              : item.PublishedAtUtc;
+          var itemDateAttr = itemLocal.ToString("yyyy-MM-dd");
+          var itemDateLabel = itemLocal.ToString("d MMMM yyyy", fa);
+          var itemExcerpt = string.IsNullOrWhiteSpace(item.Excerpt)
+              ? "برای ادامه مطلب وارد شوید."
+              : item.Excerpt;
+          <article class="blog-card reveal">
+            <a class="blog-card__link" asp-controller="Blog" asp-action="Details" asp-route-slug="@item.Slug">
+              <span class="blog-card__media">
+                <img
+                  src="@itemCover"
+                  width="800"
+                  height="500"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+              </span>
+              <span class="blog-card__body">
+                <span class="blog-card__meta">
+                  <time datetime="@itemDateAttr">@itemDateLabel</time>
+                </span>
+                <h3 class="blog-card__title">@item.Title</h3>
+                <p class="blog-card__excerpt">@itemExcerpt</p>
+                <span class="blog-card__more">ادامه مطلب</span>
+              </span>
+            </a>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<section class="consult-band consult-band--service" aria-labelledby="consult-band-heading">
+  <div class="container">
+    <div class="consult-band__panel reveal">
+      <div class="consult-band__copy">
+        <p class="consult-band__kicker">نوبت مشاوره تخصصی</p>
+        <h2 class="consult-band__title" id="consult-band-heading">
+          نیاز به ارزیابی تخصصی دارید؟
+        </h2>
+        <p class="consult-band__lead">
+          ارزیابی تخصصی، بررسی مدارک و راهنمایی مسیر درمان — همین حالا رزرو کنید یا با کلینیک تماس بگیرید.
+        </p>
+        <ul class="consult-band__chips" aria-label="اطلاعات تماس">
+          <li>شنبه تا پنجشنبه</li>
+          <li>۹ تا ۲۱</li>
+          <li>پاسخگویی تلفنی</li>
+        </ul>
+      </div>
+
+      <div class="consult-band__side">
+        <a class="consult-band__phone" href="@telHref">
+          <span class="consult-band__phone-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </span>
+          <span class="consult-band__phone-text">
+            <span class="consult-band__phone-label">تماس مستقیم</span>
+            <span class="consult-band__phone-number phone-ltr">@phoneDisplay</span>
+          </span>
+        </a>
+        <div class="consult-band__actions">
+          <button class="btn-light-custom" type="button" data-booking-open>
+            <span class="ui-icon btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <path d="M16 2v4M8 2v4M3 10h18"/>
+              </svg>
+            </span>
+            رزرو نوبت
+          </button>
+          <a class="btn-outline-light" asp-controller="Home" asp-action="Contact">صفحه تماس</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

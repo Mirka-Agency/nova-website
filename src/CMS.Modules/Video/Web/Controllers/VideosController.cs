@@ -55,6 +55,7 @@ public class VideosController : Controller
             return NotFound();
 
         ViewData["Title"] = item.Title;
+        ViewData["NavActive"] = "videos";
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;
@@ -63,6 +64,13 @@ public class VideosController : Controller
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("VideoItems", item.Id, "ویرایش ویدیو", "ManageVideo");
+
+        var relatedPage = await _items.ListPublishedPagedAsync(1, 8, cancellationToken);
+        ViewBag.Related = relatedPage.Items
+            .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
+            .Take(3)
+            .ToList();
+
         return View(item);
     }
 

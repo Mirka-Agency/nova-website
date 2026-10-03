@@ -64,6 +64,13 @@ public class TeamsController : Controller
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("TeamItems", item.Id, "ویرایش عضو تیم", "ManageTeam");
+
+        var related = await _items.ListPublishedPagedAsync(1, 8, cancellationToken);
+        ViewBag.Related = related.Items
+            .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
+            .Take(3)
+            .ToList();
+
         return View(item);
     }
 

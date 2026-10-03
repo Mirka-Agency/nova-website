@@ -1,64 +1,191 @@
 @model PublicArticleDetailDto
+@using System.Globalization
+@using CMS.Application.Settings
 @using CMS.Modules.News.Domain.Enums
+@inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
+    ViewData["NavActive"] = "articles";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var source = string.IsNullOrWhiteSpace(Model.AuthorDisplayName) ? "مقاله تخصصی" : Model.AuthorDisplayName;
+    var topic = string.IsNullOrWhiteSpace(Model.CategoryName) ? "غدد درون‌ریز" : Model.CategoryName;
+    var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
+        ? $"خلاصه مقاله تخصصی «{Model.Title}» از {brand}."
+        : Model.Excerpt;
+    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
+        ? Url.Content("~/template/assets/images/articles/scientific-reports.jpg")
+        : Model.CoverImageUrl;
+    var related = (ViewBag.Related as IReadOnlyList<PublicArticleSummaryDto>)
+        ?? Array.Empty<PublicArticleSummaryDto>();
+    var persian = new PersianCalendar();
+
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
+            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
+
+    string FormatPublished(DateTime utc)
+    {
+        var local = utc.Kind == DateTimeKind.Utc ? utc.ToLocalTime() : utc;
+        var y = persian.GetYear(local);
+        var m = persian.GetMonth(local);
+        var d = persian.GetDayOfMonth(local);
+        return ToPersianDigits($"{y}/{m:00}/{d:00}");
+    }
+
+    string? ServiceFragment()
+    {
+        var hay = $"{topic} {Model.Title} {Model.Excerpt}";
+        if (hay.Contains("آدرنال", StringComparison.Ordinal) || hay.Contains("فوق کلیه", StringComparison.Ordinal) || hay.Contains("adrenal", StringComparison.OrdinalIgnoreCase))
+            return "adrenal";
+        if (hay.Contains("پاراتیروئید", StringComparison.Ordinal) || hay.Contains("parathyroid", StringComparison.OrdinalIgnoreCase))
+            return "parathyroid";
+        if (hay.Contains("پانکراس", StringComparison.Ordinal) || hay.Contains("pancreas", StringComparison.OrdinalIgnoreCase))
+            return "pancreas";
+        if (hay.Contains("تیروئید", StringComparison.Ordinal) || hay.Contains("thyroid", StringComparison.OrdinalIgnoreCase))
+            return "thyroid";
+        return null;
+    }
+
+    var serviceFragment = ServiceFragment();
+    var serviceLabel = serviceFragment switch
+    {
+        "thyroid" => "مشاهده خدمت جراحی تیروئید",
+        "parathyroid" => "مشاهده خدمت جراحی پاراتیروئید",
+        "adrenal" => "مشاهده خدمت جراحی فوق کلیه",
+        "pancreas" => "مشاهده خدمت جراحی پانکراس",
+        _ => "مشاهده خدمات تخصصی"
+    };
+    var publishedLocal = FormatPublished(Model.PublishedAtUtc);
 }
 
-<article class="blog-page blog-detail">
-    <p class="blog-back">
-        <a asp-controller="News" asp-action="Index">@Localizer["BackToNews"]</a>
-    </p>
+<section class="page-hero page-hero--article-single" aria-labelledby="page-hero-title">
+  <div class="container article-single-hero">
+    <div class="article-single-hero__copy">
+      <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+        <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+        <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+        <a asp-controller="News" asp-action="Index">مقالات تخصصی</a>
+        <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+        <span aria-current="page">@Model.Title</span>
+      </nav>
 
-    <header class="blog-page-header">
-        <h1>@Model.Title</h1>
-        <p class="blog-meta">
-            <span class="blog-kind">@(Model.Kind == ArticleKind.Event ? Localizer["EventKind"] : Localizer["NewsKind"])</span>
-            <span>· @Localizer["PublishedOn"]: @Model.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-            @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
-            {
-                <span>· @Localizer["Author"]: @Model.AuthorDisplayName</span>
-            }
-            @if (!string.IsNullOrWhiteSpace(Model.CategoryName))
-            {
-                <span>· @Localizer["Category"]: @Model.CategoryName</span>
-            }
-            @if (Model.Kind == ArticleKind.Event)
-            {
-                @if (Model.EventStartAtUtc.HasValue)
-                {
-                    <span>· @Localizer["EventStart"]: @Model.EventStartAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
-                }
-                @if (Model.EventEndAtUtc.HasValue)
-                {
-                    <span>· @Localizer["EventEnd"]: @Model.EventEndAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model.Location))
-                {
-                    <span>· @Localizer["Location"]: @Model.Location</span>
-                }
-            }
-        </p>
-        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+      <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
+      <p class="page-hero__lead reveal">@lead</p>
+
+      <ul class="article-single-meta reveal" aria-label="اطلاعات مقاله">
+        <li>منبع: @source</li>
+        <li>موضوع: @topic</li>
+        <li>نوع: مقاله علمی</li>
+      </ul>
+    </div>
+
+    <figure class="article-single-hero__media reveal">
+      <img
+        src="@cover"
+        width="800"
+        height="500"
+        alt="@Model.Title"
+        loading="eager"
+        decoding="async"
+      >
+    </figure>
+  </div>
+</section>
+
+<section class="article-detail" aria-labelledby="article-detail-heading">
+  <div class="container">
+    <div class="article-detail__layout">
+      <div class="article-detail__main">
+        <article class="article-prose reveal">
+          <p class="section-kicker">خلاصه پژوهش</p>
+          <h2 class="section-heading" id="article-detail-heading">درباره این مطالعه</h2>
+          @if (!string.IsNullOrWhiteSpace(Model.Body))
+          {
+            <div class="article-prose__body">
+              @Html.Raw(Model.Body)
+            </div>
+          }
+          else
+          {
+            <p>@lead</p>
+          }
+        </article>
+      </div>
+
+      <aside class="article-detail__aside reveal" aria-label="اطلاعات مقاله">
+        <h3 class="article-detail__aside-title">اطلاعات مقاله</h3>
+        <ul class="article-info-list">
+          <li>
+            <span class="article-info-list__label">منبع</span>
+            <span class="article-info-list__value">@source</span>
+          </li>
+          <li>
+            <span class="article-info-list__label">موضوع</span>
+            <span class="article-info-list__value">@topic</span>
+          </li>
+          <li>
+            <span class="article-info-list__label">نوع</span>
+            <span class="article-info-list__value">مقاله علمی</span>
+          </li>
+          <li>
+            <span class="article-info-list__label">انتشار</span>
+            <span class="article-info-list__value">@publishedLocal</span>
+          </li>
+        </ul>
+        @if (!string.IsNullOrWhiteSpace(serviceFragment))
         {
-            <p class="blog-excerpt">@Model.Excerpt</p>
+          <a class="article-detail__aside-service" asp-controller="Services" asp-action="Index" asp-fragment="@serviceFragment">@serviceLabel</a>
         }
-    </header>
+        else
+        {
+          <a class="article-detail__aside-service" asp-controller="Services" asp-action="Index">@serviceLabel</a>
+        }
+      </aside>
+    </div>
+  </div>
+</section>
 
-    @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-    {
-        <figure class="blog-cover">
-            <img src="@Model.CoverImageUrl" alt="@Model.Title" />
-        </figure>
-    }
+@if (related.Count > 0)
+{
+  <section class="article-related" aria-labelledby="article-related-heading">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-kicker">ادامه مطالعه</p>
+        <h2 class="section-heading" id="article-related-heading">مقالات مرتبط</h2>
+      </div>
 
-    <div class="blog-content">@Html.Raw(Model.Body)</div>
-
-    @if (Model.Kind == ArticleKind.Event)
-    {
-        @await Component.InvokeAsync("Comments", new {
-            targetType = 1,
-            targetId = Model.Id,
-            targetTitle = Model.Title
-        })
-    }
-</article>
+      <div class="articles-archive__grid articles-archive__grid--related">
+        @{
+          var relatedFallback = Url.Content("~/template/assets/images/articles/scientific-reports.jpg");
+        }
+        @foreach (var item in related)
+        {
+          var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? relatedFallback : item.CoverImageUrl;
+          var itemType = string.IsNullOrWhiteSpace(item.AuthorDisplayName) ? "مقاله تخصصی" : item.AuthorDisplayName;
+          var itemTopic = string.IsNullOrWhiteSpace(item.CategoryName) ? "غدد درون‌ریز" : item.CategoryName;
+          <a class="article-card reveal" asp-controller="News" asp-action="Details" asp-route-slug="@item.Slug">
+            <span class="article-card__media">
+              <img
+                src="@itemCover"
+                width="800"
+                height="500"
+                alt="@item.Title"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">@itemType</span>
+                <span class="article-card__topic">@itemTopic</span>
+              </span>
+              <h3 class="article-card__title">@item.Title</h3>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}

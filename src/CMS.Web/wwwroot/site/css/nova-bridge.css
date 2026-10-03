@@ -201,3 +201,95 @@ body.site > main {
 .event-prose__body :where(ul, ol) {
   padding-inline-start: 1.25rem;
 }
+
+.video-player video,
+.video-player > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+  background: #0f1f22;
+}
+
+.video-player video {
+  object-fit: contain;
+}
+
+.video-prose__body :where(p, ul, ol, h2, h3) {
+  margin-block: 0 0.95rem;
+}
+
+.video-prose__body :where(ul, ol) {
+  padding-inline-start: 1.25rem;
+}
+
+.article-prose__body :where(p, ul, ol, h2, h3) {
+  margin-block: 0 0.95rem;
+}
+
+.article-prose__body :where(ul, ol) {
+  padding-inline-start: 1.25rem;
+}
+
+.article-prose__body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.85rem;
+}
+
+.blog-post__layout--no-toc {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.blog-single-hero__media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+  background: #0f1f22;
+}
+
+.blog-prose :where(p, ul, ol, h2, h3, figure) {
+  margin-block: 0 1rem;
+}
+
+.blog-prose :where(ul, ol) {
+  padding-inline-start: 1.25rem;
+}
+
+.blog-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.85rem;
+}
+
+.blog-post__content .public-comments,
+.blog-post__content .comments-host,
+.blog-post__content [data-comments] {
+  margin-block-start: 2rem;
+}
+
+a.doctor-focus__item {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.doctor-about__body :where(p, ul, ol, h2, h3) {
+  margin-block: 0 1rem;
+}
+
+.doctor-about__body :where(ul, ol) {
+  padding-inline-start: 1.25rem;
+}
+
+.doctor-highlight__quote cite {
+  display: block;
+  margin-block-start: 0.75rem;
+  font-style: normal;
+  color: var(--text-muted, #5c6b6d);
+  font-size: 0.95rem;
+}

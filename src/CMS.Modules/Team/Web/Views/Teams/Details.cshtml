@@ -23,6 +23,16 @@
         ? $"پروفایل تخصصی {Model.Title} در {brand}."
         : Model.Excerpt;
     var hasBody = !string.IsNullOrWhiteSpace(Model.Body);
+    var related = (ViewBag.Related as IReadOnlyList<PublicTeamItemSummaryDto>)
+        ?? Array.Empty<PublicTeamItemSummaryDto>();
+    var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
+    var metaChips = specialty
+        .Split(new[] { '|', '·', '،', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(4)
+        .ToList();
+    if (metaChips.Count == 0)
+        metaChips.Add(role);
 }
 
 <section class="page-hero page-hero--doctor-single" aria-labelledby="page-hero-title">
@@ -40,6 +50,13 @@
       <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
       <p class="doctor-single-hero__specialty reveal">@specialty</p>
       <p class="page-hero__lead reveal">@lead</p>
+
+      <ul class="doctor-single-meta reveal" aria-label="اعتبار حرفه‌ای">
+        @foreach (var chip in metaChips)
+        {
+          <li>@chip</li>
+        }
+      </ul>
 
       <div class="doctor-single-hero__actions reveal">
         <button class="btn-primary-custom" type="button" data-booking-open>
@@ -124,6 +141,169 @@
           </li>
         </ul>
       </aside>
+    </div>
+  </div>
+</section>
+
+<section class="doctor-focus" aria-labelledby="doctor-focus-heading">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-kicker">حوزه فعالیت</p>
+      <h2 class="section-heading" id="doctor-focus-heading">زمینه‌های اصلی فعالیت</h2>
+      <p class="section-lead">تمرکز بالینی بر ارزیابی و درمان جراحی بیماری‌های غدد درون‌ریز.</p>
+    </div>
+
+    <div class="doctor-focus__grid">
+      <a class="doctor-focus__item reveal" asp-controller="Services" asp-action="Index" asp-fragment="thyroid">
+        <span class="doctor-focus__icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+            <path d="M14.1 11.6c.5 1.6 3.3 1.6 3.8 0M14.5 15.3h3"/>
+          </svg>
+        </span>
+        <h3 class="doctor-focus__title">جراحی تیروئید</h3>
+        <p class="doctor-focus__text">بیماری‌ها و توده‌های تیروئید که نیاز به ارزیابی یا درمان جراحی دارند.</p>
+      </a>
+      <a class="doctor-focus__item reveal" asp-controller="Services" asp-action="Index" asp-fragment="parathyroid">
+        <span class="doctor-focus__icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+            <g fill="currentColor" stroke="none">
+              <circle cx="9.3" cy="10.8" r="1.45"/>
+              <circle cx="10.1" cy="17.6" r="1.45"/>
+              <circle cx="22.7" cy="10.8" r="1.45"/>
+              <circle cx="21.9" cy="17.6" r="1.45"/>
+            </g>
+          </svg>
+        </span>
+        <h3 class="doctor-focus__title">جراحی پاراتیروئید</h3>
+        <p class="doctor-focus__text">اختلالات پاراتیروئید و مواردی که درمان جراحی برای آن‌ها مطرح است.</p>
+      </a>
+      <a class="doctor-focus__item reveal" asp-controller="Services" asp-action="Index" asp-fragment="adrenal">
+        <span class="doctor-focus__icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+          </svg>
+        </span>
+        <h3 class="doctor-focus__title">جراحی آدرنال</h3>
+        <p class="doctor-focus__text">بررسی و درمان جراحی برخی توده‌ها و بیماری‌های غدد فوق‌کلیوی.</p>
+      </a>
+      <a class="doctor-focus__item reveal" asp-controller="Services" asp-action="Index" asp-fragment="pancreas">
+        <span class="doctor-focus__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12c2-4 5-6 8-6s6 2 8 6c-2 4-5 6-8 6s-6-2-8-6z"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </span>
+        <h3 class="doctor-focus__title">جراحی پانکراس</h3>
+        <p class="doctor-focus__text">ارزیابی و درمان جراحی موارد منتخب بیماری‌های پانکراس.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+{
+  <section class="doctor-highlight" aria-labelledby="doctor-highlight-heading">
+    <div class="container">
+      <blockquote class="doctor-highlight__quote reveal" id="doctor-highlight-heading">
+        <p>@Model.Excerpt</p>
+        <cite>@Model.Title · @brand</cite>
+      </blockquote>
+    </div>
+  </section>
+}
+
+@if (related.Count > 0)
+{
+  <section class="about-team" aria-labelledby="doctor-related-heading">
+    <div class="container">
+      <header class="about-team__head reveal">
+        <div class="about-team__intro">
+          <p class="section-kicker">تیم درمان</p>
+          <h2 class="about-team__heading" id="doctor-related-heading">سایر متخصصان</h2>
+          <p class="about-team__lead">با دیگر اعضای تیم @brand آشنا شوید.</p>
+        </div>
+        <a class="about-team__all" asp-controller="Teams" asp-action="Index">
+          آرشیو متخصصان
+          <span aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          </span>
+        </a>
+      </header>
+
+      <div class="about-team__grid">
+        @foreach (var member in related)
+        {
+          var memberCover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
+          var memberRole = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
+          var memberBio = string.IsNullOrWhiteSpace(member.Excerpt) ? member.Title : member.Excerpt;
+          <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
+            <div class="about-team__photo">
+              <img src="@memberCover" width="640" height="800" alt="@member.Title" loading="lazy">
+            </div>
+            <div class="about-team__info">
+              <span class="about-team__role">@memberRole</span>
+              <h3 class="about-team__name">@member.Title</h3>
+              <p class="about-team__title">@memberBio</p>
+              <span class="about-team__cta">مشاهده پروفایل</span>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<section class="faq-section doctor-faq" aria-labelledby="doctor-faq-heading">
+  <div class="container">
+    <div class="section-header section-header--center reveal">
+      <p class="section-kicker">راهنما</p>
+      <h2 class="section-heading" id="doctor-faq-heading">سوالات متداول</h2>
+      <p class="section-lead">پاسخ‌های کوتاه برای هماهنگی مراجعه و مشاوره با @Model.Title.</p>
+    </div>
+
+    <div class="faq-list reveal">
+      <div class="faq-item is-open">
+        <button class="faq-item__question" type="button" aria-expanded="true">
+          تخصص @Model.Title چیست؟
+          <span class="faq-item__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-item__answer">@specialty</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-item__question" type="button" aria-expanded="false">
+          مطب کجاست؟
+          <span class="faq-item__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-item__answer">@address</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-item__question" type="button" aria-expanded="false">
+          چگونه نوبت بگیریم؟
+          <span class="faq-item__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-item__answer">
+          از طریق رزرو نوبت آنلاین در سایت یا تماس با شماره
+          <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
+          می‌توانید برای مشاوره اقدام کنید.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-item__question" type="button" aria-expanded="false">
+          ساعات پاسخگویی چیست؟
+          <span class="faq-item__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-item__answer">شنبه تا پنجشنبه · ۹ تا ۲۱</div>
+      </div>
     </div>
   </div>
 </section>
