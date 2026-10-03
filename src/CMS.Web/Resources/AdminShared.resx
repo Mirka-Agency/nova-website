@@ -12,7 +12,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Brand" xml:space="preserve"><value>میرکا CMS</value></data>
+  <data name="Brand" xml:space="preserve"><value>cms نوا کلینیک</value></data>
   <data name="AdminPanel" xml:space="preserve"><value>پنل مدیریت</value></data>
   <data name="Dashboard" xml:space="preserve"><value>داشبورد</value></data>
   <data name="Blog" xml:space="preserve"><value>وبلاگ</value></data>
@@ -75,7 +75,7 @@
   <data name="SettingsSectionAdvanced" xml:space="preserve"><value>نگهداری</value></data>
   <data name="LogoUrl" xml:space="preserve"><value>لوگو</value></data>
   <data name="FaviconUrl" xml:space="preserve"><value>فاویکون</value></data>
-  <data name="ImageUploadHint" xml:space="preserve"><value>JPEG، PNG، WebP یا GIF تا ۵ مگابایت — اصلی نگه داشته و به WebP تبدیل می‌شود</value></data>
+  <data name="ImageUploadHint" xml:space="preserve"><value>JPEG، PNG، WebP، GIF یا SVG تا ۵ مگابایت — اصلی نگه داشته می‌شود؛ رسترها به WebP تبدیل می‌شوند</value></data>
   <data name="CustomizeOptimize" xml:space="preserve"><value>تنظیم اختیاری تغییر اندازه و فشرده‌سازی</value></data>
   <data name="CustomizeOptimizeHint" xml:space="preserve"><value>در صورت خالی بودن، حداکثر بعد ۲۵۶۰ پیکسل و کیفیت ۸۲ استفاده می‌شود</value></data>
   <data name="MaxWidth" xml:space="preserve"><value>حداکثر عرض/ارتفاع (پیکسل)</value></data>

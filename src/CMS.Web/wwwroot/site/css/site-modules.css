@@ -113,7 +113,6 @@ main > .error-page {
   font-size: 1.75rem;
 }
 
-.blog-empty,
 .blog-meta,
 .blog-excerpt {
   color: var(--site-muted);
@@ -122,16 +121,6 @@ main > .error-page {
 .blog-list {
   display: grid;
   gap: 1.5rem;
-}
-
-.blog-card {
-  display: grid;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: var(--site-surface);
-  border: 1px solid var(--site-border);
-  border-radius: var(--site-radius);
-  box-shadow: var(--site-shadow);
 }
 
 .blog-card-cover img,
@@ -272,13 +261,14 @@ main > .error-page {
   font-size: 0.9em;
 }
 
-.blog-faq {
+/* Legacy details/summary FAQ only — skip Nova `section.faq-section.blog-faq`. */
+.blog-faq:not(.faq-section) {
   margin-block-start: 2.5rem;
   padding-block-start: 1.5rem;
   border-block-start: 1px solid var(--site-border, #e5e5e5);
 }
 
-.blog-faq h2 {
+.blog-faq:not(.faq-section) h2 {
   margin: 0 0 1rem;
   font-size: 1.35rem;
 }

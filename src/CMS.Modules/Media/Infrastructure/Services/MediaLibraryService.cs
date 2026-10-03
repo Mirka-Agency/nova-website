@@ -400,7 +400,7 @@ public sealed class MediaLibraryService : IMediaLibraryService
         {
             throw new DomainValidationException(new Dictionary<string, string[]>
             {
-                [nameof(contentType)] = ["فقط تصاویر JPEG، PNG، WebP یا GIF مجاز هستند."]
+                [nameof(contentType)] = ["فقط تصاویر JPEG، PNG، WebP، GIF یا SVG مجاز هستند."]
             });
         }
     }

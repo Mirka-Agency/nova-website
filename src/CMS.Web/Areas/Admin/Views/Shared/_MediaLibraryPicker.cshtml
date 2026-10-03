@@ -41,7 +41,7 @@
                     @Html.AntiForgeryToken()
                     <div class="admin-field">
                         <label for="media-picker-file">@SharedLocalizer["SelectFile"]</label>
-                        <input id="media-picker-file" name="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required />
+                        <input id="media-picker-file" name="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,.svg" required />
                         <p class="admin-hint">@SharedLocalizer["ImageUploadHint"]</p>
                     </div>
                     <div class="admin-field">

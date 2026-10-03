@@ -40,25 +40,46 @@
     var readLabel = readMinutes.ToString(fa) + " دقیقه";
 
     var toc = new List<(string Id, string Text)>();
-    var headingIndex = 0;
-    var processedBody = Regex.Replace(
-        Model.Body ?? string.Empty,
-        @"<h2(\s[^>]*)?>(.*?)</h2>",
-        match =>
+    var proseSections = new List<(string? Id, string Html)>();
+    var bodyHtml = Model.Body ?? string.Empty;
+    var h2Regex = new Regex(@"<h2(\s[^>]*)?>(.*?)</h2>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+    var headingMatches = h2Regex.Matches(bodyHtml);
+
+    if (headingMatches.Count == 0)
+    {
+        if (!string.IsNullOrWhiteSpace(bodyHtml))
+            proseSections.Add((null, bodyHtml));
+    }
+    else
+    {
+        if (headingMatches[0].Index > 0)
         {
-            headingIndex++;
-            var id = $"section-{headingIndex}";
+            var intro = bodyHtml[..headingMatches[0].Index].Trim();
+            if (!string.IsNullOrWhiteSpace(intro))
+                proseSections.Add((null, intro));
+        }
+
+        for (var i = 0; i < headingMatches.Count; i++)
+        {
+            var match = headingMatches[i];
+            var id = $"section-{i + 1}";
             var text = WebUtility.HtmlDecode(Regex.Replace(match.Groups[2].Value, "<.*?>", string.Empty)).Trim();
             if (!string.IsNullOrWhiteSpace(text))
                 toc.Add((id, text));
 
+            var start = match.Index;
+            var end = i + 1 < headingMatches.Count ? headingMatches[i + 1].Index : bodyHtml.Length;
+            var sectionHtml = bodyHtml[start..end];
             var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
-            if (attrs.Contains("id=", StringComparison.OrdinalIgnoreCase))
-                return match.Value;
+            if (!attrs.Contains("id=", StringComparison.OrdinalIgnoreCase))
+            {
+                sectionHtml = $"<h2 id=\"{id}\"{attrs}>{match.Groups[2].Value}</h2>" +
+                              sectionHtml[match.Length..];
+            }
 
-            return $"<h2 id=\"{id}\"{attrs}>{match.Groups[2].Value}</h2>";
-        },
-        RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            proseSections.Add((id, sectionHtml));
+        }
+    }
 
     if (faqItems.Count > 0)
         toc.Add(("blog-faq-heading", "سوالات متداول"));
@@ -146,16 +167,30 @@
       }
 
       <div class="blog-post__content">
-        <article class="blog-prose">
-          @if (!string.IsNullOrWhiteSpace(processedBody))
+        @if (proseSections.Count > 0)
+        {
+          foreach (var section in proseSections)
           {
-            @Html.Raw(processedBody)
+            if (section.Id is null)
+            {
+              <article class="blog-prose">
+                @Html.Raw(section.Html)
+              </article>
+            }
+            else
+            {
+              <article id="@section.Id" class="blog-prose">
+                @Html.Raw(section.Html)
+              </article>
+            }
           }
-          else
-          {
+        }
+        else
+        {
+          <article class="blog-prose">
             <p>@lead</p>
-          }
-        </article>
+          </article>
+        }
 
         @await Component.InvokeAsync("Comments", new {
             targetType = 0,

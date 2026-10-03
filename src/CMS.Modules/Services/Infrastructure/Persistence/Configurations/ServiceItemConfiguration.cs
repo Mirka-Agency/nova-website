@@ -15,6 +15,7 @@ public sealed class ServiceItemConfiguration : IEntityTypeConfiguration<ServiceI
         builder.Property(x => x.Body).IsRequired();
         builder.Property(x => x.Excerpt).HasMaxLength(1000);
         builder.Property(x => x.CoverImageUrl).HasMaxLength(1000);
+        builder.Property(x => x.IconUrl).HasMaxLength(1000);
         builder.Property(x => x.AuthorUserId).HasMaxLength(450);
         builder.Property(x => x.AuthorDisplayName).HasMaxLength(200);
         builder.Property(x => x.OwnedByUserId).HasMaxLength(450);

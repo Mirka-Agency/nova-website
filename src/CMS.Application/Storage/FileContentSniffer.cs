@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace CMS.Application.Storage;
 
 /// <summary>Validates file content against declared MIME using magic-byte signatures.</summary>
@@ -8,8 +10,12 @@ public static class FileContentSniffer
         if (string.IsNullOrWhiteSpace(contentType))
             return false;
 
+        var normalized = contentType.Trim().ToLowerInvariant();
+        if (normalized is "image/svg+xml")
+            return LooksLikeSvg(stream);
+
         var header = ReadHeader(stream, 16);
-        return contentType.Trim().ToLowerInvariant() switch
+        return normalized switch
         {
             "image/jpeg" or "image/jpg" => header.Length >= 2 && header[0] == 0xFF && header[1] == 0xD8,
             "image/png" => header.Length >= 8
@@ -21,6 +27,16 @@ public static class FileContentSniffer
                 && header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50,
             _ => false
         };
+    }
+
+    private static bool LooksLikeSvg(Stream stream)
+    {
+        var header = ReadHeader(stream, 512);
+        if (header.Length == 0)
+            return false;
+
+        var text = Encoding.UTF8.GetString(header).TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
+        return text.Contains("<svg", StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool MatchesDeclaredFormFile(Stream stream, string? contentType)

@@ -20,7 +20,7 @@
   <data name="MediaUpdated" xml:space="preserve"><value>جزئیات رسانه ذخیره شد.</value></data>
   <data name="ImageEdited" xml:space="preserve"><value>تصویر ویرایش‌شده ذخیره شد.</value></data>
   <data name="SelectFile" xml:space="preserve"><value>انتخاب فایل</value></data>
-  <data name="UploadHint" xml:space="preserve"><value>JPEG، PNG، WebP یا GIF تا ۵ مگابایت — فایل اصلی نگه داشته می‌شود و نسخهٔ نمایشی به WebP تبدیل می‌شود</value></data>
+  <data name="UploadHint" xml:space="preserve"><value>JPEG، PNG، WebP، GIF یا SVG تا ۵ مگابایت — فایل اصلی نگه داشته می‌شود؛ رسترها به WebP تبدیل می‌شوند</value></data>
   <data name="CustomizeOptimize" xml:space="preserve"><value>تنظیم اختیاری تغییر اندازه و فشرده‌سازی</value></data>
   <data name="CustomizeOptimizeHint" xml:space="preserve"><value>در صورت خالی بودن، حداکثر بعد ۲۵۶۰ پیکسل و کیفیت ۸۲ استفاده می‌شود</value></data>
   <data name="MaxWidth" xml:space="preserve"><value>حداکثر عرض/ارتفاع (پیکسل)</value></data>

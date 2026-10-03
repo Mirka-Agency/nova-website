@@ -16,6 +16,7 @@ public class ServiceItem : BaseEntity
     public string? Excerpt { get; private set; }
     public ServiceStatus Status { get; private set; } = ServiceStatus.Draft;
     public string? CoverImageUrl { get; private set; }
+    public string? IconUrl { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public DateTime? PublishedAtUtc { get; private set; }
@@ -38,6 +39,7 @@ public class ServiceItem : BaseEntity
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? iconUrl,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -50,7 +52,7 @@ public class ServiceItem : BaseEntity
     {
         var item = new ServiceItem();
         item.ApplyContent(
-            title, slug, body, excerpt, categoryId, coverImageUrl,
+            title, slug, body, excerpt, categoryId, coverImageUrl, iconUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -64,6 +66,7 @@ public class ServiceItem : BaseEntity
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? iconUrl,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -75,7 +78,7 @@ public class ServiceItem : BaseEntity
         string? ogImageUrl)
     {
         ApplyContent(
-            title, slug, body, excerpt, categoryId, coverImageUrl,
+            title, slug, body, excerpt, categoryId, coverImageUrl, iconUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -124,6 +127,7 @@ public class ServiceItem : BaseEntity
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? iconUrl,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -148,6 +152,8 @@ public class ServiceItem : BaseEntity
             throw new DomainException("توضیحات کوتاه خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
+        if (iconUrl is { Length: > 1000 })
+            throw new DomainException("آدرس آیکون خیلی طولانی است.");
         if (authorUserId is { Length: > 450 })
             throw new DomainException("شناسه نویسنده نامعتبر است.");
         if (authorDisplayName is { Length: > 200 })
@@ -173,6 +179,7 @@ public class ServiceItem : BaseEntity
         Excerpt = NullIfWhiteSpace(excerpt);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
+        IconUrl = NullIfWhiteSpace(iconUrl);
         AuthorUserId = NullIfWhiteSpace(authorUserId);
         AuthorDisplayName = NullIfWhiteSpace(authorDisplayName);
         MetaTitle = NullIfWhiteSpace(metaTitle);

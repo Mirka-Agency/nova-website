@@ -11,7 +11,8 @@ public static class ImageUploadRules
         "image/jpg",
         "image/png",
         "image/webp",
-        "image/gif"
+        "image/gif",
+        "image/svg+xml"
     };
 
     public static bool IsAllowedContentType(string? contentType) =>

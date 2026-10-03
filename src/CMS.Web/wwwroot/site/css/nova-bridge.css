@@ -354,24 +354,77 @@ body.site > main {
   background: #0f1f22;
 }
 
-.blog-prose :where(p, ul, ol, h2, h3, figure) {
-  margin-block: 0 1rem;
-}
-
-.blog-prose :where(ul, ol) {
-  padding-inline-start: 1.25rem;
-}
-
-.blog-prose img {
+.blog-prose img,
+.blog-prose figure {
   max-width: 100%;
   height: auto;
   border-radius: 0.85rem;
 }
 
+.blog-prose figure {
+  margin-block: 0 1rem;
+}
+
+.blog-prose ol {
+  padding-inline-start: 1.35rem;
+  margin: 0 0 1.15rem;
+}
+
+.blog-post__content .cms-comments,
 .blog-post__content .public-comments,
 .blog-post__content .comments-host,
 .blog-post__content [data-comments] {
-  margin-block-start: 2rem;
+  margin-block-start: 2.5rem;
+  padding-block-start: 1.75rem;
+  border-block-start: 1px solid rgba(9, 112, 125, 0.12);
+}
+
+.cms-comments h2,
+.cms-comments h3 {
+  color: var(--secondary, #0f2f33);
+  font-weight: 700;
+}
+
+.cms-comments-field label {
+  color: var(--text, #243739);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.cms-comments-field input,
+.cms-comments-field textarea {
+  width: 100%;
+  max-width: 40rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(9, 112, 125, 0.18);
+  border-radius: 0.75rem;
+  background: #fff;
+  color: var(--text, #243739);
+}
+
+.cms-comments-field input:focus,
+.cms-comments-field textarea:focus {
+  outline: 2px solid var(--primary, #09707d);
+  outline-offset: 1px;
+}
+
+.cms-comments-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--primary, #09707d);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cms-comments-submit:hover,
+.cms-comments-submit:focus-visible {
+  background: var(--primary-dark, #075a64);
 }
 
 a.doctor-focus__item {
