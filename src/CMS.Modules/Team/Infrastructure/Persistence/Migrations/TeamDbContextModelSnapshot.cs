@@ -106,6 +106,9 @@ namespace CMS.Modules.Team.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<string>("FaqJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("Highlights")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");

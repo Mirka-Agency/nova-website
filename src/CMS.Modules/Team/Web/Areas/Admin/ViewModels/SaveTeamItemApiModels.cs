@@ -26,6 +26,8 @@ public sealed class SaveTeamItemApiRequest
 
     public string? EducationPathJson { get; set; }
 
+    public string? FaqJson { get; set; }
+
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
 

@@ -28,6 +28,7 @@
     var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
     var specialtyPathItems = TeamSpecialtyPathJson.Parse(Model.SpecialtyPathJson);
     var educationPathItems = TeamEducationPathJson.Parse(Model.EducationPathJson);
+    var faqItems = TeamFaqJson.Parse(Model.FaqJson);
     var metaChips = TeamHighlights.Parse(Model.Highlights).ToList();
     if (metaChips.Count == 0)
     {
@@ -259,6 +260,8 @@
   </section>
 }
 
+@if (faqItems.Count > 0)
+{
 <section class="faq-section doctor-faq" aria-labelledby="doctor-faq-heading">
   <div class="container">
     <div class="section-header section-header--center reveal">
@@ -268,49 +271,24 @@
     </div>
 
     <div class="faq-list reveal">
-      <div class="faq-item is-open">
-        <button class="faq-item__question" type="button" aria-expanded="true">
-          تخصص @Model.Title چیست؟
+      @for (var i = 0; i < faqItems.Count; i++)
+      {
+        var faq = faqItems[i];
+        var isOpen = i == 0;
+      <div class="faq-item@(isOpen ? " is-open" : null)">
+        <button class="faq-item__question" type="button" aria-expanded="@(isOpen ? "true" : "false")">
+          @faq.Question
           <span class="faq-item__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
           </span>
         </button>
-        <div class="faq-item__answer">@specialty</div>
+        <div class="faq-item__answer">@faq.Answer</div>
       </div>
-      <div class="faq-item">
-        <button class="faq-item__question" type="button" aria-expanded="false">
-          مطب کجاست؟
-          <span class="faq-item__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-item__answer">@address</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-item__question" type="button" aria-expanded="false">
-          چگونه نوبت بگیریم؟
-          <span class="faq-item__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-item__answer">
-          از طریق رزرو نوبت آنلاین در سایت یا تماس با شماره
-          <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
-          می‌توانید برای مشاوره اقدام کنید.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-item__question" type="button" aria-expanded="false">
-          ساعات پاسخگویی چیست؟
-          <span class="faq-item__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-item__answer">شنبه تا پنجشنبه · ۹ تا ۲۱</div>
-      </div>
+      }
     </div>
   </div>
 </section>
+}
 
 <section class="consult-band" id="contact" aria-labelledby="consult-band-heading">
   <div class="container">

@@ -77,6 +77,14 @@
   <data name="EducationPathPlacePlaceholder" xml:space="preserve"><value>مثلاً دانشگاه علوم پزشکی تهران</value></data>
   <data name="EducationPathEmpty" xml:space="preserve"><value>هنوز موردی برای مسیر تخصصی ثبت نشده است.</value></data>
   <data name="AddEducationPathItem" xml:space="preserve"><value>افزودن مورد</value></data>
+  <data name="FaqSettings" xml:space="preserve"><value>سوالات متداول</value></data>
+  <data name="FaqSettingsHint" xml:space="preserve"><value>اختیاری؛ در صفحه پروفایل پزشک نمایش داده می‌شود.</value></data>
+  <data name="FaqQuestion" xml:space="preserve"><value>سوال</value></data>
+  <data name="FaqAnswer" xml:space="preserve"><value>پاسخ</value></data>
+  <data name="FaqQuestionPlaceholder" xml:space="preserve"><value>سوال را بنویسید…</value></data>
+  <data name="FaqAnswerPlaceholder" xml:space="preserve"><value>پاسخ را بنویسید…</value></data>
+  <data name="FaqEmpty" xml:space="preserve"><value>هنوز سوالی ثبت نشده است.</value></data>
+  <data name="AddFaqItem" xml:space="preserve"><value>افزودن سوال</value></data>
   <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
   <data name="AuthorHint" xml:space="preserve"><value>انتخاب دستی نویسنده از کاربران ادمین یا ویرایشگر.</value></data>
   <data name="NoAuthor" xml:space="preserve"><value>بدون نویسنده</value></data>

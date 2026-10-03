@@ -145,6 +145,7 @@ public sealed class TeamItemService : ITeamItemService
             highlights: null,
             specialtyPathJson: null,
             educationPathJson: null,
+            faqJson: null,
             categoryId: null,
             coverImageUrl: null,
             avatarImageUrl: null,
@@ -194,6 +195,7 @@ public sealed class TeamItemService : ITeamItemService
         var highlights = TeamHighlights.Normalize(command.Highlights);
         var specialtyPathJson = TeamSpecialtyPathJson.NormalizeJson(command.SpecialtyPathJson);
         var educationPathJson = TeamEducationPathJson.NormalizeJson(command.EducationPathJson);
+        var faqJson = TeamFaqJson.NormalizeJson(command.FaqJson);
         var item = TeamItem.Create(
             command.Title,
             command.Subtitle,
@@ -203,6 +205,7 @@ public sealed class TeamItemService : ITeamItemService
             highlights,
             specialtyPathJson,
             educationPathJson,
+            faqJson,
             command.CategoryId,
             command.CoverImageUrl,
             command.AvatarImageUrl,
@@ -239,6 +242,7 @@ public sealed class TeamItemService : ITeamItemService
         var highlights = TeamHighlights.Normalize(command.Highlights);
         var specialtyPathJson = TeamSpecialtyPathJson.NormalizeJson(command.SpecialtyPathJson);
         var educationPathJson = TeamEducationPathJson.NormalizeJson(command.EducationPathJson);
+        var faqJson = TeamFaqJson.NormalizeJson(command.FaqJson);
         item.Update(
             command.Title,
             command.Subtitle,
@@ -248,6 +252,7 @@ public sealed class TeamItemService : ITeamItemService
             highlights,
             specialtyPathJson,
             educationPathJson,
+            faqJson,
             command.CategoryId,
             command.CoverImageUrl,
             command.AvatarImageUrl,
@@ -286,6 +291,7 @@ public sealed class TeamItemService : ITeamItemService
             item.Highlights,
             item.SpecialtyPathJson,
             item.EducationPathJson,
+            item.FaqJson,
             item.Status,
             item.CoverImageUrl,
             item.AvatarImageUrl,

@@ -218,6 +218,9 @@ public class TeamItemsController : Controller
             EducationPathItems = TeamEducationPathJson.Parse(post.EducationPathJson)
                 .Select(x => new TeamEducationPathItemViewModel { Year = x.Year, Title = x.Title, Place = x.Place })
                 .ToList(),
+            FaqItems = TeamFaqJson.Parse(post.FaqJson)
+                .Select(x => new TeamFaqItemViewModel { Question = x.Question, Answer = x.Answer })
+                .ToList(),
             CoverImageUrl = post.CoverImageUrl,
             AvatarImageUrl = post.AvatarImageUrl,
             CategoryId = post.CategoryId,
@@ -320,6 +323,9 @@ public class TeamItemsController : Controller
         var educationPathJson = TeamEducationPathJson.Serialize(
             (model.EducationPathItems ?? [])
                 .Select(x => new TeamEducationPathItemDto(x.Year, x.Title, x.Place)));
+        var faqJson = TeamFaqJson.Serialize(
+            (model.FaqItems ?? [])
+                .Select(x => new TeamFaqItemDto(x.Question, x.Answer)));
 
         return new SaveTeamItemCommand(
             string.IsNullOrWhiteSpace(model.Title) ? TeamItemDraftDefaults.Title : model.Title.Trim(),
@@ -330,6 +336,7 @@ public class TeamItemsController : Controller
             NullIfWhiteSpace(model.Highlights),
             specialtyPathJson,
             educationPathJson,
+            faqJson,
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
             NullIfWhiteSpace(model.AvatarImageUrl),
@@ -368,6 +375,7 @@ public class TeamItemsController : Controller
 
         model.SpecialtyPathItems ??= [];
         model.EducationPathItems ??= [];
+        model.FaqItems ??= [];
         return model;
     }
 

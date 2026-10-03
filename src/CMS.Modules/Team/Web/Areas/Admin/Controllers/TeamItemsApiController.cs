@@ -145,6 +145,7 @@ public class TeamItemsApiController : ControllerBase
             request.Highlights,
             request.SpecialtyPathJson,
             request.EducationPathJson,
+            request.FaqJson,
             request.CategoryId,
             request.CoverImageUrl,
             request.AvatarImageUrl,

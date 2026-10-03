@@ -198,6 +198,79 @@
             </template>
         </fieldset>
 
+        <fieldset class="admin-fieldset" data-post-faq>
+            <legend>@Localizer["FaqSettings"]</legend>
+            <p class="admin-hint">@Localizer["FaqSettingsHint"]</p>
+
+            <div class="admin-faq-list">
+                <div class="admin-faq-rows" data-faq-list>
+                    @for (var i = 0; i < Model.FaqItems.Count; i++)
+                    {
+                        <div class="admin-faq-row" data-faq-row>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="FaqItems[i].Question">@Localizer["FaqQuestion"]</label>
+                                <input asp-for="FaqItems[i].Question"
+                                       placeholder="@Localizer["FaqQuestionPlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="500" />
+                                <span asp-validation-for="FaqItems[i].Question" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="FaqItems[i].Answer">@Localizer["FaqAnswer"]</label>
+                                <textarea asp-for="FaqItems[i].Answer"
+                                          rows="3"
+                                          placeholder="@Localizer["FaqAnswerPlaceholder"]"
+                                          maxlength="5000"></textarea>
+                                <span asp-validation-for="FaqItems[i].Answer" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-faq-row-actions">
+                                <button type="button" class="btn btn-text-danger" data-faq-remove>
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                    <span>@Localizer["Delete"]</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <p class="admin-hint" data-faq-empty @(Model.FaqItems.Count > 0 ? "hidden" : null)>
+                    @Localizer["FaqEmpty"]
+                </p>
+
+                <div class="admin-faq-add-row">
+                    <button type="button" class="btn btn-secondary" data-faq-add>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span>@Localizer["AddFaqItem"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <template id="post-faq-row-template">
+                <div class="admin-faq-row" data-faq-row>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["FaqQuestion"]</label>
+                        <input name="FaqItems[__INDEX__].Question"
+                               placeholder="@Localizer["FaqQuestionPlaceholder"]"
+                               autocomplete="off"
+                               maxlength="500" />
+                    </div>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["FaqAnswer"]</label>
+                        <textarea name="FaqItems[__INDEX__].Answer"
+                                  rows="3"
+                                  placeholder="@Localizer["FaqAnswerPlaceholder"]"
+                                  maxlength="5000"></textarea>
+                    </div>
+                    <div class="admin-faq-row-actions">
+                        <button type="button" class="btn btn-text-danger" data-faq-remove>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </fieldset>
+
         <div class="admin-field">
             <label asp-for="Body">@Localizer["Description"]</label>
             <textarea asp-for="Body"

@@ -55,6 +55,16 @@ public sealed class SaveTeamItemCommandValidator : AbstractValidator<SaveTeamIte
                 return error ?? "مسیر تخصصی نامعتبر است.";
             });
 
+        RuleFor(x => x.FaqJson)
+            .MaximumLength(TeamFaqJson.MaxJsonLength)
+            .Must(value => TeamFaqJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.FaqJson))
+            .WithMessage(x =>
+            {
+                TeamFaqJson.TryValidate(x.FaqJson, out var error);
+                return error ?? "سوالات متداول نامعتبر است.";
+            });
+
         RuleFor(x => x.CoverImageUrl)
             .MaximumLength(1000)
             .Must(BeValidUrlOrPath)

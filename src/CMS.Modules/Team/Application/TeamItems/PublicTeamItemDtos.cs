@@ -26,6 +26,7 @@ public sealed record PublicTeamItemDetailDto(
     string? Highlights,
     string? SpecialtyPathJson,
     string? EducationPathJson,
+    string? FaqJson,
     string? AuthorDisplayName,
     string? MetaTitle,
     string? MetaDescription,
