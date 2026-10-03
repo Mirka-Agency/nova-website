@@ -55,6 +55,7 @@ public class ServicesController : Controller
             return NotFound();
 
         ViewData["Title"] = item.Title;
+        ViewData["NavActive"] = "services";
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;
@@ -63,6 +64,13 @@ public class ServicesController : Controller
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("ServiceItems", item.Id, "ویرایش خدمت", "ManageServices");
+
+        var related = await _items.ListPublishedPagedAsync(1, 8, cancellationToken);
+        ViewBag.Related = related.Items
+            .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
+            .Take(4)
+            .ToList();
+
         return View(item);
     }
 
