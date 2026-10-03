@@ -20,6 +20,7 @@
     var videoActive = IsCtrl("VideoItems", "VideoCategories");
     var teamActive = IsCtrl("TeamItems", "TeamCategories");
     var honorsActive = IsCtrl("HonorItems");
+    var voicesActive = IsCtrl("VoiceItems");
     var shopActive = IsCtrl(
         "ShopHome", "Products", "ShopCategories", "ShopSettings",
         "Brands", "Attributes", "CustomerGroups",
@@ -222,6 +223,18 @@
            asp-action="Index">
             <i class="fas fa-award" aria-hidden="true"></i>
             <span>@Localizer["Honors"]</span>
+        </a>
+    }
+
+    @if (await FeatureManager.IsEnabledAsync(FeatureNames.Voices)
+         && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewVoices)).Succeeded)
+    {
+        <a class="admin-nav-link @(voicesActive ? "is-active" : null)"
+           asp-area="Admin"
+           asp-controller="VoiceItems"
+           asp-action="Index">
+            <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+            <span>@Localizer["Voices"]</span>
         </a>
     }
 

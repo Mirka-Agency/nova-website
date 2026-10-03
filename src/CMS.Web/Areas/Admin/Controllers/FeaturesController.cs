@@ -44,7 +44,7 @@ public class FeaturesController : Controller
     [HttpPost]
     public async Task<IActionResult> Toggle(string name)
     {
-        if (name is not (FeatureNames.Blog or FeatureNames.News or FeatureNames.Services or FeatureNames.Video or FeatureNames.Team or FeatureNames.Honors or FeatureNames.Shop or FeatureNames.Forms or FeatureNames.Comments or FeatureNames.Popup or FeatureNames.Seo))
+        if (name is not (FeatureNames.Blog or FeatureNames.News or FeatureNames.Services or FeatureNames.Video or FeatureNames.Team or FeatureNames.Honors or FeatureNames.Voices or FeatureNames.Shop or FeatureNames.Forms or FeatureNames.Comments or FeatureNames.Popup or FeatureNames.Seo))
         {
             return NotFound();
         }

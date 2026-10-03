@@ -11,6 +11,8 @@ using CMS.Modules.Honors.Application.HonorItems;
 using CMS.Modules.Honors.Application.Interfaces;
 using CMS.Modules.Team.Application.Interfaces;
 using CMS.Modules.Team.Application.TeamItems;
+using CMS.Modules.Voices.Application.Interfaces;
+using CMS.Modules.Voices.Application.VoiceItems;
 using CMS.Web.Models;
 using CMS.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +24,7 @@ public class HomeController : Controller
 {
     private readonly IPublicTeamItemQuery _teamItems;
     private readonly IPublicHonorItemQuery _honors;
+    private readonly IPublicVoiceItemQuery _voices;
     private readonly IPublicServiceItemQuery _services;
     private readonly IPublicArticleQuery _articles;
     private readonly IFormService _forms;
@@ -30,6 +33,7 @@ public class HomeController : Controller
     public HomeController(
         IPublicTeamItemQuery teamItems,
         IPublicHonorItemQuery honors,
+        IPublicVoiceItemQuery voices,
         IPublicServiceItemQuery services,
         IPublicArticleQuery articles,
         IFormService forms,
@@ -37,6 +41,7 @@ public class HomeController : Controller
     {
         _teamItems = teamItems;
         _honors = honors;
+        _voices = voices;
         _services = services;
         _articles = articles;
         _forms = forms;
@@ -52,6 +57,7 @@ public class HomeController : Controller
         IReadOnlyList<PublicServiceItemSummaryDto> services = Array.Empty<PublicServiceItemSummaryDto>();
         IReadOnlyList<PublicTeamItemSummaryDto> team = Array.Empty<PublicTeamItemSummaryDto>();
         IReadOnlyList<PublicArticleSummaryDto> articles = Array.Empty<PublicArticleSummaryDto>();
+        IReadOnlyList<PublicVoiceItemDto> voices = Array.Empty<PublicVoiceItemDto>();
 
         if (await _features.IsEnabledAsync(FeatureNames.Services))
         {
@@ -71,11 +77,15 @@ public class HomeController : Controller
             articles = page.Items;
         }
 
+        if (await _features.IsEnabledAsync(FeatureNames.Voices))
+            voices = await _voices.ListPublishedAsync(cancellationToken);
+
         return View(new HomeIndexViewModel
         {
             Services = services,
             Team = team,
-            Articles = articles
+            Articles = articles,
+            Voices = voices
         });
     }
 

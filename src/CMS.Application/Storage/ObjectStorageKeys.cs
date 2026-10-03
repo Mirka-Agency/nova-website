@@ -15,6 +15,8 @@ public static partial class ObjectStorageKeys
         public const string Services = "services";
         public const string Video = "video";
         public const string Team = "team";
+        public const string Honors = "honors";
+        public const string Voices = "voices";
         public const string Shop = "shop";
         public const string Forms = "forms";
         public const string Media = "media";

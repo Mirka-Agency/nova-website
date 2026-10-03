@@ -4,6 +4,7 @@
 @using CMS.Modules.News.Application.Articles
 @using CMS.Modules.Services.Application.ServiceItems
 @using CMS.Modules.Team.Application.TeamItems
+@using CMS.Modules.Voices.Application.VoiceItems
 @inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = "خانه";
@@ -25,9 +26,11 @@
     var services = Model?.Services ?? Array.Empty<PublicServiceItemSummaryDto>();
     var team = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
     var articles = Model?.Articles ?? Array.Empty<PublicArticleSummaryDto>();
+    var voices = Model?.Voices ?? Array.Empty<PublicVoiceItemDto>();
     var hasCmsServices = services.Count > 0;
     var hasCmsTeam = team.Count > 0;
     var hasCmsArticles = articles.Count > 0;
+    var hasCmsVoices = voices.Count > 0;
     var fa = CultureInfo.GetCultureInfo("fa-IR");
     var fallbackDoctorCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
     var fallbackArticleCover = Url.Content("~/template/assets/images/articles/scientific-reports.jpg");
@@ -728,6 +731,52 @@ else
         <div class="testimonials-slider reveal" data-testimonials-slider>
           <div class="testimonials-slider__viewport" tabindex="0" aria-label="نظرات مراجعین">
             <div class="testimonials-slider__track">
+@if (hasCmsVoices)
+{
+    foreach (var voice in voices)
+    {
+        var role = string.IsNullOrWhiteSpace(voice.Subtitle) ? "مراجع نووا کلینیک" : voice.Subtitle!;
+        var quote = string.IsNullOrWhiteSpace(voice.Description)
+            ? $"تجربه {voice.CustomerName} از روند درمان در {brand}."
+            : voice.Description!;
+              <div class="testimonial-slide">
+                <article class="testimonial-card" data-voice-card data-audio-src="@voice.AudioUrl">
+                  <header class="testimonial-card__header">
+                    <span class="testimonial-card__avatar" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>
+                      </svg>
+                    </span>
+                    <div class="testimonial-card__identity">
+                      <p class="testimonial-card__author">@voice.CustomerName</p>
+                      <p class="testimonial-card__role">@role</p>
+                    </div>
+                  </header>
+                  <p class="testimonial-card__quote">@quote</p>
+                  <div class="testimonial-voice">
+                    <button class="testimonial-voice__play" type="button" aria-label="پخش ویس @voice.CustomerName" data-voice-play>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M8 5.14v13.72L19 12 8 5.14z"/>
+                      </svg>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/>
+                      </svg>
+                    </button>
+                    <div class="testimonial-voice__body">
+                      <div class="testimonial-voice__progress" aria-hidden="true">
+                        <span class="testimonial-voice__progress-bar" data-voice-progress></span>
+                      </div>
+                    </div>
+                    <span class="testimonial-voice__time" data-voice-current>۰:۰۰</span>
+                    <span class="visually-hidden" data-voice-total>۰:۰۰</span>
+                  </div>
+                </article>
+              </div>
+    }
+}
+else
+{
               <div class="testimonial-slide">
                 <article class="testimonial-card" data-voice-card data-duration="42">
                   <header class="testimonial-card__header">
@@ -838,6 +887,7 @@ else
                   </div>
                 </article>
               </div>
+}
             </div>
           </div>
           <div class="testimonials-slider__controls">
@@ -846,7 +896,7 @@ else
                 <path d="m9 18 6-6-6-6"/>
               </svg>
             </button>
-            <span class="testimonials-slider__counter" data-testimonials-counter aria-live="polite">۱ / ۳</span>
+            <span class="testimonials-slider__counter" data-testimonials-counter aria-live="polite">۱ / @(hasCmsVoices ? voices.Count.ToString(CultureInfo.InvariantCulture) : "۳")</span>
             <button class="testimonials-slider__button" type="button" data-testimonials-next aria-label="نظر بعدی">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="m15 18-6-6 6-6"/>

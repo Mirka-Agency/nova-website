@@ -8,6 +8,7 @@ public static class FeatureNames
     public const string Video = "Video";
     public const string Team = "Team";
     public const string Honors = "Honors";
+    public const string Voices = "Voices";
     public const string Shop = "Shop";
     public const string Forms = "Forms";
     public const string Comments = "Comments";

@@ -17,6 +17,8 @@ using CMS.Modules.Team.Infrastructure;
 using CMS.Modules.Team.Infrastructure.Persistence;
 using CMS.Modules.Honors.Infrastructure;
 using CMS.Modules.Honors.Infrastructure.Persistence;
+using CMS.Modules.Voices.Infrastructure;
+using CMS.Modules.Voices.Infrastructure.Persistence;
 using CMS.Modules.Forms.Infrastructure;
 using CMS.Modules.Forms.Infrastructure.Persistence;
 using CMS.Modules.Forms.Infrastructure.Services;
@@ -83,6 +85,7 @@ try
     builder.Services.AddVideoModule(builder.Configuration);
     builder.Services.AddTeamModule(builder.Configuration);
     builder.Services.AddHonorsModule(builder.Configuration);
+    builder.Services.AddVoicesModule(builder.Configuration);
     builder.Services.AddShopModule(builder.Configuration);
     builder.Services.AddFormsModule(builder.Configuration);
     builder.Services.AddMediaModule(builder.Configuration);
@@ -169,6 +172,8 @@ try
             var honorsDb = scope.ServiceProvider.GetRequiredService<HonorsDbContext>();
             await honorsDb.Database.MigrateAsync();
             await HonorDefaultSeeder.SeedAsync(app.Services);
+            var voicesDb = scope.ServiceProvider.GetRequiredService<VoicesDbContext>();
+            await voicesDb.Database.MigrateAsync();
             var formsDb = scope.ServiceProvider.GetRequiredService<FormsDbContext>();
             await formsDb.Database.MigrateAsync();
             await FormEnginePhase1Seeder.SeedAsync(app.Services);

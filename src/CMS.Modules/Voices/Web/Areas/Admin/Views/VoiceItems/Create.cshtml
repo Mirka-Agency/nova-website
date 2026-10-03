@@ -1,0 +1,13 @@
+@model VoiceItemFormViewModel
+@{
+    ViewData["Title"] = Localizer["CreateVoice"];
+}
+
+<form asp-action="Create" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <partial name="_VoiceItemForm" model="Model" />
+</form>
+
+@section Scripts {
+    <script src="~/admin/js/admin-voice-upload.js" asp-append-version="true"></script>
+}

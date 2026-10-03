@@ -63,6 +63,43 @@ public static class FileContentSniffer
         };
     }
 
+    public static bool MatchesDeclaredAudio(Stream stream, string? contentType)
+    {
+        if (string.IsNullOrWhiteSpace(contentType))
+            return false;
+
+        var header = ReadHeader(stream, 12);
+        return contentType.Trim().ToLowerInvariant() switch
+        {
+            "audio/mpeg" or "audio/mp3" => IsMp3Header(header),
+            "audio/ogg" => header.Length >= 4
+                && header[0] == 0x4F && header[1] == 0x67 && header[2] == 0x67 && header[3] == 0x53,
+            "audio/wav" or "audio/x-wav" => header.Length >= 12
+                && header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46
+                && header[8] == 0x57 && header[9] == 0x41 && header[10] == 0x56 && header[11] == 0x45,
+            "audio/webm" => header.Length >= 4
+                && header[0] == 0x1A && header[1] == 0x45 && header[2] == 0xDF && header[3] == 0xA3,
+            "audio/mp4" or "audio/aac" or "audio/x-m4a" => IsIsoBaseMediaFtyp(header) || IsAdtsAac(header),
+            _ => false
+        };
+    }
+
+    private static bool IsMp3Header(byte[] header)
+    {
+        if (header.Length >= 3
+            && header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33)
+            return true;
+
+        return header.Length >= 2
+               && header[0] == 0xFF
+               && (header[1] & 0xE0) == 0xE0;
+    }
+
+    private static bool IsAdtsAac(byte[] header) =>
+        header.Length >= 2
+        && header[0] == 0xFF
+        && (header[1] & 0xF0) == 0xF0;
+
     private static bool IsIsoBaseMediaFtyp(byte[] header) =>
         header.Length >= 8
         && header[4] == (byte)'f'

@@ -73,6 +73,7 @@ public sealed class AdminBarViewComponent : ViewComponent
         await TryAddAsync(links, staff, FeatureNames.Video, AuthPolicies.ViewVideo, "ویدیوها", "VideoItems", "Index", "fa-video");
         await TryAddAsync(links, staff, FeatureNames.Team, AuthPolicies.ViewTeam, "تیم", "TeamItems", "Index", "fa-users");
         await TryAddAsync(links, staff, FeatureNames.Honors, AuthPolicies.ViewHonors, "افتخارات", "HonorItems", "Index", "fa-award");
+        await TryAddAsync(links, staff, FeatureNames.Voices, AuthPolicies.ViewVoices, "صدای رضایت", "VoiceItems", "Index", "fa-microphone-alt");
         await TryAddAsync(links, staff, FeatureNames.Shop, AuthPolicies.ViewShop, "محصولات", "Products", "Index", "fa-box");
         await TryAddAsync(links, staff, FeatureNames.Forms, AuthPolicies.ViewForms, "فرم‌ها", "Forms", "Index", "fa-clipboard-list");
         await TryAddAsync(links, staff, FeatureNames.Popup, AuthPolicies.ViewPopup, "پاپ‌آپ‌ها", "Popups", "Index", "fa-window-restore");
@@ -95,6 +96,7 @@ public sealed class AdminBarViewComponent : ViewComponent
         await TryAddAsync(links, staff, FeatureNames.Video, AuthPolicies.ManageVideo, "ویدیو جدید", "VideoItems", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Team, AuthPolicies.ManageTeam, "عضو تیم جدید", "TeamItems", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Honors, AuthPolicies.ManageHonors, "افتخار جدید", "HonorItems", "Create", "fa-plus");
+        await TryAddAsync(links, staff, FeatureNames.Voices, AuthPolicies.ManageVoices, "صدای جدید", "VoiceItems", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Shop, AuthPolicies.ManageShop, "محصول جدید", "Products", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Forms, AuthPolicies.ManageForms, "فرم جدید", "Forms", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Popup, AuthPolicies.ManagePopup, "پاپ‌آپ جدید", "Popups", "Create", "fa-plus");

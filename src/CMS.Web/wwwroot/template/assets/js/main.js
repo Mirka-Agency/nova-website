@@ -461,6 +461,7 @@
     if (!voiceCards.length) return;
 
     var activeCard = null;
+    var activeAudio = null;
     var rafId = null;
     var startedAt = 0;
     var elapsedBeforePause = 0;
@@ -471,12 +472,38 @@
         playButton: card.querySelector("[data-voice-play]"),
         progress: card.querySelector("[data-voice-progress]"),
         current: card.querySelector("[data-voice-current]"),
-        duration: Number(card.getAttribute("data-duration")) || 45
+        total: card.querySelector("[data-voice-total]"),
+        duration: Number(card.getAttribute("data-duration")) || 45,
+        audioSrc: (card.getAttribute("data-audio-src") || "").trim()
       };
+    }
+
+    function getOrCreateAudio(card) {
+      var parts = getCardParts(card);
+      if (!parts.audioSrc) return null;
+      if (card._voiceAudio instanceof HTMLAudioElement) return card._voiceAudio;
+
+      var audio = new Audio(parts.audioSrc);
+      audio.preload = "metadata";
+      audio.addEventListener("loadedmetadata", function () {
+        if (!isFinite(audio.duration) || audio.duration <= 0) return;
+        card.setAttribute("data-duration", String(Math.round(audio.duration)));
+        var label = formatVoiceTime(audio.duration);
+        if (parts.current && !card.classList.contains("is-playing")) {
+          parts.current.textContent = label;
+        }
+        if (parts.total) parts.total.textContent = label;
+      });
+      audio.addEventListener("ended", function () {
+        if (activeCard === card) stopActive();
+      });
+      card._voiceAudio = audio;
+      return audio;
     }
 
     function resetCard(card) {
       var parts = getCardParts(card);
+      var audio = card._voiceAudio;
       card.classList.remove("is-playing");
       if (parts.playButton) {
         parts.playButton.setAttribute("aria-pressed", "false");
@@ -484,8 +511,15 @@
       if (parts.progress) {
         parts.progress.style.width = "0%";
       }
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
       if (parts.current) {
-        parts.current.textContent = formatVoiceTime(parts.duration);
+        var duration = audio && isFinite(audio.duration) && audio.duration > 0
+          ? audio.duration
+          : parts.duration;
+        parts.current.textContent = formatVoiceTime(duration);
       }
     }
 
@@ -493,6 +527,10 @@
       if (rafId) {
         window.cancelAnimationFrame(rafId);
         rafId = null;
+      }
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio = null;
       }
       if (activeCard) {
         resetCard(activeCard);
@@ -502,7 +540,7 @@
       startedAt = 0;
     }
 
-    function tick() {
+    function tickSimulated() {
       if (!activeCard) return;
 
       var parts = getCardParts(activeCard);
@@ -521,18 +559,46 @@
         return;
       }
 
-      rafId = window.requestAnimationFrame(tick);
+      rafId = window.requestAnimationFrame(tickSimulated);
+    }
+
+    function tickAudio() {
+      if (!activeCard || !activeAudio) return;
+
+      var parts = getCardParts(activeCard);
+      var duration = isFinite(activeAudio.duration) && activeAudio.duration > 0
+        ? activeAudio.duration
+        : parts.duration;
+      var current = activeAudio.currentTime || 0;
+      var progress = duration > 0 ? Math.min(current / duration, 1) : 0;
+
+      if (parts.progress) {
+        parts.progress.style.width = progress * 100 + "%";
+      }
+      if (parts.current) {
+        parts.current.textContent = formatVoiceTime(current);
+      }
+
+      if (!activeAudio.paused && !activeAudio.ended) {
+        rafId = window.requestAnimationFrame(tickAudio);
+      }
     }
 
     function playCard(card) {
       var parts = getCardParts(card);
+      var audio = getOrCreateAudio(card);
 
       if (activeCard && activeCard !== card) {
         stopActive();
       }
 
       if (activeCard === card) {
-        elapsedBeforePause += (performance.now() - startedAt) / 1000;
+        if (audio) {
+          audio.pause();
+          activeAudio = null;
+        } else {
+          elapsedBeforePause += (performance.now() - startedAt) / 1000;
+        }
         if (rafId) {
           window.cancelAnimationFrame(rafId);
           rafId = null;
@@ -551,6 +617,18 @@
         parts.playButton.setAttribute("aria-pressed", "true");
       }
 
+      if (audio) {
+        activeAudio = audio;
+        var playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(function () {
+            stopActive();
+          });
+        }
+        rafId = window.requestAnimationFrame(tickAudio);
+        return;
+      }
+
       if (reduceMotion) {
         if (parts.progress) {
           parts.progress.style.width = "100%";
@@ -563,11 +641,12 @@
       }
 
       startedAt = performance.now();
-      rafId = window.requestAnimationFrame(tick);
+      rafId = window.requestAnimationFrame(tickSimulated);
     }
 
     voiceCards.forEach(function (card) {
       var parts = getCardParts(card);
+      getOrCreateAudio(card);
       resetCard(card);
 
       if (!parts.playButton) return;

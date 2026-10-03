@@ -30,6 +30,8 @@
   <data name="TeamCategories" xml:space="preserve"><value>دسته‌های تیم</value></data>
   <data name="ManageTeamItems" xml:space="preserve"><value>مدیریت تیم</value></data>
   <data name="Honors" xml:space="preserve"><value>افتخارات</value></data>
+  <data name="Voices" xml:space="preserve"><value>صدای رضایت مراجعین</value></data>
+  <data name="ManageVoices" xml:space="preserve"><value>مدیریت صداهای رضایت</value></data>
   <data name="HonorItems" xml:space="preserve"><value>افتخارات کلینیک</value></data>
   <data name="ManageHonors" xml:space="preserve"><value>مدیریت افتخارات</value></data>
   <data name="ServiceCategories" xml:space="preserve"><value>دسته‌های خدمات</value></data>

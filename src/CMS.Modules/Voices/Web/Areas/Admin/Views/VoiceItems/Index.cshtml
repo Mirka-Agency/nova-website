@@ -1,0 +1,70 @@
+@model VoiceItemIndexViewModel
+@{
+    ViewData["Title"] = Localizer["VoiceItems"];
+    ViewData["SearchPlaceholder"] = Localizer["SearchVoices"].Value;
+    ViewBag.Search = Model.Search;
+    ViewBag.Page = Model.Page;
+    ViewBag.PageSize = Model.PageSize;
+    ViewBag.TotalPages = Model.TotalPages;
+    ViewBag.TotalCount = Model.TotalCount;
+    ViewBag.HasActiveFilters = Model.IsPublished.HasValue;
+    ViewBag.FilterClearRouteValues = new { area = "Admin" };
+    var hasFilters = !string.IsNullOrWhiteSpace(Model.Search) || Model.IsPublished.HasValue;
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-primary" asp-action="Create"><i class="fas fa-plus" aria-hidden="true"></i><span>@Localizer["CreateVoice"]</span></a>
+    <partial name="_FilterPanel" />
+</div>
+
+@if (Model.TotalCount == 0)
+{
+    <p class="admin-lead">@(hasFilters ? Localizer["NoSearchResults"] : Localizer["NoVoices"])</p>
+}
+else
+{
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>@Localizer["CustomerName"]</th>
+                <th>@Localizer["Subtitle"]</th>
+                <th>@Localizer["SortOrder"]</th>
+                <th>@Localizer["Status"]</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">@item.CustomerName</a>
+                    </td>
+                    <td>@(string.IsNullOrWhiteSpace(item.Subtitle) ? "—" : item.Subtitle)</td>
+                    <td><span class="admin-mono" dir="ltr">@item.SortOrder</span></td>
+                    <td>
+                        @if (item.IsPublished)
+                        {
+                            <span class="admin-badge admin-badge-success">@Localizer["Published"]</span>
+                        }
+                        else
+                        {
+                            <span class="admin-badge">@Localizer["Draft"]</span>
+                        }
+                    </td>
+                    <td class="admin-row-actions">
+                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                        <form asp-action="Delete" method="post" class="admin-inline-form" onsubmit="return confirm('@Localizer["ConfirmDelete"]');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-ghost"><i class="fas fa-trash-alt" aria-hidden="true"></i><span>@Localizer["Delete"]</span></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" />
+}
