@@ -13,6 +13,8 @@
     <ProjectReference Include="..\CMS.Modules\Video\Infrastructure\CMS.Modules.Video.Infrastructure.csproj" />
     <ProjectReference Include="..\CMS.Modules\Team\Web\CMS.Modules.Team.Web.csproj" />
     <ProjectReference Include="..\CMS.Modules\Team\Infrastructure\CMS.Modules.Team.Infrastructure.csproj" />
+    <ProjectReference Include="..\CMS.Modules\Honors\Web\CMS.Modules.Honors.Web.csproj" />
+    <ProjectReference Include="..\CMS.Modules\Honors\Infrastructure\CMS.Modules.Honors.Infrastructure.csproj" />
     <ProjectReference Include="..\CMS.Modules\Shop\Web\CMS.Modules.Shop.Web.csproj" />
     <ProjectReference Include="..\CMS.Modules\Shop\Infrastructure\CMS.Modules.Shop.Infrastructure.csproj" />
     <ProjectReference Include="..\CMS.Modules\Forms\Web\CMS.Modules.Forms.Web.csproj" />

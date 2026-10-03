@@ -153,6 +153,7 @@
       coverImageUrl: (fieldValue("CoverImageUrl") || "").trim() || null,
       avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,
+      videoUrl: (fieldValue("VideoUrl") || "").trim() || null,
       galleryJson: galleryJsonValue(),
       kind: kindValue(),
       categoryId,

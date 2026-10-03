@@ -1,0 +1,58 @@
+@model HonorItemFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="admin-validation"></div>
+
+<div class="admin-post-editor">
+    <div class="admin-post-editor-main">
+        <div class="admin-field">
+            <label asp-for="Title">@Localizer["Title"]</label>
+            <input asp-for="Title" />
+            <span asp-validation-for="Title" class="admin-field-error"></span>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="AltText">@Localizer["AltText"]</label>
+            <input asp-for="AltText" />
+            <p class="admin-hint">@Localizer["AltTextHint"]</p>
+            <span asp-validation-for="AltText" class="admin-field-error"></span>
+        </div>
+
+        <div class="admin-field">
+            <label asp-for="SortOrder">@Localizer["SortOrder"]</label>
+            <input asp-for="SortOrder" type="number" />
+            <p class="admin-hint">@Localizer["SortOrderHint"]</p>
+            <span asp-validation-for="SortOrder" class="admin-field-error"></span>
+        </div>
+
+        <div class="admin-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save" aria-hidden="true"></i><span>@Localizer["Save"]</span></button>
+            <a class="btn btn-secondary" asp-action="Index"><i class="fas fa-times" aria-hidden="true"></i><span>@Localizer["Cancel"]</span></a>
+        </div>
+    </div>
+
+    <aside class="admin-post-editor-side">
+        <div class="admin-field">
+            <label>@Localizer["Image"]</label>
+            <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                <button type="button" class="btn btn-secondary" data-media-picker data-target="#ImageUrl">
+                    <i class="fas fa-images" aria-hidden="true"></i>
+                    <span>@Localizer["SelectImage"]</span>
+                </button>
+            </div>
+            <input asp-for="ImageUrl" id="ImageUrl" type="hidden" />
+            <p class="admin-hint">@Localizer["SelectImageHint"]</p>
+            <span asp-validation-for="ImageUrl" class="admin-field-error"></span>
+            <div class="admin-upload-preview" data-media-preview-for="#ImageUrl">
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="" />
+                }
+            </div>
+        </div>
+
+        <label class="admin-check">
+            <input asp-for="IsPublished" />
+            @Localizer["Publish"]
+        </label>
+    </aside>
+</div>

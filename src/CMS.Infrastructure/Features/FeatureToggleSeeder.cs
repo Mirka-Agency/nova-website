@@ -22,6 +22,7 @@ public static class FeatureToggleSeeder
             FeatureNames.Services,
             FeatureNames.Video,
             FeatureNames.Team,
+            FeatureNames.Honors,
             FeatureNames.Shop,
             FeatureNames.Forms,
             FeatureNames.Comments,

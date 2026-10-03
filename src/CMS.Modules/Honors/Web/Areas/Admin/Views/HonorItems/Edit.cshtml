@@ -1,0 +1,11 @@
+@model HonorItemFormViewModel
+@{
+    ViewData["Title"] = Localizer["EditHonor"];
+}
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <partial name="_HonorItemForm" model="Model" />
+</form>
+
+<partial name="_MediaLibraryPicker" />

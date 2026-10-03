@@ -24,7 +24,10 @@
   <data name="VideoUrl" xml:space="preserve"><value>آدرس ویدیو</value></data>
   <data name="VideoUrlHint" xml:space="preserve"><value>آپلود فایل (MP4، WebM، OGG، MOV — حداکثر ۲۰۰ مگابایت) یا وارد کردن آدرس مستقیم. برای پخش در صفحه جزئیات لازم است.</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
-  <data name="CoverImage" xml:space="preserve"><value>تصویر شاخص</value></data>
+  <data name="CoverImage" xml:space="preserve"><value>تامنیل ویدیو</value></data>
+  <data name="Thumbnail" xml:space="preserve"><value>تامنیل ویدیو</value></data>
+  <data name="SelectThumbnail" xml:space="preserve"><value>انتخاب تامنیل</value></data>
+  <data name="ThumbnailHint" xml:space="preserve"><value>تصویر پیش‌نمایش کارت و پوستر پلیر؛ از کتابخانه رسانه انتخاب یا آپلود کنید.</value></data>
   <data name="CoverImageUploadHint" xml:space="preserve"><value>آپلود JPEG، PNG، WebP یا GIF (حداکثر ۵ مگابایت). در S3 ذخیره می‌شود.</value></data>
   <data name="CoverImageInvalidType" xml:space="preserve"><value>فقط تصاویر JPEG، PNG، WebP یا GIF مجاز هستند.</value></data>
   <data name="CoverImageTooLarge" xml:space="preserve"><value>حجم تصویر شاخص باید حداکثر ۵ مگابایت باشد.</value></data>

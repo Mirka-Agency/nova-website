@@ -7,6 +7,8 @@ using CMS.Modules.News.Application.Interfaces;
 using CMS.Modules.News.Domain.Enums;
 using CMS.Modules.Services.Application.Interfaces;
 using CMS.Modules.Services.Application.ServiceItems;
+using CMS.Modules.Honors.Application.HonorItems;
+using CMS.Modules.Honors.Application.Interfaces;
 using CMS.Modules.Team.Application.Interfaces;
 using CMS.Modules.Team.Application.TeamItems;
 using CMS.Web.Models;
@@ -19,6 +21,7 @@ namespace CMS.Web.Controllers;
 public class HomeController : Controller
 {
     private readonly IPublicTeamItemQuery _teamItems;
+    private readonly IPublicHonorItemQuery _honors;
     private readonly IPublicServiceItemQuery _services;
     private readonly IPublicArticleQuery _articles;
     private readonly IFormService _forms;
@@ -26,12 +29,14 @@ public class HomeController : Controller
 
     public HomeController(
         IPublicTeamItemQuery teamItems,
+        IPublicHonorItemQuery honors,
         IPublicServiceItemQuery services,
         IPublicArticleQuery articles,
         IFormService forms,
         IFeatureManager features)
     {
         _teamItems = teamItems;
+        _honors = honors;
         _services = services;
         _articles = articles;
         _forms = forms;
@@ -88,13 +93,22 @@ public class HomeController : Controller
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.SiteSettings();
 
         IReadOnlyList<PublicTeamItemSummaryDto> team = Array.Empty<PublicTeamItemSummaryDto>();
+        IReadOnlyList<PublicHonorItemDto> honors = Array.Empty<PublicHonorItemDto>();
+
         if (await _features.IsEnabledAsync(FeatureNames.Team))
         {
             var page = await _teamItems.ListPublishedPagedAsync(1, 4, cancellationToken);
             team = page.Items;
         }
 
-        return View(team);
+        if (await _features.IsEnabledAsync(FeatureNames.Honors))
+            honors = await _honors.ListPublishedAsync(cancellationToken);
+
+        return View(new AboutPageViewModel
+        {
+            Team = team,
+            Honors = honors
+        });
     }
 
     [HttpGet("contact")]

@@ -1,0 +1,11 @@
+@model HonorItemFormViewModel
+@{
+    ViewData["Title"] = Localizer["CreateHonor"];
+}
+
+<form asp-action="Create" method="post" class="admin-form">
+    @Html.AntiForgeryToken()
+    <partial name="_HonorItemForm" model="Model" />
+</form>
+
+<partial name="_MediaLibraryPicker" />

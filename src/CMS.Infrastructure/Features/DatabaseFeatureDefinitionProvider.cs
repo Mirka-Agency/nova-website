@@ -17,6 +17,7 @@ public sealed class DatabaseFeatureDefinitionProvider : IFeatureDefinitionProvid
         FeatureNames.Services,
         FeatureNames.Video,
         FeatureNames.Team,
+        FeatureNames.Honors,
         FeatureNames.Shop,
         FeatureNames.Forms,
         FeatureNames.Comments,

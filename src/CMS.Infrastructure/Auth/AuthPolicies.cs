@@ -8,6 +8,7 @@ public static class AuthPolicies
     public const string ManageServices = "ManageServices";
     public const string ManageVideo = "ManageVideo";
     public const string ManageTeam = "ManageTeam";
+    public const string ManageHonors = "ManageHonors";
     public const string ManageShop = "ManageShop";
     public const string ManageForms = "ManageForms";
     public const string ManageFormSubmissions = "ManageFormSubmissions";
@@ -21,6 +22,7 @@ public static class AuthPolicies
     public const string ViewServices = "ViewServices";
     public const string ViewVideo = "ViewVideo";
     public const string ViewTeam = "ViewTeam";
+    public const string ViewHonors = "ViewHonors";
     public const string ViewShop = "ViewShop";
     public const string ViewForms = "ViewForms";
     public const string ViewMedia = "ViewMedia";

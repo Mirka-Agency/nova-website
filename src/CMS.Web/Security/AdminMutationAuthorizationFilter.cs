@@ -34,6 +34,7 @@ public sealed class AdminMutationAuthorizationFilter : IAsyncAuthorizationFilter
             ["TeamCategories"] = AuthPolicies.ManageTeam,
             ["TeamsMedia"] = AuthPolicies.ManageTeam,
             ["TeamItemsApi"] = AuthPolicies.ManageTeam,
+            ["HonorItems"] = AuthPolicies.ManageHonors,
             ["ShopHome"] = AuthPolicies.ManageShop,
             ["Products"] = AuthPolicies.ManageShop,
             ["ProductSpecifications"] = AuthPolicies.ManageShop,
