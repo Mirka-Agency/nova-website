@@ -31,6 +31,30 @@ public sealed class SaveTeamItemCommandValidator : AbstractValidator<SaveTeamIte
             .MaximumLength(1000)
             .When(x => !string.IsNullOrWhiteSpace(x.Excerpt));
 
+        RuleFor(x => x.Highlights)
+            .MaximumLength(TeamHighlights.MaxTextLength)
+            .When(x => !string.IsNullOrWhiteSpace(x.Highlights));
+
+        RuleFor(x => x.SpecialtyPathJson)
+            .MaximumLength(TeamSpecialtyPathJson.MaxJsonLength)
+            .Must(value => TeamSpecialtyPathJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.SpecialtyPathJson))
+            .WithMessage(x =>
+            {
+                TeamSpecialtyPathJson.TryValidate(x.SpecialtyPathJson, out var error);
+                return error ?? "حوزه فعالیت نامعتبر است.";
+            });
+
+        RuleFor(x => x.EducationPathJson)
+            .MaximumLength(TeamEducationPathJson.MaxJsonLength)
+            .Must(value => TeamEducationPathJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.EducationPathJson))
+            .WithMessage(x =>
+            {
+                TeamEducationPathJson.TryValidate(x.EducationPathJson, out var error);
+                return error ?? "مسیر تخصصی نامعتبر است.";
+            });
+
         RuleFor(x => x.CoverImageUrl)
             .MaximumLength(1000)
             .Must(BeValidUrlOrPath)

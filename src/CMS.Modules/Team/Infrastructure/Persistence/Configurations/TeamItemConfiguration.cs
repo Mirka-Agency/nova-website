@@ -15,6 +15,9 @@ public sealed class TeamItemConfiguration : IEntityTypeConfiguration<TeamItem>
         builder.Property(x => x.Slug).HasMaxLength(300).IsRequired();
         builder.Property(x => x.Body).IsRequired();
         builder.Property(x => x.Excerpt).HasMaxLength(1000);
+        builder.Property(x => x.Highlights).HasMaxLength(2000);
+        builder.Property(x => x.SpecialtyPathJson);
+        builder.Property(x => x.EducationPathJson);
         builder.Property(x => x.CoverImageUrl).HasMaxLength(1000);
         builder.Property(x => x.AvatarImageUrl).HasMaxLength(1000);
         builder.Property(x => x.AuthorUserId).HasMaxLength(450);

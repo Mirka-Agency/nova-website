@@ -57,6 +57,26 @@
   <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
   <data name="ShortDescription" xml:space="preserve"><value>توضیحات کوتاه</value></data>
   <data name="ShortDescriptionHint" xml:space="preserve"><value>در صفحه اصلی به‌عنوان بیو پزشک نمایش داده می‌شود.</value></data>
+  <data name="Highlights" xml:space="preserve"><value>نکات برجسته</value></data>
+  <data name="HighlightsHint" xml:space="preserve"><value>هر خط یک مورد؛ مثلاً نظام پزشکی، فلوشیپ، مجوز. در صفحه اصلی زیر بیو نمایش داده می‌شود.</value></data>
+  <data name="SpecialtyPath" xml:space="preserve"><value>حوزه فعالیت</value></data>
+  <data name="SpecialtyPathHint" xml:space="preserve"><value>زمینه‌های اصلی فعالیت پزشک؛ در صفحه پروفایل نمایش داده می‌شود.</value></data>
+  <data name="SpecialtyPathTitle" xml:space="preserve"><value>عنوان</value></data>
+  <data name="SpecialtyPathText" xml:space="preserve"><value>توضیح</value></data>
+  <data name="SpecialtyPathTitlePlaceholder" xml:space="preserve"><value>مثلاً جراحی تیروئید</value></data>
+  <data name="SpecialtyPathTextPlaceholder" xml:space="preserve"><value>توضیح کوتاه این حوزه فعالیت</value></data>
+  <data name="SpecialtyPathEmpty" xml:space="preserve"><value>هنوز موردی برای حوزه فعالیت ثبت نشده است.</value></data>
+  <data name="AddSpecialtyPathItem" xml:space="preserve"><value>افزودن مورد</value></data>
+  <data name="EducationPath" xml:space="preserve"><value>مسیر تخصصی</value></data>
+  <data name="EducationPathHint" xml:space="preserve"><value>تحصیلات و تخصص به‌صورت تایم‌لاین؛ در صفحه پروفایل نمایش داده می‌شود.</value></data>
+  <data name="EducationPathYear" xml:space="preserve"><value>سال</value></data>
+  <data name="EducationPathTitle" xml:space="preserve"><value>عنوان</value></data>
+  <data name="EducationPathPlace" xml:space="preserve"><value>محل / دانشگاه</value></data>
+  <data name="EducationPathYearPlaceholder" xml:space="preserve"><value>مثلاً ۲۰۲۲</value></data>
+  <data name="EducationPathTitlePlaceholder" xml:space="preserve"><value>مثلاً فلوشیپ جراحی غدد درون‌ریز</value></data>
+  <data name="EducationPathPlacePlaceholder" xml:space="preserve"><value>مثلاً دانشگاه علوم پزشکی تهران</value></data>
+  <data name="EducationPathEmpty" xml:space="preserve"><value>هنوز موردی برای مسیر تخصصی ثبت نشده است.</value></data>
+  <data name="AddEducationPathItem" xml:space="preserve"><value>افزودن مورد</value></data>
   <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
   <data name="AuthorHint" xml:space="preserve"><value>انتخاب دستی نویسنده از کاربران ادمین یا ویرایشگر.</value></data>
   <data name="NoAuthor" xml:space="preserve"><value>بدون نویسنده</value></data>

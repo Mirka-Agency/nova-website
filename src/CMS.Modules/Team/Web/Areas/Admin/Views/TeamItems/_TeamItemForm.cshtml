@@ -31,6 +31,174 @@
         </div>
 
         <div class="admin-field">
+            <label asp-for="Highlights">@Localizer["Highlights"]</label>
+            <textarea asp-for="Highlights" rows="4"></textarea>
+            <p class="admin-hint">@Localizer["HighlightsHint"]</p>
+            <span asp-validation-for="Highlights" class="admin-field-error"></span>
+        </div>
+
+        <fieldset class="admin-fieldset" data-team-specialty-path>
+            <legend>@Localizer["SpecialtyPath"]</legend>
+            <p class="admin-hint">@Localizer["SpecialtyPathHint"]</p>
+
+            <div class="admin-faq-list">
+                <div class="admin-faq-rows" data-specialty-path-list>
+                    @for (var i = 0; i < Model.SpecialtyPathItems.Count; i++)
+                    {
+                        <div class="admin-faq-row" data-specialty-path-row>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="SpecialtyPathItems[i].Title">@Localizer["SpecialtyPathTitle"]</label>
+                                <input asp-for="SpecialtyPathItems[i].Title"
+                                       placeholder="@Localizer["SpecialtyPathTitlePlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="200" />
+                                <span asp-validation-for="SpecialtyPathItems[i].Title" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="SpecialtyPathItems[i].Text">@Localizer["SpecialtyPathText"]</label>
+                                <textarea asp-for="SpecialtyPathItems[i].Text"
+                                          rows="3"
+                                          placeholder="@Localizer["SpecialtyPathTextPlaceholder"]"
+                                          maxlength="1000"></textarea>
+                                <span asp-validation-for="SpecialtyPathItems[i].Text" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-faq-row-actions">
+                                <button type="button" class="btn btn-text-danger" data-specialty-path-remove>
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                    <span>@Localizer["Delete"]</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <p class="admin-hint" data-specialty-path-empty @(Model.SpecialtyPathItems.Count > 0 ? "hidden" : null)>
+                    @Localizer["SpecialtyPathEmpty"]
+                </p>
+
+                <div class="admin-faq-add-row">
+                    <button type="button" class="btn btn-secondary" data-specialty-path-add>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span>@Localizer["AddSpecialtyPathItem"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <template id="team-specialty-path-row-template">
+                <div class="admin-faq-row" data-specialty-path-row>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["SpecialtyPathTitle"]</label>
+                        <input name="SpecialtyPathItems[__INDEX__].Title"
+                               placeholder="@Localizer["SpecialtyPathTitlePlaceholder"]"
+                               autocomplete="off"
+                               maxlength="200" />
+                    </div>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["SpecialtyPathText"]</label>
+                        <textarea name="SpecialtyPathItems[__INDEX__].Text"
+                                  rows="3"
+                                  placeholder="@Localizer["SpecialtyPathTextPlaceholder"]"
+                                  maxlength="1000"></textarea>
+                    </div>
+                    <div class="admin-faq-row-actions">
+                        <button type="button" class="btn btn-text-danger" data-specialty-path-remove>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </fieldset>
+
+        <fieldset class="admin-fieldset" data-team-education-path>
+            <legend>@Localizer["EducationPath"]</legend>
+            <p class="admin-hint">@Localizer["EducationPathHint"]</p>
+
+            <div class="admin-faq-list">
+                <div class="admin-faq-rows" data-education-path-list>
+                    @for (var i = 0; i < Model.EducationPathItems.Count; i++)
+                    {
+                        <div class="admin-faq-row" data-education-path-row>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="EducationPathItems[i].Year">@Localizer["EducationPathYear"]</label>
+                                <input asp-for="EducationPathItems[i].Year"
+                                       placeholder="@Localizer["EducationPathYearPlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="32" />
+                                <span asp-validation-for="EducationPathItems[i].Year" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="EducationPathItems[i].Title">@Localizer["EducationPathTitle"]</label>
+                                <input asp-for="EducationPathItems[i].Title"
+                                       placeholder="@Localizer["EducationPathTitlePlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="300" />
+                                <span asp-validation-for="EducationPathItems[i].Title" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="EducationPathItems[i].Place">@Localizer["EducationPathPlace"]</label>
+                                <input asp-for="EducationPathItems[i].Place"
+                                       placeholder="@Localizer["EducationPathPlacePlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="300" />
+                                <span asp-validation-for="EducationPathItems[i].Place" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-faq-row-actions">
+                                <button type="button" class="btn btn-text-danger" data-education-path-remove>
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                    <span>@Localizer["Delete"]</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <p class="admin-hint" data-education-path-empty @(Model.EducationPathItems.Count > 0 ? "hidden" : null)>
+                    @Localizer["EducationPathEmpty"]
+                </p>
+
+                <div class="admin-faq-add-row">
+                    <button type="button" class="btn btn-secondary" data-education-path-add>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span>@Localizer["AddEducationPathItem"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <template id="team-education-path-row-template">
+                <div class="admin-faq-row" data-education-path-row>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["EducationPathYear"]</label>
+                        <input name="EducationPathItems[__INDEX__].Year"
+                               placeholder="@Localizer["EducationPathYearPlaceholder"]"
+                               autocomplete="off"
+                               maxlength="32" />
+                    </div>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["EducationPathTitle"]</label>
+                        <input name="EducationPathItems[__INDEX__].Title"
+                               placeholder="@Localizer["EducationPathTitlePlaceholder"]"
+                               autocomplete="off"
+                               maxlength="300" />
+                    </div>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["EducationPathPlace"]</label>
+                        <input name="EducationPathItems[__INDEX__].Place"
+                               placeholder="@Localizer["EducationPathPlacePlaceholder"]"
+                               autocomplete="off"
+                               maxlength="300" />
+                    </div>
+                    <div class="admin-faq-row-actions">
+                        <button type="button" class="btn btn-text-danger" data-education-path-remove>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </fieldset>
+
+        <div class="admin-field">
             <label asp-for="Body">@Localizer["Description"]</label>
             <textarea asp-for="Body"
                       rows="16"

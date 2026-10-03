@@ -19,6 +19,13 @@ public sealed class SaveTeamItemApiRequest
     [MaxLength(1000)]
     public string? Excerpt { get; set; }
 
+    [MaxLength(2000)]
+    public string? Highlights { get; set; }
+
+    public string? SpecialtyPathJson { get; set; }
+
+    public string? EducationPathJson { get; set; }
+
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
 

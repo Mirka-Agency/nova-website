@@ -52,6 +52,7 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
                 p.AvatarImageUrl,
                 p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.Excerpt ?? string.Empty,
+                p.Highlights,
                 p.AuthorDisplayName))
             .ToListAsync(cancellationToken);
 
@@ -87,6 +88,9 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
             post.AvatarImageUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),
+            post.Highlights,
+            post.SpecialtyPathJson,
+            post.EducationPathJson,
             post.AuthorDisplayName,
             post.MetaTitle,
             post.MetaDescription,

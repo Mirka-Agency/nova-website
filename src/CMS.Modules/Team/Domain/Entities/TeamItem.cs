@@ -15,6 +15,12 @@ public class TeamItem : BaseEntity
     public string Slug { get; private set; } = string.Empty;
     public string Body { get; private set; } = string.Empty;
     public string? Excerpt { get; private set; }
+    /// <summary>Newline-separated credential/highlight lines for doctor-meta.</summary>
+    public string? Highlights { get; private set; }
+    /// <summary>JSON array of activity-area items (title + text) for doctor-focus.</summary>
+    public string? SpecialtyPathJson { get; private set; }
+    /// <summary>JSON array of education timeline items (year + title + place) for doctor-education.</summary>
+    public string? EducationPathJson { get; private set; }
     public TeamStatus Status { get; private set; } = TeamStatus.Draft;
     public string? CoverImageUrl { get; private set; }
     public string? AvatarImageUrl { get; private set; }
@@ -39,6 +45,9 @@ public class TeamItem : BaseEntity
         string slug,
         string body,
         string? excerpt,
+        string? highlights,
+        string? specialtyPathJson,
+        string? educationPathJson,
         Guid? categoryId,
         string? coverImageUrl,
         string? avatarImageUrl,
@@ -54,7 +63,8 @@ public class TeamItem : BaseEntity
     {
         var item = new TeamItem();
         item.ApplyContent(
-            title, subtitle, slug, body, excerpt, categoryId, coverImageUrl, avatarImageUrl,
+            title, subtitle, slug, body, excerpt, highlights, specialtyPathJson, educationPathJson,
+            categoryId, coverImageUrl, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -67,6 +77,9 @@ public class TeamItem : BaseEntity
         string slug,
         string body,
         string? excerpt,
+        string? highlights,
+        string? specialtyPathJson,
+        string? educationPathJson,
         Guid? categoryId,
         string? coverImageUrl,
         string? avatarImageUrl,
@@ -81,7 +94,8 @@ public class TeamItem : BaseEntity
         string? ogImageUrl)
     {
         ApplyContent(
-            title, subtitle, slug, body, excerpt, categoryId, coverImageUrl, avatarImageUrl,
+            title, subtitle, slug, body, excerpt, highlights, specialtyPathJson, educationPathJson,
+            categoryId, coverImageUrl, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -129,6 +143,9 @@ public class TeamItem : BaseEntity
         string slug,
         string body,
         string? excerpt,
+        string? highlights,
+        string? specialtyPathJson,
+        string? educationPathJson,
         Guid? categoryId,
         string? coverImageUrl,
         string? avatarImageUrl,
@@ -156,6 +173,12 @@ public class TeamItem : BaseEntity
             throw new DomainException("توضیحات تیم الزامی است.");
         if (excerpt is { Length: > 1000 })
             throw new DomainException("توضیحات کوتاه خیلی طولانی است.");
+        if (highlights is { Length: > 2000 })
+            throw new DomainException("نکات برجسته خیلی طولانی است.");
+        if (specialtyPathJson is { Length: > 50_000 })
+            throw new DomainException("حوزه فعالیت خیلی طولانی است.");
+        if (educationPathJson is { Length: > 50_000 })
+            throw new DomainException("مسیر تخصصی خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
         if (avatarImageUrl is { Length: > 1000 })
@@ -184,6 +207,9 @@ public class TeamItem : BaseEntity
         Slug = slug.Trim().ToLowerInvariant();
         Body = body;
         Excerpt = NullIfWhiteSpace(excerpt);
+        Highlights = NullIfWhiteSpace(highlights);
+        SpecialtyPathJson = NullIfWhiteSpace(specialtyPathJson);
+        EducationPathJson = NullIfWhiteSpace(educationPathJson);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
         AvatarImageUrl = NullIfWhiteSpace(avatarImageUrl);

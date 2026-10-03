@@ -390,6 +390,7 @@ else
         var bio = string.IsNullOrWhiteSpace(member.Excerpt)
             ? $"پروفایل تخصصی {member.Title} در {brand}."
             : member.Excerpt;
+        var metaItems = TeamHighlights.Parse(member.Highlights);
           <div
             class="doctor-feature@(isFirst ? " is-active" : null)"
             role="tabpanel"
@@ -413,17 +414,20 @@ else
               <h3 class="doctor-feature__name">@member.Title</h3>
               <p class="doctor-feature__title">@titleLine</p>
               <p class="doctor-feature__bio">@bio</p>
-              @if (!string.IsNullOrWhiteSpace(member.AuthorDisplayName))
+              @if (metaItems.Count > 0)
               {
               <ul class="doctor-meta">
+                @foreach (var metaItem in metaItems)
+                {
                 <li>
                   <span class="doctor-meta__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M20 6 9 17l-5-5"/>
                     </svg>
                   </span>
-                  @member.AuthorDisplayName
+                  @metaItem
                 </li>
+                }
               </ul>
               }
               <a class="btn-primary-custom" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">

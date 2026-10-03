@@ -9,6 +9,7 @@ public sealed record PublicTeamItemSummaryDto(
     string? AvatarImageUrl,
     DateTime PublishedAtUtc,
     string Excerpt,
+    string? Highlights,
     string? AuthorDisplayName);
 
 public sealed record PublicTeamItemDetailDto(
@@ -22,6 +23,9 @@ public sealed record PublicTeamItemDetailDto(
     string? AvatarImageUrl,
     DateTime PublishedAtUtc,
     string Excerpt,
+    string? Highlights,
+    string? SpecialtyPathJson,
+    string? EducationPathJson,
     string? AuthorDisplayName,
     string? MetaTitle,
     string? MetaDescription,

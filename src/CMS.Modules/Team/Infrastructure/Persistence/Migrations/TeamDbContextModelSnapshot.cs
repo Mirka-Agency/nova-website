@@ -99,9 +99,16 @@ namespace CMS.Modules.Team.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("EducationPathJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("Excerpt")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Highlights")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("MetaDescription")
                         .HasMaxLength(500)
@@ -138,6 +145,9 @@ namespace CMS.Modules.Team.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<string>("SpecialtyPathJson")
+                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()

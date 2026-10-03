@@ -50,6 +50,13 @@ public class TeamItemFormViewModel
     [MaxLength(1000, ErrorMessage = "توضیحات کوتاه حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? Excerpt { get; set; }
 
+    [MaxLength(2000, ErrorMessage = "نکات برجسته حداکثر ۲۰۰۰ نویسه می‌تواند باشد.")]
+    public string? Highlights { get; set; }
+
+    public List<TeamSpecialtyPathItemViewModel> SpecialtyPathItems { get; set; } = [];
+
+    public List<TeamEducationPathItemViewModel> EducationPathItems { get; set; } = [];
+
     [MaxLength(1000, ErrorMessage = "آدرس تصویر شاخص حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? CoverImageUrl { get; set; }
 
@@ -89,6 +96,27 @@ public class TeamItemFormViewModel
 
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
+}
+
+public class TeamSpecialtyPathItemViewModel
+{
+    [MaxLength(200, ErrorMessage = "عنوان حوزه فعالیت حداکثر ۲۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1000, ErrorMessage = "توضیح حوزه فعالیت حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string Text { get; set; } = string.Empty;
+}
+
+public class TeamEducationPathItemViewModel
+{
+    [MaxLength(32, ErrorMessage = "سال حداکثر ۳۲ نویسه می‌تواند باشد.")]
+    public string Year { get; set; } = string.Empty;
+
+    [MaxLength(300, ErrorMessage = "عنوان مسیر تخصصی حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(300, ErrorMessage = "محل مسیر تخصصی حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Place { get; set; } = string.Empty;
 }
 
 public class CategoryListItemViewModel

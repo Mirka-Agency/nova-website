@@ -211,6 +211,13 @@ public class TeamItemsController : Controller
             Slug = post.Slug,
             Body = post.Body,
             Excerpt = post.Excerpt,
+            Highlights = post.Highlights,
+            SpecialtyPathItems = TeamSpecialtyPathJson.Parse(post.SpecialtyPathJson)
+                .Select(x => new TeamSpecialtyPathItemViewModel { Title = x.Title, Text = x.Text })
+                .ToList(),
+            EducationPathItems = TeamEducationPathJson.Parse(post.EducationPathJson)
+                .Select(x => new TeamEducationPathItemViewModel { Year = x.Year, Title = x.Title, Place = x.Place })
+                .ToList(),
             CoverImageUrl = post.CoverImageUrl,
             AvatarImageUrl = post.AvatarImageUrl,
             CategoryId = post.CategoryId,
@@ -307,12 +314,22 @@ public class TeamItemsController : Controller
             }
         }
 
+        var specialtyPathJson = TeamSpecialtyPathJson.Serialize(
+            (model.SpecialtyPathItems ?? [])
+                .Select(x => new TeamSpecialtyPathItemDto(x.Title, x.Text)));
+        var educationPathJson = TeamEducationPathJson.Serialize(
+            (model.EducationPathItems ?? [])
+                .Select(x => new TeamEducationPathItemDto(x.Year, x.Title, x.Place)));
+
         return new SaveTeamItemCommand(
             string.IsNullOrWhiteSpace(model.Title) ? TeamItemDraftDefaults.Title : model.Title.Trim(),
             NullIfWhiteSpace(model.Subtitle),
             model.Slug,
             model.Body ?? string.Empty,
             NullIfWhiteSpace(model.Excerpt),
+            NullIfWhiteSpace(model.Highlights),
+            specialtyPathJson,
+            educationPathJson,
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
             NullIfWhiteSpace(model.AvatarImageUrl),
@@ -349,6 +366,8 @@ public class TeamItemsController : Controller
                 string.Equals(model.AuthorUserId, a.Id, StringComparison.Ordinal)))
         ];
 
+        model.SpecialtyPathItems ??= [];
+        model.EducationPathItems ??= [];
         return model;
     }
 

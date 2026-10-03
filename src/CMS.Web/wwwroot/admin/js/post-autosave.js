@@ -79,6 +79,33 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function specialtyPathJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-specialty-path-row]"));
+    const items = [];
+    for (const row of rows) {
+      const title = (row.querySelector("[name$='.Title']")?.value || "").trim();
+      const text = (row.querySelector("[name$='.Text']")?.value || "").trim();
+      if (!title && !text) continue;
+      if (!title || !text) continue;
+      items.push({ title, text });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
+  function educationPathJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-education-path-row]"));
+    const items = [];
+    for (const row of rows) {
+      const year = (row.querySelector("[name$='.Year']")?.value || "").trim();
+      const title = (row.querySelector("[name$='.Title']")?.value || "").trim();
+      const place = (row.querySelector("[name$='.Place']")?.value || "").trim();
+      if (!year && !title && !place) continue;
+      if (!year || !title || !place) continue;
+      items.push({ year, title, place });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
   function isPublishChecked() {
     const el = form.elements.namedItem("Publish");
     return !!(el && el.type === "checkbox" && el.checked);
@@ -98,6 +125,9 @@
       slug: (fieldValue("Slug") || "").trim() || null,
       body: bodyValue(),
       excerpt: (fieldValue("Excerpt") || "").trim() || null,
+      highlights: (fieldValue("Highlights") || "").trim() || null,
+      specialtyPathJson: specialtyPathJsonValue(),
+      educationPathJson: educationPathJsonValue(),
       coverImageUrl: (fieldValue("CoverImageUrl") || "").trim() || null,
       avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,

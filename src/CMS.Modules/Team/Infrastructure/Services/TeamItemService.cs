@@ -142,6 +142,9 @@ public sealed class TeamItemService : ITeamItemService
             slug,
             string.Empty,
             excerpt: null,
+            highlights: null,
+            specialtyPathJson: null,
+            educationPathJson: null,
             categoryId: null,
             coverImageUrl: null,
             avatarImageUrl: null,
@@ -188,12 +191,18 @@ public sealed class TeamItemService : ITeamItemService
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
+        var highlights = TeamHighlights.Normalize(command.Highlights);
+        var specialtyPathJson = TeamSpecialtyPathJson.NormalizeJson(command.SpecialtyPathJson);
+        var educationPathJson = TeamEducationPathJson.NormalizeJson(command.EducationPathJson);
         var item = TeamItem.Create(
             command.Title,
             command.Subtitle,
             slug,
             sanitizedBody,
             command.Excerpt,
+            highlights,
+            specialtyPathJson,
+            educationPathJson,
             command.CategoryId,
             command.CoverImageUrl,
             command.AvatarImageUrl,
@@ -227,12 +236,18 @@ public sealed class TeamItemService : ITeamItemService
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
+        var highlights = TeamHighlights.Normalize(command.Highlights);
+        var specialtyPathJson = TeamSpecialtyPathJson.NormalizeJson(command.SpecialtyPathJson);
+        var educationPathJson = TeamEducationPathJson.NormalizeJson(command.EducationPathJson);
         item.Update(
             command.Title,
             command.Subtitle,
             slug,
             sanitizedBody,
             command.Excerpt,
+            highlights,
+            specialtyPathJson,
+            educationPathJson,
             command.CategoryId,
             command.CoverImageUrl,
             command.AvatarImageUrl,
@@ -268,6 +283,9 @@ public sealed class TeamItemService : ITeamItemService
             item.Slug,
             item.Body,
             item.Excerpt,
+            item.Highlights,
+            item.SpecialtyPathJson,
+            item.EducationPathJson,
             item.Status,
             item.CoverImageUrl,
             item.AvatarImageUrl,
