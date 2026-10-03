@@ -1,5 +1,7 @@
 @model PublicArticleDetailDto
 @using System.Globalization
+@using System.Net
+@using System.Text.RegularExpressions
 @using CMS.Application.Settings
 @using CMS.Modules.News.Domain.Enums
 @inject ISiteSettingsService SiteSettings
@@ -8,6 +10,11 @@
     ViewData["NavActive"] = "events";
     var settings = await SiteSettings.GetAsync();
     var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
     var type = string.IsNullOrWhiteSpace(Model.CategoryName) ? "رویداد تخصصی" : Model.CategoryName;
     var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
         ? $"جزئیات رویداد «{Model.Title}» در {brand}."
@@ -42,6 +49,37 @@
     var year = PersianYear(Model.EventStartAtUtc ?? Model.PublishedAtUtc);
     var startLocal = FormatLocal(Model.EventStartAtUtc);
     var endLocal = FormatLocal(Model.EventEndAtUtc);
+
+    var gallery = new List<(string Src, string Alt)>();
+    if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+        gallery.Add((Model.CoverImageUrl!, Model.Title));
+
+    foreach (Match img in Regex.Matches(Model.Body ?? string.Empty, @"<img[^>]+src=[""']([^""']+)[""'][^>]*>", RegexOptions.IgnoreCase))
+    {
+        var src = WebUtility.HtmlDecode(img.Groups[1].Value).Trim();
+        if (string.IsNullOrWhiteSpace(src)) continue;
+        if (gallery.Any(g => string.Equals(g.Src, src, StringComparison.OrdinalIgnoreCase))) continue;
+
+        var altMatch = Regex.Match(img.Value, @"alt=[""']([^""']*)[""']", RegexOptions.IgnoreCase);
+        var alt = altMatch.Success && !string.IsNullOrWhiteSpace(altMatch.Groups[1].Value)
+            ? WebUtility.HtmlDecode(altMatch.Groups[1].Value)
+            : Model.Title;
+        gallery.Add((src, alt));
+        if (gallery.Count >= 8) break;
+    }
+
+    if (gallery.Count == 0)
+        gallery.Add((cover, Model.Title));
+
+    var bodyWithoutGalleryDupes = Model.Body ?? string.Empty;
+    foreach (var item in gallery.Skip(string.IsNullOrWhiteSpace(Model.CoverImageUrl) ? 0 : 1))
+    {
+        bodyWithoutGalleryDupes = Regex.Replace(
+            bodyWithoutGalleryDupes,
+            $@"<figure[^>]*>\s*<img[^>]+src=[""']{Regex.Escape(item.Src)}[""'][^>]*>\s*</figure>",
+            string.Empty,
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+    }
 }
 
 <section class="page-hero page-hero--event-single" aria-labelledby="page-hero-title">
@@ -68,7 +106,10 @@
       }
       @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
       {
-        <li>مسئولیت علمی: @Model.AuthorDisplayName</li>
+        <li>
+          مسئولیت علمی:
+          <a asp-controller="Teams" asp-action="Index">@Model.AuthorDisplayName</a>
+        </li>
       }
       @if (!string.IsNullOrWhiteSpace(Model.Location))
       {
@@ -85,16 +126,59 @@
         <article class="event-prose reveal">
           <p class="section-kicker">درباره رویداد</p>
           <h2 class="section-heading" id="event-detail-heading">@Model.Title</h2>
-          @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-          {
-            <figure class="event-prose__cover">
-              <img src="@cover" width="1024" height="576" alt="@Model.Title" loading="eager">
-            </figure>
-          }
           <div class="event-prose__body">
-            @Html.Raw(Model.Body)
+            @if (!string.IsNullOrWhiteSpace(bodyWithoutGalleryDupes))
+            {
+              @Html.Raw(bodyWithoutGalleryDupes)
+            }
+            else
+            {
+              <p>@lead</p>
+            }
           </div>
         </article>
+
+        @if (gallery.Count > 0)
+        {
+          <section class="event-gallery reveal" aria-labelledby="event-gallery-heading">
+            <div class="event-gallery__header">
+              <h2 class="event-gallery__title" id="event-gallery-heading">تصاویر رویداد</h2>
+            </div>
+            <div class="event-gallery__panel">
+              <div class="event-gallery__grid" data-event-gallery>
+                @{
+                  var gIndex = 0;
+                }
+                @foreach (var image in gallery)
+                {
+                  var featureClass = gIndex == 0 ? " event-gallery__item--feature" : "";
+                  <button
+                    class="event-gallery__item@(featureClass)"
+                    type="button"
+                    data-gallery-index="@gIndex"
+                    aria-label="نمایش تصویر @(ToPersianDigits((gIndex + 1).ToString(CultureInfo.InvariantCulture))) از گالری رویداد"
+                  >
+                    <img
+                      src="@image.Src"
+                      width="960"
+                      height="640"
+                      alt="@image.Alt"
+                      loading="@(gIndex == 0 ? "eager" : "lazy")"
+                      decoding="async"
+                    >
+                    <span class="event-gallery__zoom" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m20 20-3-3M11 8v6M8 11h6"/>
+                      </svg>
+                    </span>
+                  </button>
+                  gIndex++;
+                }
+              </div>
+            </div>
+          </section>
+        }
 
         @await Component.InvokeAsync("Comments", new {
             targetType = 1,
@@ -150,6 +234,7 @@
             <span class="event-info-list__value">@brand</span>
           </li>
         </ul>
+        <a class="article-detail__aside-service" asp-controller="Events" asp-action="Index">مشاهده همه رویدادها</a>
       </aside>
     </div>
   </div>
@@ -205,3 +290,21 @@
     </div>
   </section>
 }
+
+<section class="consult-band consult-band--compact" id="contact" aria-labelledby="consult-band-heading">
+  <div class="container">
+    <div class="consult-band__panel reveal">
+      <div class="consult-band__copy">
+        <p class="consult-band__kicker">نوبت مشاوره</p>
+        <h2 class="consult-band__title" id="consult-band-heading">رزرو مشاوره تخصصی</h2>
+        <p class="consult-band__meta">شنبه تا پنجشنبه · ۹ تا ۲۱</p>
+      </div>
+      <div class="consult-band__actions">
+        <button class="btn-primary-custom" type="button" data-booking-open>رزرو نوبت</button>
+        <a class="btn-secondary-custom" href="@telHref">
+          <span class="phone-ltr">@phoneDisplay</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

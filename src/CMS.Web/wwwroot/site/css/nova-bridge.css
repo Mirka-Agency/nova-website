@@ -293,3 +293,12 @@ a.doctor-focus__item {
   color: var(--text-muted, #5c6b6d);
   font-size: 0.95rem;
 }
+
+.event-detail__aside .article-detail__aside-service {
+  display: inline-flex;
+  margin-block-start: 1.25rem;
+}
+
+.event-gallery {
+  margin-block-start: 2rem;
+}
