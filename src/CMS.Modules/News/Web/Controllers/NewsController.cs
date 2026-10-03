@@ -38,9 +38,11 @@ public class NewsController : Controller
         if (!await _features.IsEnabledAsync(FeatureNames.News))
             return NotFound();
 
-        ViewData["Title"] = _localizer["News"].Value;
+        ViewData["Title"] = "مقالات تخصصی";
+        ViewData["NavActive"] = "articles";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("NewsArticles", "مدیریت اخبار", "ViewNews");
-        var result = await _articles.ListPublishedPagedAsync(page, 12, cancellationToken);
+        // Archive matches Nova articles template (client-side filter/paging in main.js).
+        var result = await _articles.ListPublishedPagedAsync(page, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;

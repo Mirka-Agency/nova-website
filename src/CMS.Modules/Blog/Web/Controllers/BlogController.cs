@@ -38,9 +38,11 @@ public class BlogController : Controller
         if (!await _features.IsEnabledAsync(FeatureNames.Blog))
             return NotFound();
 
-        ViewData["Title"] = _localizer["Blog"].Value;
+        ViewData["Title"] = "وبلاگ";
+        ViewData["NavActive"] = "blog";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("Posts", "مدیریت نوشته‌ها", "ViewBlog");
-        var result = await _posts.ListPublishedPagedAsync(page, 12, cancellationToken);
+        // Archive matches Nova blog template (client-side paging in main.js).
+        var result = await _posts.ListPublishedPagedAsync(page, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;

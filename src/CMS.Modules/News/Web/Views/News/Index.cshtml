@@ -1,85 +1,410 @@
 @model IReadOnlyList<PublicArticleSummaryDto>
 @using CMS.Modules.News.Domain.Enums
 @{
-    ViewData["Title"] = Localizer["News"];
+    ViewData["Title"] = "مقالات تخصصی";
+    ViewData["NavActive"] = "articles";
+    var items = (Model ?? Array.Empty<PublicArticleSummaryDto>())
+        .Where(x => x.Kind != ArticleKind.Event)
+        .ToList();
+    var hasCmsArticles = items.Count > 0;
+
+    string MapCategory(string? name, string title, string excerpt)
+    {
+        var hay = $"{name} {title} {excerpt}";
+        if (hay.Contains("آدرنال", StringComparison.Ordinal) || hay.Contains("adrenal", StringComparison.OrdinalIgnoreCase) || hay.Contains("فوق کلیه", StringComparison.Ordinal))
+            return "adrenal";
+        if (hay.Contains("تیروئید", StringComparison.Ordinal) || hay.Contains("thyroid", StringComparison.OrdinalIgnoreCase) || hay.Contains("hypocalcemia", StringComparison.OrdinalIgnoreCase) || hay.Contains("هیپوکلسمی", StringComparison.Ordinal))
+            return "thyroid";
+        return "other";
+    }
+
+    string TopicLabel(string category) => category switch
+    {
+        "thyroid" => "تیروئید",
+        "adrenal" => "آدرنال",
+        _ => "سایر"
+    };
 }
 
-<section class="blog-page">
-    <header class="blog-page-header">
-        <h1>@Localizer["News"]</h1>
-    </header>
+<section class="page-hero page-hero--articles" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">مقالات تخصصی</span>
+    </nav>
+    <h1 class="page-hero__title reveal" id="page-hero-title">مقالات علمی و مورد تأیید نووا کلینیک</h1>
+    <p class="page-hero__lead reveal">
+      گزیده‌ای از مقالات، متاآنالیزها و منابع تخصصی در جراحی تیروئید، آدرنال و مراقبت‌های مرتبط با غدد درون‌ریز.
+    </p>
+  </div>
+</section>
 
-    @if (Model.Count == 0)
-    {
-        <p class="blog-empty">@Localizer["NoPosts"]</p>
-    }
-    else
-    {
-        <div class="blog-list">
-            @foreach (var post in Model)
-            {
-                <article class="blog-card">
-                    @if (!string.IsNullOrWhiteSpace(post.CoverImageUrl))
-                    {
-                        <a class="blog-card-cover" asp-controller="News" asp-action="Details" asp-route-slug="@post.Slug">
-                            <img src="@post.CoverImageUrl" alt="@post.Title" />
-                        </a>
-                    }
-                    <div class="blog-card-body">
-                        <h2>
-                            <a asp-controller="News" asp-action="Details" asp-route-slug="@post.Slug">@post.Title</a>
-                        </h2>
-                        <p class="blog-meta">
-                            <span class="blog-kind">@(post.Kind == ArticleKind.Event ? Localizer["EventKind"] : Localizer["NewsKind"])</span>
-                            <span>· @Localizer["PublishedOn"]: @post.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-                            @if (!string.IsNullOrWhiteSpace(post.AuthorDisplayName))
-                            {
-                                <span>· @Localizer["Author"]: @post.AuthorDisplayName</span>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(post.CategoryName))
-                            {
-                                <span>· @Localizer["Category"]: @post.CategoryName</span>
-                            }
-                            @if (post.Kind == ArticleKind.Event)
-                            {
-                                @if (post.EventStartAtUtc.HasValue)
-                                {
-                                    <span>· @Localizer["EventStart"]: @post.EventStartAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
-                                }
-                                @if (post.EventEndAtUtc.HasValue)
-                                {
-                                    <span>· @Localizer["EventEnd"]: @post.EventEndAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(post.Location))
-                                {
-                                    <span>· @Localizer["Location"]: @post.Location</span>
-                                }
-                            }
-                        </p>
-                        @if (!string.IsNullOrWhiteSpace(post.Excerpt))
-                        {
-                            <p class="blog-excerpt">@post.Excerpt</p>
-                        }
-                        <a class="blog-read-more" asp-controller="News" asp-action="Details" asp-route-slug="@post.Slug">@Localizer["ReadMore"]</a>
-                    </div>
-                </article>
-            }
-        </div>
+<section class="articles-archive" aria-label="آرشیو مقالات تخصصی" data-articles-archive>
+  <div class="container">
+    <div class="articles-toolbar reveal" role="group" aria-label="فیلتر موضوع مقاله">
+      <button class="articles-filter is-active" type="button" data-article-filter="all" aria-pressed="true">همه</button>
+      <button class="articles-filter" type="button" data-article-filter="thyroid" aria-pressed="false">تیروئید</button>
+      <button class="articles-filter" type="button" data-article-filter="adrenal" aria-pressed="false">آدرنال</button>
+      <button class="articles-filter" type="button" data-article-filter="other" aria-pressed="false">سایر</button>
+    </div>
 
-        @if (ViewBag.TotalPages is int totalPages && totalPages > 1)
-        {
-            var currentPage = ViewBag.Page as int? ?? 1;
-            <nav class="blog-pager" aria-label="صفحه‌بندی" style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;">
-                @if (currentPage > 1)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage - 1)">قبلی</a>
-                }
-                <span>صفحه @currentPage از @totalPages</span>
-                @if (currentPage < totalPages)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage + 1)">بعدی</a>
-                }
-            </nav>
-        }
+    <p class="articles-count reveal" data-articles-count aria-live="polite"></p>
+
+    <div class="articles-archive__grid">
+@if (hasCmsArticles)
+{
+    var index = 0;
+    foreach (var item in items)
+    {
+        var category = MapCategory(item.CategoryName, item.Title, item.Excerpt);
+        var topic = string.IsNullOrWhiteSpace(item.CategoryName) ? TopicLabel(category) : item.CategoryName;
+        var typeLabel = string.IsNullOrWhiteSpace(item.AuthorDisplayName) ? "مقاله تخصصی" : item.AuthorDisplayName;
+        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
+            ? Url.Content("~/template/assets/images/articles/scientific-reports.jpg")
+            : item.CoverImageUrl;
+        var featuredClass = index == 0 ? " article-card--featured" : "";
+        <a
+          class="article-card@(featuredClass) reveal"
+          asp-controller="News"
+          asp-action="Details"
+          asp-route-slug="@item.Slug"
+          data-article-card
+          data-article-category="@category"
+        >
+          <span class="article-card__media">
+            <img
+              src="@cover"
+              width="800"
+              height="500"
+              alt="@item.Title"
+              loading="@(index == 0 ? "eager" : "lazy")"
+              decoding="async"
+            >
+          </span>
+          <span class="article-card__body">
+            <span class="article-card__meta">
+              <span class="article-card__type">@typeLabel</span>
+              <span class="article-card__topic">@topic</span>
+            </span>
+            <h3 class="article-card__title">@item.Title</h3>
+            <p class="article-card__excerpt">
+              @(string.IsNullOrWhiteSpace(item.Excerpt) ? "برای مطالعه جزئیات این مقاله تخصصی وارد شوید." : item.Excerpt)
+            </p>
+            <span class="article-card__more">مطالعه مقاله</span>
+          </span>
+        </a>
+        index++;
     }
+}
+else
+{
+<a
+            class="article-card article-card--featured reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="thyroid"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/scientific-reports.jpg"
+                width="800"
+                height="500"
+                alt="Scientific Reports"
+                loading="eager"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Scientific Reports</span>
+                <span class="article-card__topic">تیروئید</span>
+              </span>
+              <h3 class="article-card__title">Development and validation of risk prediction models for permanent hypocalcemia after total thyroidectomy in patients with papillary thyroid carcinoma</h3>
+              <p class="article-card__excerpt">
+                توسعه و اعتبارسنجی مدل‌های پیش‌بینی خطر هیپوکلسمی دائمی پس از تیروئیدکتومی کامل در بیماران مبتلا به کارسینوم پاپیلاری تیروئید.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="adrenal"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/posterior-adrenalectomy.webp"
+                width="800"
+                height="500"
+                alt="Posterior retroperitoneoscopic adrenalectomy"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">مطالعه بالینی</span>
+                <span class="article-card__topic">آدرنال</span>
+              </span>
+              <h3 class="article-card__title">Posterior retroperitoneoscopic adrenalectomy</h3>
+              <p class="article-card__excerpt">
+                ارزیابی رویکرد خلفی رتروپرتونئوسکوپیک آدرنالکتومی به‌عنوان روش کم‌تهاجمی برداشتن غده فوق کلیه، بر اساس نتایج ۵۶۰ عمل در ۵۲۰ بیمار.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="other"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/jama-insights.webp"
+                width="800"
+                height="500"
+                alt="JAMA Insights"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">JAMA Insights</span>
+                <span class="article-card__topic">ارتباط بالینی</span>
+              </span>
+              <h3 class="article-card__title">Article from JAMA Insights</h3>
+              <p class="article-card__excerpt">
+                بهترین شیوه‌های ارتباط جراح با بیمار درباره جراحی؛ با تمرکز بر همدلی، مدیریت عدم قطعیت و تصمیم‌گیری مشترک.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="thyroid"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/intraoperative-hypocalcemia.webp"
+                width="800"
+                height="500"
+                alt="Impact of Intraoperative Interventions on Hypocalcemia"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Meta-Analysis</span>
+                <span class="article-card__topic">تیروئید</span>
+              </span>
+              <h3 class="article-card__title">Impact of Intraoperative Interventions on Hypocalcemia Post-Total Thyroidectomy: A Meta-Analysis</h3>
+              <p class="article-card__excerpt">
+                متاآنالیز مداخلات حین عمل برای کاهش خطر هیپوکلسمی پس از تیروئیدکتومی کامل و تأثیر آن بر کیفیت زندگی بیماران.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="thyroid"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/vitamin-d-thyroidectomy.webp"
+                width="800"
+                height="500"
+                alt="Preoperative Vitamin D Supplementation"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Head &amp; Neck</span>
+                <span class="article-card__topic">تیروئید</span>
+              </span>
+              <h3 class="article-card__title">Preoperative Vitamin D Supplementation to Reduce Hypocalcemia Following Total Thyroidectomy</h3>
+              <p class="article-card__excerpt">
+                مرور نظام‌مند و متاآنالیز کارآزمایی‌های بالینی تصادفی درباره مکمل ویتامین D پیش از عمل و کاهش هیپوکلسمی پس از تیروئیدکتومی.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="thyroid"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/calcium-algorithm.jpg"
+                width="800"
+                height="500"
+                alt="A symptom-based algorithm for calcium management"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Prospective Study</span>
+                <span class="article-card__topic">تیروئید</span>
+              </span>
+              <h3 class="article-card__title">A symptom-based algorithm for calcium management after thyroid surgery</h3>
+              <p class="article-card__excerpt">
+                الگوریتم مبتنی بر علائم برای مدیریت کلسیم پس از جراحی تیروئید؛ مطالعه چندمرکزی آینده‌نگر.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="other"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/jama-ct-risks.jpg"
+                width="800"
+                height="500"
+                alt="JAMA Internal Medicine"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">JAMA Internal Medicine</span>
+                <span class="article-card__topic">تصویربرداری</span>
+              </span>
+              <h3 class="article-card__title">Projected Lifetime Cancer Risks From Current Computed Tomography Imaging</h3>
+              <p class="article-card__excerpt">
+                بررسی ریسک‌های سرطان طول عمر مرتبط با تصویربرداری سی‌تی اسکن در شرایط فعلی استفاده از این روش تشخیصی.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="thyroid"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/rln-anatomy.webp"
+                width="800"
+                height="500"
+                alt="Surgical Anatomy and Monitoring of the Recurrent Laryngeal Nerve"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Textbook Chapter</span>
+                <span class="article-card__topic">تیروئید</span>
+              </span>
+              <h3 class="article-card__title">Surgical Anatomy and Monitoring of the Recurrent Laryngeal Nerve</h3>
+              <p class="article-card__excerpt">
+                راهنمای آناتومی جراحی و مانیتورینگ حین عمل عصب حنجره‌ای راجعه؛ موضوعی کلیدی در جراحی ایمن تیروئید.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="adrenal"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/adrenal-glands.webp"
+                width="800"
+                height="500"
+                alt="Adrenal Glands"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Textbook</span>
+                <span class="article-card__topic">آدرنال</span>
+              </span>
+              <h3 class="article-card__title">Adrenal Glands: Diagnostic Aspects and Surgical Therapy</h3>
+              <p class="article-card__excerpt">
+                مرجع جامع آناتومی، فیزیولوژی، پاتولوژی، تصویربرداری و درمان جراحی اختلالات غده فوق کلیه.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+
+          <a
+            class="article-card reveal"
+            asp-controller="News" asp-action="Index"
+            data-article-card
+            data-article-category="thyroid"
+          >
+            <span class="article-card__media">
+              <img
+                src="~/template/assets/images/articles/rln-landmarks.webp"
+                width="800"
+                height="500"
+                alt="Recurrent laryngeal nerve landmarks during thyroidectomy"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-card__body">
+              <span class="article-card__meta">
+                <span class="article-card__type">Anatomical Study</span>
+                <span class="article-card__topic">تیروئید</span>
+              </span>
+              <h3 class="article-card__title">Recurrent laryngeal nerve landmarks during thyroidectomy</h3>
+              <p class="article-card__excerpt">
+                توصیف روابط آناتومیک عصب حنجره‌ای راجعه هنگام جراحی تیروئید در جمعیت مورد مطالعه.
+              </p>
+              <span class="article-card__more">مطالعه مقاله</span>
+            </span>
+          </a>
+}
+    </div>
+
+    <p class="articles-empty" data-articles-empty hidden>مقاله‌ای در این دسته یافت نشد.</p>
+
+    <nav class="articles-pagination" data-articles-pagination hidden aria-label="صفحه‌بندی مقالات">
+      <button class="articles-pagination__btn" type="button" data-articles-prev aria-label="صفحه قبل">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+      <div class="articles-pagination__pages" data-articles-pages></div>
+      <button class="articles-pagination__btn" type="button" data-articles-next aria-label="صفحه بعد">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
 </section>
