@@ -198,7 +198,7 @@
             {
               var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
               var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
-              var bio = string.IsNullOrWhiteSpace(member.Excerpt) ? member.Title : member.Excerpt;
+              var bio = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
               <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
                 <div class="about-team__photo">
                   <img src="@cover" width="640" height="800" alt="@member.Title" loading="lazy">

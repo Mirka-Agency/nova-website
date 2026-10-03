@@ -138,11 +138,13 @@ public sealed class TeamItemService : ITeamItemService
         var slug = await EnsureUniqueSlugAsync(slugSeed, null, cancellationToken);
         var item = TeamItem.Create(
             TeamItemDraftDefaults.Title,
+            subtitle: null,
             slug,
             string.Empty,
             excerpt: null,
             categoryId: null,
             coverImageUrl: null,
+            avatarImageUrl: null,
             authorUserId: null,
             authorDisplayName: null,
             metaTitle: null,
@@ -188,11 +190,13 @@ public sealed class TeamItemService : ITeamItemService
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var item = TeamItem.Create(
             command.Title,
+            command.Subtitle,
             slug,
             sanitizedBody,
             command.Excerpt,
             command.CategoryId,
             command.CoverImageUrl,
+            command.AvatarImageUrl,
             command.AuthorUserId,
             command.AuthorDisplayName,
             command.MetaTitle,
@@ -225,11 +229,13 @@ public sealed class TeamItemService : ITeamItemService
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         item.Update(
             command.Title,
+            command.Subtitle,
             slug,
             sanitizedBody,
             command.Excerpt,
             command.CategoryId,
             command.CoverImageUrl,
+            command.AvatarImageUrl,
             command.AuthorUserId,
             command.AuthorDisplayName,
             command.MetaTitle,
@@ -258,11 +264,13 @@ public sealed class TeamItemService : ITeamItemService
         new(
             item.Id,
             item.Title,
+            item.Subtitle,
             item.Slug,
             item.Body,
             item.Excerpt,
             item.Status,
             item.CoverImageUrl,
+            item.AvatarImageUrl,
             item.CategoryId,
             item.AuthorUserId,
             item.AuthorDisplayName,

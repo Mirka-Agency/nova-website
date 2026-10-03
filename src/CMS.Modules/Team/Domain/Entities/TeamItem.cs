@@ -11,11 +11,13 @@ public class TeamItem : BaseEntity
     }
 
     public string Title { get; private set; } = string.Empty;
+    public string? Subtitle { get; private set; }
     public string Slug { get; private set; } = string.Empty;
     public string Body { get; private set; } = string.Empty;
     public string? Excerpt { get; private set; }
     public TeamStatus Status { get; private set; } = TeamStatus.Draft;
     public string? CoverImageUrl { get; private set; }
+    public string? AvatarImageUrl { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public DateTime? PublishedAtUtc { get; private set; }
@@ -33,11 +35,13 @@ public class TeamItem : BaseEntity
 
     public static TeamItem Create(
         string title,
+        string? subtitle,
         string slug,
         string body,
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? avatarImageUrl,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -50,7 +54,7 @@ public class TeamItem : BaseEntity
     {
         var item = new TeamItem();
         item.ApplyContent(
-            title, slug, body, excerpt, categoryId, coverImageUrl,
+            title, subtitle, slug, body, excerpt, categoryId, coverImageUrl, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -59,11 +63,13 @@ public class TeamItem : BaseEntity
 
     public void Update(
         string title,
+        string? subtitle,
         string slug,
         string body,
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? avatarImageUrl,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -75,7 +81,7 @@ public class TeamItem : BaseEntity
         string? ogImageUrl)
     {
         ApplyContent(
-            title, slug, body, excerpt, categoryId, coverImageUrl,
+            title, subtitle, slug, body, excerpt, categoryId, coverImageUrl, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -119,11 +125,13 @@ public class TeamItem : BaseEntity
 
     private void ApplyContent(
         string title,
+        string? subtitle,
         string slug,
         string body,
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? avatarImageUrl,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -138,6 +146,8 @@ public class TeamItem : BaseEntity
             throw new DomainException("عنوان تیم الزامی است.");
         if (title.Trim().Length > 300)
             throw new DomainException("عنوان تیم خیلی طولانی است.");
+        if (subtitle is { Length: > 300 })
+            throw new DomainException("عنوان فرعی خیلی طولانی است.");
         if (string.IsNullOrWhiteSpace(slug))
             throw new DomainException("نامک تیم الزامی است.");
         if (slug.Trim().Length > 300)
@@ -148,6 +158,8 @@ public class TeamItem : BaseEntity
             throw new DomainException("توضیحات کوتاه خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
+        if (avatarImageUrl is { Length: > 1000 })
+            throw new DomainException("آدرس تصویر آواتار خیلی طولانی است.");
         if (authorUserId is { Length: > 450 })
             throw new DomainException("شناسه نویسنده نامعتبر است.");
         if (authorDisplayName is { Length: > 200 })
@@ -168,11 +180,13 @@ public class TeamItem : BaseEntity
             throw new DomainException("آدرس تصویر Open Graph خیلی طولانی است.");
 
         Title = title.Trim();
+        Subtitle = NullIfWhiteSpace(subtitle);
         Slug = slug.Trim().ToLowerInvariant();
         Body = body;
         Excerpt = NullIfWhiteSpace(excerpt);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
+        AvatarImageUrl = NullIfWhiteSpace(avatarImageUrl);
         AuthorUserId = NullIfWhiteSpace(authorUserId);
         AuthorDisplayName = NullIfWhiteSpace(authorDisplayName);
         MetaTitle = NullIfWhiteSpace(metaTitle);

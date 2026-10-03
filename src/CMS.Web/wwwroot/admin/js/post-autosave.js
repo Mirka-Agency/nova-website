@@ -94,10 +94,12 @@
 
     return {
       title: title || draftTitle,
+      subtitle: (fieldValue("Subtitle") || "").trim() || null,
       slug: (fieldValue("Slug") || "").trim() || null,
       body: bodyValue(),
       excerpt: (fieldValue("Excerpt") || "").trim() || null,
       coverImageUrl: (fieldValue("CoverImageUrl") || "").trim() || null,
+      avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,
       categoryId,
       authorUserId: (fieldValue("AuthorUserId") || "").trim() || null,

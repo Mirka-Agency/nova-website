@@ -2,9 +2,11 @@ namespace CMS.Modules.Team.Application.TeamItems;
 
 public sealed record PublicTeamItemSummaryDto(
     string Title,
+    string? Subtitle,
     string Slug,
     string? CategoryName,
     string? CoverImageUrl,
+    string? AvatarImageUrl,
     DateTime PublishedAtUtc,
     string Excerpt,
     string? AuthorDisplayName);
@@ -12,10 +14,12 @@ public sealed record PublicTeamItemSummaryDto(
 public sealed record PublicTeamItemDetailDto(
     Guid Id,
     string Title,
+    string? Subtitle,
     string Slug,
     string Body,
     string? CategoryName,
     string? CoverImageUrl,
+    string? AvatarImageUrl,
     DateTime PublishedAtUtc,
     string Excerpt,
     string? AuthorDisplayName,

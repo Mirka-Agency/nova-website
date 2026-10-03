@@ -730,12 +730,15 @@
     var openButtons = document.querySelectorAll("[data-booking-open]");
     var closeButtons = modal.querySelectorAll("[data-booking-close]");
     var form = modal.querySelector("[data-booking-form]");
+    var formHost = modal.querySelector("[data-booking-form-host]");
     var success = modal.querySelector("[data-booking-success]");
     var selectRoot = modal.querySelector("[data-booking-select], [data-ui-select]");
-    var bookingSelect = createUiSelect(selectRoot, {
-      defaultValue: "thyroid",
-      placeholder: "انتخاب موضوع مراجعه",
-    });
+    var bookingSelect = selectRoot
+      ? createUiSelect(selectRoot, {
+          defaultValue: "thyroid",
+          placeholder: "انتخاب موضوع مراجعه",
+        })
+      : null;
     var lastFocus = null;
 
     function closeSelect() {
@@ -765,10 +768,13 @@
       document.body.classList.add("booking-open");
 
       if (form) form.hidden = false;
+      if (formHost) formHost.hidden = false;
       if (success) success.hidden = true;
 
       window.setTimeout(function () {
-        var firstInput = modal.querySelector("#booking-name");
+        var firstInput =
+          modal.querySelector("#booking-name") ||
+          modal.querySelector(".booking-form--cms input:not([type='hidden'])");
         if (firstInput) firstInput.focus();
       }, 20);
     }
@@ -789,6 +795,11 @@
         form.querySelectorAll(".booking-form__error").forEach(function (error) {
           error.hidden = true;
         });
+      }
+      if (formHost) {
+        formHost.hidden = false;
+        var cmsForm = formHost.querySelector("form.public-form");
+        if (cmsForm) cmsForm.reset();
       }
       if (success) success.hidden = true;
 

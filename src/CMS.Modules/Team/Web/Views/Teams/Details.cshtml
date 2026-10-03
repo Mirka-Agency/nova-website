@@ -15,7 +15,7 @@
         ? "شریعتی، ساختمان کسری، طبقه ۴ واحد ۱۵"
         : settings.Address;
     var role = string.IsNullOrWhiteSpace(Model.CategoryName) ? "عضو تیم درمان" : Model.CategoryName;
-    var specialty = string.IsNullOrWhiteSpace(Model.Excerpt) ? role : Model.Excerpt;
+    var specialty = string.IsNullOrWhiteSpace(Model.Subtitle) ? role : Model.Subtitle;
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/doctors/dr-hamedani.webp")
         : Model.CoverImageUrl;
@@ -237,7 +237,9 @@
         {
           var memberCover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
           var memberRole = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
-          var memberBio = string.IsNullOrWhiteSpace(member.Excerpt) ? member.Title : member.Excerpt;
+          var memberBio = string.IsNullOrWhiteSpace(member.Subtitle)
+              ? (string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName)
+              : member.Subtitle;
           <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
             <div class="about-team__photo">
               <img src="@memberCover" width="640" height="800" alt="@member.Title" loading="lazy">

@@ -45,13 +45,13 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
             .Take(normalizedPageSize)
             .Select(p => new PublicTeamItemSummaryDto(
                 p.Title,
+                p.Subtitle,
                 p.Slug,
                 p.Category != null ? p.Category.Name : null,
                 p.CoverImageUrl,
-                    p.PublishedAtUtc ?? p.CreatedAtUtc,
-                p.Excerpt != null && p.Excerpt != string.Empty
-                    ? p.Excerpt
-                    : (p.Body.Length > ExcerptLength ? p.Body.Substring(0, ExcerptLength) : p.Body),
+                p.AvatarImageUrl,
+                p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.Excerpt ?? string.Empty,
                 p.AuthorDisplayName))
             .ToListAsync(cancellationToken);
 
@@ -79,10 +79,12 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
         return new PublicTeamItemDetailDto(
             post.Id,
             post.Title,
+            post.Subtitle,
             post.Slug,
             post.Body,
             post.Category?.Name,
             post.CoverImageUrl,
+            post.AvatarImageUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),
             post.AuthorDisplayName,

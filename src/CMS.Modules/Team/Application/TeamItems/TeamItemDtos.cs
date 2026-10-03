@@ -34,11 +34,13 @@ public sealed record TeamItemListItemDto(
 public sealed record TeamItemDetailDto(
     Guid Id,
     string Title,
+    string? Subtitle,
     string Slug,
     string Body,
     string? Excerpt,
     TeamStatus Status,
     string? CoverImageUrl,
+    string? AvatarImageUrl,
     Guid? CategoryId,
     string? AuthorUserId,
     string? AuthorDisplayName,
@@ -59,11 +61,13 @@ public static class TeamItemDraftDefaults
 
 public sealed record SaveTeamItemCommand(
     string Title,
+    string? Subtitle,
     string? Slug,
     string Body,
     string? Excerpt,
     Guid? CategoryId,
     string? CoverImageUrl,
+    string? AvatarImageUrl,
     bool Publish,
     DateTime? PublishedAtUtc,
     string? AuthorUserId,

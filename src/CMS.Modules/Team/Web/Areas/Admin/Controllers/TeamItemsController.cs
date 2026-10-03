@@ -207,10 +207,12 @@ public class TeamItemsController : Controller
             Title = string.Equals(post.Title, TeamItemDraftDefaults.Title, StringComparison.Ordinal)
                 ? string.Empty
                 : post.Title,
+            Subtitle = post.Subtitle,
             Slug = post.Slug,
             Body = post.Body,
             Excerpt = post.Excerpt,
             CoverImageUrl = post.CoverImageUrl,
+            AvatarImageUrl = post.AvatarImageUrl,
             CategoryId = post.CategoryId,
             AuthorUserId = post.AuthorUserId,
             // Fresh auto-drafts default Publish on (user preference); existing drafts keep unchecked.
@@ -307,11 +309,13 @@ public class TeamItemsController : Controller
 
         return new SaveTeamItemCommand(
             string.IsNullOrWhiteSpace(model.Title) ? TeamItemDraftDefaults.Title : model.Title.Trim(),
+            NullIfWhiteSpace(model.Subtitle),
             model.Slug,
             model.Body ?? string.Empty,
             NullIfWhiteSpace(model.Excerpt),
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
+            NullIfWhiteSpace(model.AvatarImageUrl),
             model.Publish,
             ToUtc(model.PublishedAtLocal),
             NullIfWhiteSpace(model.AuthorUserId),

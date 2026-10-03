@@ -8,6 +8,9 @@ public sealed class SaveTeamItemApiRequest
     public string Title { get; set; } = string.Empty;
 
     [MaxLength(300)]
+    public string? Subtitle { get; set; }
+
+    [MaxLength(300)]
     public string? Slug { get; set; }
 
     [Required(AllowEmptyStrings = true)]
@@ -18,6 +21,9 @@ public sealed class SaveTeamItemApiRequest
 
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
+
+    [MaxLength(1000)]
+    public string? AvatarImageUrl { get; set; }
 
     public Guid? CategoryId { get; set; }
 

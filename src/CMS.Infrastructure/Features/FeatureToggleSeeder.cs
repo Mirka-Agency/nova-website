@@ -47,6 +47,19 @@ public static class FeatureToggleSeeder
             logger.LogInformation("Seeded feature toggle {Feature} = {Enabled}", name, enabled);
         }
 
+        // Keep Forms reachable when config enables it (system contact/booking forms).
+        if (configuration.GetValue($"FeatureManagement:{FeatureNames.Forms}", false))
+        {
+            var formsToggle = await db.FeatureToggles
+                .FirstOrDefaultAsync(t => t.Name == FeatureNames.Forms, cancellationToken);
+            if (formsToggle is not null && !formsToggle.Enabled)
+            {
+                formsToggle.Enabled = true;
+                formsToggle.UpdatedAtUtc = DateTime.UtcNow;
+                logger.LogInformation("Enabled feature toggle {Feature} from configuration", FeatureNames.Forms);
+            }
+        }
+
         await db.SaveChangesAsync(cancellationToken);
     }
 }

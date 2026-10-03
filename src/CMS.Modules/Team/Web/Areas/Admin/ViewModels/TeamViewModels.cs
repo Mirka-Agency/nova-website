@@ -39,6 +39,9 @@ public class TeamItemFormViewModel
     [MaxLength(300, ErrorMessage = "عنوان حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
     public string Title { get; set; } = string.Empty;
 
+    [MaxLength(300, ErrorMessage = "عنوان فرعی حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string? Subtitle { get; set; }
+
     [MaxLength(300, ErrorMessage = "نامک حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
     public string? Slug { get; set; }
 
@@ -49,6 +52,9 @@ public class TeamItemFormViewModel
 
     [MaxLength(1000, ErrorMessage = "آدرس تصویر شاخص حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? CoverImageUrl { get; set; }
+
+    [MaxLength(1000, ErrorMessage = "آدرس تصویر آواتار حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string? AvatarImageUrl { get; set; }
 
     public Guid? CategoryId { get; set; }
 

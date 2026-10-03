@@ -152,6 +152,86 @@ body.site > main {
   margin-block-start: 1rem;
 }
 
+/* Booking modal: skin Core FormEmbed */
+.booking-form--cms > .public-form-embed {
+  max-width: none;
+}
+
+.booking-form--cms > .public-form-embed > h2,
+.booking-form--cms > .public-form-embed > .public-form-lead {
+  display: none;
+}
+
+.booking-form--cms > .public-form-embed .public-form {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.booking-form--cms > .public-form-embed .public-form-field label {
+  display: block;
+  margin-block-end: 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text, #2c3e40);
+}
+
+.booking-form--cms > .public-form-embed .public-form-field input,
+.booking-form--cms > .public-form-embed .public-form-field textarea,
+.booking-form--cms > .public-form-embed .public-form-field select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(44, 62, 64, 0.14);
+  border-radius: 0.85rem;
+  background: #fff;
+  font: inherit;
+  color: var(--text, #2c3e40);
+}
+
+.booking-form--cms > .public-form-embed .public-form-field textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.booking-form--cms > .public-form-embed .public-form-field input:focus,
+.booking-form--cms > .public-form-embed .public-form-field textarea:focus,
+.booking-form--cms > .public-form-embed .public-form-field select:focus {
+  outline: none;
+  border-color: var(--primary, #0d7377);
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.12);
+}
+
+.booking-form--cms > .public-form-embed .public-form-actions .btn,
+.booking-form--cms > .public-form-embed .public-form-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.85rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--primary, #0d7377);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.booking-form--cms > .public-form-embed .public-form-actions .btn:hover,
+.booking-form--cms > .public-form-embed .public-form-actions button:hover {
+  background: var(--primary-dark, #0a5c5f);
+}
+
+.booking-form--cms > .booking-form__note {
+  margin-block-start: 0.85rem;
+}
+
 /* Doctors archive pager */
 .doctors-pager {
   display: flex;

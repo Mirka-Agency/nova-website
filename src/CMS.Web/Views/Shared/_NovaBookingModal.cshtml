@@ -1,6 +1,10 @@
-@* Nova booking modal *@
+@* Nova booking modal — Core Forms (key=booking) with template fallback *@
+@using CMS.Application.Common.Features
 @using CMS.Application.Settings
+@using CMS.Modules.Forms.Application.Interfaces
 @inject ISiteSettingsService SiteSettings
+@inject IFormService Forms
+@inject Microsoft.FeatureManagement.IFeatureManager Features
 @{
     var settings = await SiteSettings.GetAsync();
     var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
@@ -8,6 +12,13 @@
     if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
     var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
     var telHref = "tel:" + phoneDigits;
+
+    var hasBookingForm = false;
+    if (await Features.IsEnabledAsync(FeatureNames.Forms))
+    {
+        var booking = await Forms.GetPublicContractByKeyAsync("booking");
+        hasBookingForm = booking is not null && booking.Fields.Count > 0;
+    }
 }
 <div class="booking-modal" id="booking-modal" hidden aria-hidden="true">
     <div class="booking-modal__backdrop" data-booking-close tabindex="-1"></div>
@@ -30,6 +41,30 @@
         <p class="booking-modal__lead">نام و شماره تماس خود را وارد کنید تا برای هماهنگی نوبت با شما تماس بگیریم.</p>
       </div>
 
+@if (hasBookingForm)
+{
+      <div class="booking-form booking-form--cms" data-booking-form-host>
+        @await Component.InvokeAsync("FormEmbed", new { key = "booking" })
+        <p class="booking-form__note">
+          یا مستقیم تماس بگیرید:
+          <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
+        </p>
+      </div>
+
+      <div class="booking-success" data-booking-success hidden>
+        <div class="booking-success__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="m8.5 12.5 2.2 2.2 4.8-5"/>
+          </svg>
+        </div>
+        <h3 class="booking-success__title">درخواست شما ثبت شد</h3>
+        <p class="booking-success__text" data-booking-success-text>به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.</p>
+        <button class="btn-primary-custom" type="button" data-booking-close>بستن</button>
+      </div>
+}
+else
+{
       <form class="booking-form" data-booking-form novalidate>
         <div class="booking-form__field">
           <label for="booking-name">نام و نام خانوادگی</label>
@@ -105,6 +140,6 @@
         <p class="booking-success__text">به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.</p>
         <button class="btn-primary-custom" type="button" data-booking-close>بستن</button>
       </div>
+}
     </div>
   </div>
-

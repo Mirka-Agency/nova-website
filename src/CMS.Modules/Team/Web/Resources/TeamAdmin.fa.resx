@@ -11,6 +11,8 @@
   <data name="CreateCategory" xml:space="preserve"><value>ایجاد دسته</value></data>
   <data name="EditCategory" xml:space="preserve"><value>ویرایش دسته</value></data>
   <data name="Title" xml:space="preserve"><value>عنوان</value></data>
+  <data name="Subtitle" xml:space="preserve"><value>عنوان فرعی</value></data>
+  <data name="SubtitleHint" xml:space="preserve"><value>مثلاً تخصص و سمت؛ در صفحه اصلی زیر نام پزشک نمایش داده می‌شود.</value></data>
   <data name="Name" xml:space="preserve"><value>نام</value></data>
   <data name="Slug" xml:space="preserve"><value>نامک</value></data>
   <data name="Body" xml:space="preserve"><value>توضیحات</value></data>
@@ -20,6 +22,8 @@
   <data name="ImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
   <data name="CoverImage" xml:space="preserve"><value>تصویر شاخص</value></data>
+  <data name="AvatarImage" xml:space="preserve"><value>تصویر آواتار</value></data>
+  <data name="AvatarImageHint" xml:space="preserve"><value>برای سلکتور پزشک در صفحه اصلی؛ بهتر است پرتره مربعی باشد.</value></data>
   <data name="CoverImageUploadHint" xml:space="preserve"><value>آپلود JPEG، PNG، WebP یا GIF (حداکثر ۵ مگابایت). در S3 ذخیره می‌شود.</value></data>
   <data name="CoverImageInvalidType" xml:space="preserve"><value>فقط تصاویر JPEG، PNG، WebP یا GIF مجاز هستند.</value></data>
   <data name="CoverImageTooLarge" xml:space="preserve"><value>حجم تصویر شاخص باید حداکثر ۵ مگابایت باشد.</value></data>
@@ -52,7 +56,7 @@
   <data name="SearchPosts" xml:space="preserve"><value>جستجوی عضو تیم…</value></data>
   <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
   <data name="ShortDescription" xml:space="preserve"><value>توضیحات کوتاه</value></data>
-  <data name="ShortDescriptionHint" xml:space="preserve"><value>اختیاری؛ در فهرست تیم و در صورت خالی بودن متا به‌عنوان خلاصه استفاده می‌شود.</value></data>
+  <data name="ShortDescriptionHint" xml:space="preserve"><value>در صفحه اصلی به‌عنوان بیو پزشک نمایش داده می‌شود.</value></data>
   <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
   <data name="AuthorHint" xml:space="preserve"><value>انتخاب دستی نویسنده از کاربران ادمین یا ویرایشگر.</value></data>
   <data name="NoAuthor" xml:space="preserve"><value>بدون نویسنده</value></data>

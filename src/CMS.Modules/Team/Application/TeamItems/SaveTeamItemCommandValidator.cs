@@ -15,6 +15,10 @@ public sealed class SaveTeamItemCommandValidator : AbstractValidator<SaveTeamIte
             .MaximumLength(300)
             .When(x => !x.Publish);
 
+        RuleFor(x => x.Subtitle)
+            .MaximumLength(300)
+            .When(x => !string.IsNullOrWhiteSpace(x.Subtitle));
+
         RuleFor(x => x.Body)
             .NotNull()
             .MaximumLength(500_000);
@@ -32,6 +36,12 @@ public sealed class SaveTeamItemCommandValidator : AbstractValidator<SaveTeamIte
             .Must(BeValidUrlOrPath)
             .When(x => !string.IsNullOrWhiteSpace(x.CoverImageUrl))
             .WithMessage("تصویر شاخص باید آدرس مطلق یا مسیر نسبی سایت باشد.");
+
+        RuleFor(x => x.AvatarImageUrl)
+            .MaximumLength(1000)
+            .Must(BeValidUrlOrPath)
+            .When(x => !string.IsNullOrWhiteSpace(x.AvatarImageUrl))
+            .WithMessage("تصویر آواتار باید آدرس مطلق یا مسیر نسبی سایت باشد.");
 
         RuleFor(x => x.AuthorUserId)
             .MaximumLength(450)

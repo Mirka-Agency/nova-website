@@ -138,11 +138,13 @@ public class TeamItemsApiController : ControllerBase
 
         return new(
             string.IsNullOrWhiteSpace(request.Title) ? TeamItemDraftDefaults.Title : request.Title.Trim(),
+            request.Subtitle,
             request.Slug,
             request.Body ?? string.Empty,
             request.Excerpt,
             request.CategoryId,
             request.CoverImageUrl,
+            request.AvatarImageUrl,
             request.Publish,
             request.PublishedAtUtc,
             authorUserId,

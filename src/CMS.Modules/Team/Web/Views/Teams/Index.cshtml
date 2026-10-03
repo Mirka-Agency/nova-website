@@ -52,7 +52,7 @@
         {
           var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
           var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
-          var specialty = string.IsNullOrWhiteSpace(member.Excerpt) ? member.Title : member.Excerpt;
+          var specialty = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
           <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
             <span class="doctor-jump__avatar">
               <img src="@cover" width="72" height="72" alt="" loading="lazy">
