@@ -33,8 +33,10 @@ public class ServicesController : Controller
             return NotFound();
 
         ViewData["Title"] = _localizer["Services"].Value;
+        ViewData["NavActive"] = "services";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("ServiceItems", "مدیریت خدمات", "ViewServices");
-        var result = await _items.ListPublishedPagedAsync(page, 12, cancellationToken);
+        // Archive page matches the Nova template (no compact pager UI).
+        var result = await _items.ListPublishedPagedAsync(page, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;
