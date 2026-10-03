@@ -134,6 +134,46 @@
             </div>
         </div>
 
+        <div class="admin-field"
+             data-article-attachment
+             data-upload-url="@Url.Action("UploadAttachment", "NewsMedia", new { area = "Admin" })">
+            <label>@Localizer["Attachment"]</label>
+            <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
+                <button type="button" class="btn btn-secondary" data-attachment-upload-btn>
+                    <i class="fas fa-upload" aria-hidden="true"></i>
+                    <span>@Localizer["UploadAttachment"]</span>
+                </button>
+                <button type="button"
+                        class="btn btn-ghost"
+                        data-attachment-clear-btn
+                        @(string.IsNullOrWhiteSpace(Model.AttachmentUrl) ? "hidden" : null)>
+                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                    <span>@Localizer["RemoveAttachment"]</span>
+                </button>
+                <input type="file"
+                       accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/jpeg,image/png,image/webp"
+                       data-attachment-upload-input
+                       hidden />
+            </div>
+            <input asp-for="AttachmentUrl" id="AttachmentUrl" type="hidden" data-attachment-url />
+            <input asp-for="AttachmentFileName" id="AttachmentFileName" type="hidden" data-attachment-name />
+            <p class="admin-hint">@Localizer["AttachmentHint"]</p>
+            <span asp-validation-for="AttachmentUrl" class="admin-field-error"></span>
+            <p class="admin-field-error" data-attachment-upload-error hidden></p>
+            <div class="admin-upload-preview" data-attachment-preview>
+                @if (!string.IsNullOrWhiteSpace(Model.AttachmentUrl))
+                {
+                    <a href="@Model.AttachmentUrl"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       data-attachment-link>
+                        <i class="fas fa-file-alt" aria-hidden="true"></i>
+                        <span data-attachment-label>@(string.IsNullOrWhiteSpace(Model.AttachmentFileName) ? Localizer["AttachmentReady"].Value : Model.AttachmentFileName)</span>
+                    </a>
+                }
+            </div>
+        </div>
+
         <div class="admin-field" data-article-gallery>
             <label>@Localizer["ImageGallery"]</label>
             <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">

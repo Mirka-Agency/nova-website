@@ -235,6 +235,8 @@ public class NewsArticlesController : Controller
             GalleryImages = ArticleGalleryJson.Parse(post.GalleryJson)
                 .Select(x => new ArticleGalleryImageFormItem { Url = x.Url, AltText = x.AltText })
                 .ToList(),
+            AttachmentUrl = post.AttachmentUrl,
+            AttachmentFileName = post.AttachmentFileName,
             CategoryId = post.CategoryId,
             AuthorUserId = post.AuthorUserId,
             Publish = post.Status == ArticleStatus.Published,
@@ -366,6 +368,8 @@ public class NewsArticlesController : Controller
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
             galleryJson,
+            NullIfWhiteSpace(model.AttachmentUrl),
+            NullIfWhiteSpace(model.AttachmentFileName),
             model.Publish,
             ToUtc(model.PublishedAtLocal, nameof(ArticleFormViewModel.PublishedAtLocal)),
             ToUtc(model.EventStartAtLocal, nameof(ArticleFormViewModel.EventStartAtLocal)),

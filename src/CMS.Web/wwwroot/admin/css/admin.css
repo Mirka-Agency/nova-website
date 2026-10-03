@@ -1436,6 +1436,21 @@ fieldset.admin-field legend {
   border-radius: 6px;
 }
 
+.admin-upload-preview [data-attachment-link] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  color: var(--admin-text);
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.admin-upload-preview [data-attachment-link]:hover,
+.admin-upload-preview [data-attachment-link]:focus-visible {
+  text-decoration: underline;
+}
+
 .admin-row-actions [data-media-clear][hidden],
 .admin-row-actions [data-media-edit][hidden] {
   display: none !important;

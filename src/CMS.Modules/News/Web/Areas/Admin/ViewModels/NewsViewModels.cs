@@ -58,6 +58,12 @@ public class ArticleFormViewModel
 
     public List<ArticleGalleryImageFormItem> GalleryImages { get; set; } = [];
 
+    [MaxLength(1000, ErrorMessage = "آدرس فایل پیوست حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string? AttachmentUrl { get; set; }
+
+    [MaxLength(300, ErrorMessage = "نام فایل پیوست حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string? AttachmentFileName { get; set; }
+
     /// <summary>UTC snapshots for autosave so event dates are not wiped.</summary>
     public DateTime? EventStartAtUtc { get; set; }
 

@@ -56,6 +56,16 @@ public sealed class SaveArticleCommandValidator : AbstractValidator<SaveArticleC
                 return error ?? "فرمت گالری تصاویر نامعتبر است.";
             });
 
+        RuleFor(x => x.AttachmentUrl)
+            .MaximumLength(1000)
+            .Must(BeValidUrlOrPath)
+            .When(x => !string.IsNullOrWhiteSpace(x.AttachmentUrl))
+            .WithMessage("فایل پیوست باید آدرس مطلق یا مسیر نسبی سایت باشد.");
+
+        RuleFor(x => x.AttachmentFileName)
+            .MaximumLength(300)
+            .When(x => !string.IsNullOrWhiteSpace(x.AttachmentFileName));
+
         RuleFor(x => x.AuthorUserId)
             .MaximumLength(450)
             .When(x => !string.IsNullOrWhiteSpace(x.AuthorUserId));

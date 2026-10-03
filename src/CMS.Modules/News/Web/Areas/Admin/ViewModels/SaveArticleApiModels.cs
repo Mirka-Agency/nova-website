@@ -24,6 +24,12 @@ public sealed class SaveArticleApiRequest
 
     public string? GalleryJson { get; set; }
 
+    [MaxLength(1000)]
+    public string? AttachmentUrl { get; set; }
+
+    [MaxLength(300)]
+    public string? AttachmentFileName { get; set; }
+
     public Guid? CategoryId { get; set; }
 
     public string? AuthorUserId { get; set; }

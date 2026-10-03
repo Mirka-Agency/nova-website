@@ -24,6 +24,8 @@ public sealed record PublicArticleDetailDto(
     string? CategoryName,
     string? CoverImageUrl,
     string? GalleryJson,
+    string? AttachmentUrl,
+    string? AttachmentFileName,
     DateTime PublishedAtUtc,
     DateTime? EventStartAtUtc,
     DateTime? EventEndAtUtc,

@@ -19,6 +19,10 @@ public class Article : BaseEntity
     public string? CoverImageUrl { get; private set; }
     /// <summary>JSON array of gallery images: [{ url, altText }].</summary>
     public string? GalleryJson { get; private set; }
+    /// <summary>Public URL of an optional downloadable attachment (PDF/DOC/…).</summary>
+    public string? AttachmentUrl { get; private set; }
+    /// <summary>Original file name for download display.</summary>
+    public string? AttachmentFileName { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public DateTime? PublishedAtUtc { get; private set; }
@@ -139,6 +143,19 @@ public class Article : BaseEntity
             throw new DomainException("گالری تصاویر خیلی طولانی است.");
 
         GalleryJson = string.IsNullOrWhiteSpace(galleryJson) ? null : galleryJson.Trim();
+        Touch();
+    }
+
+    public void SetAttachment(string? attachmentUrl, string? attachmentFileName)
+    {
+        if (attachmentUrl is { Length: > 1000 })
+            throw new DomainException("آدرس فایل پیوست خیلی طولانی است.");
+        if (attachmentFileName is { Length: > 300 })
+            throw new DomainException("نام فایل پیوست خیلی طولانی است.");
+
+        var url = NullIfWhiteSpace(attachmentUrl);
+        AttachmentUrl = url;
+        AttachmentFileName = url is null ? null : NullIfWhiteSpace(attachmentFileName);
         Touch();
     }
 

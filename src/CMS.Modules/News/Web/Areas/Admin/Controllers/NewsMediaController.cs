@@ -73,4 +73,60 @@ public class NewsMediaController : Controller
                 new { error = new { message = "آپلود ناموفق بود." } });
         }
     }
+
+    [HttpPost("UploadAttachment")]
+    [RequestSizeLimit(FormFileUploadRules.MaxBytes + 1_048_576)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FormFileUploadRules.MaxBytes + 1_048_576)]
+    public async Task<IActionResult> UploadAttachment(IFormFile? file, CancellationToken cancellationToken)
+    {
+        if (!await _features.IsEnabledAsync(FeatureNames.News))
+            return NotFound();
+
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = new { message = "فایلی آپلود نشده است." } });
+
+        try
+        {
+            await using var buffer = new MemoryStream();
+            await file.CopyToAsync(buffer, cancellationToken);
+            buffer.Position = 0;
+            if (!FormFileUploadRules.Validate(buffer, file.ContentType, buffer.Length))
+            {
+                return BadRequest(new
+                {
+                    error = new
+                    {
+                        message = "فقط فایل‌های PDF، Word، تصویر یا متن با حداکثر ۱۰ مگابایت مجاز هستند."
+                    }
+                });
+            }
+
+            buffer.Position = 0;
+            var objectKey = ObjectStorageKeys.Create(
+                ObjectStorageKeys.Modules.News,
+                "attachments",
+                file.FileName);
+
+            var uploaded = await _objectStorage.UploadAsync(
+                buffer,
+                objectKey,
+                file.ContentType,
+                cancellationToken);
+
+            var fileName = Path.GetFileName(file.FileName);
+            if (string.IsNullOrWhiteSpace(fileName))
+                fileName = "file";
+            if (fileName.Length > 300)
+                fileName = fileName[..300];
+
+            _logger.LogInformation("Admin action: uploaded news article attachment {ObjectKey}", uploaded.ObjectKey);
+            return Ok(new { url = uploaded.PublicUrl, fileName });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "News article attachment upload failed");
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { error = new { message = "آپلود ناموفق بود." } });
+        }
+    }
 }

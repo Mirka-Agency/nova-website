@@ -109,6 +109,8 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
             article.Category?.Name,
             article.CoverImageUrl,
             article.GalleryJson,
+            article.AttachmentUrl,
+            article.AttachmentFileName,
             article.PublishedAtUtc ?? article.CreatedAtUtc,
             article.EventStartAtUtc,
             article.EventEndAtUtc,

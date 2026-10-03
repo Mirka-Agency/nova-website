@@ -181,6 +181,17 @@
             <span class="article-info-list__value">@publishedLocal</span>
           </li>
         </ul>
+        @if (!string.IsNullOrWhiteSpace(Model.AttachmentUrl))
+        {
+          var downloadLabel = string.IsNullOrWhiteSpace(Model.AttachmentFileName)
+              ? "دانلود فایل مقاله"
+              : $"دانلود {Model.AttachmentFileName}";
+          <a class="article-detail__aside-link"
+             href="@Model.AttachmentUrl"
+             target="_blank"
+             rel="noopener noreferrer"
+             download="@Model.AttachmentFileName">@downloadLabel</a>
+        }
         @if (!string.IsNullOrWhiteSpace(serviceFragment))
         {
           <a class="article-detail__aside-service" asp-controller="Services" asp-action="Index" asp-fragment="@serviceFragment">@serviceLabel</a>

@@ -60,6 +60,11 @@
   <data name="ImageGalleryEmpty" xml:space="preserve"><value>هنوز تصویری به گالری اضافه نشده است.</value></data>
   <data name="AddGalleryImage" xml:space="preserve"><value>افزودن تصویر</value></data>
   <data name="ImageAltText" xml:space="preserve"><value>متن جایگزین</value></data>
+  <data name="Attachment" xml:space="preserve"><value>فایل پیوست</value></data>
+  <data name="UploadAttachment" xml:space="preserve"><value>آپلود فایل</value></data>
+  <data name="RemoveAttachment" xml:space="preserve"><value>حذف فایل</value></data>
+  <data name="AttachmentHint" xml:space="preserve"><value>اختیاری: PDF، Word، تصویر یا متن (حداکثر ۱۰ مگابایت). در صفحه مقاله لینک دانلود نمایش داده می‌شود.</value></data>
+  <data name="AttachmentReady" xml:space="preserve"><value>فایل پیوست</value></data>
   <data name="Remove" xml:space="preserve"><value>حذف</value></data>
   <data name="SearchPosts" xml:space="preserve"><value>جستجوی مقاله/رویداد…</value></data>
   <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>

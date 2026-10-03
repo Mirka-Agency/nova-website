@@ -16,6 +16,8 @@ public sealed class ArticleConfiguration : IEntityTypeConfiguration<Article>
         builder.Property(x => x.Excerpt).HasMaxLength(1000);
         builder.Property(x => x.CoverImageUrl).HasMaxLength(1000);
         builder.Property(x => x.GalleryJson);
+        builder.Property(x => x.AttachmentUrl).HasMaxLength(1000);
+        builder.Property(x => x.AttachmentFileName).HasMaxLength(300);
         builder.Property(x => x.Location).HasMaxLength(300);
         builder.Property(x => x.AuthorUserId).HasMaxLength(450);
         builder.Property(x => x.AuthorDisplayName).HasMaxLength(200);

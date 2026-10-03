@@ -154,6 +154,8 @@
       avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,
       videoUrl: (fieldValue("VideoUrl") || "").trim() || null,
+      attachmentUrl: (fieldValue("AttachmentUrl") || "").trim() || null,
+      attachmentFileName: (fieldValue("AttachmentFileName") || "").trim() || null,
       galleryJson: galleryJsonValue(),
       kind: kindValue(),
       categoryId,

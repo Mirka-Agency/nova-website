@@ -228,6 +228,7 @@ public sealed class ArticleService : IArticleService
             command.OgDescription,
             command.OgImageUrl);
         article.SetGalleryJson(galleryJson);
+        article.SetAttachment(command.AttachmentUrl, command.AttachmentFileName);
 
         ApplyPublishState(article, command);
 
@@ -271,6 +272,7 @@ public sealed class ArticleService : IArticleService
             command.OgDescription,
             command.OgImageUrl);
         article.SetGalleryJson(galleryJson);
+        article.SetAttachment(command.AttachmentUrl, command.AttachmentFileName);
 
         ApplyPublishState(article, command);
 
@@ -297,6 +299,8 @@ public sealed class ArticleService : IArticleService
             article.Kind,
             article.CoverImageUrl,
             article.GalleryJson,
+            article.AttachmentUrl,
+            article.AttachmentFileName,
             article.CategoryId,
             article.AuthorUserId,
             article.AuthorDisplayName,

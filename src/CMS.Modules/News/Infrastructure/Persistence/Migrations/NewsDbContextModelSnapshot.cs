@@ -25,6 +25,14 @@ partial class NewsDbContextModelSnapshot : ModelSnapshot
                     .ValueGeneratedOnAdd()
                     .HasColumnType("uuid");
 
+                b.Property<string>("AttachmentFileName")
+                    .HasMaxLength(300)
+                    .HasColumnType("character varying(300)");
+
+                b.Property<string>("AttachmentUrl")
+                    .HasMaxLength(1000)
+                    .HasColumnType("character varying(1000)");
+
                 b.Property<string>("AuthorDisplayName")
                     .HasMaxLength(200)
                     .HasColumnType("character varying(200)");
