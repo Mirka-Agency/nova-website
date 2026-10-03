@@ -58,6 +58,7 @@
 @section Scripts {
     <partial name="_CkEditorScripts" />
     <partial name="_JalaliDatePickerScripts" />
+    <script src="~/admin/js/admin-article-gallery.js" asp-append-version="true"></script>
     @if (await FeatureManager.IsEnabledAsync(CMS.Application.Common.Features.FeatureNames.Seo))
     {
         <partial name="_SeoAnalysisScripts" />

@@ -56,6 +56,14 @@ public class ArticleFormViewModel
     [MaxLength(1000, ErrorMessage = "آدرس تصویر شاخص حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? CoverImageUrl { get; set; }
 
+    public List<ArticleGalleryImageFormItem> GalleryImages { get; set; } = [];
+
+    /// <summary>UTC snapshots for autosave so event dates are not wiped.</summary>
+    public DateTime? EventStartAtUtc { get; set; }
+
+    /// <summary>UTC snapshots for autosave so event dates are not wiped.</summary>
+    public DateTime? EventEndAtUtc { get; set; }
+
     public Guid? CategoryId { get; set; }
 
     public string? AuthorUserId { get; set; }
@@ -103,6 +111,15 @@ public class ArticleFormViewModel
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
     public IReadOnlyList<SelectListItem> Kinds { get; set; } = [];
+}
+
+public class ArticleGalleryImageFormItem
+{
+    [MaxLength(1000, ErrorMessage = "آدرس تصویر گالری حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string Url { get; set; } = string.Empty;
+
+    [MaxLength(300, ErrorMessage = "متن جایگزین حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string? AltText { get; set; }
 }
 
 public class CategoryListItemViewModel

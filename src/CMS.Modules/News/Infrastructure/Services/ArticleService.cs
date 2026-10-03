@@ -206,6 +206,7 @@ public sealed class ArticleService : IArticleService
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
+        var galleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson);
         var article = Article.Create(
             command.Title,
             slug,
@@ -226,6 +227,7 @@ public sealed class ArticleService : IArticleService
             command.OgTitle,
             command.OgDescription,
             command.OgImageUrl);
+        article.SetGalleryJson(galleryJson);
 
         ApplyPublishState(article, command);
 
@@ -247,6 +249,7 @@ public sealed class ArticleService : IArticleService
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
+        var galleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson);
         article.Update(
             command.Title,
             slug,
@@ -267,6 +270,7 @@ public sealed class ArticleService : IArticleService
             command.OgTitle,
             command.OgDescription,
             command.OgImageUrl);
+        article.SetGalleryJson(galleryJson);
 
         ApplyPublishState(article, command);
 
@@ -292,6 +296,7 @@ public sealed class ArticleService : IArticleService
             article.Status,
             article.Kind,
             article.CoverImageUrl,
+            article.GalleryJson,
             article.CategoryId,
             article.AuthorUserId,
             article.AuthorDisplayName,
@@ -314,7 +319,12 @@ public sealed class ArticleService : IArticleService
             ? ArticleDraftDefaults.Title
             : command.Title.Trim();
         var body = command.Body ?? string.Empty;
-        return command with { Title = title, Body = body };
+        return command with
+        {
+            Title = title,
+            Body = body,
+            GalleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson)
+        };
     }
 
     private static void ApplyPublishState(Article article, SaveArticleCommand command)

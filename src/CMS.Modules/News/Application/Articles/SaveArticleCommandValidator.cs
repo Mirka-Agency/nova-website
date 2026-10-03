@@ -46,6 +46,16 @@ public sealed class SaveArticleCommandValidator : AbstractValidator<SaveArticleC
             .When(x => !string.IsNullOrWhiteSpace(x.CoverImageUrl))
             .WithMessage("تصویر شاخص باید آدرس مطلق یا مسیر نسبی سایت باشد.");
 
+        RuleFor(x => x.GalleryJson)
+            .MaximumLength(ArticleGalleryJson.MaxJsonLength)
+            .Must(value => ArticleGalleryJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.GalleryJson))
+            .WithMessage(x =>
+            {
+                ArticleGalleryJson.TryValidate(x.GalleryJson, out var error);
+                return error ?? "فرمت گالری تصاویر نامعتبر است.";
+            });
+
         RuleFor(x => x.AuthorUserId)
             .MaximumLength(450)
             .When(x => !string.IsNullOrWhiteSpace(x.AuthorUserId));

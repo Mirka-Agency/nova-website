@@ -138,6 +138,59 @@ body.cms-popup-open {
   overflow: hidden;
 }
 
+/* Booking popup — align with Nova booking modal chrome */
+.cms-popup--booking .cms-popup__dialog {
+  width: min(100%, 32rem);
+  max-height: min(92vh, 44rem);
+  padding: 1.5rem 1.5rem 1.75rem;
+  border-radius: 1.25rem;
+  background: #fff;
+  color: var(--text, #2c3e40);
+}
+
+.cms-popup--booking .cms-popup__title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--text, #2c3e40);
+}
+
+.cms-popup--booking .cms-popup__text {
+  margin: 0 0 1.15rem;
+  color: var(--text-muted, #5c6b6d);
+  font-size: 0.98rem;
+  line-height: 1.75;
+  white-space: normal;
+}
+
+.cms-popup--booking .cms-popup__form.booking-form--cms > .public-form-embed > h2,
+.cms-popup--booking .cms-popup__form.booking-form--cms > .public-form-embed > .public-form-lead {
+  display: none;
+}
+
+.cms-popup--booking .cms-popup__form .public-form {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.cms-popup--booking .cms-popup__close {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: rgba(44, 62, 64, 0.06);
+  color: var(--text, #2c3e40);
+}
+
+.cms-popup--booking .cms-popup__close:hover,
+.cms-popup--booking .cms-popup__close:focus-visible {
+  background: rgba(13, 115, 119, 0.12);
+  color: var(--primary, #0d7377);
+}
+
 @media (max-width: 640px) {
   .cms-popup {
     padding: 0.5rem;

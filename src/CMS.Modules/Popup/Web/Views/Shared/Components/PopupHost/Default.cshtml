@@ -1,10 +1,19 @@
 @model IReadOnlyList<CMS.Modules.Popup.Application.Popups.PublicPopupDto>
+@using System.Text.RegularExpressions
 @using CMS.Application.Common.Features
+@using CMS.Application.Settings
 @using CMS.Modules.Popup.Domain.Enums
 @using Microsoft.FeatureManagement
 @inject IFeatureManager FeatureManager
+@inject ISiteSettingsService SiteSettings
 @{
     var formsEnabled = await FeatureManager.IsEnabledAsync(FeatureNames.Forms);
+    var settings = await SiteSettings.GetAsync();
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
 }
 
 <link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" />
@@ -21,8 +30,10 @@
     };
     var ctaAction = PopupCtaActions.Normalize(popup.CtaAction);
     var hasCta = ctaAction != PopupCtaActions.None && !string.IsNullOrWhiteSpace(popup.CtaText);
+    var isBooking = string.Equals(popup.Slug, "booking", StringComparison.OrdinalIgnoreCase);
+    var popupClass = isBooking ? "cms-popup cms-popup--booking" : "cms-popup";
 
-    <div class="cms-popup"
+    <div class="@popupClass"
          id="cms-popup-@popup.Slug"
          data-cms-popup
          data-popup-id="@popup.Id"
@@ -86,8 +97,15 @@
                 }
                 @if (popup.FormId.HasValue && formsEnabled)
                 {
-                    <div class="cms-popup__form" data-popup-form>
+                    <div class="cms-popup__form @(isBooking ? "booking-form booking-form--cms" : null)" data-popup-form>
                         @await Component.InvokeAsync("FormEmbed", new { id = popup.FormId.Value })
+                        @if (isBooking)
+                        {
+                            <p class="booking-form__note">
+                                یا مستقیم تماس بگیرید:
+                                <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
+                            </p>
+                        }
                     </div>
                 }
             </div>

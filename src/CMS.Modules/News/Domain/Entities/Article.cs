@@ -17,6 +17,8 @@ public class Article : BaseEntity
     public ArticleStatus Status { get; private set; } = ArticleStatus.Draft;
     public ArticleKind Kind { get; private set; } = ArticleKind.News;
     public string? CoverImageUrl { get; private set; }
+    /// <summary>JSON array of gallery images: [{ url, altText }].</summary>
+    public string? GalleryJson { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public DateTime? PublishedAtUtc { get; private set; }
@@ -128,6 +130,15 @@ public class Article : BaseEntity
             throw new DomainException("شناسه مالک مطلب نامعتبر است.");
 
         OwnedByUserId = userId.Trim();
+        Touch();
+    }
+
+    public void SetGalleryJson(string? galleryJson)
+    {
+        if (galleryJson is { Length: > 100_000 })
+            throw new DomainException("گالری تصاویر خیلی طولانی است.");
+
+        GalleryJson = string.IsNullOrWhiteSpace(galleryJson) ? null : galleryJson.Trim();
         Touch();
     }
 

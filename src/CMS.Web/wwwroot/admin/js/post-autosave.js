@@ -106,6 +106,28 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function galleryJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-article-gallery-item]"));
+    const items = [];
+    for (const row of rows) {
+      const url = (row.querySelector("[data-gallery-url]")?.value || "").trim();
+      if (!url) continue;
+      const altText = (row.querySelector("[data-gallery-alt]")?.value || "").trim() || null;
+      items.push({ url, altText });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
+  function kindValue() {
+    return fieldValue("Kind") || null;
+  }
+
+  function eventUtcValue(selector) {
+    const el = form.querySelector(selector);
+    const value = (el?.value || "").trim();
+    return value || null;
+  }
+
   function isPublishChecked() {
     const el = form.elements.namedItem("Publish");
     return !!(el && el.type === "checkbox" && el.checked);
@@ -131,10 +153,15 @@
       coverImageUrl: (fieldValue("CoverImageUrl") || "").trim() || null,
       avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,
+      galleryJson: galleryJsonValue(),
+      kind: kindValue(),
       categoryId,
       authorUserId: (fieldValue("AuthorUserId") || "").trim() || null,
       publish: false,
       publishedAtUtc: null,
+      eventStartAtUtc: eventUtcValue("[data-autosave-event-start]"),
+      eventEndAtUtc: eventUtcValue("[data-autosave-event-end]"),
+      location: (fieldValue("Location") || "").trim() || null,
       metaTitle: (fieldValue("MetaTitle") || "").trim() || null,
       metaDescription: (fieldValue("MetaDescription") || "").trim() || null,
       seoKeywords: (fieldValue("SeoKeywords") || "").trim() || null,

@@ -232,12 +232,17 @@ public class NewsArticlesController : Controller
             Excerpt = post.Excerpt,
             Kind = post.Kind,
             CoverImageUrl = post.CoverImageUrl,
+            GalleryImages = ArticleGalleryJson.Parse(post.GalleryJson)
+                .Select(x => new ArticleGalleryImageFormItem { Url = x.Url, AltText = x.AltText })
+                .ToList(),
             CategoryId = post.CategoryId,
             AuthorUserId = post.AuthorUserId,
             Publish = post.Status == ArticleStatus.Published,
             PublishedAtLocal = ToIranLocal(post.PublishedAtUtc),
             EventStartAtLocal = ToIranLocal(post.EventStartAtUtc),
             EventEndAtLocal = ToIranLocal(post.EventEndAtUtc),
+            EventStartAtUtc = post.EventStartAtUtc,
+            EventEndAtUtc = post.EventEndAtUtc,
             Location = post.Location,
             MetaTitle = post.MetaTitle,
             MetaDescription = post.MetaDescription,
@@ -349,6 +354,9 @@ public class NewsArticlesController : Controller
             }
         }
 
+        var galleryJson = ArticleGalleryJson.Serialize(
+            (model.GalleryImages ?? []).Select(x => new ArticleGalleryImageDto(x.Url, x.AltText)));
+
         return new SaveArticleCommand(
             string.IsNullOrWhiteSpace(model.Title) ? ArticleDraftDefaults.Title : model.Title.Trim(),
             model.Slug,
@@ -357,6 +365,7 @@ public class NewsArticlesController : Controller
             model.Kind,
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
+            galleryJson,
             model.Publish,
             ToUtc(model.PublishedAtLocal, nameof(ArticleFormViewModel.PublishedAtLocal)),
             ToUtc(model.EventStartAtLocal, nameof(ArticleFormViewModel.EventStartAtLocal)),
@@ -377,6 +386,7 @@ public class NewsArticlesController : Controller
     {
         var categories = await _categories.ListAsync(cancellationToken);
         var authors = await _authors.ListContentAuthorsAsync(cancellationToken);
+        model.GalleryImages ??= [];
 
         model.Kinds =
         [

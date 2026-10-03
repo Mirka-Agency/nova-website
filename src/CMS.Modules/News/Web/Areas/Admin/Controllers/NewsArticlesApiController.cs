@@ -151,6 +151,7 @@ public class NewsArticlesApiController : ControllerBase
             request.Kind,
             request.CategoryId,
             request.CoverImageUrl,
+            ArticleGalleryJson.NormalizeJson(request.GalleryJson),
             request.Publish,
             request.PublishedAtUtc,
             request.EventStartAtUtc,

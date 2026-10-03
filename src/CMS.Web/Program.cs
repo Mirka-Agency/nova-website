@@ -181,6 +181,7 @@ try
             var popupDb = scope.ServiceProvider.GetRequiredService<PopupDbContext>();
             await popupDb.Database.MigrateAsync();
             await PopupDefaultSeeder.SeedAsync(app.Services);
+            await CMS.Web.Seeding.PopupBookingSeeder.SeedAsync(app.Services);
             var seoDb = scope.ServiceProvider.GetRequiredService<SeoDbContext>();
             await seoDb.Database.MigrateAsync();
             await IdentityDataSeeder.SeedAsync(app.Services);

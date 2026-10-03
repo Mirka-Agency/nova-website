@@ -55,6 +55,12 @@
   <data name="SelectFromLibrary" xml:space="preserve"><value>انتخاب از کتابخانه</value></data>
   <data name="SelectImage" xml:space="preserve"><value>انتخاب تصویر</value></data>
   <data name="SelectImageHint" xml:space="preserve"><value>کتابخانه رسانه را باز کنید تا از تصاویر موجود انتخاب کنید یا فایل جدید آپلود کنید.</value></data>
+  <data name="ImageGallery" xml:space="preserve"><value>گالری تصاویر</value></data>
+  <data name="ImageGalleryHint" xml:space="preserve"><value>چند تصویر از کتابخانه رسانه اضافه کنید؛ در صفحه خبر/رویداد به‌صورت گالری نمایش داده می‌شود.</value></data>
+  <data name="ImageGalleryEmpty" xml:space="preserve"><value>هنوز تصویری به گالری اضافه نشده است.</value></data>
+  <data name="AddGalleryImage" xml:space="preserve"><value>افزودن تصویر</value></data>
+  <data name="ImageAltText" xml:space="preserve"><value>متن جایگزین</value></data>
+  <data name="Remove" xml:space="preserve"><value>حذف</value></data>
   <data name="SearchPosts" xml:space="preserve"><value>جستجوی خبر/رویداد…</value></data>
   <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
   <data name="ShortDescription" xml:space="preserve"><value>توضیحات کوتاه</value></data>

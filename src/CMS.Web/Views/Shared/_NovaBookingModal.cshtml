@@ -1,11 +1,22 @@
-@* Nova booking modal — Core Forms (key=booking) with template fallback *@
+@* Nova booking modal — Core Forms fallback when CMS Popup slug=booking is inactive *@
 @using CMS.Application.Common.Features
 @using CMS.Application.Settings
 @using CMS.Modules.Forms.Application.Interfaces
+@using CMS.Modules.Popup.Infrastructure.Persistence
+@using Microsoft.EntityFrameworkCore
 @inject ISiteSettingsService SiteSettings
 @inject IFormService Forms
+@inject PopupDbContext PopupDb
 @inject Microsoft.FeatureManagement.IFeatureManager Features
 @{
+    var popupEnabled = await Features.IsEnabledAsync(FeatureNames.Popup);
+    if (popupEnabled
+        && await PopupDb.Popups.AsNoTracking()
+            .AnyAsync(p => p.IsActive && p.Slug == CMS.Web.Seeding.PopupBookingSeeder.BookingSlug))
+    {
+        return;
+    }
+
     var settings = await SiteSettings.GetAsync();
     var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
     var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
@@ -13,12 +24,15 @@
     var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
     var telHref = "tel:" + phoneDigits;
 
-    var hasBookingForm = false;
-    if (await Features.IsEnabledAsync(FeatureNames.Forms))
-    {
-        var booking = await Forms.GetPublicContractByKeyAsync("booking");
-        hasBookingForm = booking is not null && booking.Fields.Count > 0;
-    }
+    var booking = await Features.IsEnabledAsync(FeatureNames.Forms)
+        ? await Forms.GetPublicContractByKeyAsync("booking")
+        : null;
+    var hasBookingForm = booking is not null && booking.Fields.Count > 0;
+    var title = booking?.Name ?? "رزرو نوبت مشاوره";
+    var lead = booking?.Description
+        ?? "نام و شماره تماس خود را وارد کنید تا برای هماهنگی نوبت با شما تماس بگیریم.";
+    var successText = booking?.SubmitBehavior.Message
+        ?? "به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.";
 }
 <div class="booking-modal" id="booking-modal" hidden aria-hidden="true">
     <div class="booking-modal__backdrop" data-booking-close tabindex="-1"></div>
@@ -37,8 +51,8 @@
 
       <div class="booking-modal__header">
         <p class="section-kicker">نوبت‌دهی</p>
-        <h2 class="booking-modal__title" id="booking-modal-title">رزرو نوبت مشاوره</h2>
-        <p class="booking-modal__lead">نام و شماره تماس خود را وارد کنید تا برای هماهنگی نوبت با شما تماس بگیریم.</p>
+        <h2 class="booking-modal__title" id="booking-modal-title">@title</h2>
+        <p class="booking-modal__lead">@lead</p>
       </div>
 
 @if (hasBookingForm)
@@ -59,7 +73,7 @@
           </svg>
         </div>
         <h3 class="booking-success__title">درخواست شما ثبت شد</h3>
-        <p class="booking-success__text" data-booking-success-text>به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.</p>
+        <p class="booking-success__text" data-booking-success-text>@successText</p>
         <button class="btn-primary-custom" type="button" data-booking-close>بستن</button>
       </div>
 }
@@ -137,7 +151,7 @@ else
           </svg>
         </div>
         <h3 class="booking-success__title">درخواست شما ثبت شد</h3>
-        <p class="booking-success__text">به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.</p>
+        <p class="booking-success__text">@successText</p>
         <button class="btn-primary-custom" type="button" data-booking-close>بستن</button>
       </div>
 }

@@ -23,6 +23,7 @@ public sealed record PublicArticleDetailDto(
     ArticleKind Kind,
     string? CategoryName,
     string? CoverImageUrl,
+    string? GalleryJson,
     DateTime PublishedAtUtc,
     DateTime? EventStartAtUtc,
     DateTime? EventEndAtUtc,

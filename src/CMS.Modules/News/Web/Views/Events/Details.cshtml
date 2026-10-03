@@ -3,6 +3,7 @@
 @using System.Net
 @using System.Text.RegularExpressions
 @using CMS.Application.Settings
+@using CMS.Modules.News.Application.Articles
 @using CMS.Modules.News.Domain.Enums
 @inject ISiteSettingsService SiteSettings
 @{
@@ -51,34 +52,48 @@
     var endLocal = FormatLocal(Model.EventEndAtUtc);
 
     var gallery = new List<(string Src, string Alt)>();
-    if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-        gallery.Add((Model.CoverImageUrl!, Model.Title));
-
-    foreach (Match img in Regex.Matches(Model.Body ?? string.Empty, @"<img[^>]+src=[""']([^""']+)[""'][^>]*>", RegexOptions.IgnoreCase))
+    var curatedGallery = ArticleGalleryJson.Parse(Model.GalleryJson);
+    foreach (var image in curatedGallery)
     {
-        var src = WebUtility.HtmlDecode(img.Groups[1].Value).Trim();
-        if (string.IsNullOrWhiteSpace(src)) continue;
-        if (gallery.Any(g => string.Equals(g.Src, src, StringComparison.OrdinalIgnoreCase))) continue;
+        if (gallery.Any(g => string.Equals(g.Src, image.Url, StringComparison.OrdinalIgnoreCase)))
+            continue;
+        gallery.Add((image.Url, string.IsNullOrWhiteSpace(image.AltText) ? Model.Title : image.AltText!));
+    }
 
-        var altMatch = Regex.Match(img.Value, @"alt=[""']([^""']*)[""']", RegexOptions.IgnoreCase);
-        var alt = altMatch.Success && !string.IsNullOrWhiteSpace(altMatch.Groups[1].Value)
-            ? WebUtility.HtmlDecode(altMatch.Groups[1].Value)
-            : Model.Title;
-        gallery.Add((src, alt));
-        if (gallery.Count >= 8) break;
+    if (gallery.Count == 0)
+    {
+        if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+            gallery.Add((Model.CoverImageUrl!, Model.Title));
+
+        foreach (Match img in Regex.Matches(Model.Body ?? string.Empty, @"<img[^>]+src=[""']([^""']+)[""'][^>]*>", RegexOptions.IgnoreCase))
+        {
+            var src = WebUtility.HtmlDecode(img.Groups[1].Value).Trim();
+            if (string.IsNullOrWhiteSpace(src)) continue;
+            if (gallery.Any(g => string.Equals(g.Src, src, StringComparison.OrdinalIgnoreCase))) continue;
+
+            var altMatch = Regex.Match(img.Value, @"alt=[""']([^""']*)[""']", RegexOptions.IgnoreCase);
+            var alt = altMatch.Success && !string.IsNullOrWhiteSpace(altMatch.Groups[1].Value)
+                ? WebUtility.HtmlDecode(altMatch.Groups[1].Value)
+                : Model.Title;
+            gallery.Add((src, alt));
+            if (gallery.Count >= 8) break;
+        }
     }
 
     if (gallery.Count == 0)
         gallery.Add((cover, Model.Title));
 
     var bodyWithoutGalleryDupes = Model.Body ?? string.Empty;
-    foreach (var item in gallery.Skip(string.IsNullOrWhiteSpace(Model.CoverImageUrl) ? 0 : 1))
+    if (curatedGallery.Count == 0)
     {
-        bodyWithoutGalleryDupes = Regex.Replace(
-            bodyWithoutGalleryDupes,
-            $@"<figure[^>]*>\s*<img[^>]+src=[""']{Regex.Escape(item.Src)}[""'][^>]*>\s*</figure>",
-            string.Empty,
-            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        foreach (var item in gallery.Skip(string.IsNullOrWhiteSpace(Model.CoverImageUrl) ? 0 : 1))
+        {
+            bodyWithoutGalleryDupes = Regex.Replace(
+                bodyWithoutGalleryDupes,
+                $@"<figure[^>]*>\s*<img[^>]+src=[""']{Regex.Escape(item.Src)}[""'][^>]*>\s*</figure>",
+                string.Empty,
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        }
     }
 }
 
