@@ -169,18 +169,18 @@
       <div class="blog-post__content">
         @if (proseSections.Count > 0)
         {
-          foreach (var section in proseSections)
+          foreach (var proseSection in proseSections)
           {
-            if (section.Id is null)
+            if (proseSection.Id is null)
             {
               <article class="blog-prose">
-                @Html.Raw(section.Html)
+                @Html.Raw(proseSection.Html)
               </article>
             }
             else
             {
-              <article id="@section.Id" class="blog-prose">
-                @Html.Raw(section.Html)
+              <article id="@proseSection.Id" class="blog-prose">
+                @Html.Raw(proseSection.Html)
               </article>
             }
           }
