@@ -1419,13 +1419,21 @@ fieldset.admin-field legend {
 }
 
 .admin-upload-preview video,
-.admin-video-preview video {
+.admin-video-preview video,
+.admin-video-preview iframe {
   display: block;
   width: 100%;
   max-width: 100%;
   max-height: 280px;
+  border: 0;
   border-radius: 0.5rem;
   background: #0f172a;
+}
+
+.admin-video-preview iframe {
+  aspect-ratio: 16 / 9;
+  max-height: none;
+  min-height: 160px;
 }
 
 .admin-upload-preview img {

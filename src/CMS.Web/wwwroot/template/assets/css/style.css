@@ -6429,12 +6429,18 @@ a.video-single-meta__value:focus-visible {
   box-shadow: var(--shadow-md);
 }
 
-.video-player iframe {
+.video-player iframe,
+.video-player video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.video-player video {
+  object-fit: contain;
+  background: #0f1f22;
 }
 
 .video-detail {

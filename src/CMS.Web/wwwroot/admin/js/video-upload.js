@@ -87,6 +87,38 @@
     if (!busy) clearProgress();
   }
 
+  function resolveEmbedUrl(url) {
+    const trimmed = (url || "").trim();
+    if (!trimmed) return null;
+
+    const iframeSrc = trimmed.match(/src\s*=\s*["'](https?:\/\/[^"']+)["']/i);
+    const raw = iframeSrc ? iframeSrc[1].trim() : trimmed;
+
+    if (/aparat\.com\/video\/video\/embed\//i.test(raw)
+      || /youtube\.com\/embed\//i.test(raw)
+      || /player\.vimeo\.com\/video\//i.test(raw)) {
+      return raw.split("#")[0];
+    }
+
+    const aparat = raw.match(/aparat\.com\/(?:v\/|embed\/|video\/video\/embed(?:_box)?\/videohash\/)([A-Za-z0-9_-]+)/i);
+    if (aparat) {
+      return `https://www.aparat.com/video/video/embed/videohash/${aparat[1]}/vt/frame`;
+    }
+
+    const yt = raw.match(/(?:youtube\.com\/watch\?(?:[^#]*&)?v=|youtube\.com\/embed\/|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+    if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+
+    const vimeo = raw.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+    return null;
+  }
+
+  function isHostedPage(url) {
+    const raw = (url || "").trim();
+    return /aparat\.com|youtube\.com|youtu\.be|vimeo\.com/i.test(raw);
+  }
+
   function renderPreview(url) {
     if (!previewEl) return;
     const trimmed = (url || "").trim();
@@ -94,6 +126,20 @@
       previewEl.innerHTML = "";
       return;
     }
+
+    const embedUrl = resolveEmbedUrl(trimmed);
+    if (embedUrl) {
+      previewEl.innerHTML =
+        `<iframe src="${embedUrl}" title="پیش‌نمایش ویدیو" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+      return;
+    }
+
+    if (isHostedPage(trimmed)) {
+      previewEl.innerHTML =
+        `<p class="admin-hint">لینک ویدیو قابل پخش توکار نیست. بعد از ذخیره، لینک منبع نمایش داده می‌شود.</p>`;
+      return;
+    }
+
     previewEl.innerHTML = `<video controls preload="metadata" src="${trimmed}"></video>`;
   }
 

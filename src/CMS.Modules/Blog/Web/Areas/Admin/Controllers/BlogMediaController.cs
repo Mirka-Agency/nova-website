@@ -92,7 +92,8 @@ public class BlogMediaController : Controller
 
         try
         {
-            return await PersistVideoAsync(file, file.FileName, file.ContentType, cancellationToken);
+            var contentType = NormalizeVideoContentType(file.ContentType, file.FileName);
+            return await PersistVideoAsync(file, file.FileName, contentType, cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
