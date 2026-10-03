@@ -1,68 +1,508 @@
 @model IReadOnlyList<PublicVideoItemSummaryDto>
+@using CMS.Application.Settings
+@inject ISiteSettingsService SiteSettings
 @{
-    ViewData["Title"] = Localizer["Videos"];
+    ViewData["Title"] = "ویدئوها";
+    ViewData["NavActive"] = "videos";
+    var settings = await SiteSettings.GetAsync();
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var items = Model ?? Array.Empty<PublicVideoItemSummaryDto>();
+    var hasCmsVideos = items.Count > 0;
+
+    string MapCategory(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "clinic";
+        var n = name.Trim();
+        if (n.Contains("پاراتیروئید", StringComparison.Ordinal) || n.Contains("parathyroid", StringComparison.OrdinalIgnoreCase))
+            return "parathyroid";
+        if (n.Contains("تیروئید", StringComparison.Ordinal) || n.Contains("thyroid", StringComparison.OrdinalIgnoreCase) || n.Contains("TOETVA", StringComparison.OrdinalIgnoreCase))
+            return "thyroid";
+        if (n.Contains("فرآیند", StringComparison.Ordinal) || n.Contains("فرایند", StringComparison.Ordinal) || n.Contains("جراحی", StringComparison.Ordinal) || n.Contains("process", StringComparison.OrdinalIgnoreCase))
+            return "process";
+        if (n.Contains("کلینیک", StringComparison.Ordinal) || n.Contains("معرفی", StringComparison.Ordinal) || n.Contains("clinic", StringComparison.OrdinalIgnoreCase))
+            return "clinic";
+        return "clinic";
+    }
 }
 
-<section class="blog-page">
-    <header class="blog-page-header">
-        <h1>@Localizer["Videos"]</h1>
-    </header>
+<section class="page-hero page-hero--videos" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">ویدئوها</span>
+    </nav>
+    <h1 class="page-hero__title reveal" id="page-hero-title">ویدئوهای نووا کلینیک</h1>
+    <p class="page-hero__lead reveal">
+      توضیحات تخصصی درباره جراحی غدد، روش‌های کم‌تهاجمی و مسیر درمان؛ با روایت دکتر کاوه همدانی.
+    </p>
+  </div>
+</section>
 
-    @if (Model.Count == 0)
-    {
-        <p class="blog-empty">@Localizer["NoVideos"]</p>
-    }
-    else
-    {
-        <div class="blog-list">
-            @foreach (var post in Model)
-            {
-                <article class="blog-card">
-                    @if (!string.IsNullOrWhiteSpace(post.CoverImageUrl))
-                    {
-                        <a class="blog-card-cover" asp-controller="Videos" asp-action="Details" asp-route-slug="@post.Slug">
-                            <img src="@post.CoverImageUrl" alt="@post.Title" />
-                        </a>
-                    }
-                    <div class="blog-card-body">
-                        <h2>
-                            <a asp-controller="Videos" asp-action="Details" asp-route-slug="@post.Slug">@post.Title</a>
-                        </h2>
-                        <p class="blog-meta">
-                            <span>@Localizer["PublishedOn"]: @post.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</span>
-                            @if (!string.IsNullOrWhiteSpace(post.AuthorDisplayName))
-                            {
-                                <span>· @Localizer["Author"]: @post.AuthorDisplayName</span>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(post.CategoryName))
-                            {
-                                <span>· @Localizer["Category"]: @post.CategoryName</span>
-                            }
-                        </p>
-                        @if (!string.IsNullOrWhiteSpace(post.Excerpt))
-                        {
-                            <p class="blog-excerpt">@post.Excerpt</p>
-                        }
-                        <a class="blog-read-more" asp-controller="Videos" asp-action="Details" asp-route-slug="@post.Slug">@Localizer["ReadMore"]</a>
-                    </div>
-                </article>
-            }
-        </div>
+<section class="videos-archive" aria-label="آرشیو ویدئوها" data-videos-archive>
+  <div class="container">
+    <div class="videos-toolbar reveal" role="group" aria-label="فیلتر موضوع ویدئو">
+      <button class="videos-filter is-active" type="button" data-video-filter="all" aria-pressed="true">همه</button>
+      <button class="videos-filter" type="button" data-video-filter="thyroid" aria-pressed="false">تیروئید</button>
+      <button class="videos-filter" type="button" data-video-filter="parathyroid" aria-pressed="false">پاراتیروئید</button>
+      <button class="videos-filter" type="button" data-video-filter="process" aria-pressed="false">فرآیند جراحی</button>
+      <button class="videos-filter" type="button" data-video-filter="clinic" aria-pressed="false">معرفی کلینیک</button>
+    </div>
 
-        @if (ViewBag.TotalPages is int totalPages && totalPages > 1)
-        {
-            var currentPage = ViewBag.Page as int? ?? 1;
-            <nav class="blog-pager" aria-label="صفحه‌بندی" style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;">
-                @if (currentPage > 1)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage - 1)">قبلی</a>
-                }
-                <span>صفحه @currentPage از @totalPages</span>
-                @if (currentPage < totalPages)
-                {
-                    <a asp-action="Index" asp-route-page="@(currentPage + 1)">بعدی</a>
-                }
-            </nav>
-        }
+    <p class="videos-count reveal" data-videos-count aria-live="polite"></p>
+
+    <div class="videos-grid">
+@if (hasCmsVideos)
+{
+    var isFirst = true;
+    foreach (var item in items)
+    {
+        var category = MapCategory(item.CategoryName);
+        var typeLabel = string.IsNullOrWhiteSpace(item.CategoryName) ? "ویدئو" : item.CategoryName;
+        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
+            ? Url.Content("~/template/assets/images/videos/endocrine.webp")
+            : item.CoverImageUrl;
+        <article class="video-card reveal" data-video-card data-video-category="@category">
+          <a
+            class="video-card__trigger"
+            asp-controller="Videos"
+            asp-action="Details"
+            asp-route-slug="@item.Slug"
+            aria-label="مشاهده ویدئو: @item.Title"
+          >
+            <span class="video-card__media">
+              <img
+                src="@cover"
+                width="640"
+                height="360"
+                alt=""
+                loading="@(isFirst ? "eager" : "lazy")"
+                decoding="async"
+              >
+              <span class="video-card__play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                </svg>
+              </span>
+            </span>
+            <span class="video-card__body">
+              <span class="video-card__type">@typeLabel</span>
+              <h3 class="video-card__title">@item.Title</h3>
+            </span>
+          </a>
+        </article>
+        isFirst = false;
     }
+}
+else
+{
+<article class="video-card reveal" data-video-card data-video-category="thyroid">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: گواتر بزرگ"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/goiter.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">تیروئید</span>
+                <h3 class="video-card__title">گواتر بزرگ</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="process">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: فضای سوم: فرآیند های بعد جراحی در نووا کلینیک"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/post-surgery.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">فرآیند جراحی</span>
+                <h3 class="video-card__title">فضای سوم: فرآیند های بعد جراحی در نووا کلینیک</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="process">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: فضای دوم: فرآیند های حین جراحی در نووا کلینیک"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/intraop.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">فرآیند جراحی</span>
+                <h3 class="video-card__title">فضای دوم: فرآیند های حین جراحی در نووا کلینیک</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="process">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: فضای اول: فرآیند های قبل جراحی در نووا کلینیک"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/pre-surgery.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">فرآیند جراحی</span>
+                <h3 class="video-card__title">فضای اول: فرآیند های قبل جراحی در نووا کلینیک</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="parathyroid">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: فیلم جراحی پاراتیروئید"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/parathyroid.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">پاراتیروئید</span>
+                <h3 class="video-card__title">فیلم جراحی پاراتیروئید</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="clinic">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: چشم انداز نووا کلینیک از زبان دکتر کاوه همدانی"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/vision.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">معرفی کلینیک</span>
+                <h3 class="video-card__title">چشم انداز نووا کلینیک از زبان دکتر کاوه همدانی</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="thyroid">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: جراحی تیروئید بدون زخم به روش TOETVA"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/toetva.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">تیروئید</span>
+                <h3 class="video-card__title">جراحی تیروئید بدون زخم به روش TOETVA</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="process">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: نکات کلیدی درباره فرآیند جراحی از زبان دکتر کاوه همدانی"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/insights.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">فرآیند جراحی</span>
+                <h3 class="video-card__title">نکات کلیدی درباره فرآیند جراحی از زبان دکتر کاوه همدانی</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="process">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: تشریح مراحل قبل، حین و بعد از عمل جراحی"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/procedure.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">فرآیند جراحی</span>
+                <h3 class="video-card__title">تشریح مراحل قبل، حین و بعد از عمل جراحی</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="clinic">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: نووا کلینیک؛ مرجع فوق‌تخصصی جراحی غدد در ایران"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/endocrine.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">معرفی کلینیک</span>
+                <h3 class="video-card__title">نووا کلینیک؛ مرجع فوق‌تخصصی جراحی غدد در ایران</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="thyroid">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: هاشیموتو چیست؟ بررسی علل و درمان کم‌کاری تیروئید با دکتر کاوه همدانی"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/hashimoto.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">تیروئید</span>
+                <h3 class="video-card__title">هاشیموتو چیست؟ بررسی علل و درمان کم‌کاری تیروئید با دکتر کاوه همدانی</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="thyroid">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: جراحی تیروئید بدون بخیه گردن؟ | روش‌های کم‌تهاجمی TOETVA و زیربغل"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/scarless.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">تیروئید</span>
+                <h3 class="video-card__title">جراحی تیروئید بدون بخیه گردن؟ | روش‌های کم‌تهاجمی TOETVA و زیربغل</h3>
+              </span>
+            </a>
+          </article>
+
+          <article class="video-card reveal" data-video-card data-video-category="thyroid">
+            <a
+              class="video-card__trigger"
+              asp-controller="Videos" asp-action="Index"
+              aria-label="مشاهده ویدئو: انواع توده‌های تیروئید | تفاوت بین بیماری‌های خوش‌خیم و بدخیم"
+            >
+              <span class="video-card__media">
+                <img
+                  src="~/template/assets/images/videos/nodules.webp"
+                  width="640"
+                  height="360"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                >
+                <span class="video-card__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.75c0-.9.95-1.45 1.7-.98l8.35 5.1c.7.43.7 1.53 0 1.96l-8.35 5.1c-.75.47-1.7-.08-1.7-.98V5.75z"/>
+                  </svg>
+                </span>
+              </span>
+              <span class="video-card__body">
+                <span class="video-card__type">تیروئید</span>
+                <h3 class="video-card__title">انواع توده‌های تیروئید | تفاوت بین بیماری‌های خوش‌خیم و بدخیم</h3>
+              </span>
+            </a>
+          </article>
+}
+    </div>
+
+    <p class="videos-empty" data-videos-empty hidden>ویدئویی در این دسته یافت نشد.</p>
+
+    <nav class="videos-pagination" data-videos-pagination hidden aria-label="صفحه‌بندی ویدئوها">
+      <button class="videos-pagination__btn" type="button" data-videos-prev aria-label="صفحه قبل">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+      <div class="videos-pagination__pages" data-videos-pages></div>
+      <button class="videos-pagination__btn" type="button" data-videos-next aria-label="صفحه بعد">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</section>
+
+<section class="consult-band consult-band--compact" id="contact" aria-labelledby="consult-band-heading">
+  <div class="container">
+    <div class="consult-band__panel reveal">
+      <div class="consult-band__copy">
+        <p class="consult-band__kicker">نوبت مشاوره</p>
+        <h2 class="consult-band__title" id="consult-band-heading">
+          رزرو مشاوره تخصصی
+        </h2>
+        <p class="consult-band__meta">شنبه تا پنجشنبه · ۹ تا ۲۱</p>
+      </div>
+
+      <div class="consult-band__actions">
+        <button class="btn-primary-custom" type="button" data-booking-open>
+          رزرو نوبت
+        </button>
+        <a class="btn-secondary-custom" href="@telHref">
+          <span class="phone-ltr">@phoneDisplay</span>
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
