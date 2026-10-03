@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using CMS.Application.Admin;
 using CMS.Application.Common.Features;
-using CMS.Modules.Blog.Application.Interfaces;
-using CMS.Modules.Blog.Application.Posts;
 using CMS.Modules.Forms.Application.Interfaces;
+using CMS.Modules.News.Application.Articles;
+using CMS.Modules.News.Application.Interfaces;
+using CMS.Modules.News.Domain.Enums;
 using CMS.Modules.Services.Application.Interfaces;
 using CMS.Modules.Services.Application.ServiceItems;
 using CMS.Modules.Team.Application.Interfaces;
@@ -19,20 +20,20 @@ public class HomeController : Controller
 {
     private readonly IPublicTeamItemQuery _teamItems;
     private readonly IPublicServiceItemQuery _services;
-    private readonly IPublicPostQuery _posts;
+    private readonly IPublicArticleQuery _articles;
     private readonly IFormService _forms;
     private readonly IFeatureManager _features;
 
     public HomeController(
         IPublicTeamItemQuery teamItems,
         IPublicServiceItemQuery services,
-        IPublicPostQuery posts,
+        IPublicArticleQuery articles,
         IFormService forms,
         IFeatureManager features)
     {
         _teamItems = teamItems;
         _services = services;
-        _posts = posts;
+        _articles = articles;
         _forms = forms;
         _features = features;
     }
@@ -45,7 +46,7 @@ public class HomeController : Controller
 
         IReadOnlyList<PublicServiceItemSummaryDto> services = Array.Empty<PublicServiceItemSummaryDto>();
         IReadOnlyList<PublicTeamItemSummaryDto> team = Array.Empty<PublicTeamItemSummaryDto>();
-        IReadOnlyList<PublicPostSummaryDto> posts = Array.Empty<PublicPostSummaryDto>();
+        IReadOnlyList<PublicArticleSummaryDto> articles = Array.Empty<PublicArticleSummaryDto>();
 
         if (await _features.IsEnabledAsync(FeatureNames.Services))
         {
@@ -59,17 +60,17 @@ public class HomeController : Controller
             team = page.Items;
         }
 
-        if (await _features.IsEnabledAsync(FeatureNames.Blog))
+        if (await _features.IsEnabledAsync(FeatureNames.News))
         {
-            var page = await _posts.ListPublishedPagedAsync(1, 3, cancellationToken);
-            posts = page.Items;
+            var page = await _articles.ListPublishedByKindPagedAsync(ArticleKind.News, 1, 3, cancellationToken);
+            articles = page.Items;
         }
 
         return View(new HomeIndexViewModel
         {
             Services = services,
             Team = team,
-            Posts = posts
+            Articles = articles
         });
     }
 

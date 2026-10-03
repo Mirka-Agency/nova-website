@@ -16,9 +16,9 @@
   <data name="AdminPanel" xml:space="preserve"><value>پنل مدیریت</value></data>
   <data name="Dashboard" xml:space="preserve"><value>داشبورد</value></data>
   <data name="Blog" xml:space="preserve"><value>وبلاگ</value></data>
-  <data name="News" xml:space="preserve"><value>رویدادها و اخبار</value></data>
-  <data name="NewsArticles" xml:space="preserve"><value>اخبار و رویدادها</value></data>
-  <data name="NewsCategories" xml:space="preserve"><value>دسته‌های اخبار</value></data>
+  <data name="News" xml:space="preserve"><value>مقالات تخصصی و رویدادها</value></data>
+  <data name="NewsArticles" xml:space="preserve"><value>مقالات تخصصی و رویدادها</value></data>
+  <data name="NewsCategories" xml:space="preserve"><value>دسته‌ها</value></data>
   <data name="Services" xml:space="preserve"><value>خدمات</value></data>
   <data name="ServiceItems" xml:space="preserve"><value>خدمات</value></data>
   <data name="Video" xml:space="preserve"><value>ویدیو</value></data>
@@ -195,7 +195,7 @@
   <data name="AdminNav" xml:space="preserve"><value>ناوبری مدیریت</value></data>
   <data name="DashboardEmpty" xml:space="preserve"><value>برای نقش شما هنوز میانبری در داشبورد تعریف نشده است.</value></data>
   <data name="ManagePosts" xml:space="preserve"><value>مدیریت مطالب</value></data>
-  <data name="ManageNewsArticles" xml:space="preserve"><value>مدیریت اخبار و رویدادها</value></data>
+  <data name="ManageNewsArticles" xml:space="preserve"><value>مدیریت مقالات تخصصی و رویدادها</value></data>
   <data name="ManageServiceItems" xml:space="preserve"><value>مدیریت خدمات</value></data>
   <data name="ManageProducts" xml:space="preserve"><value>مدیریت محصولات</value></data>
   <data name="ManageOrders" xml:space="preserve"><value>مدیریت سفارش‌ها</value></data>

@@ -1,7 +1,7 @@
 @model HomeIndexViewModel
 @using System.Globalization
 @using CMS.Application.Settings
-@using CMS.Modules.Blog.Application.Posts
+@using CMS.Modules.News.Application.Articles
 @using CMS.Modules.Services.Application.ServiceItems
 @using CMS.Modules.Team.Application.TeamItems
 @inject ISiteSettingsService SiteSettings
@@ -24,13 +24,13 @@
         : settings.Tagline;
     var services = Model?.Services ?? Array.Empty<PublicServiceItemSummaryDto>();
     var team = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
-    var posts = Model?.Posts ?? Array.Empty<PublicPostSummaryDto>();
+    var articles = Model?.Articles ?? Array.Empty<PublicArticleSummaryDto>();
     var hasCmsServices = services.Count > 0;
     var hasCmsTeam = team.Count > 0;
-    var hasCmsPosts = posts.Count > 0;
+    var hasCmsArticles = articles.Count > 0;
     var fa = CultureInfo.GetCultureInfo("fa-IR");
     var fallbackDoctorCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
-    var fallbackPostCover = Url.Content("~/template/assets/images/blog/thyroid-risks.webp");
+    var fallbackArticleCover = Url.Content("~/template/assets/images/articles/scientific-reports.jpg");
 }
 <!-- Hero -->
     <section class="hero-section" aria-labelledby="hero-title">
@@ -857,26 +857,26 @@ else
       </div>
     </section>
 
-    <!-- Articles -->
+    <!-- Articles (Core News / مقالات تخصصی) -->
     <section class="articles-section" id="articles" aria-labelledby="articles-heading">
       <div class="container">
         <div class="section-header reveal">
           <p class="section-kicker">محتوا</p>
-          <h2 class="section-heading" id="articles-heading">دانش و آگاهی</h2>
-          <p class="section-lead">آخرین مطالب آموزشی درباره بیماری‌ها و مراقبت‌های مرتبط با جراحی غدد.</p>
+          <h2 class="section-heading" id="articles-heading">مقالات تخصصی</h2>
+          <p class="section-lead">آخرین مقالات تخصصی درباره بیماری‌ها و مراقبت‌های مرتبط با جراحی غدد.</p>
         </div>
 
         <div class="articles-grid">
-@if (hasCmsPosts)
+@if (hasCmsArticles)
 {
-    foreach (var item in posts)
+    foreach (var item in articles)
     {
         var local = item.PublishedAtUtc.ToLocalTime();
         var dateAttr = local.ToString("yyyy-MM-dd");
         var dateLabel = local.ToString("d MMMM yyyy", fa);
-        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? fallbackPostCover : item.CoverImageUrl;
+        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? fallbackArticleCover : item.CoverImageUrl;
         var excerpt = string.IsNullOrWhiteSpace(item.Excerpt) ? "برای ادامه مطلب وارد شوید." : item.Excerpt;
-          <a class="article-item reveal" asp-controller="Blog" asp-action="Details" asp-route-slug="@item.Slug">
+          <a class="article-item reveal" asp-controller="News" asp-action="Details" asp-route-slug="@item.Slug">
             <span class="article-item__media">
               <img
                 src="@cover"
@@ -908,13 +908,13 @@ else
 }
 else
 {
-          <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
+          <a class="article-item reveal" asp-controller="News" asp-action="Index">
             <span class="article-item__media">
               <img
-                src="~/template/assets/images/blog/thyroid-risks.webp"
+                src="~/template/assets/images/articles/scientific-reports.jpg"
                 width="800"
                 height="500"
-                alt="تصویر شاخص مقاله خطرات بیماری تیروئید"
+                alt="تصویر شاخص مقالات تخصصی"
                 loading="lazy"
                 decoding="async"
               >
@@ -931,79 +931,23 @@ else
                   <time datetime="2026-09-06">۱۵ شهریور ۱۴۰۵</time>
                 </span>
               </span>
-              <h3 class="article-item__title">خطرات بیماری تیروئید؛ آیا مشکلات تیروئید می‌تواند باعث مرگ شود؟</h3>
-              <p class="article-item__excerpt">نگاهی به اهمیت اختلالات تیروئید و زمان مراجعه برای بررسی تخصصی.</p>
-              <span class="article-item__more">ادامه مطلب</span>
-            </span>
-          </a>
-          <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
-            <span class="article-item__media">
-              <img
-                src="~/template/assets/images/blog/thyroid-hair-loss.webp"
-                width="800"
-                height="500"
-                alt="تصویر شاخص مقاله تیروئید و ریزش مو"
-                loading="lazy"
-                decoding="async"
-              >
-            </span>
-            <span class="article-item__body">
-              <span class="article-item__head">
-                <span class="article-item__meta">
-                  <span class="ui-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="5" width="18" height="16" rx="2"/>
-                      <path d="M16 3v4M8 3v4M3 11h18"/>
-                    </svg>
-                  </span>
-                  <time datetime="2026-09-06">۱۵ شهریور ۱۴۰۵</time>
-                </span>
-              </span>
-              <h3 class="article-item__title">آیا تیروئید باعث ریزش مو می‌شود؟</h3>
-              <p class="article-item__excerpt">علت، علائم و راهکارهای درمانی مرتبط با اختلالات تیروئید و ریزش مو.</p>
-              <span class="article-item__more">ادامه مطلب</span>
-            </span>
-          </a>
-          <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
-            <span class="article-item__media">
-              <img
-                src="~/template/assets/images/blog/life-without-thyroid.webp"
-                width="800"
-                height="500"
-                alt="تصویر شاخص مقاله زندگی بدون تیروئید"
-                loading="lazy"
-                decoding="async"
-              >
-            </span>
-            <span class="article-item__body">
-              <span class="article-item__head">
-                <span class="article-item__meta">
-                  <span class="ui-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="5" width="18" height="16" rx="2"/>
-                      <path d="M16 3v4M8 3v4M3 11h18"/>
-                    </svg>
-                  </span>
-                  <time datetime="2026-09-06">۱۵ شهریور ۱۴۰۵</time>
-                </span>
-              </span>
-              <h3 class="article-item__title">زندگی بدون تیروئید چگونه است؟</h3>
-              <p class="article-item__excerpt">بررسی شرایط پس از برداشتن تیروئید و نکات مراقبتی مهم برای بیماران.</p>
-              <span class="article-item__more">ادامه مطلب</span>
+              <h3 class="article-item__title">مقالات تخصصی جراحی غدد</h3>
+              <p class="article-item__excerpt">از پنل مدیریت، مقالات تخصصی را منتشر کنید تا در این بخش نمایش داده شوند.</p>
+              <span class="article-item__more">مشاهده آرشیو</span>
             </span>
           </a>
 }
         </div>
 
         <div class="articles-footer reveal">
-          <a class="btn-primary-custom" asp-controller="Blog" asp-action="Index">
+          <a class="btn-primary-custom" asp-controller="News" asp-action="Index">
             <span class="ui-icon btn-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
             </span>
-            مشاهده همه مطالب وبلاگ
+            مشاهده همه مقالات تخصصی
           </a>
         </div>
       </div>

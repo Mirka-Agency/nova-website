@@ -4,10 +4,10 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="Posts" xml:space="preserve"><value>اخبار و رویدادها</value></data>
+  <data name="Posts" xml:space="preserve"><value>مقالات تخصصی و رویدادها</value></data>
   <data name="Categories" xml:space="preserve"><value>دسته‌ها</value></data>
-  <data name="CreatePost" xml:space="preserve"><value>ایجاد خبر/رویداد</value></data>
-  <data name="EditPost" xml:space="preserve"><value>ویرایش خبر/رویداد</value></data>
+  <data name="CreatePost" xml:space="preserve"><value>ایجاد مقاله/رویداد</value></data>
+  <data name="EditPost" xml:space="preserve"><value>ویرایش مقاله/رویداد</value></data>
   <data name="CreateCategory" xml:space="preserve"><value>ایجاد دسته</value></data>
   <data name="EditCategory" xml:space="preserve"><value>ویرایش دسته</value></data>
   <data name="Title" xml:space="preserve"><value>عنوان</value></data>
@@ -25,12 +25,12 @@
   <data name="Category" xml:space="preserve"><value>دسته</value></data>
   <data name="NoCategory" xml:space="preserve"><value>بدون دسته</value></data>
   <data name="Kind" xml:space="preserve"><value>نوع</value></data>
-  <data name="NewsKind" xml:space="preserve"><value>خبر</value></data>
+  <data name="NewsKind" xml:space="preserve"><value>مقاله تخصصی</value></data>
   <data name="EventKind" xml:space="preserve"><value>رویداد</value></data>
   <data name="EventStart" xml:space="preserve"><value>شروع رویداد</value></data>
   <data name="EventEnd" xml:space="preserve"><value>پایان رویداد</value></data>
   <data name="Location" xml:space="preserve"><value>محل برگزاری</value></data>
-  <data name="EventFieldsHint" xml:space="preserve"><value>برای رویدادها، تاریخ شروع/پایان و محل برگزاری را وارد کنید؛ برای خبر اختیاری است.</value></data>
+  <data name="EventFieldsHint" xml:space="preserve"><value>برای رویدادها، تاریخ شروع/پایان و محل برگزاری را وارد کنید؛ برای مقاله تخصصی اختیاری است.</value></data>
   <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
   <data name="Draft" xml:space="preserve"><value>پیش‌نویس</value></data>
   <data name="Published" xml:space="preserve"><value>منتشرشده</value></data>
@@ -41,28 +41,43 @@
   <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
   <data name="Delete" xml:space="preserve"><value>حذف</value></data>
   <data name="ConfirmDelete" xml:space="preserve"><value>این مورد حذف شود؟</value></data>
-  <data name="NoPosts" xml:space="preserve"><value>هنوز خبر یا رویدادی ثبت نشده است.</value></data>
+  <data name="NoPosts" xml:space="preserve"><value>هنوز مقاله تخصصی یا رویدادی ثبت نشده است.</value></data>
   <data name="NoCategories" xml:space="preserve"><value>هنوز دسته‌ای ثبت نشده است.</value></data>
-  <data name="PostCreated" xml:space="preserve"><value>خبر/رویداد با موفقیت ایجاد شد.</value></data>
-  <data name="PostUpdated" xml:space="preserve"><value>خبر/رویداد به‌روزرسانی شد.</value></data>
-  <data name="PostDeleted" xml:space="preserve"><value>خبر/رویداد حذف شد.</value></data>
+  <data name="PostCreated" xml:space="preserve"><value>مقاله/رویداد با موفقیت ایجاد شد.</value></data>
+  <data name="PostUpdated" xml:space="preserve"><value>مقاله/رویداد به‌روزرسانی شد.</value></data>
+  <data name="PostDeleted" xml:space="preserve"><value>مقاله/رویداد حذف شد.</value></data>
   <data name="CategoryCreated" xml:space="preserve"><value>دسته با موفقیت ایجاد شد.</value></data>
   <data name="CategoryUpdated" xml:space="preserve"><value>دسته به‌روزرسانی شد.</value></data>
   <data name="CategoryDeleted" xml:space="preserve"><value>دسته حذف شد.</value></data>
-  <data name="ArticleCount" xml:space="preserve"><value>تعداد اخبار/رویدادها</value></data>
+  <data name="ArticleCount" xml:space="preserve"><value>تعداد مقالات/رویدادها</value></data>
   <data name="CreatedAt" xml:space="preserve"><value>تاریخ ایجاد</value></data>
   <data name="CoverImageHint" xml:space="preserve"><value>اختیاری: به‌جای آپلود، آدرس مطلق https وارد کنید یا از کتابخانه انتخاب کنید.</value></data>
   <data name="SelectFromLibrary" xml:space="preserve"><value>انتخاب از کتابخانه</value></data>
   <data name="SelectImage" xml:space="preserve"><value>انتخاب تصویر</value></data>
   <data name="SelectImageHint" xml:space="preserve"><value>کتابخانه رسانه را باز کنید تا از تصاویر موجود انتخاب کنید یا فایل جدید آپلود کنید.</value></data>
   <data name="ImageGallery" xml:space="preserve"><value>گالری تصاویر</value></data>
-  <data name="ImageGalleryHint" xml:space="preserve"><value>چند تصویر از کتابخانه رسانه اضافه کنید؛ در صفحه خبر/رویداد به‌صورت گالری نمایش داده می‌شود.</value></data>
+  <data name="ImageGalleryHint" xml:space="preserve"><value>چند تصویر از کتابخانه رسانه اضافه کنید؛ در صفحه مقاله/رویداد به‌صورت گالری نمایش داده می‌شود.</value></data>
   <data name="ImageGalleryEmpty" xml:space="preserve"><value>هنوز تصویری به گالری اضافه نشده است.</value></data>
   <data name="AddGalleryImage" xml:space="preserve"><value>افزودن تصویر</value></data>
   <data name="ImageAltText" xml:space="preserve"><value>متن جایگزین</value></data>
   <data name="Remove" xml:space="preserve"><value>حذف</value></data>
-  <data name="SearchPosts" xml:space="preserve"><value>جستجوی خبر/رویداد…</value></data>
+  <data name="SearchPosts" xml:space="preserve"><value>جستجوی مقاله/رویداد…</value></data>
   <data name="NoSearchResults" xml:space="preserve"><value>نتیجه‌ای برای این جستجو یافت نشد.</value></data>
+  <data name="AllKinds" xml:space="preserve"><value>همه انواع</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>همه وضعیت‌ها</value></data>
+  <data name="AllCategories" xml:space="preserve"><value>همه دسته‌ها</value></data>
+  <data name="FromDate" xml:space="preserve"><value>از تاریخ ایجاد</value></data>
+  <data name="ToDate" xml:space="preserve"><value>تا تاریخ ایجاد</value></data>
+  <data name="EventFromDate" xml:space="preserve"><value>از تاریخ شروع رویداد</value></data>
+  <data name="EventToDate" xml:space="preserve"><value>تا تاریخ شروع رویداد</value></data>
+  <data name="Sort" xml:space="preserve"><value>مرتب‌سازی</value></data>
+  <data name="SortNewest" xml:space="preserve"><value>جدیدترین</value></data>
+  <data name="SortOldest" xml:space="preserve"><value>قدیمی‌ترین</value></data>
+  <data name="SortPublished" xml:space="preserve"><value>تاریخ انتشار</value></data>
+  <data name="SortEventStart" xml:space="preserve"><value>شروع رویداد (نزدیک‌ترین)</value></data>
+  <data name="SortEventStartDesc" xml:space="preserve"><value>شروع رویداد (دورترین)</value></data>
+  <data name="SortTitle" xml:space="preserve"><value>عنوان (الف–ی)</value></data>
+  <data name="SortTitleDesc" xml:space="preserve"><value>عنوان (ی–الف)</value></data>
   <data name="ShortDescription" xml:space="preserve"><value>توضیحات کوتاه</value></data>
   <data name="ShortDescriptionHint" xml:space="preserve"><value>اختیاری؛ در فهرست و در صورت خالی بودن متا به‌عنوان خلاصه استفاده می‌شود.</value></data>
   <data name="Author" xml:space="preserve"><value>نویسنده</value></data>
@@ -74,7 +89,7 @@
   <data name="MetaSettings" xml:space="preserve"><value>تنظیمات متا</value></data>
   <data name="SeoSettings" xml:space="preserve"><value>تنظیمات سئو</value></data>
   <data name="MetaTitle" xml:space="preserve"><value>عنوان متا</value></data>
-  <data name="MetaTitleHint" xml:space="preserve"><value>عنوان صفحه در نتایج جستجو؛ خالی = عنوان خبر/رویداد.</value></data>
+  <data name="MetaTitleHint" xml:space="preserve"><value>عنوان صفحه در نتایج جستجو؛ خالی = عنوان مقاله/رویداد.</value></data>
   <data name="MetaDescription" xml:space="preserve"><value>توضیحات متا</value></data>
   <data name="MetaDescriptionHint" xml:space="preserve"><value>خلاصه برای موتورهای جستجو؛ خالی = توضیحات کوتاه.</value></data>
   <data name="SeoKeywords" xml:space="preserve"><value>کلمات کلیدی</value></data>

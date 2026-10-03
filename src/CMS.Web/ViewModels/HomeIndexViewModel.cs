@@ -1,4 +1,4 @@
-using CMS.Modules.Blog.Application.Posts;
+using CMS.Modules.News.Application.Articles;
 using CMS.Modules.Services.Application.ServiceItems;
 using CMS.Modules.Team.Application.TeamItems;
 
@@ -12,6 +12,6 @@ public sealed class HomeIndexViewModel
     public IReadOnlyList<PublicTeamItemSummaryDto> Team { get; init; } =
         Array.Empty<PublicTeamItemSummaryDto>();
 
-    public IReadOnlyList<PublicPostSummaryDto> Posts { get; init; } =
-        Array.Empty<PublicPostSummaryDto>();
+    public IReadOnlyList<PublicArticleSummaryDto> Articles { get; init; } =
+        Array.Empty<PublicArticleSummaryDto>();
 }

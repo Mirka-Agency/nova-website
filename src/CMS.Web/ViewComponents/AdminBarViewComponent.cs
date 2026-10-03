@@ -68,7 +68,7 @@ public sealed class AdminBarViewComponent : ViewComponent
         var links = new List<AdminBarLink>(10);
 
         await TryAddAsync(links, staff, FeatureNames.Blog, AuthPolicies.ViewBlog, "نوشته‌ها", "Posts", "Index", "fa-newspaper");
-        await TryAddAsync(links, staff, FeatureNames.News, AuthPolicies.ViewNews, "اخبار", "NewsArticles", "Index", "fa-bullhorn");
+        await TryAddAsync(links, staff, FeatureNames.News, AuthPolicies.ViewNews, "مقالات تخصصی", "NewsArticles", "Index", "fa-newspaper");
         await TryAddAsync(links, staff, FeatureNames.Services, AuthPolicies.ViewServices, "خدمات", "ServiceItems", "Index", "fa-concierge-bell");
         await TryAddAsync(links, staff, FeatureNames.Video, AuthPolicies.ViewVideo, "ویدیوها", "VideoItems", "Index", "fa-video");
         await TryAddAsync(links, staff, FeatureNames.Team, AuthPolicies.ViewTeam, "تیم", "TeamItems", "Index", "fa-users");
@@ -89,7 +89,7 @@ public sealed class AdminBarViewComponent : ViewComponent
         var links = new List<AdminBarLink>(8);
 
         await TryAddAsync(links, staff, FeatureNames.Blog, AuthPolicies.ManageBlog, "نوشته جدید", "Posts", "Create", "fa-plus");
-        await TryAddAsync(links, staff, FeatureNames.News, AuthPolicies.ManageNews, "خبر جدید", "NewsArticles", "Create", "fa-plus");
+        await TryAddAsync(links, staff, FeatureNames.News, AuthPolicies.ManageNews, "مقاله تخصصی جدید", "NewsArticles", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Services, AuthPolicies.ManageServices, "خدمت جدید", "ServiceItems", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Video, AuthPolicies.ManageVideo, "ویدیو جدید", "VideoItems", "Create", "fa-plus");
         await TryAddAsync(links, staff, FeatureNames.Team, AuthPolicies.ManageTeam, "عضو تیم جدید", "TeamItems", "Create", "fa-plus");

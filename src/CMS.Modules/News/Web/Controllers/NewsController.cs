@@ -41,9 +41,8 @@ public class NewsController : Controller
 
         ViewData["Title"] = "مقالات تخصصی";
         ViewData["NavActive"] = "articles";
-        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("NewsArticles", "مدیریت اخبار", "ViewNews");
-        // Archive matches Nova articles template (client-side filter/paging in main.js).
-        var result = await _articles.ListPublishedPagedAsync(page, 48, cancellationToken);
+        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("NewsArticles", "مدیریت مقالات تخصصی", "ViewNews");
+        var result = await _articles.ListPublishedByKindPagedAsync(ArticleKind.News, page, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;
@@ -73,7 +72,7 @@ public class NewsController : Controller
         ViewData["OgTitle"] = FirstNonEmpty(post.OgTitle, post.MetaTitle, post.Title);
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
-        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("NewsArticles", post.Id, "ویرایش خبر", "ManageNews");
+        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("NewsArticles", post.Id, "ویرایش مقاله تخصصی", "ManageNews");
 
         var related = await _articles.ListPublishedByKindPagedAsync(ArticleKind.News, 1, 8, cancellationToken);
         ViewBag.Related = related.Items
