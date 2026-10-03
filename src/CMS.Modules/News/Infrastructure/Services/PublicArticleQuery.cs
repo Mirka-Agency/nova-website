@@ -25,10 +25,24 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedPagedAsync(
+    public Task<PagedResult<PublicArticleSummaryDto>> ListPublishedPagedAsync(
         int page,
         int pageSize,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) =>
+        ListPublishedByKindPagedAsync(kind: null, page, pageSize, cancellationToken);
+
+    public async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedAsync(
+        ArticleKind kind,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default) =>
+        await ListPublishedByKindPagedAsync((ArticleKind?)kind, page, pageSize, cancellationToken);
+
+    private async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedAsync(
+        ArticleKind? kind,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken)
     {
         var normalizedPage = page < 1 ? 1 : page;
         var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
@@ -37,10 +51,16 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
             .AsNoTracking()
             .Where(p => p.Status == ArticleStatus.Published);
 
+        if (kind.HasValue)
+            query = query.Where(p => p.Kind == kind.Value);
+
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var articles = await query
-            .OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc)
+        var ordered = kind == ArticleKind.Event
+            ? query.OrderByDescending(p => p.EventStartAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc)
+            : query.OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc);
+
+        var articles = await ordered
             .Skip((normalizedPage - 1) * normalizedPageSize)
             .Take(normalizedPageSize)
             .Select(p => new PublicArticleSummaryDto(

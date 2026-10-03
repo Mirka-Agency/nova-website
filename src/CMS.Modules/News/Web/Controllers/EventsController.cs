@@ -3,33 +3,28 @@ using CMS.Application.Common.Features;
 using CMS.Application.Seo;
 using CMS.Modules.News.Application.Interfaces;
 using CMS.Modules.News.Domain.Enums;
-using CMS.Modules.News.Web;
 using CMS.Modules.Seo.Application.Interfaces;
 using CMS.Modules.Seo.Web;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.FeatureManagement;
 
 namespace CMS.Modules.News.Web.Controllers;
 
-[Route("news")]
-public class NewsController : Controller
+[Route("events")]
+public class EventsController : Controller
 {
     private readonly IPublicArticleQuery _articles;
     private readonly IFeatureManager _features;
     private readonly ISeoDocumentService _seoDocuments;
-    private readonly IStringLocalizer<NewsPublic> _localizer;
 
-    public NewsController(
-        IPublicArticleQuery posts,
+    public EventsController(
+        IPublicArticleQuery articles,
         IFeatureManager features,
-        ISeoDocumentService seoDocuments,
-        IStringLocalizer<NewsPublic> localizer)
+        ISeoDocumentService seoDocuments)
     {
-        _articles = posts;
+        _articles = articles;
         _features = features;
         _seoDocuments = seoDocuments;
-        _localizer = localizer;
     }
 
     [HttpGet("")]
@@ -39,11 +34,11 @@ public class NewsController : Controller
         if (!await _features.IsEnabledAsync(FeatureNames.News))
             return NotFound();
 
-        ViewData["Title"] = "مقالات تخصصی";
-        ViewData["NavActive"] = "articles";
-        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("NewsArticles", "مدیریت اخبار", "ViewNews");
-        // Archive matches Nova articles template (client-side filter/paging in main.js).
-        var result = await _articles.ListPublishedPagedAsync(page, 48, cancellationToken);
+        ViewData["Title"] = "رویدادها";
+        ViewData["NavActive"] = "events";
+        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("NewsArticles", "مدیریت رویدادها", "ViewNews");
+
+        var result = await _articles.ListPublishedByKindPagedAsync(ArticleKind.Event, page, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;
@@ -52,19 +47,17 @@ public class NewsController : Controller
     }
 
     [HttpGet("{slug}")]
-    public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
+    public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken = default)
     {
         if (!await _features.IsEnabledAsync(FeatureNames.News))
             return NotFound();
 
         var post = await _articles.GetPublishedBySlugAsync(slug, cancellationToken);
-        if (post is null)
+        if (post is null || post.Kind != ArticleKind.Event)
             return NotFound();
 
-        if (post.Kind == ArticleKind.Event)
-            return RedirectToActionPermanent("Details", "Events", new { slug = post.Slug });
-
         ViewData["Title"] = post.Title;
+        ViewData["NavActive"] = "events";
         ViewData["MetaTitle"] = FirstNonEmpty(post.MetaTitle, post.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(post.MetaDescription, post.Excerpt);
         ViewData["MetaKeywords"] = post.SeoKeywords;
@@ -72,7 +65,13 @@ public class NewsController : Controller
         ViewData["OgTitle"] = FirstNonEmpty(post.OgTitle, post.MetaTitle, post.Title);
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
-        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("NewsArticles", post.Id, "ویرایش خبر", "ManageNews");
+        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("NewsArticles", post.Id, "ویرایش رویداد", "ManageNews");
+
+        var related = await _articles.ListPublishedByKindPagedAsync(ArticleKind.Event, 1, 6, cancellationToken);
+        ViewBag.Related = related.Items
+            .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
+            .Take(3)
+            .ToList();
 
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {
@@ -83,13 +82,13 @@ public class NewsController : Controller
                 ViewData["SchemaJson"] = FirstNonEmpty(
                     seo.SchemaJson,
                     SeoSchemaBuilder.BuildContentSchema(
-                        seo.SchemaType ?? "NewsArticle",
+                        seo.SchemaType ?? "Event",
                         post.Title,
                         FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                        AbsoluteUrl(post.CanonicalUrl, $"/news/{post.Slug}"),
+                        AbsoluteUrl(post.CanonicalUrl, $"/events/{post.Slug}"),
                         FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl),
                         post.AuthorDisplayName,
-                        post.PublishedAtUtc,
+                        post.EventStartAtUtc ?? post.PublishedAtUtc,
                         null));
             }
         }

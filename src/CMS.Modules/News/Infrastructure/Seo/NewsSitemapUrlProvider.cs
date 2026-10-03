@@ -23,24 +23,28 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
     {
         var entries = new List<SitemapUrlEntry>
         {
-            new("/news", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
+            new("/news", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8),
+            new("/events", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
         };
 
-        // Includes both news articles and events (ArticleKind.Event) under /news/{slug}.
         var articles = await _db.Articles
             .AsNoTracking()
             .Where(a => a.Status == ArticleStatus.Published)
             .Select(a => new
             {
                 a.Slug,
+                a.Kind,
                 LastMod = a.PublishedAtUtc ?? a.UpdatedAtUtc ?? a.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
 
         foreach (var article in articles)
         {
+            var path = article.Kind == ArticleKind.Event
+                ? $"/events/{article.Slug}"
+                : $"/news/{article.Slug}";
             entries.Add(new SitemapUrlEntry(
-                $"/news/{article.Slug}",
+                path,
                 article.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7));

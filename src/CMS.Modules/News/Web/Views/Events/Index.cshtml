@@ -1,0 +1,220 @@
+@model IReadOnlyList<PublicArticleSummaryDto>
+@using System.Globalization
+@using CMS.Application.Settings
+@using CMS.Modules.News.Domain.Enums
+@inject ISiteSettingsService SiteSettings
+@{
+    ViewData["Title"] = "رویدادها";
+    ViewData["NavActive"] = "events";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var items = Model ?? Array.Empty<PublicArticleSummaryDto>();
+    var hasCms = items.Count > 0;
+    var fallbackCover = Url.Content("~/template/assets/images/events/adrenal-workshop.webp");
+    var persian = new PersianCalendar();
+
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
+            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
+
+    string EventType(PublicArticleSummaryDto item) =>
+        string.IsNullOrWhiteSpace(item.CategoryName) ? "رویداد تخصصی" : item.CategoryName!;
+
+    string? EventYear(PublicArticleSummaryDto item)
+    {
+        var dt = item.EventStartAtUtc ?? item.PublishedAtUtc;
+        if (dt == default) return null;
+        var local = dt.Kind == DateTimeKind.Utc ? dt.ToLocalTime() : dt;
+        return ToPersianDigits(persian.GetYear(local).ToString(CultureInfo.InvariantCulture));
+    }
+}
+
+<section class="page-hero page-hero--events" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">رویدادها</span>
+    </nav>
+    <h1 class="page-hero__title reveal" id="page-hero-title">رویدادهای @brand</h1>
+    <p class="page-hero__lead reveal">
+      کارگاه‌ها، پنل‌ها و کنفرانس‌های تخصصی جراحی غدد؛ فضایی برای تبادل تجربه بالینی و به‌روزرسانی دانش تخصصی.
+    </p>
+  </div>
+</section>
+
+<section class="events-archive" aria-label="آرشیو رویدادها">
+  <div class="container">
+    <div class="events-list">
+      @if (hasCms)
+      {
+        var index = 0;
+        foreach (var item in items)
+        {
+          var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? fallbackCover : item.CoverImageUrl;
+          var type = EventType(item);
+          var year = EventYear(item);
+          var featuredClass = index == 0 ? " event-card--featured" : "";
+          var excerpt = string.IsNullOrWhiteSpace(item.Excerpt)
+              ? "برای مشاهده جزئیات این رویداد وارد شوید."
+              : item.Excerpt;
+          <a
+            class="event-card@(featuredClass) reveal"
+            asp-controller="Events"
+            asp-action="Details"
+            asp-route-slug="@item.Slug"
+          >
+            <span class="event-card__media">
+              <img
+                src="@cover"
+                width="1024"
+                height="576"
+                alt="@item.Title"
+                loading="@(index == 0 ? "eager" : "lazy")"
+                decoding="async"
+              >
+            </span>
+            <span class="event-card__body">
+              <span class="event-card__meta">
+                <span class="event-card__type">@type</span>
+                @if (!string.IsNullOrWhiteSpace(year))
+                {
+                  <span class="event-card__year">@year</span>
+                }
+              </span>
+              <h3 class="event-card__title">@item.Title</h3>
+              <p class="event-card__excerpt">@excerpt</p>
+              <span class="event-card__more">مشاهده جزئیات</span>
+            </span>
+          </a>
+          index++;
+        }
+      }
+      else
+      {
+        <a class="event-card event-card--featured reveal" asp-controller="Events" asp-action="Index">
+          <span class="event-card__media">
+            <img
+              src="~/template/assets/images/events/adrenal-workshop.webp"
+              width="1024"
+              height="576"
+              alt="کارگاه تخصصی بررسی توده‌های آدرنال"
+              loading="eager"
+              decoding="async"
+            >
+          </span>
+          <span class="event-card__body">
+            <span class="event-card__meta">
+              <span class="event-card__type">کارگاه تخصصی</span>
+              <span class="event-card__year">۱۴۰۴</span>
+            </span>
+            <h3 class="event-card__title">برنامه اعضای پنل کارگاه</h3>
+            <p class="event-card__excerpt">
+              در گردهمایی جامعه جراحان ایران، کارگاه تخصصی بررسی توده‌های آدرنال با مسئولیت علمی دکتر کاوه همدانی برگزار شد؛ با تمرکز بر توده‌های اتفاقی، فئوکروموسیتوما و تومورهای بدخیم آدرنال.
+            </p>
+            <span class="event-card__more">مشاهده جزئیات</span>
+          </span>
+        </a>
+
+        <a class="event-card reveal" asp-controller="Events" asp-action="Index">
+          <span class="event-card__media">
+            <img
+              src="~/template/assets/images/events/thyroid-complications.jpeg"
+              width="1024"
+              height="681"
+              alt="پنل عوارض جراحی تیروئید ۱۴۰۴"
+              loading="lazy"
+              decoding="async"
+            >
+          </span>
+          <span class="event-card__body">
+            <span class="event-card__meta">
+              <span class="event-card__type">پنل تخصصی</span>
+              <span class="event-card__year">۱۴۰۴</span>
+            </span>
+            <h3 class="event-card__title">پنل عوارض جراحی تیروئید – ۱۴۰۴</h3>
+            <p class="event-card__excerpt">
+              بررسی عوارض شایع و نادر پس از جراحی تیروئید، راهکارهای پیشگیری و مدیریت آن‌ها با حضور جراحان اندوکرین کشور.
+            </p>
+            <span class="event-card__more">مشاهده جزئیات</span>
+          </span>
+        </a>
+
+        <a class="event-card reveal" asp-controller="Events" asp-action="Index">
+          <span class="event-card__media">
+            <img
+              src="~/template/assets/images/events/board-meeting.jpeg"
+              width="1024"
+              height="551"
+              alt="جلسه هیأت مدیره انجمن جراحان عمومی ایران"
+              loading="lazy"
+              decoding="async"
+            >
+          </span>
+          <span class="event-card__body">
+            <span class="event-card__meta">
+              <span class="event-card__type">جلسه انجمن</span>
+            </span>
+            <h3 class="event-card__title">جلسه هیأت مدیره انجمن جراحان عمومی ایران</h3>
+            <p class="event-card__excerpt">
+              نشست هماهنگی هیأت مدیره با مسئولان شاخه‌ها برای ارتقای علمی، حرفه‌ای و صنفی جراحان عمومی کشور.
+            </p>
+            <span class="event-card__more">مشاهده جزئیات</span>
+          </span>
+        </a>
+
+        <a class="event-card reveal" asp-controller="Events" asp-action="Index">
+          <span class="event-card__media">
+            <img
+              src="~/template/assets/images/events/hyperparathyroidism.webp"
+              width="1024"
+              height="512"
+              alt="کنفرانس هیپرپاراتیروئیدیسم اولیه"
+              loading="lazy"
+              decoding="async"
+            >
+          </span>
+          <span class="event-card__body">
+            <span class="event-card__meta">
+              <span class="event-card__type">کنفرانس علمی</span>
+              <time class="event-card__year" datetime="2024-05-24">۴ خرداد ۱۴۰۳</time>
+            </span>
+            <h3 class="event-card__title">هیپرپاراتیروئیدیسم اولیه: چالش‌های تشخیصی و درمانی</h3>
+            <p class="event-card__excerpt">
+              اولین کنفرانس علمی ماهانه انجمن جراحی عمومی ایران — شاخه خوزستان، با دبیری علمی دکتر کاوه همدانی در اهواز.
+            </p>
+            <span class="event-card__more">مشاهده جزئیات</span>
+          </span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="consult-band consult-band--compact" id="contact" aria-labelledby="consult-band-heading">
+  <div class="container">
+    <div class="consult-band__panel reveal">
+      <div class="consult-band__copy">
+        <p class="consult-band__kicker">نوبت مشاوره</p>
+        <h2 class="consult-band__title" id="consult-band-heading">
+          رزرو مشاوره تخصصی
+        </h2>
+        <p class="consult-band__meta">شنبه تا پنجشنبه · ۹ تا ۲۱</p>
+      </div>
+
+      <div class="consult-band__actions">
+        <button class="btn-primary-custom" type="button" data-booking-open>
+          رزرو نوبت
+        </button>
+        <a class="btn-secondary-custom" href="@telHref">
+          <span class="phone-ltr">@phoneDisplay</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

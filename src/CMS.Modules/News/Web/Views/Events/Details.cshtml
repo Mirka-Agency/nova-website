@@ -1,0 +1,207 @@
+@model PublicArticleDetailDto
+@using System.Globalization
+@using CMS.Application.Settings
+@using CMS.Modules.News.Domain.Enums
+@inject ISiteSettingsService SiteSettings
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["NavActive"] = "events";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var type = string.IsNullOrWhiteSpace(Model.CategoryName) ? "رویداد تخصصی" : Model.CategoryName;
+    var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
+        ? $"جزئیات رویداد «{Model.Title}» در {brand}."
+        : Model.Excerpt;
+    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
+        ? Url.Content("~/template/assets/images/events/adrenal-workshop.webp")
+        : Model.CoverImageUrl;
+    var related = (ViewBag.Related as IReadOnlyList<PublicArticleSummaryDto>) ?? Array.Empty<PublicArticleSummaryDto>();
+    var persian = new PersianCalendar();
+
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
+            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
+
+    string? PersianYear(DateTime? utc)
+    {
+        if (!utc.HasValue) return null;
+        var local = utc.Value.Kind == DateTimeKind.Utc ? utc.Value.ToLocalTime() : utc.Value;
+        return ToPersianDigits(persian.GetYear(local).ToString(CultureInfo.InvariantCulture));
+    }
+
+    string? FormatLocal(DateTime? utc)
+    {
+        if (!utc.HasValue) return null;
+        var local = utc.Value.Kind == DateTimeKind.Utc ? utc.Value.ToLocalTime() : utc.Value;
+        var y = persian.GetYear(local);
+        var m = persian.GetMonth(local);
+        var d = persian.GetDayOfMonth(local);
+        return ToPersianDigits($"{y}/{m:00}/{d:00}");
+    }
+
+    var year = PersianYear(Model.EventStartAtUtc ?? Model.PublishedAtUtc);
+    var startLocal = FormatLocal(Model.EventStartAtUtc);
+    var endLocal = FormatLocal(Model.EventEndAtUtc);
+}
+
+<section class="page-hero page-hero--event-single" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <a asp-controller="Events" asp-action="Index">رویدادها</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">@Model.Title</span>
+    </nav>
+
+    <p class="section-kicker reveal">
+      @type@if (!string.IsNullOrWhiteSpace(year)) { <text> · @year</text> }
+    </p>
+    <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
+    <p class="page-hero__lead reveal">@lead</p>
+
+    <ul class="event-single-meta reveal" aria-label="اطلاعات رویداد">
+      <li>@type</li>
+      @if (!string.IsNullOrWhiteSpace(year))
+      {
+        <li>سال @year</li>
+      }
+      @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
+      {
+        <li>مسئولیت علمی: @Model.AuthorDisplayName</li>
+      }
+      @if (!string.IsNullOrWhiteSpace(Model.Location))
+      {
+        <li>@Model.Location</li>
+      }
+    </ul>
+  </div>
+</section>
+
+<section class="event-detail" aria-labelledby="event-detail-heading">
+  <div class="container">
+    <div class="event-detail__layout">
+      <div class="event-detail__main">
+        <article class="event-prose reveal">
+          <p class="section-kicker">درباره رویداد</p>
+          <h2 class="section-heading" id="event-detail-heading">@Model.Title</h2>
+          @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+          {
+            <figure class="event-prose__cover">
+              <img src="@cover" width="1024" height="576" alt="@Model.Title" loading="eager">
+            </figure>
+          }
+          <div class="event-prose__body">
+            @Html.Raw(Model.Body)
+          </div>
+        </article>
+
+        @await Component.InvokeAsync("Comments", new {
+            targetType = 1,
+            targetId = Model.Id,
+            targetTitle = Model.Title
+        })
+      </div>
+
+      <aside class="event-detail__aside reveal" aria-label="اطلاعات رویداد">
+        <h3 class="event-detail__aside-title">اطلاعات رویداد</h3>
+        <ul class="event-info-list">
+          <li>
+            <span class="event-info-list__label">نوع</span>
+            <span class="event-info-list__value">@type</span>
+          </li>
+          @if (!string.IsNullOrWhiteSpace(year))
+          {
+            <li>
+              <span class="event-info-list__label">سال</span>
+              <span class="event-info-list__value">@year</span>
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(startLocal))
+          {
+            <li>
+              <span class="event-info-list__label">شروع</span>
+              <span class="event-info-list__value">@startLocal</span>
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(endLocal))
+          {
+            <li>
+              <span class="event-info-list__label">پایان</span>
+              <span class="event-info-list__value">@endLocal</span>
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(Model.Location))
+          {
+            <li>
+              <span class="event-info-list__label">محل</span>
+              <span class="event-info-list__value">@Model.Location</span>
+            </li>
+          }
+          @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
+          {
+            <li>
+              <span class="event-info-list__label">مسئولیت علمی</span>
+              <span class="event-info-list__value">@Model.AuthorDisplayName</span>
+            </li>
+          }
+          <li>
+            <span class="event-info-list__label">برگزارکننده</span>
+            <span class="event-info-list__value">@brand</span>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+@if (related.Count > 0)
+{
+  <section class="event-related" aria-labelledby="event-related-heading">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-kicker">ادامه فعالیت‌های علمی</p>
+        <h2 class="section-heading" id="event-related-heading">رویدادهای مرتبط</h2>
+      </div>
+
+      <div class="events-list events-list--related" tabindex="0" aria-label="رویدادهای مرتبط">
+        @{
+          var relatedFallback = Url.Content("~/template/assets/images/events/thyroid-complications.jpeg");
+        }
+        @foreach (var item in related)
+        {
+          var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? relatedFallback : item.CoverImageUrl;
+          var itemType = string.IsNullOrWhiteSpace(item.CategoryName) ? "رویداد تخصصی" : item.CategoryName;
+          var itemYear = PersianYear(item.EventStartAtUtc ?? item.PublishedAtUtc);
+          var itemExcerpt = string.IsNullOrWhiteSpace(item.Excerpt)
+              ? "برای مشاهده جزئیات این رویداد وارد شوید."
+              : item.Excerpt;
+          <a class="event-card reveal" asp-controller="Events" asp-action="Details" asp-route-slug="@item.Slug">
+            <span class="event-card__media">
+              <img
+                src="@itemCover"
+                width="1024"
+                height="681"
+                alt="@item.Title"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="event-card__body">
+              <span class="event-card__meta">
+                <span class="event-card__type">@itemType</span>
+                @if (!string.IsNullOrWhiteSpace(itemYear))
+                {
+                  <span class="event-card__year">@itemYear</span>
+                }
+              </span>
+              <h3 class="event-card__title">@item.Title</h3>
+              <p class="event-card__excerpt">@itemExcerpt</p>
+              <span class="event-card__more">مشاهده جزئیات</span>
+            </span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}

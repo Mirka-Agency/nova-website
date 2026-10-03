@@ -181,3 +181,23 @@ body.site > main {
 .doctor-about__body :where(ul, ol) {
   padding-inline-start: 1.25rem;
 }
+
+.event-prose__cover {
+  margin: 0 0 1.25rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.event-prose__cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.event-prose__body :where(p, ul, ol) {
+  margin-block: 0 1rem;
+}
+
+.event-prose__body :where(ul, ol) {
+  padding-inline-start: 1.25rem;
+}
