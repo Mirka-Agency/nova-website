@@ -1,5 +1,5 @@
 @model PublicVideoItemDetailDto
-@using System.Text.RegularExpressions
+@using CMS.Modules.Video.Application.VideoItems
 @inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
@@ -16,30 +16,11 @@
         : Model.CoverImageUrl;
     var related = (ViewBag.Related as IReadOnlyList<PublicVideoItemSummaryDto>)
         ?? Array.Empty<PublicVideoItemSummaryDto>();
-    var embedUrl = ResolveEmbedUrl(Model.VideoUrl);
-    var hasFileVideo = string.IsNullOrWhiteSpace(embedUrl) && !string.IsNullOrWhiteSpace(Model.VideoUrl);
+    var embedUrl = VideoEmbedUrl.Resolve(Model.VideoUrl);
+    var hasFileVideo = string.IsNullOrWhiteSpace(embedUrl)
+        && !string.IsNullOrWhiteSpace(Model.VideoUrl)
+        && !VideoEmbedUrl.IsHostedPage(Model.VideoUrl);
     var hasPlayer = !string.IsNullOrWhiteSpace(embedUrl) || hasFileVideo;
-
-    string? ResolveEmbedUrl(string? url)
-    {
-        if (string.IsNullOrWhiteSpace(url)) return null;
-        var raw = url.Trim();
-
-        if (raw.Contains("aparat.com/video/video/embed/", StringComparison.OrdinalIgnoreCase)
-            || raw.Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase)
-            || raw.Contains("player.vimeo.com/video/", StringComparison.OrdinalIgnoreCase))
-            return raw;
-
-        var aparat = Regex.Match(raw, @"aparat\.com/(?:v/|video/video/embed/videohash/)([A-Za-z0-9]+)", RegexOptions.IgnoreCase);
-        if (aparat.Success)
-            return $"https://www.aparat.com/video/video/embed/videohash/{aparat.Groups[1].Value}/vt/frame";
-
-        var ytWatch = Regex.Match(raw, @"(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{6,})", RegexOptions.IgnoreCase);
-        if (ytWatch.Success)
-            return $"https://www.youtube.com/embed/{ytWatch.Groups[1].Value}";
-
-        return null;
-    }
 }
 
 <section class="page-hero page-hero--video-single" aria-labelledby="page-hero-title">
@@ -79,11 +60,22 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowfullscreen
           loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
         ></iframe>
       }
       else if (hasFileVideo)
       {
         <video controls playsinline preload="metadata" poster="@cover" src="@Model.VideoUrl" title="@Model.Title"></video>
+      }
+      else if (!string.IsNullOrWhiteSpace(Model.VideoUrl) && VideoEmbedUrl.IsHostedPage(Model.VideoUrl))
+      {
+        <div class="video-player__fallback">
+          <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
+          <p class="video-player__fallback-text">
+            لینک ویدیو قابل پخش نیست.
+            <a href="@Model.VideoUrl" target="_blank" rel="noopener noreferrer">مشاهده در منبع</a>
+          </p>
+        </div>
       }
       else
       {

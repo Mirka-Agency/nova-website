@@ -64,7 +64,21 @@
                 <p class="admin-upload-percent" data-video-upload-percent hidden>۰٪</p>
             </div>
             <div class="admin-upload-preview admin-video-preview" data-video-preview>
-                @if (!string.IsNullOrWhiteSpace(Model.VideoUrl))
+                @{
+                    var adminEmbed = CMS.Modules.Video.Application.VideoItems.VideoEmbedUrl.Resolve(Model.VideoUrl);
+                }
+                @if (!string.IsNullOrWhiteSpace(adminEmbed))
+                {
+                    <iframe
+                        src="@adminEmbed"
+                        title="پیش‌نمایش ویدیو"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        allowfullscreen
+                        loading="lazy"
+                        style="width:100%;aspect-ratio:16/9;border:0;border-radius:0.75rem;background:#0f1f22;"></iframe>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.VideoUrl)
+                         && !CMS.Modules.Video.Application.VideoItems.VideoEmbedUrl.IsHostedPage(Model.VideoUrl))
                 {
                     <video controls preload="metadata" poster="@Model.CoverImageUrl" src="@Model.VideoUrl"></video>
                 }

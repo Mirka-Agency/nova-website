@@ -22,7 +22,7 @@
   <data name="UploadVideo" xml:space="preserve"><value>آپلود ویدیو</value></data>
   <data name="ClearVideo" xml:space="preserve"><value>حذف ویدیو</value></data>
   <data name="VideoUrl" xml:space="preserve"><value>آدرس ویدیو</value></data>
-  <data name="VideoUrlHint" xml:space="preserve"><value>آپلود فایل (MP4، WebM، OGG، MOV — حداکثر ۲۰۰ مگابایت) یا وارد کردن آدرس مستقیم. برای پخش در صفحه جزئیات لازم است.</value></data>
+  <data name="VideoUrlHint" xml:space="preserve"><value>آپلود فایل (MP4، WebM، OGG، MOV) یا لینک آپارات/یوتیوب؛ مثلاً https://www.aparat.com/v/xxxxx یا کد iframe آپارات.</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
   <data name="CoverImage" xml:space="preserve"><value>تامنیل ویدیو</value></data>
   <data name="Thumbnail" xml:space="preserve"><value>تامنیل ویدیو</value></data>
