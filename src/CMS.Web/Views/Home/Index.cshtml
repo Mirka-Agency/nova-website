@@ -1,6 +1,36 @@
+@model HomeIndexViewModel
+@using System.Globalization
+@using CMS.Application.Settings
+@using CMS.Modules.Blog.Application.Posts
+@using CMS.Modules.Services.Application.ServiceItems
+@using CMS.Modules.Team.Application.TeamItems
+@inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = "خانه";
     ViewData["NavActive"] = "home";
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var contactEmail = string.IsNullOrWhiteSpace(settings.ContactEmail) ? "info@nova-clinic.org" : settings.ContactEmail;
+    var address = string.IsNullOrWhiteSpace(settings.Address)
+        ? "شریعتی، بالاتر از خواجه عبدالله، نبش کوچه ذکایی (جنب آرش موتورز)، ساختمان کسری، طبقه ۴، واحد ۱۵"
+        : settings.Address;
+    var heroLead = string.IsNullOrWhiteSpace(settings.Tagline)
+        ? "جراحی تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین و کم‌تهاجمی."
+        : settings.Tagline;
+    var services = Model?.Services ?? Array.Empty<PublicServiceItemSummaryDto>();
+    var team = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
+    var posts = Model?.Posts ?? Array.Empty<PublicPostSummaryDto>();
+    var hasCmsServices = services.Count > 0;
+    var hasCmsTeam = team.Count > 0;
+    var hasCmsPosts = posts.Count > 0;
+    var fa = CultureInfo.GetCultureInfo("fa-IR");
+    var fallbackDoctorCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
+    var fallbackPostCover = Url.Content("~/template/assets/images/blog/thyroid-risks.webp");
 }
 <!-- Hero -->
     <section class="hero-section" aria-labelledby="hero-title">
@@ -8,12 +38,12 @@
         <div class="hero-grid">
           <div class="hero-panel">
             <p class="section-kicker hero-reveal">فلوشیپ جراحی غدد</p>
-            <p class="hero-brand-name hero-reveal">نووا کلینیک</p>
+            <p class="hero-brand-name hero-reveal">@brand</p>
             <h1 class="hero-title hero-reveal hero-reveal--delay" id="hero-title">
               اولین کلینیک فلوشیپ جراحی غدد درون‌ریز ایران
             </h1>
             <p class="hero-text hero-reveal hero-reveal--delay-2">
-              جراحی تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین و کم‌تهاجمی.
+              @heroLead
             </p>
 
             <div class="hero-actions hero-reveal hero-reveal--delay-2">
@@ -25,13 +55,13 @@
                 </span>
                 درخواست مشاوره رایگان
               </a>
-              <a class="btn-secondary-custom" href="tel:02191093492">
+              <a class="btn-secondary-custom" href="@telHref">
                 <span class="ui-icon btn-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
                   </svg>
                 </span>
-                <span class="phone-ltr">۰۲۱-۹۱۰۹۳۴۹۲</span>
+                <span class="phone-ltr">@phoneDisplay</span>
               </a>
             </div>
 
@@ -169,6 +199,37 @@
         </div>
 
         <div class="row g-3 g-lg-4">
+@if (hasCmsServices)
+{
+    foreach (var item in services)
+    {
+        var excerpt = string.IsNullOrWhiteSpace(item.Excerpt)
+            ? (item.CategoryName ?? "مشاهده جزئیات این خدمت تخصصی.")
+            : item.Excerpt;
+          <div class="col-6 col-lg-3 reveal">
+            <article class="service-card">
+              <span class="service-card__icon" aria-hidden="true">
+                @if (!string.IsNullOrWhiteSpace(item.CoverImageUrl))
+                {
+                  <img src="@item.CoverImageUrl" alt="" width="32" height="32" style="width:2rem;height:2rem;object-fit:cover;border-radius:50%;" />
+                }
+                else
+                {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/>
+                    <circle cx="12" cy="12" r="3.2"/>
+                  </svg>
+                }
+              </span>
+              <h3 class="service-card__title">@item.Title</h3>
+              <p class="service-card__text">@excerpt</p>
+              <a class="service-card__link" asp-controller="Services" asp-action="Details" asp-route-slug="@item.Slug">جزئیات خدمت</a>
+            </article>
+          </div>
+    }
+}
+else
+{
           <div class="col-6 col-lg-3 reveal">
             <article class="service-card">
               <span class="service-card__icon" aria-hidden="true">
@@ -243,6 +304,7 @@
               <a class="service-card__link" asp-controller="Services" asp-action="Index" asp-fragment="pancreas">جزئیات خدمت</a>
             </article>
           </div>
+}
         </div>
 
         <div class="services-note reveal">
@@ -284,6 +346,104 @@
           </p>
         </div>
 
+@if (hasCmsTeam)
+{
+        <div class="doctor-picker reveal" role="tablist" aria-label="انتخاب پزشک">
+    @{
+        var teamIndex = 0;
+    }
+    @foreach (var member in team)
+    {
+        var tabId = member.Slug;
+        var isFirst = teamIndex == 0;
+        var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackDoctorCover : member.CoverImageUrl;
+          <button
+            class="doctor-picker__btn@(isFirst ? " is-active" : null)"
+            type="button"
+            role="tab"
+            id="tab-@tabId"
+            aria-selected="@(isFirst ? "true" : "false")"
+            aria-controls="panel-@tabId"
+            data-doctor-tab="@tabId"
+            tabindex="@(isFirst ? null : "-1")"
+          >
+            <span class="doctor-picker__avatar">
+              <img src="@cover" width="72" height="72" alt="" loading="lazy">
+            </span>
+            <span class="doctor-picker__name">@member.Title</span>
+          </button>
+        teamIndex++;
+    }
+        </div>
+
+        <div class="doctor-panels reveal">
+    @{
+        teamIndex = 0;
+    }
+    @foreach (var member in team)
+    {
+        var tabId = member.Slug;
+        var isFirst = teamIndex == 0;
+        var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackDoctorCover : member.CoverImageUrl;
+        var role = string.IsNullOrWhiteSpace(member.CategoryName) ? $"عضو تیم {brand}" : member.CategoryName;
+        var titleLine = string.IsNullOrWhiteSpace(member.Excerpt) ? role : member.Excerpt;
+        var bio = string.IsNullOrWhiteSpace(member.Excerpt)
+            ? $"پروفایل تخصصی {member.Title} در {brand}."
+            : member.Excerpt;
+          <div
+            class="doctor-feature@(isFirst ? " is-active" : null)"
+            role="tabpanel"
+            id="panel-@tabId"
+            aria-labelledby="tab-@tabId"
+            data-doctor-panel="@tabId"
+            aria-hidden="@(isFirst ? "false" : "true")"
+            @(isFirst ? Html.Raw("") : Html.Raw("inert"))
+          >
+            <div class="doctor-feature__media">
+              <img
+                src="@cover"
+                width="1200"
+                height="675"
+                alt="@member.Title"
+                loading="lazy"
+              >
+            </div>
+            <div class="doctor-feature__content">
+              <span class="doctor-feature__role">@role</span>
+              <h3 class="doctor-feature__name">@member.Title</h3>
+              <p class="doctor-feature__title">@titleLine</p>
+              <p class="doctor-feature__bio">@bio</p>
+              @if (!string.IsNullOrWhiteSpace(member.AuthorDisplayName))
+              {
+              <ul class="doctor-meta">
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  @member.AuthorDisplayName
+                </li>
+              </ul>
+              }
+              <a class="btn-primary-custom" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </span>
+                مشاهده پروفایل پزشک
+              </a>
+            </div>
+          </div>
+        teamIndex++;
+    }
+        </div>
+}
+else
+{
         <div class="doctor-picker reveal" role="tablist" aria-label="انتخاب پزشک">
           <button
             class="doctor-picker__btn is-active"
@@ -347,7 +507,7 @@
               >
             </div>
             <div class="doctor-feature__content">
-              <span class="doctor-feature__role">مدیر نووا کلینیک</span>
+              <span class="doctor-feature__role">مدیر @brand</span>
               <h3 class="doctor-feature__name">دکتر کاوه همدانی</h3>
               <p class="doctor-feature__title">متخصص جراحی عمومی | فلوشیپ جراحی غدد درون‌ریز</p>
               <p class="doctor-feature__bio">
@@ -456,6 +616,7 @@
             </div>
           </div>
         </div>
+}
 
         <div class="articles-footer reveal">
           <a class="btn-primary-custom" asp-controller="Teams" asp-action="Index">
@@ -702,6 +863,47 @@
         </div>
 
         <div class="articles-grid">
+@if (hasCmsPosts)
+{
+    foreach (var item in posts)
+    {
+        var local = item.PublishedAtUtc.ToLocalTime();
+        var dateAttr = local.ToString("yyyy-MM-dd");
+        var dateLabel = local.ToString("d MMMM yyyy", fa);
+        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? fallbackPostCover : item.CoverImageUrl;
+        var excerpt = string.IsNullOrWhiteSpace(item.Excerpt) ? "برای ادامه مطلب وارد شوید." : item.Excerpt;
+          <a class="article-item reveal" asp-controller="Blog" asp-action="Details" asp-route-slug="@item.Slug">
+            <span class="article-item__media">
+              <img
+                src="@cover"
+                width="800"
+                height="500"
+                alt="@item.Title"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-item__body">
+              <span class="article-item__head">
+                <span class="article-item__meta">
+                  <span class="ui-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="16" rx="2"/>
+                      <path d="M16 3v4M8 3v4M3 11h18"/>
+                    </svg>
+                  </span>
+                  <time datetime="@dateAttr">@dateLabel</time>
+                </span>
+              </span>
+              <h3 class="article-item__title">@item.Title</h3>
+              <p class="article-item__excerpt">@excerpt</p>
+              <span class="article-item__more">ادامه مطلب</span>
+            </span>
+          </a>
+    }
+}
+else
+{
           <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
             <span class="article-item__media">
               <img
@@ -786,6 +988,7 @@
               <span class="article-item__more">ادامه مطلب</span>
             </span>
           </a>
+}
         </div>
 
         <div class="articles-footer reveal">
@@ -894,18 +1097,18 @@
               <p class="section-kicker section-kicker--light">ارتباط</p>
               <h2 class="section-heading" id="cta-heading">مشاوره تخصصی رایگان</h2>
               <p class="section-lead">
-                برای رزرو وقت یا دریافت مشاوره با دکتر کاوه همدانی، فلوشیپ جراحی غدد درون‌ریز، همین حالا تماس بگیرید.
+                برای رزرو وقت یا دریافت مشاوره تخصصی در @brand، همین حالا تماس بگیرید.
               </p>
               <div class="hero-actions" style="margin-top: 1rem; margin-bottom: 0;">
-                <a class="btn-light-custom" href="tel:02191093492">
+                <a class="btn-light-custom" href="@telHref">
                   <span class="ui-icon btn-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
                     </svg>
                   </span>
-                  <span class="phone-ltr">۰۲۱-۹۱۰۹۳۴۹۲</span>
+                  <span class="phone-ltr">@phoneDisplay</span>
                 </a>
-                <a class="btn-outline-custom" href="mailto:info@@nova-clinic.org">
+                <a class="btn-outline-custom" href="mailto:@contactEmail">
                   <span class="ui-icon btn-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                       <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -939,7 +1142,7 @@
                   </span>
                   <div class="cta-contact__body">
                     <strong>نشانی کلینیک</strong>
-                    شریعتی، بالاتر از خواجه عبدالله، نبش کوچه ذکایی (جنب آرش موتورز)، ساختمان کسری، طبقه ۴، واحد ۱۵
+                    @address
                   </div>
                 </div>
                 <div class="cta-contact__item">
@@ -951,7 +1154,7 @@
                   </span>
                   <div class="cta-contact__body">
                     <strong>ایمیل</strong>
-                    <a href="mailto:info@@nova-clinic.org">info@@nova-clinic.org</a>
+                    <a href="mailto:@contactEmail">@contactEmail</a>
                   </div>
                 </div>
               </div>

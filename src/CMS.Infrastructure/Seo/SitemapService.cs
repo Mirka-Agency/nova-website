@@ -124,9 +124,12 @@ public sealed class StaticPagesSitemapUrlProvider : ISitemapUrlProvider
 
     public Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
+        var today = DateTime.UtcNow.Date;
         IReadOnlyList<SitemapUrlEntry> entries =
         [
-            new("/", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 1.0)
+            new("/", today, SitemapChangeFrequency.Daily, 1.0),
+            new("/about", today, SitemapChangeFrequency.Monthly, 0.8),
+            new("/contact", today, SitemapChangeFrequency.Monthly, 0.8)
         ];
         return Task.FromResult(entries);
     }
