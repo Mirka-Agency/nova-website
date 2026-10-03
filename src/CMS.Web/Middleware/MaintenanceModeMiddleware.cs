@@ -24,6 +24,8 @@ public sealed class MaintenanceModeMiddleware
             || path.StartsWithSegments("/css")
             || path.StartsWithSegments("/js")
             || path.StartsWithSegments("/lib")
+            || path.StartsWithSegments("/site")
+            || path.StartsWithSegments("/template")
             || path.StartsWithSegments("/admin")
             || path.StartsWithSegments("/favicon"))
         {

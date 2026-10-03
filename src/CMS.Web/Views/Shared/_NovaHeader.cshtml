@@ -1,0 +1,221 @@
+@using CMS.Application.Common.Features
+@using CMS.Application.Settings
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
+@inject ISiteSettingsService SiteSettings
+@{
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var logoUrl = string.IsNullOrWhiteSpace(settings.LogoUrl)
+        ? Url.Content("~/template/assets/images/common/logo-nova-transparent.png")
+        : settings.LogoUrl;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var nav = ViewData["NavActive"] as string;
+    if (string.IsNullOrWhiteSpace(nav))
+    {
+        var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+        var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        nav = (controller, action) switch
+        {
+            ("Home", "Index") => "home",
+            ("Home", "About") => "about",
+            ("Home", "Contact") => "contact",
+            ("Services", _) => "services",
+            ("Videos", _) => "videos",
+            ("News", _) => "articles",
+            ("Blog", _) => "blog",
+            ("Teams", _) => "doctors",
+            _ => ""
+        };
+    }
+    bool IsActive(string key) => string.Equals(nav, key, StringComparison.OrdinalIgnoreCase);
+    var servicesOn = await FeatureManager.IsEnabledAsync(FeatureNames.Services);
+    var videoOn = await FeatureManager.IsEnabledAsync(FeatureNames.Video);
+    var newsOn = await FeatureManager.IsEnabledAsync(FeatureNames.News);
+    var blogOn = await FeatureManager.IsEnabledAsync(FeatureNames.Blog);
+    var teamOn = await FeatureManager.IsEnabledAsync(FeatureNames.Team);
+    var aboutGroupActive = IsActive("about") || IsActive("contact") || IsActive("doctors") || IsActive("events");
+}
+<header class="site-header">
+  <div class="container">
+    <div class="site-header__shell">
+      <a class="site-logo" asp-controller="Home" asp-action="Index" aria-label="@brand — صفحه اصلی">
+        <img src="@logoUrl" width="148" height="66" alt="@brand">
+      </a>
+
+      <nav class="desktop-nav" aria-label="منوی اصلی">
+        <ul class="main-nav">
+          <li>
+            <a class="@(IsActive("home") ? "is-active" : null)" asp-controller="Home" asp-action="Index" aria-current="@(IsActive("home") ? "page" : null)">صفحه اصلی</a>
+          </li>
+          @if (servicesOn)
+          {
+            <li class="has-dropdown">
+              <a class="@(IsActive("services") ? "is-active" : null)" asp-controller="Services" asp-action="Index" aria-current="@(IsActive("services") ? "page" : null)" aria-haspopup="true" aria-expanded="false">
+                خدمات ما
+                <span class="nav-caret" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </a>
+              <ul class="nav-dropdown" aria-label="زیرمنوی خدمات">
+                <li><a asp-controller="Services" asp-action="Index">جراحی تیروئید</a></li>
+                <li><a asp-controller="Services" asp-action="Index" asp-fragment="parathyroid">جراحی پاراتیروئید</a></li>
+                <li><a asp-controller="Services" asp-action="Index" asp-fragment="adrenal">جراحی فوق کلیه</a></li>
+                <li><a asp-controller="Services" asp-action="Index" asp-fragment="pancreas">جراحی پانکراس</a></li>
+              </ul>
+            </li>
+          }
+          @if (videoOn)
+          {
+            <li>
+              <a class="@(IsActive("videos") ? "is-active" : null)" asp-controller="Videos" asp-action="Index" aria-current="@(IsActive("videos") ? "page" : null)">ویدئو ها</a>
+            </li>
+          }
+          @if (newsOn)
+          {
+            <li>
+              <a class="@(IsActive("articles") ? "is-active" : null)" asp-controller="News" asp-action="Index" aria-current="@(IsActive("articles") ? "page" : null)">مقالات تخصصی</a>
+            </li>
+          }
+          @if (blogOn)
+          {
+            <li>
+              <a class="@(IsActive("blog") ? "is-active" : null)" asp-controller="Blog" asp-action="Index" aria-current="@(IsActive("blog") ? "page" : null)">وبلاگ</a>
+            </li>
+          }
+          <li class="has-dropdown">
+            <a class="@(aboutGroupActive ? "is-active" : null)" asp-controller="Home" asp-action="About" aria-current="@(IsActive("about") ? "page" : null)" aria-haspopup="true" aria-expanded="false">
+              درباره ما
+              <span class="nav-caret" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </a>
+            <ul class="nav-dropdown" aria-label="زیرمنوی درباره ما">
+              <li><a asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
+              @if (teamOn)
+              {
+                <li><a asp-controller="Teams" asp-action="Index">متخصصان کلینیک</a></li>
+              }
+              @if (newsOn)
+              {
+                <li><a asp-controller="News" asp-action="Index">رویدادها</a></li>
+              }
+            </ul>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a class="header-phone" href="@telHref">
+          <span class="header-phone__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          <span class="header-phone__text">
+            <span class="header-phone__label">مشاوره</span>
+            <span class="header-phone__number phone-ltr">@phoneDisplay</span>
+          </span>
+        </a>
+        <a class="header-phone header-phone--mobile" href="@telHref">
+          <span class="header-phone__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          مشاوره
+        </a>
+        <button class="header-cta" type="button" data-booking-open>
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          رزرو نوبت
+        </button>
+        <button class="nav-toggle" type="button" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-nav">
+          <span class="nav-toggle__line" aria-hidden="true"></span>
+          <span class="nav-toggle__line" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" aria-label="منوی موبایل" aria-hidden="true">
+    <div class="container">
+      <div class="mobile-nav__panel">
+        <ul>
+          <li>
+            <a class="@(IsActive("home") ? "is-active" : null)" asp-controller="Home" asp-action="Index" aria-current="@(IsActive("home") ? "page" : null)">صفحه اصلی</a>
+          </li>
+          @if (servicesOn)
+          {
+            <li class="has-dropdown">
+              <div class="mobile-nav__row">
+                <a asp-controller="Services" asp-action="Index">خدمات ما</a>
+                <button class="mobile-nav__submenu-toggle" type="button" aria-expanded="false" aria-label="باز کردن زیرمنوی خدمات">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
+              <ul class="mobile-nav__submenu">
+                <li><a asp-controller="Services" asp-action="Index">جراحی تیروئید</a></li>
+                <li><a asp-controller="Services" asp-action="Index" asp-fragment="parathyroid">جراحی پاراتیروئید</a></li>
+                <li><a asp-controller="Services" asp-action="Index" asp-fragment="adrenal">جراحی فوق کلیه</a></li>
+                <li><a asp-controller="Services" asp-action="Index" asp-fragment="pancreas">جراحی پانکراس</a></li>
+              </ul>
+            </li>
+          }
+          @if (videoOn)
+          {
+            <li><a asp-controller="Videos" asp-action="Index">ویدئو ها</a></li>
+          }
+          @if (newsOn)
+          {
+            <li><a asp-controller="News" asp-action="Index">مقالات تخصصی</a></li>
+          }
+          @if (blogOn)
+          {
+            <li><a asp-controller="Blog" asp-action="Index">وبلاگ</a></li>
+          }
+          <li class="has-dropdown">
+            <div class="mobile-nav__row">
+              <a asp-controller="Home" asp-action="About">درباره ما</a>
+              <button class="mobile-nav__submenu-toggle" type="button" aria-expanded="false" aria-label="باز کردن زیرمنوی درباره ما">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+            </div>
+            <ul class="mobile-nav__submenu">
+              <li><a asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
+              @if (teamOn)
+              {
+                <li><a asp-controller="Teams" asp-action="Index">متخصصان کلینیک</a></li>
+              }
+              @if (newsOn)
+              {
+                <li><a asp-controller="News" asp-action="Index">رویدادها</a></li>
+              }
+            </ul>
+          </li>
+        </ul>
+        <div class="mobile-nav__meta">
+          <a class="mobile-nav__meta-row" href="@telHref">
+            <span class="ui-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <span class="phone-ltr">@phoneDisplay</span>
+          </a>
+          <span class="mobile-nav__meta-row">
+            <span class="ui-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </span>
+            شنبه تا پنجشنبه · ۹ تا ۲۱
+          </span>
+        </div>
+        <button class="header-cta header-cta--full" type="button" data-booking-open>
+          <span class="ui-icon btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          رزرو نوبت مشاوره
+        </button>
+      </div>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,144 @@
+@* Nova template footer *@
+@using CMS.Application.Settings
+@inject ISiteSettingsService SiteSettings
+@{
+    var settings = await SiteSettings.GetAsync();
+    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
+    var logoUrl = string.IsNullOrWhiteSpace(settings.LogoUrl)
+        ? Url.Content("~/template/assets/images/common/logo-nova-transparent.png")
+        : settings.LogoUrl;
+    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
+    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
+    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
+    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
+    var telHref = "tel:" + phoneDigits;
+    var email = string.IsNullOrWhiteSpace(settings.ContactEmail) ? "info@nova-clinic.org" : settings.ContactEmail;
+    var address = string.IsNullOrWhiteSpace(settings.Address)
+        ? "شریعتی، نبش کوچه ذکایی، ساختمان کسری، طبقه ۴ واحد ۱۵"
+        : settings.Address;
+    var footerText = string.IsNullOrWhiteSpace(settings.FooterText)
+        ? "اولین کلینیک فلوشیپ جراحی غدد درون‌ریز ایران، تحت نظارت دکتر کاوه همدانی."
+        : settings.FooterText;
+    var year = DateTime.Now.Year;
+}
+<footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a asp-controller="Home" asp-action="Index" class="footer-brand__logo" aria-label="@brand">
+            <img src="@logoUrl" width="140" height="63" alt="@brand">
+          </a>
+          <p class="footer-brand__text">
+            @footerText
+          </p>
+          <a class="footer-cta" href="@telHref">
+            <span class="ui-icon btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </span>
+            رزرو مشاوره · <span class="phone-ltr">@phoneDisplay</span>
+          </a>
+        </div>
+
+        <nav class="footer-nav" aria-label="لینک‌های فوتر">
+          <div class="footer-col">
+            <h3 class="footer-heading">خدمات</h3>
+            <ul class="footer-links">
+              <li><a asp-controller="Services" asp-action="Index">جراحی تیروئید</a></li>
+              <li><a asp-controller="Services" asp-action="Index" asp-fragment="parathyroid">جراحی پاراتیروئید</a></li>
+              <li><a asp-controller="Services" asp-action="Index" asp-fragment="adrenal">جراحی فوق کلیه</a></li>
+              <li><a asp-controller="Services" asp-action="Index" asp-fragment="pancreas">جراحی پانکراس</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h3 class="footer-heading">دسترسی</h3>
+            <ul class="footer-links">
+              <li><a asp-controller="Teams" asp-action="Index">متخصصان</a></li>
+              <li><a href="#journey">مسیر درمان</a></li>
+              <li><a asp-controller="News" asp-action="Index">مقالات</a></li>
+              <li><a href="#faq">سوالات متداول</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col--contact">
+            <h3 class="footer-heading">ارتباط</h3>
+            <ul class="footer-contact">
+              <li>
+                <span class="footer-contact__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                </span>
+                <span class="footer-contact__body">
+                  <span class="footer-contact__label">تلفن</span>
+                  <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
+                </span>
+              </li>
+              <li>
+                <span class="footer-contact__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m22 7-10 7L2 7"/>
+                  </svg>
+                </span>
+                <span class="footer-contact__body">
+                  <span class="footer-contact__label">ایمیل</span>
+                  <a href="mailto:@email">@email</a>
+                </span>
+              </li>
+              <li>
+                <span class="footer-contact__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </span>
+                <span class="footer-contact__body">
+                  <span class="footer-contact__label">آدرس</span>
+                  <span>@address</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© @year @brand</p>
+        <div class="footer-social">
+          <a href="@(settings.InstagramUrl ?? "https://www.instagram.com/dr_kaveh_hamedani")" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+          <a href="@(settings.LinkedInUrl ?? "https://www.linkedin.com/company/nova-clinic-iran")" target="_blank" rel="noopener noreferrer" aria-label="لینکدین">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+          </a>
+          <a href="@(settings.YouTubeUrl ?? "https://www.youtube.com/@novaclinic_org")" target="_blank" rel="noopener noreferrer" aria-label="یوتیوب">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22.5 7.5a3 3 0 0 0-2.1-2.1C18.6 5 12 5 12 5s-6.6 0-8.4.4A3 3 0 0 0 1.5 7.5 31 31 0 0 0 1 12a31 31 0 0 0 .5 4.5 3 3 0 0 0 2.1 2.1C5.4 19 12 19 12 19s6.6 0 8.4-.4a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23 12a31 31 0 0 0-.5-4.5z"/>
+              <path d="m10 15 5-3-5-3v6z"/>
+            </svg>
+          </a>
+          <a href="@(settings.AparatUrl ?? "https://www.aparat.com/")" target="_blank" rel="noopener noreferrer" aria-label="آپارات">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="14" rx="3"/>
+              <path d="M8 10.5v3M12 9v6M16 10.5v3"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <p class="footer-credit">
+        <a href="https://mirka.agency/" target="_blank" rel="noopener noreferrer">درخشان با میرکا 💎</a>
+      </p>
+    </div>
+  </footer>

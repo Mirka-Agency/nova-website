@@ -19,6 +19,20 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpGet("about")]
+    public IActionResult About()
+    {
+        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.SiteSettings();
+        return View();
+    }
+
+    [HttpGet("contact")]
+    public IActionResult Contact()
+    {
+        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.SiteSettings();
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error(int? code = null, string? message = null)
     {

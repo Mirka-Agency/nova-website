@@ -6,7 +6,6 @@
 @{
     var settings = await SiteSettings.GetAsync();
     var brand = settings.SiteName;
-    var footer = string.IsNullOrWhiteSpace(settings.FooterText) ? settings.SiteName : settings.FooterText;
     var pageTitle = ViewData["Title"] as string;
     var pageMetaTitle = ViewData["MetaTitle"] as string;
     var pageMetaDescription = ViewData["MetaDescription"] as string;
@@ -25,14 +24,9 @@
     var twitterSite = TwitterHandle(settings.TwitterUrl);
     var robots = ViewData["Robots"] as string;
     var schemaJson = ViewData["SchemaJson"] as string;
-    var hasSocial = !string.IsNullOrWhiteSpace(settings.InstagramUrl)
-        || !string.IsNullOrWhiteSpace(settings.TelegramUrl)
-        || !string.IsNullOrWhiteSpace(settings.TwitterUrl)
-        || !string.IsNullOrWhiteSpace(settings.LinkedInUrl)
-        || !string.IsNullOrWhiteSpace(settings.AparatUrl)
-        || !string.IsNullOrWhiteSpace(settings.FacebookUrl)
-        || !string.IsNullOrWhiteSpace(settings.YouTubeUrl)
-        || !string.IsNullOrWhiteSpace(settings.WhatsAppUrl);
+    var favicon = string.IsNullOrWhiteSpace(settings.FaviconUrl)
+        ? Url.Content("~/template/assets/images/common/favicon.png")
+        : settings.FaviconUrl;
 
     static string? FirstNonEmpty(params string?[] values)
     {
@@ -111,10 +105,8 @@
     {
         <meta name="twitter:site" content="@twitterSite" />
     }
-    @if (!string.IsNullOrWhiteSpace(settings.FaviconUrl))
-    {
-        <link rel="icon" href="@settings.FaviconUrl" />
-    }
+    <link rel="icon" href="@favicon" type="image/png" />
+    <link rel="apple-touch-icon" href="@favicon" />
     @if (!string.IsNullOrWhiteSpace(schemaJson))
     {
         <script type="application/ld+json">@Html.Raw(schemaJson)</script>
@@ -123,7 +115,13 @@
     {
         @await Component.InvokeAsync("SeoJsonLd")
     }
-    <link rel="stylesheet" href="~/site/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/template/assets/vendor/bootstrap/bootstrap.rtl.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/template/assets/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/template/assets/css/responsive.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/site/css/admin-bar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/site/css/nova-bridge.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/site/css/site-modules.css" asp-append-version="true" />
     @if (!string.IsNullOrWhiteSpace(settings.HeadScripts))
     {
         @Html.Raw(settings.HeadScripts)
@@ -135,120 +133,22 @@
     {
         @Html.Raw(settings.BodyOpenScripts)
     }
-    <header class="site-header">
-        <div class="site-header-inner">
-            <div class="site-brand-block">
-                <a class="site-brand" asp-controller="Home" asp-action="Index">
-                    @if (!string.IsNullOrWhiteSpace(settings.LogoUrl))
-                    {
-                        <img class="site-logo" src="@settings.LogoUrl" alt="@brand" />
-                    }
-                    else
-                    {
-                        @brand
-                    }
-                </a>
-                @if (!string.IsNullOrWhiteSpace(settings.Tagline))
-                {
-                    <p class="site-tagline">@settings.Tagline</p>
-                }
-            </div>
-            <nav class="site-nav" aria-label="منوی اصلی">
-                <a asp-controller="Home" asp-action="Index">خانه</a>
-                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Blog))
-                {
-                    <a asp-controller="Blog" asp-action="Index">وبلاگ</a>
-                }
-                @if (await FeatureManager.IsEnabledAsync(FeatureNames.News))
-                {
-                    <a asp-controller="News" asp-action="Index">رویدادها و اخبار</a>
-                }
-                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Services))
-                {
-                    <a asp-controller="Services" asp-action="Index">خدمات</a>
-                }
-                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Video))
-                {
-                    <a asp-controller="Videos" asp-action="Index">ویدیوها</a>
-                }
-                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Team))
-                {
-                    <a asp-controller="Teams" asp-action="Index">تیم</a>
-                }
-                @if (await FeatureManager.IsEnabledAsync(FeatureNames.Shop))
-                {
-                    <a asp-controller="Shop" asp-action="Index">فروشگاه</a>
-                    @await Component.InvokeAsync("CartNav")
-                }
-                @await Component.InvokeAsync("AccountNav")
-            </nav>
-        </div>
-    </header>
-    <main class="site-main">
+
+    <partial name="_NovaHeader" />
+    <partial name="_NovaNavBackdrop" />
+    <partial name="_NovaBookingModal" />
+
+    <main>
         @RenderBody()
     </main>
-    <footer class="site-footer">
-        <div class="site-footer-inner">
-            <div>© @DateTime.Now.Year @footer</div>
-            @if (!string.IsNullOrWhiteSpace(settings.ContactEmail)
-                 || !string.IsNullOrWhiteSpace(settings.ContactPhone)
-                 || !string.IsNullOrWhiteSpace(settings.Address))
-            {
-                <div class="site-footer-contact">
-                    @if (!string.IsNullOrWhiteSpace(settings.Address))
-                    {
-                        <span>@settings.Address</span>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.ContactEmail))
-                    {
-                        <a href="mailto:@settings.ContactEmail">@settings.ContactEmail</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.ContactPhone))
-                    {
-                        <span>@settings.ContactPhone</span>
-                    }
-                </div>
-            }
-            @if (hasSocial)
-            {
-                <div class="site-footer-social">
-                    @if (!string.IsNullOrWhiteSpace(settings.InstagramUrl))
-                    {
-                        <a href="@settings.InstagramUrl" rel="noopener noreferrer" target="_blank">اینستاگرام</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.TelegramUrl))
-                    {
-                        <a href="@settings.TelegramUrl" rel="noopener noreferrer" target="_blank">تلگرام</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.TwitterUrl))
-                    {
-                        <a href="@settings.TwitterUrl" rel="noopener noreferrer" target="_blank">اکس</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.LinkedInUrl))
-                    {
-                        <a href="@settings.LinkedInUrl" rel="noopener noreferrer" target="_blank">لینکدین</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.AparatUrl))
-                    {
-                        <a href="@settings.AparatUrl" rel="noopener noreferrer" target="_blank">آپارات</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.FacebookUrl))
-                    {
-                        <a href="@settings.FacebookUrl" rel="noopener noreferrer" target="_blank">فیسبوک</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.YouTubeUrl))
-                    {
-                        <a href="@settings.YouTubeUrl" rel="noopener noreferrer" target="_blank">یوتیوب</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(settings.WhatsAppUrl))
-                    {
-                        <a href="@settings.WhatsAppUrl" rel="noopener noreferrer" target="_blank">واتس‌اپ</a>
-                    }
-                </div>
-            }
-        </div>
-    </footer>
+
+    <partial name="_NovaFooter" />
+    <partial name="_NovaFloatCall" />
+
     @await Component.InvokeAsync("PopupHost")
+    <script src="~/template/assets/js/main.js" asp-append-version="true"></script>
+    <script src="~/site/js/admin-bar.js" asp-append-version="true"></script>
+    <script src="~/site/js/popup.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     @if (!string.IsNullOrWhiteSpace(settings.BodyCloseScripts))
     {

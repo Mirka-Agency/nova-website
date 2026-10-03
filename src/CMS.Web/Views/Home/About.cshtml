@@ -1,0 +1,366 @@
+@{
+    ViewData["Title"] = "درباره ما";
+    ViewData["NavActive"] = "about";
+}
+<section class="about-hero" aria-labelledby="page-hero-title">
+      <div class="container about-hero__grid">
+        <div class="about-hero__copy">
+          <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+            <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+            <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+            <span aria-current="page">درباره ما</span>
+          </nav>
+          <p class="about-hero__brand reveal">نووا کلینیک</p>
+          <h1 class="about-hero__title reveal" id="page-hero-title">
+            اولین کلینیک فلوشیپ جراحی غدد درون‌ریز ایران
+          </h1>
+          <p class="about-hero__lead reveal">
+            درمان تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس؛ با رویکرد بیمارمحور و پیگیری پس از درمان.
+          </p>
+          <div class="about-hero__actions reveal">
+            <button class="btn-primary-custom" type="button" data-booking-open>
+              <span class="ui-icon btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+              </span>
+              رزرو مشاوره
+            </button>
+            <a class="about-hero__text-link" href="#about-story">
+              ادامه مطلب
+              <span aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 12H5M12 5l-7 7 7 7"/>
+                </svg>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <div class="about-hero__visual reveal">
+          <figure class="about-hero__frame">
+            <img
+              src="~/template/assets/images/home/clinic-care.webp"
+              width="900"
+              height="1100"
+              alt="فضای تخصصی نووا کلینیک"
+              loading="eager"
+            >
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-story" id="about-story" aria-labelledby="about-story-heading">
+      <div class="container about-story__grid">
+        <div class="about-story__copy reveal">
+          <p class="section-kicker">معرفی</p>
+          <h2 class="about-story__heading" id="about-story-heading">درباره کلینیک</h2>
+          <p class="about-story__lead">
+            نووا کلینیک با تیمی از پزشکان متخصص، خدمات تشخیصی و درمانی نوین را در حوزه جراحی غدد ارائه می‌دهد.
+          </p>
+          <p class="about-story__text">
+            این مرکز با بهره‌گیری از تجهیزات پیشرفته، در جراحی تیروئید، پاراتیروئید، آدرنال و پانکراس فعالیت می‌کند و بر توضیح شفاف روند درمان و پیگیری پس از آن تأکید دارد.
+          </p>
+
+          <ul class="about-story__focus" aria-label="حوزه‌های تمرکز">
+            <li>
+              <a class="about-story__focus-item" asp-controller="Services" asp-action="Index">
+                <span class="about-story__focus-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" fill-opacity=".12" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
+                    <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+                    <path d="M14.1 11.6c.5 1.6 3.3 1.6 3.8 0M14.5 15.3h3"/>
+                  </svg>
+                </span>
+                <span class="about-story__focus-label">تیروئید</span>
+              </a>
+            </li>
+            <li>
+              <a class="about-story__focus-item" asp-controller="Services" asp-action="Index" asp-fragment="parathyroid">
+                <span class="about-story__focus-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" fill-opacity=".1" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
+                    <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+                    <g fill="currentColor" stroke="none">
+                      <circle cx="9.3" cy="10.8" r="1.45"/>
+                      <circle cx="10.1" cy="17.6" r="1.45"/>
+                      <circle cx="22.7" cy="10.8" r="1.45"/>
+                      <circle cx="21.9" cy="17.6" r="1.45"/>
+                    </g>
+                  </svg>
+                </span>
+                <span class="about-story__focus-label">پاراتیروئید</span>
+              </a>
+            </li>
+            <li>
+              <a class="about-story__focus-item" asp-controller="Services" asp-action="Index" asp-fragment="adrenal">
+                <span class="about-story__focus-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" fill-opacity=".12" d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+                    <path d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+                    <path d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1M26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1"/>
+                  </svg>
+                </span>
+                <span class="about-story__focus-label">فوق کلیه</span>
+              </a>
+            </li>
+            <li>
+              <a class="about-story__focus-item" asp-controller="Services" asp-action="Index" asp-fragment="pancreas">
+                <span class="about-story__focus-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" fill-opacity=".12" d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4z"/>
+                    <path d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4"/>
+                    <path d="M7.9 17.8c2.3-2.2 5.2-2.8 8.4-2.1 2.7.6 5.3.2 7.5-1.4"/>
+                    <circle cx="24.5" cy="13.3" r=".8" fill="currentColor" stroke="none"/>
+                  </svg>
+                </span>
+                <span class="about-story__focus-label">پانکراس</span>
+              </a>
+            </li>
+          </ul>
+
+          <a class="about-story__link" asp-controller="Services" asp-action="Index">
+            مشاهده خدمات
+            <span aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+              </svg>
+            </span>
+          </a>
+        </div>
+
+        <div class="about-story__visual reveal" aria-hidden="true">
+          <svg class="about-story__art" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="210" cy="210" r="168" stroke="currentColor" stroke-opacity=".08" stroke-width="1.5"/>
+            <circle cx="210" cy="210" r="128" stroke="currentColor" stroke-opacity=".12" stroke-width="1.5"/>
+            <circle cx="210" cy="210" r="86" fill="currentColor" fill-opacity=".05"/>
+            <path
+              fill="currentColor"
+              fill-opacity=".12"
+              d="M186 152c-18-34-44-54-66-43-24 12-17 60-3 95 12 34 38 63 60 49 17-10 6-43 28-43s11 33 28 43c22 14 48-15 60-49 14-35 21-83-3-95-22-11-48 9-66 43z"
+            />
+            <path
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M186 152c-18-34-44-54-66-43-24 12-17 60-3 95 12 34 38 63 60 49 17-10 6-43 28-43s11 33 28 43c22 14 48-15 60-49 14-35 21-83-3-95-22-11-48 9-66 43z"
+            />
+            <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M186 152c4 14 28 14 32 0M190 184h24"/>
+            <circle cx="128" cy="118" r="5" fill="currentColor" fill-opacity=".35"/>
+            <circle cx="292" cy="118" r="5" fill="currentColor" fill-opacity=".35"/>
+            <circle cx="108" cy="248" r="4" fill="currentColor" fill-opacity=".25"/>
+            <circle cx="312" cy="248" r="4" fill="currentColor" fill-opacity=".25"/>
+            <path stroke="currentColor" stroke-opacity=".2" stroke-width="1.4" stroke-linecap="round" d="M128 118v38M292 118v38M108 248h34M312 248h-34"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-team" id="about-team" aria-labelledby="about-team-heading">
+      <div class="container">
+        <header class="about-team__head reveal">
+          <div class="about-team__intro">
+            <p class="section-kicker">متخصصان</p>
+            <h2 class="about-team__heading" id="about-team-heading">تیم درمان</h2>
+            <p class="about-team__lead">پزشکان اصلی نووا؛ مسیر درمان را با تخصص و همراهی شفاف پیش می‌برند.</p>
+          </div>
+          <a class="about-team__all" asp-controller="Teams" asp-action="Index">
+            آرشیو متخصصان
+            <span aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            </span>
+          </a>
+        </header>
+
+        <div class="about-team__grid">
+          <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
+            <div class="about-team__photo">
+              <img src="~/template/assets/images/doctors/dr-hamedani-portrait.webp" width="640" height="800" alt="دکتر کاوه همدانی" loading="lazy">
+            </div>
+            <div class="about-team__info">
+              <span class="about-team__role">مدیر نووا کلینیک</span>
+              <h3 class="about-team__name">دکتر کاوه همدانی</h3>
+              <p class="about-team__title">متخصص جراحی عمومی | فلوشیپ جراحی غدد درون‌ریز</p>
+              <span class="about-team__cta">مشاهده پروفایل</span>
+            </div>
+          </a>
+          <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
+            <div class="about-team__photo">
+              <img src="~/template/assets/images/doctors/dr-takyar.jpeg" width="640" height="800" alt="دکتر میرعلیرضا تکیار" loading="lazy">
+            </div>
+            <div class="about-team__info">
+              <span class="about-team__role">پزشک‌پژوهشگر</span>
+              <h3 class="about-team__name">دکتر میرعلیرضا تکیار</h3>
+              <p class="about-team__title">متخصص بیماری‌های داخلی | پژوهشگر حوزه غدد درون‌ریز و متابولیسم</p>
+              <span class="about-team__cta">مشاهده پروفایل</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-why" id="about-why" aria-labelledby="about-why-heading">
+      <div class="container">
+        <header class="about-why__head reveal">
+          <p class="section-kicker">تمایز</p>
+          <h2 class="about-why__heading" id="about-why-heading">چرا نووا</h2>
+          <p class="about-why__lead">از تشخیص تا پیگیری؛ مسیر مراجعه شفاف و بیمارمحور.</p>
+        </header>
+
+        <ol class="about-why__list">
+          <li class="about-why__item reveal">
+            <span class="about-why__num" aria-hidden="true">۰۱</span>
+            <div class="about-why__body">
+              <h3 class="about-why__title">تشخیص و درمان پیشرفته</h3>
+              <p>ارزیابی دقیق یافته‌ها و انتخاب مسیر درمانی متناسب با شرایط هر بیمار.</p>
+            </div>
+          </li>
+          <li class="about-why__item reveal">
+            <span class="about-why__num" aria-hidden="true">۰۲</span>
+            <div class="about-why__body">
+              <h3 class="about-why__title">درمان‌های تخصصی</h3>
+              <p>تمرکز بر جراحی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین.</p>
+            </div>
+          </li>
+          <li class="about-why__item reveal">
+            <span class="about-why__num" aria-hidden="true">۰۳</span>
+            <div class="about-why__body">
+              <h3 class="about-why__title">متخصصان باتجربه</h3>
+              <p>تیمی متمرکز بر جراحی غدد و بیماری‌های مرتبط با غدد درون‌ریز.</p>
+            </div>
+          </li>
+          <li class="about-why__item reveal">
+            <span class="about-why__num" aria-hidden="true">۰۴</span>
+            <div class="about-why__body">
+              <h3 class="about-why__title">مراقبت پس از درمان</h3>
+              <p>پیگیری تخصصی و همراهی بیمار پس از پایان مسیر درمان.</p>
+            </div>
+          </li>
+          <li class="about-why__item reveal">
+            <span class="about-why__num" aria-hidden="true">۰۵</span>
+            <div class="about-why__body">
+              <h3 class="about-why__title">ارتباط شفاف</h3>
+              <p>توضیح روند درمان و همراهی بیمار در تصمیم‌گیری‌های مرتبط با مسیر درمان.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="about-honors" id="about-honors" aria-labelledby="about-honors-heading">
+      <div class="container">
+        <div class="about-honors__shell" data-honors-slider>
+          <div class="about-honors__top reveal">
+            <div class="about-honors__intro">
+              <p class="section-kicker">اعتبار و مدارک</p>
+              <h2 class="section-heading" id="about-honors-heading">افتخارات کلینیک</h2>
+              <p class="about-honors__lead">
+                گواهینامه‌ها و مدارک تخصصی تیم نووا. برای بزرگ‌نمایی روی هر مورد کلیک کنید.
+              </p>
+            </div>
+            <div class="about-honors__controls">
+              <button class="about-honors__button" type="button" data-honors-prev aria-label="گواهینامه قبلی">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+              <span class="about-honors__counter" data-honors-counter aria-live="polite">۱ از ۵</span>
+              <button class="about-honors__button" type="button" data-honors-next aria-label="گواهینامه بعدی">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="about-honors__viewport reveal" tabindex="0" aria-label="گالری افتخارات کلینیک؛ با دکمه‌ها یا کشیدن افقی جابه‌جا شوید">
+            <div class="about-honors__track" data-event-gallery>
+              <button class="about-honors__item" type="button" data-gallery-index="0" aria-label="نمایش مجوز رسمی DHA">
+                <span class="about-honors__media">
+                  <img src="~/template/assets/images/about/cert-dha.webp" width="1170" height="827" alt="مجوز رسمی DHA" loading="lazy" decoding="async">
+                  <span class="about-honors__zoom" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
+                  </span>
+                </span>
+                <span class="about-honors__caption">مجوز رسمی DHA</span>
+              </button>
+              <button class="about-honors__item" type="button" data-gallery-index="1" aria-label="نمایش دانشنامه تخصص جراحی">
+                <span class="about-honors__media">
+                  <img src="~/template/assets/images/about/cert-specialty.webp" width="1300" height="919" alt="دانشنامه تخصص جراحی — دکتر کاوه همدانی" loading="lazy" decoding="async">
+                  <span class="about-honors__zoom" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
+                  </span>
+                </span>
+                <span class="about-honors__caption">دانشنامه تخصص جراحی</span>
+              </button>
+              <button class="about-honors__item" type="button" data-gallery-index="2" aria-label="نمایش گواهینامه فلوشیپ جراحی غدد">
+                <span class="about-honors__media">
+                  <img src="~/template/assets/images/about/cert-fellowship.webp" width="1700" height="1201" alt="گواهینامه فلوشیپ جراحی غدد درون‌ریز — دکتر کاوه همدانی" loading="lazy" decoding="async">
+                  <span class="about-honors__zoom" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
+                  </span>
+                </span>
+                <span class="about-honors__caption">فلوشیپ جراحی غدد درون‌ریز</span>
+              </button>
+              <button class="about-honors__item" type="button" data-gallery-index="3" aria-label="نمایش گواهینامه پسادکتری دانشگاه ییل">
+                <span class="about-honors__media">
+                  <img src="~/template/assets/images/about/cert-yale.webp" width="1755" height="1240" alt="گواهینامه پسادکتری دانشگاه ییل — دکتر میرعلیرضا تکیار" loading="lazy" decoding="async">
+                  <span class="about-honors__zoom" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
+                  </span>
+                </span>
+                <span class="about-honors__caption">پسادکتری دانشگاه ییل</span>
+              </button>
+              <button class="about-honors__item" type="button" data-gallery-index="4" aria-label="نمایش گواهینامه حرفه‌ای">
+                <span class="about-honors__media">
+                  <img src="~/template/assets/images/about/cert-license.jpeg" width="1130" height="1600" alt="گواهینامه حرفه‌ای تیم نووا کلینیک" loading="lazy" decoding="async">
+                  <span class="about-honors__zoom" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
+                  </span>
+                </span>
+                <span class="about-honors__caption">گواهینامه حرفه‌ای</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="consult-band consult-band--service" id="contact" aria-labelledby="consult-band-heading">
+      <div class="container">
+        <div class="consult-band__panel reveal">
+          <div class="consult-band__copy">
+            <p class="consult-band__kicker">نوبت مشاوره</p>
+            <h2 class="consult-band__title" id="consult-band-heading">آماده شروع مسیر درمان هستید؟</h2>
+            <p class="consult-band__lead">برای هماهنگی مشاوره تخصصی، نوبت رزرو کنید یا مستقیم تماس بگیرید.</p>
+            <ul class="consult-band__chips" aria-label="ساعات پاسخگویی">
+              <li>شنبه تا پنجشنبه</li>
+              <li>۹ تا ۲۱</li>
+            </ul>
+          </div>
+          <div class="consult-band__side">
+            <a class="consult-band__phone" href="tel:02191093492">
+              <span class="consult-band__phone-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </span>
+              <span class="consult-band__phone-text">
+                <span class="consult-band__phone-label">تماس مستقیم</span>
+                <span class="consult-band__phone-number phone-ltr">۰۲۱-۹۱۰۹۳۴۹۲</span>
+              </span>
+            </a>
+            <div class="consult-band__actions">
+              <button class="btn-light-custom" type="button" data-booking-open>
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <path d="M16 2v4M8 2v4M3 10h18"/>
+                  </svg>
+                </span>
+                رزرو نوبت آنلاین
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>

@@ -1,0 +1,71 @@
+/* Nova public shell — neutralize host/theme collisions so layout matches the static template. */
+
+html {
+  overflow-x: clip;
+}
+
+body.site {
+  display: block;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  font-family: var(--font-family, "Peyda", Tahoma, sans-serif);
+  font-size: var(--fs-body, 1.0625rem);
+  line-height: var(--lh-body, 1.75);
+  color: var(--text, #2c3e40);
+  background: var(--white, #fff);
+  box-sizing: border-box;
+}
+
+/* Keep admin-bar vertical offset without breaking Nova absolute/fixed header */
+body.site:has(.site-admin-bar:not(.is-collapsed)) {
+  padding-block-start: var(--site-admin-bar-height, 44px);
+}
+
+body.site:has(.site-admin-bar) .site-header {
+  top: var(--site-admin-bar-height, 0px);
+}
+
+/* Match static template containers: centered, full-bleed sections outside */
+body.site .container {
+  width: 100%;
+  max-width: var(--container-max, 1140px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  box-sizing: border-box;
+}
+
+/* Legacy site.css used .site-logo as an <img>; Nova uses it on the brand <a> */
+body.site .site-logo {
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: auto;
+  object-fit: unset;
+}
+
+body.site .site-logo img {
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: 46px;
+  object-fit: contain;
+}
+
+/* Do not let leftover host footer rules flatten the Nova footer */
+body.site .site-footer {
+  border-block-start: 0;
+}
+
+body.site > main {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}

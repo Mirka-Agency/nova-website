@@ -1,37 +1,962 @@
-﻿@using CMS.Application.Common.Features
-@using CMS.Application.Settings
-@using Microsoft.FeatureManagement
-@inject IFeatureManager FeatureManager
-@inject ISiteSettingsService SiteSettings
 @{
-    var settings = await SiteSettings.GetAsync();
     ViewData["Title"] = "خانه";
-    var tagline = string.IsNullOrWhiteSpace(settings.Tagline)
-        ? "محتوا، فروشگاه و ارتباط — همه در یک جا."
-        : settings.Tagline;
-    var blogOn = await FeatureManager.IsEnabledAsync(FeatureNames.Blog);
-    var newsOn = await FeatureManager.IsEnabledAsync(FeatureNames.News);
-    var shopOn = await FeatureManager.IsEnabledAsync(FeatureNames.Shop);
+    ViewData["NavActive"] = "home";
 }
+<!-- Hero -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="container hero-section__inner">
+        <div class="hero-grid">
+          <div class="hero-panel">
+            <p class="section-kicker hero-reveal">فلوشیپ جراحی غدد</p>
+            <p class="hero-brand-name hero-reveal">نووا کلینیک</p>
+            <h1 class="hero-title hero-reveal hero-reveal--delay" id="hero-title">
+              اولین کلینیک فلوشیپ جراحی غدد درون‌ریز ایران
+            </h1>
+            <p class="hero-text hero-reveal hero-reveal--delay-2">
+              جراحی تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین و کم‌تهاجمی.
+            </p>
 
-<section class="site-hero">
-    <h1>@settings.SiteName</h1>
-    <p class="site-hero-lead">@tagline</p>
-    @if (blogOn || newsOn || shopOn)
-    {
-        <div class="site-hero-actions">
-            @if (blogOn)
-            {
-                <a class="site-btn site-btn-primary" asp-controller="Blog" asp-action="Index">وبلاگ</a>
-            }
-            @if (newsOn)
-            {
-                <a class="site-btn site-btn-secondary" asp-controller="News" asp-action="Index">رویدادها و اخبار</a>
-            }
-            @if (shopOn)
-            {
-                <a class="site-btn site-btn-secondary" asp-controller="Shop" asp-action="Index">فروشگاه</a>
-            }
+            <div class="hero-actions hero-reveal hero-reveal--delay-2">
+              <a class="btn-primary-custom" href="#contact">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </span>
+                درخواست مشاوره رایگان
+              </a>
+              <a class="btn-secondary-custom" href="tel:02191093492">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                </span>
+                <span class="phone-ltr">۰۲۱-۹۱۰۹۳۴۹۲</span>
+              </a>
+            </div>
+
+            <p class="hero-note hero-reveal hero-reveal--delay-2">
+              <span class="ui-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+              </span>
+              زیر نظر دکتر کاوه همدانی · نظام پزشکی ۱۱۰۶۱۴
+            </p>
+          </div>
+
+          <div class="hero-media hero-reveal hero-reveal--delay" data-hero-video>
+            <video
+              class="hero-media__video"
+              poster="~/template/assets/images/home/cover-hero.png"
+              preload="metadata"
+              playsinline
+              controlslist="nodownload noplaybackrate"
+              aria-label="ویدیوی معرفی نووا کلینیک"
+            >
+              <source src="~/template/assets/videos/hero.mp4" type="video/mp4">
+            </video>
+            <button class="hero-media__play" type="button" aria-label="پخش ویدیو" data-hero-video-play>
+              <span class="hero-media__play-ring" aria-hidden="true"></span>
+              <span class="hero-media__play-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+                  <path d="M9 6.2v11.6L18.8 12 9 6.2z"/>
+                </svg>
+              </span>
+            </button>
+          </div>
         </div>
-    }
-</section>
+      </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="trust-section" aria-label="ویژگی‌های کلینیک">
+      <div class="container">
+        <ul class="trust-list">
+          <li class="trust-item">
+            <span class="trust-item__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="5"/>
+                <path d="m8.8 12-1.3 9 4.5-2.7 4.5 2.7-1.3-9"/>
+                <path d="m12 5.7.7 1.4 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2.7-1.4z"/>
+              </svg>
+            </span>
+            <div class="trust-item__body">
+              <span class="trust-item__label">فلوشیپ جراحی غدد</span>
+              <span class="trust-item__hint">اولین مرکز تخصصی در ایران</span>
+            </div>
+          </li>
+          <li class="trust-item">
+            <span class="trust-item__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="7"/>
+                <circle cx="12" cy="12" r="2.5"/>
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+              </svg>
+            </span>
+            <div class="trust-item__body">
+              <span class="trust-item__label">روش‌های کم‌تهاجمی</span>
+              <span class="trust-item__hint">از جمله جراحی بدون جای زخم</span>
+            </div>
+          </li>
+          <li class="trust-item">
+            <span class="trust-item__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.8 9.4c0 5.2-8.8 10-8.8 10s-8.8-4.8-8.8-10A4.4 4.4 0 0 1 12 8a4.4 4.4 0 0 1 8.8 1.4z"/>
+                <path d="M7.2 12h2.3l1.2-2.4 2.2 5 1.2-2.6h2.7"/>
+              </svg>
+            </span>
+            <div class="trust-item__body">
+              <span class="trust-item__label">مراقبت پس از درمان</span>
+              <span class="trust-item__hint">پیگیری تخصصی و همراهی بیمار</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Intro -->
+    <section class="intro-section" id="about" aria-labelledby="intro-heading">
+      <div class="container">
+        <div class="row align-items-center g-4 g-xl-5">
+          <div class="col-lg-5 reveal">
+            <div class="intro-media">
+              <img
+                src="~/template/assets/images/doctors/dr-hamedani.webp"
+                width="1200"
+                height="675"
+                alt="تیم تخصصی نووا کلینیک"
+                loading="lazy"
+              >
+            </div>
+          </div>
+          <div class="col-lg-7 reveal">
+            <div class="intro-content">
+              <p class="section-kicker">درباره نووا</p>
+              <h2 class="section-heading" id="intro-heading"><span class="intro-heading__line">درمان تخصصی بیماری‌های</span> <span class="intro-heading__line">غدد درون‌ریز</span></h2>
+              <p>
+                غدد درون‌ریز نقش حیاتی در تنظیم عملکرد بدن دارند و اختلال در این سیستم می‌تواند سلامت کلی فرد را تحت تأثیر قرار دهد.
+              </p>
+              <p>
+                در نووا کلینیک، با بهره‌گیری از روش‌های تشخیصی و درمانی روز، به درمان بیماری‌های تیروئید، پاراتیروئید، آدرنال و سایر اختلالات مرتبط می‌پردازیم؛ با هدف درمان دقیق، کاهش عوارض و بهبود کیفیت زندگی بیماران.
+              </p>
+              <a class="btn-primary-custom" asp-controller="Services" asp-action="Index">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                    <path d="M9 12h6M9 16h4"/>
+                  </svg>
+                </span>
+                مشاهده خدمات
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services-section" id="services" aria-labelledby="services-heading">
+      <div class="container">
+        <div class="section-header reveal">
+          <p class="section-kicker">خدمات</p>
+          <h2 class="section-heading" id="services-heading">خدمات تخصصی</h2>
+          <p class="section-lead">
+            تمرکز ما بر جراحی‌های تخصصی غدد درون‌ریز است؛ با انتخاب روش مناسب بر اساس شرایط هر بیمار.
+          </p>
+        </div>
+
+        <div class="row g-3 g-lg-4">
+          <div class="col-6 col-lg-3 reveal">
+            <article class="service-card">
+              <span class="service-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path fill="currentColor" fill-opacity=".12" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
+                  <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+                  <path d="M14.1 11.6c.5 1.6 3.3 1.6 3.8 0M14.5 15.3h3"/>
+                </svg>
+              </span>
+              <h3 class="service-card__title">جراحی تیروئید</h3>
+              <p class="service-card__text">
+                ارزیابی و درمان جراحی ندول، گواتر، پرکاری و سرطان‌های تیروئید با روش‌های باز یا کم‌تهاجمی.
+              </p>
+              <a class="service-card__link" asp-controller="Services" asp-action="Index">جزئیات خدمت</a>
+            </article>
+          </div>
+
+          <div class="col-6 col-lg-3 reveal">
+            <article class="service-card">
+              <span class="service-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path fill="currentColor" fill-opacity=".1" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
+                  <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+                  <g fill="currentColor" stroke="none">
+                    <circle cx="9.3" cy="10.8" r="1.45"/>
+                    <circle cx="10.1" cy="17.6" r="1.45"/>
+                    <circle cx="22.7" cy="10.8" r="1.45"/>
+                    <circle cx="21.9" cy="17.6" r="1.45"/>
+                  </g>
+                </svg>
+              </span>
+              <h3 class="service-card__title">جراحی پاراتیروئید</h3>
+              <p class="service-card__text">
+                درمان اختلالات پاراتیروئید از جمله هیپرپاراتیروئیدیسم با تمرکز بر دقت تشخیص و کاهش عوارض.
+              </p>
+              <a class="service-card__link" asp-controller="Services" asp-action="Index" asp-fragment="parathyroid">جزئیات خدمت</a>
+            </article>
+          </div>
+
+          <div class="col-6 col-lg-3 reveal">
+            <article class="service-card">
+              <span class="service-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path fill="currentColor" fill-opacity=".12" d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+                  <path d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+                  <path fill="currentColor" fill-opacity=".3" d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1-2-1.6-4.4-1.9-7.1-.4zM26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1 2-1.6 4.4-1.9 7.1-.4z"/>
+                  <path d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1M26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1"/>
+                </svg>
+              </span>
+              <h3 class="service-card__title">جراحی فوق کلیه</h3>
+              <p class="service-card__text">
+                جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.
+              </p>
+              <a class="service-card__link" asp-controller="Services" asp-action="Index" asp-fragment="adrenal">جزئیات خدمت</a>
+            </article>
+          </div>
+
+          <div class="col-6 col-lg-3 reveal">
+            <article class="service-card">
+              <span class="service-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path fill="currentColor" fill-opacity=".12" d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4z"/>
+                  <path d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4"/>
+                  <path d="M7.9 17.8c2.3-2.2 5.2-2.8 8.4-2.1 2.7.6 5.3.2 7.5-1.4"/>
+                  <circle cx="24.5" cy="13.3" r=".8" fill="currentColor" stroke="none"/>
+                </svg>
+              </span>
+              <h3 class="service-card__title">جراحی پانکراس</h3>
+              <p class="service-card__text">
+                ارزیابی و درمان جراحی تومورهای عملکردی، سرطان‌های پانکراس و تومورهای نورواندوکرین.
+              </p>
+              <a class="service-card__link" asp-controller="Services" asp-action="Index" asp-fragment="pancreas">جزئیات خدمت</a>
+            </article>
+          </div>
+        </div>
+
+        <div class="services-note reveal">
+          <span class="services-note__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 8h.01M11 12h1v4h1"/>
+            </svg>
+          </span>
+          <p>
+            <strong>تمایز تیروئید:</strong>
+            در بیماران واجد شرایط، امکان جراحی تیروئید بدون جای زخم روی گردن با روش TOETVA وجود دارد؛ انتخاب روش پس از بررسی تخصصی مشخص می‌شود.
+          </p>
+        </div>
+
+        <div class="articles-footer reveal">
+          <a class="btn-primary-custom" asp-controller="Services" asp-action="Index">
+            <span class="ui-icon btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                <rect x="9" y="3" width="6" height="4" rx="1"/>
+                <path d="M9 12h6M9 16h4"/>
+              </svg>
+            </span>
+            مشاهده همه خدمات
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Doctors -->
+    <section class="doctors-section" id="doctors" aria-labelledby="doctors-heading">
+      <div class="container">
+        <div class="section-header reveal">
+          <p class="section-kicker">تیم درمان</p>
+          <h2 class="section-heading" id="doctors-heading">متخصصان کلینیک</h2>
+          <p class="section-lead">
+            تیم نووا کلینیک با تمرکز بر جراحی و درمان بیماری‌های غدد درون‌ریز فعالیت می‌کند.
+          </p>
+        </div>
+
+        <div class="doctor-picker reveal" role="tablist" aria-label="انتخاب پزشک">
+          <button
+            class="doctor-picker__btn is-active"
+            type="button"
+            role="tab"
+            id="tab-hamedani"
+            aria-selected="true"
+            aria-controls="panel-hamedani"
+            data-doctor-tab="hamedani"
+          >
+            <span class="doctor-picker__avatar">
+              <img
+                src="~/template/assets/images/doctors/dr-hamedani-portrait.webp"
+                width="72"
+                height="72"
+                alt=""
+                loading="lazy"
+              >
+            </span>
+            <span class="doctor-picker__name">دکتر کاوه همدانی</span>
+          </button>
+          <button
+            class="doctor-picker__btn"
+            type="button"
+            role="tab"
+            id="tab-takyar"
+            aria-selected="false"
+            aria-controls="panel-takyar"
+            data-doctor-tab="takyar"
+            tabindex="-1"
+          >
+            <span class="doctor-picker__avatar">
+              <img
+                src="~/template/assets/images/doctors/dr-takyar.jpeg"
+                width="72"
+                height="72"
+                alt=""
+                loading="lazy"
+              >
+            </span>
+            <span class="doctor-picker__name">دکتر میرعلیرضا تکیار</span>
+          </button>
+        </div>
+
+        <div class="doctor-panels reveal">
+          <div
+            class="doctor-feature is-active"
+            role="tabpanel"
+            id="panel-hamedani"
+            aria-labelledby="tab-hamedani"
+            data-doctor-panel="hamedani"
+            aria-hidden="false"
+          >
+            <div class="doctor-feature__media">
+              <img
+                src="~/template/assets/images/doctors/dr-hamedani.webp"
+                width="1200"
+                height="675"
+                alt="دکتر کاوه همدانی، فلوشیپ جراحی غدد درون‌ریز"
+                loading="lazy"
+              >
+            </div>
+            <div class="doctor-feature__content">
+              <span class="doctor-feature__role">مدیر نووا کلینیک</span>
+              <h3 class="doctor-feature__name">دکتر کاوه همدانی</h3>
+              <p class="doctor-feature__title">متخصص جراحی عمومی | فلوشیپ جراحی غدد درون‌ریز</p>
+              <p class="doctor-feature__bio">
+                نخستین جراح ایرانی معرفی‌کننده و اجراکننده تکنیک TOETVA (جراحی تیروئید از راه دهان بدون برش روی گردن). تمرکز ایشان بر ارزیابی دقیق بیمار و انتخاب روش جراحی متناسب با شرایط هر فرد است.
+              </p>
+              <ul class="doctor-meta">
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  نظام پزشکی: ۱۱۰۶۱۴
+                </li>
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  فلوشیپ دانشگاه علوم پزشکی تهران
+                </li>
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  مجوز رسمی DHA
+                </li>
+              </ul>
+              <a class="btn-primary-custom" asp-controller="Teams" asp-action="Index">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </span>
+                مشاهده پروفایل پزشک
+              </a>
+            </div>
+          </div>
+
+          <div
+            class="doctor-feature"
+            role="tabpanel"
+            id="panel-takyar"
+            aria-labelledby="tab-takyar"
+            data-doctor-panel="takyar"
+            aria-hidden="true"
+            inert
+          >
+            <div class="doctor-feature__media">
+              <img
+                src="~/template/assets/images/doctors/dr-takyar.jpeg"
+                width="436"
+                height="351"
+                alt="دکتر میرعلیرضا تکیار، متخصص بیماری‌های داخلی"
+                loading="lazy"
+              >
+            </div>
+            <div class="doctor-feature__content">
+              <span class="doctor-feature__role">پزشک‌پژوهشگر</span>
+              <h3 class="doctor-feature__name">دکتر میرعلیرضا تکیار</h3>
+              <p class="doctor-feature__title">متخصص بیماری‌های داخلی | پزشک و پژوهشگر حوزه غدد درون‌ریز و متابولیسم</p>
+              <p class="doctor-feature__bio">
+                پزشک متخصص بیماری‌های داخلی و پژوهشگر حوزه غدد درون‌ریز و متابولیسم. فعالیت‌های علمی ایشان بر بررسی اختلالات غدد، بیماری‌های متابولیک و سازوکارهای مرتبط با استخوان و هورمون‌ها متمرکز است.
+              </p>
+              <ul class="doctor-meta">
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  پسادکتری دانشگاه ییل
+                </li>
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  دکترای پژوهشی دانشگاه ملبورن
+                </li>
+                <li>
+                  <span class="doctor-meta__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                  </span>
+                  پژوهشکده علوم غدد شهید بهشتی
+                </li>
+              </ul>
+              <a class="btn-primary-custom" asp-controller="Teams" asp-action="Index">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </span>
+                مشاهده پروفایل پزشک
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="articles-footer reveal">
+          <a class="btn-primary-custom" asp-controller="Teams" asp-action="Index">
+            <span class="ui-icon btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </span>
+            مشاهده آرشیو متخصصان
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Journey -->
+    <section class="journey-section" id="journey" aria-labelledby="journey-heading">
+      <div class="container">
+        <div class="section-header section-header--center reveal">
+          <p class="section-kicker">فرآیند</p>
+          <h2 class="section-heading" id="journey-heading">مسیر درمان در نووا</h2>
+          <p class="section-lead">
+            از مشاوره اولیه تا پیگیری پس از درمان، مسیر مراجعه شفاف و مرحله‌به‌مرحله طراحی شده است.
+          </p>
+        </div>
+
+        <ol class="journey-steps">
+          <li class="journey-step reveal">
+            <div class="journey-step__index">
+              <span class="journey-step__num" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="8" cy="8" r="3"/>
+                  <path d="M2.5 19c.5-3.2 2.5-5 5.5-5 1.4 0 2.6.4 3.5 1.2"/>
+                  <path d="M14 5h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1.5L14 17v-3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/>
+                  <path d="M15 8h3M15 11h2"/>
+                </svg>
+              </span>
+            </div>
+            <div class="journey-step__body">
+              <h3 class="journey-step__title">مشاوره تخصصی</h3>
+              <p class="journey-step__text">بررسی شرح حال، مدارک و دغدغه‌های بیمار در جلسه اولیه.</p>
+            </div>
+          </li>
+          <li class="journey-step reveal">
+            <div class="journey-step__index">
+              <span class="journey-step__num" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 3v5a4 4 0 0 0 8 0V3"/>
+                  <path d="M4 3h4M12 3h4"/>
+                  <path d="M10 12v2a5 5 0 0 0 10 0v-1"/>
+                  <circle cx="20" cy="10" r="2"/>
+                </svg>
+              </span>
+            </div>
+            <div class="journey-step__body">
+              <h3 class="journey-step__title">تشخیص دقیق</h3>
+              <p class="journey-step__text">ارزیابی یافته‌ها و در صورت نیاز تکمیل بررسی‌های تشخیصی.</p>
+            </div>
+          </li>
+          <li class="journey-step reveal">
+            <div class="journey-step__index">
+              <span class="journey-step__num" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6"/>
+                  <rect x="3" y="6" width="18" height="15" rx="2"/>
+                  <path d="M9 13h6M12 10v6"/>
+                  <path d="M3 11h18"/>
+                </svg>
+              </span>
+            </div>
+            <div class="journey-step__body">
+              <h3 class="journey-step__title">درمان تخصصی</h3>
+              <p class="journey-step__text">انتخاب روش جراحی یا درمان مناسب بر اساس شرایط بیمار.</p>
+            </div>
+          </li>
+          <li class="journey-step reveal">
+            <div class="journey-step__index">
+              <span class="journey-step__num" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="16" rx="2"/>
+                  <path d="M8 3v4M16 3v4M3 10h18"/>
+                  <path d="m8 15 2.5 2.5L16 13"/>
+                </svg>
+              </span>
+            </div>
+            <div class="journey-step__body">
+              <h3 class="journey-step__title">پیگیری پس از درمان</h3>
+              <p class="journey-step__text">مراقبت‌های بعد از عمل و برنامه پیگیری متناسب با نوع بیماری.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section" aria-labelledby="testimonials-heading">
+      <div class="container">
+        <div class="section-header section-header--center reveal">
+          <p class="section-kicker">بازخورد</p>
+          <h2 class="section-heading" id="testimonials-heading">نظرات مراجعین</h2>
+          <p class="section-lead">متن و صدای تجربه بیماران از روند درمان در نووا کلینیک.</p>
+        </div>
+
+        <div class="testimonials-slider reveal" data-testimonials-slider>
+          <div class="testimonials-slider__viewport" tabindex="0" aria-label="نظرات مراجعین">
+            <div class="testimonials-slider__track">
+              <div class="testimonial-slide">
+                <article class="testimonial-card" data-voice-card data-duration="42">
+                  <header class="testimonial-card__header">
+                    <span class="testimonial-card__avatar" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>
+                      </svg>
+                    </span>
+                    <div class="testimonial-card__identity">
+                      <p class="testimonial-card__author">مریم احمدی</p>
+                      <p class="testimonial-card__role">مراجع نووا کلینیک</p>
+                    </div>
+                  </header>
+                  <p class="testimonial-card__quote">
+                    من آدم خیلی حساسی‌ام و همیشه از درمان‌های پزشکی می‌ترسیدم، ولی تجربه‌ای که اینجا داشتم فراتر از انتظارم بود. برخورد پرسنل گرم بود و دکتر همه چیز را واضح توضیح داد.
+                  </p>
+                  <div class="testimonial-voice">
+                    <button class="testimonial-voice__play" type="button" aria-label="پخش ویس مریم احمدی" data-voice-play>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M8 5.14v13.72L19 12 8 5.14z"/>
+                      </svg>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/>
+                      </svg>
+                    </button>
+                    <div class="testimonial-voice__body">
+                      <div class="testimonial-voice__progress" aria-hidden="true">
+                        <span class="testimonial-voice__progress-bar" data-voice-progress></span>
+                      </div>
+                    </div>
+                    <span class="testimonial-voice__time" data-voice-current>۰:۴۲</span>
+                    <span class="visually-hidden" data-voice-total>۰:۴۲</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="testimonial-slide">
+                <article class="testimonial-card" data-voice-card data-duration="68">
+                  <header class="testimonial-card__header">
+                    <span class="testimonial-card__avatar" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>
+                      </svg>
+                    </span>
+                    <div class="testimonial-card__identity">
+                      <p class="testimonial-card__author">حسین مرادی</p>
+                      <p class="testimonial-card__role">مراجع نووا کلینیک</p>
+                    </div>
+                  </header>
+                  <p class="testimonial-card__quote">
+                    چند جا برای مشکلم مراجعه کرده بودم ولی راهنمایی درستی نگرفتم. اینجا دکتر با حوصله توضیح داد مشکلم چیست و چه درمانی لازم دارم. حس می‌کنم جای مطمئنی پیدا کردم.
+                  </p>
+                  <div class="testimonial-voice">
+                    <button class="testimonial-voice__play" type="button" aria-label="پخش ویس حسین مرادی" data-voice-play>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M8 5.14v13.72L19 12 8 5.14z"/>
+                      </svg>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/>
+                      </svg>
+                    </button>
+                    <div class="testimonial-voice__body">
+                      <div class="testimonial-voice__progress" aria-hidden="true">
+                        <span class="testimonial-voice__progress-bar" data-voice-progress></span>
+                      </div>
+                    </div>
+                    <span class="testimonial-voice__time" data-voice-current>۱:۰۸</span>
+                    <span class="visually-hidden" data-voice-total>۱:۰۸</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="testimonial-slide">
+                <article class="testimonial-card" data-voice-card data-duration="55">
+                  <header class="testimonial-card__header">
+                    <span class="testimonial-card__avatar" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>
+                      </svg>
+                    </span>
+                    <div class="testimonial-card__identity">
+                      <p class="testimonial-card__author">زهرا کیانی</p>
+                      <p class="testimonial-card__role">مراجع نووا کلینیک</p>
+                    </div>
+                  </header>
+                  <p class="testimonial-card__quote">
+                    از لحظه ورود، برخورد پرسنل محترمانه بود. دکترها کاربلد بودند و با حوصله به سوال‌ها جواب دادند. همه‌چیز حرفه‌ای و در عین حال دوستانه بود.
+                  </p>
+                  <div class="testimonial-voice">
+                    <button class="testimonial-voice__play" type="button" aria-label="پخش ویس زهرا کیانی" data-voice-play>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M8 5.14v13.72L19 12 8 5.14z"/>
+                      </svg>
+                      <svg class="testimonial-voice__icon testimonial-voice__icon--pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/>
+                      </svg>
+                    </button>
+                    <div class="testimonial-voice__body">
+                      <div class="testimonial-voice__progress" aria-hidden="true">
+                        <span class="testimonial-voice__progress-bar" data-voice-progress></span>
+                      </div>
+                    </div>
+                    <span class="testimonial-voice__time" data-voice-current>۰:۵۵</span>
+                    <span class="visually-hidden" data-voice-total>۰:۵۵</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+          <div class="testimonials-slider__controls">
+            <button class="testimonials-slider__button" type="button" data-testimonials-prev aria-label="نظر قبلی">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </button>
+            <span class="testimonials-slider__counter" data-testimonials-counter aria-live="polite">۱ / ۳</span>
+            <button class="testimonials-slider__button" type="button" data-testimonials-next aria-label="نظر بعدی">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m15 18-6-6 6-6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Articles -->
+    <section class="articles-section" id="articles" aria-labelledby="articles-heading">
+      <div class="container">
+        <div class="section-header reveal">
+          <p class="section-kicker">محتوا</p>
+          <h2 class="section-heading" id="articles-heading">دانش و آگاهی</h2>
+          <p class="section-lead">آخرین مطالب آموزشی درباره بیماری‌ها و مراقبت‌های مرتبط با جراحی غدد.</p>
+        </div>
+
+        <div class="articles-grid">
+          <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
+            <span class="article-item__media">
+              <img
+                src="~/template/assets/images/blog/thyroid-risks.webp"
+                width="800"
+                height="500"
+                alt="تصویر شاخص مقاله خطرات بیماری تیروئید"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-item__body">
+              <span class="article-item__head">
+                <span class="article-item__meta">
+                  <span class="ui-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="16" rx="2"/>
+                      <path d="M16 3v4M8 3v4M3 11h18"/>
+                    </svg>
+                  </span>
+                  <time datetime="2026-09-06">۱۵ شهریور ۱۴۰۵</time>
+                </span>
+              </span>
+              <h3 class="article-item__title">خطرات بیماری تیروئید؛ آیا مشکلات تیروئید می‌تواند باعث مرگ شود؟</h3>
+              <p class="article-item__excerpt">نگاهی به اهمیت اختلالات تیروئید و زمان مراجعه برای بررسی تخصصی.</p>
+              <span class="article-item__more">ادامه مطلب</span>
+            </span>
+          </a>
+          <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
+            <span class="article-item__media">
+              <img
+                src="~/template/assets/images/blog/thyroid-hair-loss.webp"
+                width="800"
+                height="500"
+                alt="تصویر شاخص مقاله تیروئید و ریزش مو"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-item__body">
+              <span class="article-item__head">
+                <span class="article-item__meta">
+                  <span class="ui-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="16" rx="2"/>
+                      <path d="M16 3v4M8 3v4M3 11h18"/>
+                    </svg>
+                  </span>
+                  <time datetime="2026-09-06">۱۵ شهریور ۱۴۰۵</time>
+                </span>
+              </span>
+              <h3 class="article-item__title">آیا تیروئید باعث ریزش مو می‌شود؟</h3>
+              <p class="article-item__excerpt">علت، علائم و راهکارهای درمانی مرتبط با اختلالات تیروئید و ریزش مو.</p>
+              <span class="article-item__more">ادامه مطلب</span>
+            </span>
+          </a>
+          <a class="article-item reveal" asp-controller="Blog" asp-action="Index">
+            <span class="article-item__media">
+              <img
+                src="~/template/assets/images/blog/life-without-thyroid.webp"
+                width="800"
+                height="500"
+                alt="تصویر شاخص مقاله زندگی بدون تیروئید"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
+            <span class="article-item__body">
+              <span class="article-item__head">
+                <span class="article-item__meta">
+                  <span class="ui-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="16" rx="2"/>
+                      <path d="M16 3v4M8 3v4M3 11h18"/>
+                    </svg>
+                  </span>
+                  <time datetime="2026-09-06">۱۵ شهریور ۱۴۰۵</time>
+                </span>
+              </span>
+              <h3 class="article-item__title">زندگی بدون تیروئید چگونه است؟</h3>
+              <p class="article-item__excerpt">بررسی شرایط پس از برداشتن تیروئید و نکات مراقبتی مهم برای بیماران.</p>
+              <span class="article-item__more">ادامه مطلب</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="articles-footer reveal">
+          <a class="btn-primary-custom" asp-controller="Blog" asp-action="Index">
+            <span class="ui-icon btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            </span>
+            مشاهده همه مطالب وبلاگ
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section" id="faq" aria-labelledby="faq-heading">
+      <div class="container">
+        <div class="section-header section-header--center reveal">
+          <p class="section-kicker">راهنما</p>
+          <h2 class="section-heading" id="faq-heading">سوالات متداول</h2>
+          <p class="section-lead">پاسخ‌های کوتاه به پرتکرارترین پرسش‌های بیماران.</p>
+        </div>
+
+        <div class="faq-list reveal">
+          <div class="faq-item is-open">
+            <button class="faq-item__question" type="button" aria-expanded="true">
+              تخصص دکتر کاوه همدانی چیست؟
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-item__answer">
+              دکتر همدانی متخصص جراحی عمومی و فلوشیپ جراحی غدد درون‌ریز از دانشگاه علوم پزشکی تهران هستند.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-item__question" type="button" aria-expanded="false">
+              جراحی باز بهتر است یا اندوسکوپیک؟
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-item__answer">
+              بر اساس شرایط بیماری و وضعیت بیمار تصمیم‌گیری می‌شود؛ هر روش برای همه مناسب نیست.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-item__question" type="button" aria-expanded="false">
+              بعد از عمل کی می‌توانم حمام بروم؟
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-item__answer">
+              بعد از ۴۸ ساعت از زمان عمل، استحمام بلامانع است (با شامپوی بچه).
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-item__question" type="button" aria-expanded="false">
+              تا آخر عمر باید کلسیم بخورم؟
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-item__answer">
+              خیر؛ در صورت نیاز معمولاً برای یک دوره کوتاه تجویز می‌شود.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-item__question" type="button" aria-expanded="false">
+              کی می‌توانم رانندگی کنم؟
+              <span class="faq-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-item__answer">
+              توصیه می‌شود تا یک هفته پرهیز شود؛ زمان دقیق‌تر را پزشک بر اساس نوع جراحی اعلام می‌کند.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA / Contact -->
+    <section class="cta-section" id="contact" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="cta-panel reveal">
+          <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+              <p class="section-kicker section-kicker--light">ارتباط</p>
+              <h2 class="section-heading" id="cta-heading">مشاوره تخصصی رایگان</h2>
+              <p class="section-lead">
+                برای رزرو وقت یا دریافت مشاوره با دکتر کاوه همدانی، فلوشیپ جراحی غدد درون‌ریز، همین حالا تماس بگیرید.
+              </p>
+              <div class="hero-actions" style="margin-top: 1rem; margin-bottom: 0;">
+                <a class="btn-light-custom" href="tel:02191093492">
+                  <span class="ui-icon btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.35a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.75.34 1.54.57 2.35.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                  </span>
+                  <span class="phone-ltr">۰۲۱-۹۱۰۹۳۴۹۲</span>
+                </a>
+                <a class="btn-outline-custom" href="mailto:info@@nova-clinic.org">
+                  <span class="ui-icon btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="4" width="20" height="16" rx="2"/>
+                      <path d="m22 7-10 7L2 7"/>
+                    </svg>
+                  </span>
+                  ارسال ایمیل
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="cta-contact">
+                <div class="cta-contact__item">
+                  <span class="cta-contact__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9"/>
+                      <path d="M12 7v5l3 2"/>
+                    </svg>
+                  </span>
+                  <div class="cta-contact__body">
+                    <strong>ساعات پاسخگویی</strong>
+                    شنبه تا پنجشنبه، ۹ تا ۲۱
+                  </div>
+                </div>
+                <div class="cta-contact__item">
+                  <span class="cta-contact__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                  </span>
+                  <div class="cta-contact__body">
+                    <strong>نشانی کلینیک</strong>
+                    شریعتی، بالاتر از خواجه عبدالله، نبش کوچه ذکایی (جنب آرش موتورز)، ساختمان کسری، طبقه ۴، واحد ۱۵
+                  </div>
+                </div>
+                <div class="cta-contact__item">
+                  <span class="cta-contact__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="4" width="20" height="16" rx="2"/>
+                      <path d="m22 7-10 7L2 7"/>
+                    </svg>
+                  </span>
+                  <div class="cta-contact__body">
+                    <strong>ایمیل</strong>
+                    <a href="mailto:info@@nova-clinic.org">info@@nova-clinic.org</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
