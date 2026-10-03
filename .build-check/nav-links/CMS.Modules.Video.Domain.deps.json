@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "CMS.Modules.Video.Domain/1.0.0": {
+        "dependencies": {
+          "CMS.Domain": "1.0.0"
+        },
+        "runtime": {
+          "CMS.Modules.Video.Domain.dll": {}
+        }
+      },
+      "CMS.Domain/1.0.0": {
+        "runtime": {
+          "CMS.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CMS.Modules.Video.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CMS.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

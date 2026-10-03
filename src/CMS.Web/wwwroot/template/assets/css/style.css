@@ -7119,31 +7119,120 @@ a.video-single-meta__value:focus-visible {
   color: var(--text);
 }
 
-.article-detail__aside-link,
 .article-detail__aside-service {
   display: inline-flex;
   align-items: center;
-  margin-top: 0.35rem;
+  margin-top: 0.85rem;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
+  color: var(--text-muted);
   text-decoration: none;
   transition: color var(--transition);
 }
 
-.article-detail__aside-link {
-  color: var(--primary);
-}
-
-.article-detail__aside-link:hover,
-.article-detail__aside-link:focus-visible,
 .article-detail__aside-service:hover,
 .article-detail__aside-service:focus-visible {
   color: var(--primary-dark);
 }
 
-.article-detail__aside-service {
-  color: var(--text-muted);
-  font-weight: 600;
+.article-single-hero__actions {
+  margin-top: 1.35rem;
+}
+
+.article-download {
+  --download-bg: var(--primary);
+  --download-bg-hover: var(--primary-dark);
+  --download-color: var(--white);
+  --download-border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.15rem;
+  max-width: 100%;
+  padding: 0.7rem 1.15rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--download-border);
+  background: var(--download-bg);
+  color: var(--download-color);
+  text-decoration: none;
+  box-shadow: none;
+  transition:
+    background-color 240ms ease,
+    color 240ms ease,
+    border-color 240ms ease,
+    transform 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.article-download:hover,
+.article-download:focus-visible {
+  background: var(--download-bg-hover);
+  color: var(--download-color);
+  border-color: var(--download-border);
+  transform: translateY(-1px);
+}
+
+.article-download:active {
+  transform: translateY(0);
+}
+
+.article-download__icon {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: inherit;
+}
+
+.article-download__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.article-download__copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+  text-align: start;
+}
+
+.article-download__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.article-download__file {
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.88;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-download__chevron {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  margin-inline-start: auto;
+  opacity: 0.85;
+}
+
+.article-download__chevron svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.article-download--aside {
+  width: 100%;
+  margin-top: 0.15rem;
+  justify-content: flex-start;
 }
 
 .article-related {

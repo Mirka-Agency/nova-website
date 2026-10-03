@@ -17,7 +17,7 @@ def escape_at(html: str) -> str:
 def convert_links(html: str) -> str:
     replacements = [
         ('href="../index.html"', 'asp-controller="Home" asp-action="Index"'),
-        ('href="service-single.html"', 'asp-controller="Services" asp-action="Index"'),
+        ('href="service-single.html"', 'asp-controller="Services" asp-action="Index" asp-fragment="thyroid"'),
         ('href="services.html#parathyroid"', 'href="#parathyroid"'),
         ('href="services.html#adrenal"', 'href="#adrenal"'),
         ('href="services.html#pancreas"', 'href="#pancreas"'),

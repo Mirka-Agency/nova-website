@@ -1060,6 +1060,15 @@
     position: static;
   }
 
+  .article-download {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .article-download__file {
+    max-width: 14rem;
+  }
+
   .articles-archive__grid--related {
     gap: 1rem;
   }

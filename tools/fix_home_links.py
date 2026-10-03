@@ -10,7 +10,8 @@ LINK_MAP = [
     (r'href="pages/services\.html#adrenal"', 'asp-controller="Services" asp-action="Index" asp-fragment="adrenal"'),
     (r'href="pages/services\.html#pancreas"', 'asp-controller="Services" asp-action="Index" asp-fragment="pancreas"'),
     (r'href="pages/services\.html"', 'asp-controller="Services" asp-action="Index"'),
-    (r'href="pages/service-single\.html"', 'asp-controller="Services" asp-action="Index"'),
+    # *-single.html pages map to module Details destinations (fragment fallback when no CMS slug)
+    (r'href="pages/service-single\.html"', 'asp-controller="Services" asp-action="Index" asp-fragment="thyroid"'),
     (r'href="pages/videos\.html"', 'asp-controller="Videos" asp-action="Index"'),
     (r'href="pages/video-single\.html"', 'asp-controller="Videos" asp-action="Index"'),
     (r'href="pages/articles\.html"', 'asp-controller="News" asp-action="Index"'),
@@ -22,8 +23,8 @@ LINK_MAP = [
     (r'href="pages/doctors\.html"', 'asp-controller="Teams" asp-action="Index"'),
     (r'href="pages/doctor-single\.html"', 'asp-controller="Teams" asp-action="Index"'),
     (r'href="pages/doctor-takyar\.html"', 'asp-controller="Teams" asp-action="Index"'),
-    (r'href="pages/events\.html"', 'asp-controller="News" asp-action="Index"'),
-    (r'href="pages/event-single\.html"', 'asp-controller="News" asp-action="Index"'),
+    (r'href="pages/events\.html"', 'asp-controller="Events" asp-action="Index"'),
+    (r'href="pages/event-single\.html"', 'asp-controller="Events" asp-action="Index"'),
     (r'href="index\.html"', 'asp-controller="Home" asp-action="Index"'),
 ]
 

@@ -18,6 +18,7 @@ if static_cards.endswith("</div>"):
     static_cards = static_cards[: -len("</div>")].rstrip()
 
 static_cards = static_cards.replace("../assets/", "~/template/assets/")
+# blog-single maps to Details when CMS slug exists; static fallback stays on listing
 static_cards = static_cards.replace('href="blog-single.html"', 'asp-controller="Blog" asp-action="Index"')
 static_cards = static_cards.replace("@", "@@")
 

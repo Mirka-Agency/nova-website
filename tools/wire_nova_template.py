@@ -48,8 +48,9 @@ LINK_MAP = [
     ('href="services.html#pancreas"', 'asp-controller="Services" asp-action="Index" asp-fragment="pancreas"'),
     ('href="pages/services.html"', 'asp-controller="Services" asp-action="Index"'),
     ('href="services.html"', 'asp-controller="Services" asp-action="Index"'),
-    ('href="pages/service-single.html"', 'asp-controller="Services" asp-action="Index"'),
-    ('href="service-single.html"', 'asp-controller="Services" asp-action="Index"'),
+    # service-single.html in the template set is the thyroid detail page
+    ('href="pages/service-single.html"', 'asp-controller="Services" asp-action="Index" asp-fragment="thyroid"'),
+    ('href="service-single.html"', 'asp-controller="Services" asp-action="Index" asp-fragment="thyroid"'),
     ('href="pages/videos.html"', 'asp-controller="Videos" asp-action="Index"'),
     ('href="videos.html"', 'asp-controller="Videos" asp-action="Index"'),
     ('href="pages/articles.html"', 'asp-controller="News" asp-action="Index"'),

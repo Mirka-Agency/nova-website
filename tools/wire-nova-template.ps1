@@ -48,8 +48,9 @@ function Convert-PageLinks([string]$html) {
         'href="services.html#adrenal"' = 'asp-controller="Services" asp-action="Index" asp-fragment="adrenal"'
         'href="pages/services.html#pancreas"' = 'asp-controller="Services" asp-action="Index" asp-fragment="pancreas"'
         'href="services.html#pancreas"' = 'asp-controller="Services" asp-action="Index" asp-fragment="pancreas"'
-        'href="pages/service-single.html"' = 'asp-controller="Services" asp-action="Index"'
-        'href="service-single.html"' = 'asp-controller="Services" asp-action="Index"'
+        # service-single.html in the template set is the thyroid detail page
+        'href="pages/service-single.html"' = 'asp-controller="Services" asp-action="Index" asp-fragment="thyroid"'
+        'href="service-single.html"' = 'asp-controller="Services" asp-action="Index" asp-fragment="thyroid"'
         'href="pages/videos.html"' = 'asp-controller="Videos" asp-action="Index"'
         'href="videos.html"' = 'asp-controller="Videos" asp-action="Index"'
         'href="pages/articles.html"' = 'asp-controller="News" asp-action="Index"'

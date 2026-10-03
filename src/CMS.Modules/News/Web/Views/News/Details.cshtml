@@ -63,6 +63,10 @@
             Src: x.Url,
             Alt: string.IsNullOrWhiteSpace(x.AltText) ? Model.Title : x.AltText!))
         .ToList();
+    var hasAttachment = !string.IsNullOrWhiteSpace(Model.AttachmentUrl);
+    var attachmentName = string.IsNullOrWhiteSpace(Model.AttachmentFileName)
+        ? null
+        : Model.AttachmentFileName;
 }
 
 <section class="page-hero page-hero--article-single" aria-labelledby="page-hero-title">
@@ -84,6 +88,32 @@
         <li>موضوع: @topic</li>
         <li>نوع: مقاله علمی</li>
       </ul>
+
+      @if (hasAttachment)
+      {
+        <div class="article-single-hero__actions reveal">
+          <a class="article-download"
+             href="@Model.AttachmentUrl"
+             target="_blank"
+             rel="noopener noreferrer"
+             download="@(attachmentName ?? "article")">
+            <span class="article-download__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"/>
+                <path d="m7 11 5 5 5-5"/>
+                <path d="M5 21h14"/>
+              </svg>
+            </span>
+            <span class="article-download__copy">
+              <span class="article-download__label">دانلود مقاله</span>
+              @if (!string.IsNullOrWhiteSpace(attachmentName))
+              {
+                <span class="article-download__file" dir="auto">@attachmentName</span>
+              }
+            </span>
+          </a>
+        </div>
+      }
     </div>
 
     <figure class="article-single-hero__media reveal">
@@ -181,16 +211,28 @@
             <span class="article-info-list__value">@publishedLocal</span>
           </li>
         </ul>
-        @if (!string.IsNullOrWhiteSpace(Model.AttachmentUrl))
+        @if (hasAttachment)
         {
-          var downloadLabel = string.IsNullOrWhiteSpace(Model.AttachmentFileName)
-              ? "دانلود فایل مقاله"
-              : $"دانلود {Model.AttachmentFileName}";
-          <a class="article-detail__aside-link"
+          <a class="article-download article-download--aside"
              href="@Model.AttachmentUrl"
              target="_blank"
              rel="noopener noreferrer"
-             download="@Model.AttachmentFileName">@downloadLabel</a>
+             download="@(attachmentName ?? "article")">
+            <span class="article-download__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"/>
+                <path d="m7 11 5 5 5-5"/>
+                <path d="M5 21h14"/>
+              </svg>
+            </span>
+            <span class="article-download__copy">
+              <span class="article-download__label">دانلود مقاله</span>
+              @if (!string.IsNullOrWhiteSpace(attachmentName))
+              {
+                <span class="article-download__file" dir="auto">@attachmentName</span>
+              }
+            </span>
+          </a>
         }
         @if (!string.IsNullOrWhiteSpace(serviceFragment))
         {
