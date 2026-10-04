@@ -345,7 +345,11 @@ public sealed class ArticleService : IArticleService
 
     private static void ApplyPublishState(Article article, SaveArticleCommand command)
     {
-        if (command.Publish)
+        // Null means "leave publish state alone" (autosave / content-only updates).
+        if (command.Publish is null)
+            return;
+
+        if (command.Publish.Value)
             article.Publish(command.PublishedAtUtc);
         else
         {

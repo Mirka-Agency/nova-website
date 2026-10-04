@@ -21,6 +21,7 @@
   let saving = false;
   let dirty = true;
   let hold = form.getAttribute("data-autosave-hold") === "true";
+  let abortController = null;
 
   function token() {
     return (
@@ -185,7 +186,8 @@
       kind: kindValue(),
       categoryId,
       authorUserId: (fieldValue("AuthorUserId") || "").trim() || null,
-      publish: false,
+      // Never touch publish state from autosave — only explicit Save may publish/unpublish.
+      publish: null,
       publishedAtUtc: null,
       eventStartAtUtc: eventUtcValue("[data-autosave-event-start]"),
       eventEndAtUtc: eventUtcValue("[data-autosave-event-end]"),
@@ -256,6 +258,9 @@
 
     saving = true;
     setStatus(msgSaving, false);
+    abortController?.abort();
+    abortController = new AbortController();
+    const { signal } = abortController;
 
     try {
       const response = await fetch(url, {
@@ -268,6 +273,7 @@
         },
         credentials: "same-origin",
         body: serialized,
+        signal,
       });
 
       if (!response.ok) {
@@ -293,12 +299,19 @@
         minute: "2-digit",
       });
       setStatus(`${msgSaved} — ${time}`, false);
-    } catch {
+    } catch (err) {
+      if (err?.name === "AbortError") return;
       setStatus(msgFailed, true);
     } finally {
       saving = false;
     }
   }
+
+  form.addEventListener("submit", function () {
+    hold = true;
+    form.setAttribute("data-autosave-hold", "true");
+    abortController?.abort();
+  });
 
   function markDirty() {
     dirty = true;

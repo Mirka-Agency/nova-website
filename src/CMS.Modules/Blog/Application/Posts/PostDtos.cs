@@ -67,7 +67,7 @@ public sealed record SavePostCommand(
     Guid? CategoryId,
     string? CoverImageUrl,
     string? CoverVideoUrl,
-    bool Publish,
+    bool? Publish,
     DateTime? PublishedAtUtc,
     string? AuthorUserId,
     string? AuthorDisplayName,

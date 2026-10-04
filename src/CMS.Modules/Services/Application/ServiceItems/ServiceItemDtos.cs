@@ -64,7 +64,7 @@ public sealed record SaveServiceItemCommand(
     string? Excerpt,
     Guid? CategoryId,
     string? CoverImageUrl,
-    bool Publish,
+    bool? Publish,
     DateTime? PublishedAtUtc,
     string? AuthorUserId,
     string? AuthorDisplayName,

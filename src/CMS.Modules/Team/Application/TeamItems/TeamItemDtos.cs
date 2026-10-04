@@ -78,7 +78,7 @@ public sealed record SaveTeamItemCommand(
     Guid? CategoryId,
     string? CoverImageUrl,
     string? AvatarImageUrl,
-    bool Publish,
+    bool? Publish,
     DateTime? PublishedAtUtc,
     string? AuthorUserId,
     string? AuthorDisplayName,

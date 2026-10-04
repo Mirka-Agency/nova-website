@@ -66,7 +66,7 @@ public sealed record SaveVideoItemCommand(
     string? VideoUrl,
     Guid? CategoryId,
     string? CoverImageUrl,
-    bool Publish,
+    bool? Publish,
     DateTime? PublishedAtUtc,
     string? AuthorUserId,
     string? AuthorDisplayName,

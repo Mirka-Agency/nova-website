@@ -81,7 +81,7 @@ public sealed record SaveArticleCommand(
     string? GalleryJson,
     string? AttachmentUrl,
     string? AttachmentFileName,
-    bool Publish,
+    bool? Publish,
     DateTime? PublishedAtUtc,
     DateTime? EventStartAtUtc,
     DateTime? EventEndAtUtc,

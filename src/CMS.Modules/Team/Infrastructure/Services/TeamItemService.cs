@@ -325,7 +325,11 @@ public sealed class TeamItemService : ITeamItemService
 
     private static void ApplyPublishState(TeamItem item, SaveTeamItemCommand command)
     {
-        if (command.Publish)
+        // Null means "leave publish state alone" (autosave / content-only updates).
+        if (command.Publish is null)
+            return;
+
+        if (command.Publish.Value)
             item.Publish(command.PublishedAtUtc);
         else
         {

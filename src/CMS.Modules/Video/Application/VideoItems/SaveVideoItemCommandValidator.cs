@@ -9,11 +9,11 @@ public sealed class SaveVideoItemCommandValidator : AbstractValidator<SaveVideoI
         RuleFor(x => x.Title)
             .NotEmpty()
             .MaximumLength(300)
-            .When(x => x.Publish);
+            .When(x => x.Publish == true);
 
         RuleFor(x => x.Title)
             .MaximumLength(300)
-            .When(x => !x.Publish);
+            .When(x => x.Publish != true);
 
         RuleFor(x => x.Body)
             .NotNull()

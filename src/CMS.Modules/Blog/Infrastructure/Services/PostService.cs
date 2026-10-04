@@ -297,7 +297,11 @@ public sealed class PostService : IPostService
 
     private static void ApplyPublishState(Post post, SavePostCommand command)
     {
-        if (command.Publish)
+        // Null means "leave publish state alone" (autosave / content-only updates).
+        if (command.Publish is null)
+            return;
+
+        if (command.Publish.Value)
             post.Publish(command.PublishedAtUtc);
         else
         {

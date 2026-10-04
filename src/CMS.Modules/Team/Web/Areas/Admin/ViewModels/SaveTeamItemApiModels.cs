@@ -42,7 +42,8 @@ public sealed class SaveTeamItemApiRequest
 
     public string? AuthorDisplayName { get; set; }
 
-    public bool Publish { get; set; }
+    /// <summary>Null keeps the current publish state (used by autosave).</summary>
+    public bool? Publish { get; set; }
 
     public DateTime? PublishedAtUtc { get; set; }
 

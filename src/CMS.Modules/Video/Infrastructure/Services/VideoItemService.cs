@@ -291,7 +291,11 @@ public sealed class VideoItemService : IVideoItemService
 
     private static void ApplyPublishState(VideoItem item, SaveVideoItemCommand command)
     {
-        if (command.Publish)
+        // Null means "leave publish state alone" (autosave / content-only updates).
+        if (command.Publish is null)
+            return;
+
+        if (command.Publish.Value)
             item.Publish(command.PublishedAtUtc);
         else
         {
