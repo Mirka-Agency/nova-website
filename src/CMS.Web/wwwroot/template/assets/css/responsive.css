@@ -568,7 +568,7 @@
     display: flex;
     align-items: stretch;
     gap: 0.85rem;
-    padding: 0.15rem 0 0.65rem;
+    padding: 5.35rem 0 0.65rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
@@ -1029,21 +1029,16 @@
 
   .articles-archive__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .article-card--featured {
-    grid-template-columns: 1fr;
-  }
-
-  .article-card--featured .article-card__media {
-    aspect-ratio: 16 / 10;
-    min-height: 0;
-    max-height: 12rem;
-    height: auto;
+    gap: 3.1rem 1.15rem;
+    padding-top: 5.75rem;
   }
 
   .article-card__media {
-    max-height: 10.5rem;
+    width: clamp(6.85rem, 46%, 9.25rem);
+  }
+
+  .article-card__body {
+    padding-top: 7.55rem;
   }
 
   .article-single-hero {
@@ -1076,6 +1071,7 @@
 
   .articles-archive__grid--related {
     gap: 1rem;
+    padding-top: 5.5rem;
   }
 
   .articles-archive__grid--related .article-card {
@@ -1726,7 +1722,10 @@
   }
 
   .articles-archive__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 22rem);
+    justify-content: center;
+    gap: 3rem;
+    padding-top: 5.5rem;
   }
 
   .articles-toolbar {
@@ -1750,6 +1749,14 @@
     min-height: 2.2rem;
     padding-inline: 0.9rem;
     font-size: 0.82rem;
+  }
+
+  .article-card__media {
+    width: clamp(7rem, 48%, 9.5rem);
+  }
+
+  .article-card__body {
+    padding-top: 7.75rem;
   }
 
   .article-card__title {
