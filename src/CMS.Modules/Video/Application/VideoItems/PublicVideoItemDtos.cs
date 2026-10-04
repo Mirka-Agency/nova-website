@@ -1,9 +1,12 @@
 namespace CMS.Modules.Video.Application.VideoItems;
 
+public sealed record PublicVideoCategoryDto(string Name, string Slug);
+
 public sealed record PublicVideoItemSummaryDto(
     string Title,
     string Slug,
     string? CategoryName,
+    string? CategorySlug,
     string? CoverImageUrl,
     string? VideoUrl,
     DateTime PublishedAtUtc,
@@ -16,6 +19,7 @@ public sealed record PublicVideoItemDetailDto(
     string Slug,
     string Body,
     string? CategoryName,
+    string? CategorySlug,
     string? CoverImageUrl,
     string? VideoUrl,
     DateTime PublishedAtUtc,

@@ -10,5 +10,7 @@ public interface IPublicVideoItemQuery
         int page,
         int pageSize,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PublicVideoCategoryDto>> ListPublishedCategoriesAsync(
+        CancellationToken cancellationToken = default);
     Task<PublicVideoItemDetailDto?> GetPublishedBySlugAsync(string slug, CancellationToken cancellationToken = default);
 }

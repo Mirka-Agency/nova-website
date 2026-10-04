@@ -37,10 +37,12 @@ public class VideosController : Controller
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("VideoItems", "مدیریت ویدیوها", "ViewVideo");
         // Archive matches Nova template grid/filter UI (client-side paging in main.js).
         var result = await _items.ListPublishedPagedAsync(page, 48, cancellationToken);
+        var categories = await _items.ListPublishedCategoriesAsync(cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;
         ViewBag.TotalPages = result.TotalPages;
+        ViewBag.Categories = categories;
         return View(result.Items);
     }
 

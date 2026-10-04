@@ -47,6 +47,7 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
                 p.Title,
                 p.Slug,
                 p.Category != null ? p.Category.Name : null,
+                p.Category != null ? p.Category.Slug : null,
                 p.CoverImageUrl,
                 p.VideoUrl,
                 p.PublishedAtUtc ?? p.CreatedAtUtc,
@@ -57,6 +58,17 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
             .ToListAsync(cancellationToken);
 
         return new PagedResult<PublicVideoItemSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
+    }
+
+    public async Task<IReadOnlyList<PublicVideoCategoryDto>> ListPublishedCategoriesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _db.Categories
+            .AsNoTracking()
+            .Where(c => c.VideoItems.Any(v => v.Status == VideoStatus.Published))
+            .OrderBy(c => c.Name)
+            .Select(c => new PublicVideoCategoryDto(c.Name, c.Slug))
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<PublicVideoItemDetailDto?> GetPublishedBySlugAsync(
@@ -83,6 +95,7 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
             post.Slug,
             post.Body,
             post.Category?.Name,
+            post.Category?.Slug,
             post.CoverImageUrl,
             post.VideoUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,

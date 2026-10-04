@@ -1,5 +1,6 @@
 @model IReadOnlyList<PublicVideoItemSummaryDto>
 @using CMS.Application.Settings
+@using CMS.Modules.Video.Application.VideoItems
 @inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = "ویدئوها";
@@ -12,21 +13,8 @@
     var telHref = "tel:" + phoneDigits;
     var items = Model ?? Array.Empty<PublicVideoItemSummaryDto>();
     var hasCmsVideos = items.Count > 0;
-
-    string MapCategory(string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) return "clinic";
-        var n = name.Trim();
-        if (n.Contains("پاراتیروئید", StringComparison.Ordinal) || n.Contains("parathyroid", StringComparison.OrdinalIgnoreCase))
-            return "parathyroid";
-        if (n.Contains("تیروئید", StringComparison.Ordinal) || n.Contains("thyroid", StringComparison.OrdinalIgnoreCase) || n.Contains("TOETVA", StringComparison.OrdinalIgnoreCase))
-            return "thyroid";
-        if (n.Contains("فرآیند", StringComparison.Ordinal) || n.Contains("فرایند", StringComparison.Ordinal) || n.Contains("جراحی", StringComparison.Ordinal) || n.Contains("process", StringComparison.OrdinalIgnoreCase))
-            return "process";
-        if (n.Contains("کلینیک", StringComparison.Ordinal) || n.Contains("معرفی", StringComparison.Ordinal) || n.Contains("clinic", StringComparison.OrdinalIgnoreCase))
-            return "clinic";
-        return "clinic";
-    }
+    var categories = (ViewBag.Categories as IReadOnlyList<PublicVideoCategoryDto>)
+        ?? Array.Empty<PublicVideoCategoryDto>();
 }
 
 <section class="page-hero page-hero--videos" aria-labelledby="page-hero-title">
@@ -47,10 +35,20 @@
   <div class="container">
     <div class="videos-toolbar reveal" role="group" aria-label="فیلتر موضوع ویدئو">
       <button class="videos-filter is-active" type="button" data-video-filter="all" aria-pressed="true">همه</button>
+@if (hasCmsVideos)
+{
+    foreach (var category in categories)
+    {
+      <button class="videos-filter" type="button" data-video-filter="@category.Slug" aria-pressed="false">@category.Name</button>
+    }
+}
+else
+{
       <button class="videos-filter" type="button" data-video-filter="thyroid" aria-pressed="false">تیروئید</button>
       <button class="videos-filter" type="button" data-video-filter="parathyroid" aria-pressed="false">پاراتیروئید</button>
       <button class="videos-filter" type="button" data-video-filter="process" aria-pressed="false">فرآیند جراحی</button>
       <button class="videos-filter" type="button" data-video-filter="clinic" aria-pressed="false">معرفی کلینیک</button>
+}
     </div>
 
     <p class="videos-count reveal" data-videos-count aria-live="polite"></p>
@@ -61,7 +59,7 @@
     var isFirst = true;
     foreach (var item in items)
     {
-        var category = MapCategory(item.CategoryName);
+        var category = string.IsNullOrWhiteSpace(item.CategorySlug) ? "uncategorized" : item.CategorySlug;
         var typeLabel = string.IsNullOrWhiteSpace(item.CategoryName) ? "ویدئو" : item.CategoryName;
         var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
             ? Url.Content("~/template/assets/images/videos/endocrine.webp")
