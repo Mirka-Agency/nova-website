@@ -6,6 +6,7 @@ public sealed record SiteSettingsDto(
     string? ContactEmail,
     string? ContactPhone,
     string? Address,
+    string? BusinessHours,
     string? FooterText,
     string? LogoUrl,
     string? FaviconUrl,
@@ -20,6 +21,7 @@ public sealed record SiteSettingsDto(
     string? FacebookUrl,
     string? YouTubeUrl,
     string? WhatsAppUrl,
+    string? PrivacyHtml,
     string? HeadScripts,
     string? BodyOpenScripts,
     string? BodyCloseScripts,
@@ -32,6 +34,7 @@ public sealed record UpdateSiteSettingsCommand(
     string? ContactEmail,
     string? ContactPhone,
     string? Address,
+    string? BusinessHours,
     string? FooterText,
     string? LogoUrl,
     string? FaviconUrl,
@@ -46,6 +49,7 @@ public sealed record UpdateSiteSettingsCommand(
     string? FacebookUrl,
     string? YouTubeUrl,
     string? WhatsAppUrl,
+    string? PrivacyHtml,
     bool MaintenanceMode,
     string? MaintenanceMessage);
 

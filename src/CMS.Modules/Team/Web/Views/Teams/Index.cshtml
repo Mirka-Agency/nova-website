@@ -5,12 +5,10 @@
     ViewData["Title"] = "متخصصان کلینیک";
     ViewData["NavActive"] = "doctors";
     var settings = await SiteSettings.GetAsync();
-    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
+    var contact = SiteContactInfo.From(settings);
+    var brand = contact.Brand;
+    var phoneDisplay = contact.PhoneDisplay;
+    var telHref = contact.TelHref;
     var items = Model ?? Array.Empty<PublicTeamItemSummaryDto>();
     var hasCms = items.Count > 0;
     var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");

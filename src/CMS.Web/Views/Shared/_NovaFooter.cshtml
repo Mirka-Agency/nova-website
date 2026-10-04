@@ -10,22 +10,15 @@
 @inject IPublicServiceItemQuery PublicServices
 @{
     var settings = await SiteSettings.GetAsync();
-    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
-    var logoUrl = string.IsNullOrWhiteSpace(settings.LogoUrl)
-        ? Url.Content("~/template/assets/images/common/logo-nova-transparent.png")
-        : settings.LogoUrl;
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
-    var email = string.IsNullOrWhiteSpace(settings.ContactEmail) ? "info@nova-clinic.org" : settings.ContactEmail;
-    var address = string.IsNullOrWhiteSpace(settings.Address)
-        ? "شریعتی، نبش کوچه ذکایی، ساختمان کسری، طبقه ۴ واحد ۱۵"
-        : settings.Address;
-    var footerText = string.IsNullOrWhiteSpace(settings.FooterText)
-        ? "اولین کلینیک فلوشیپ جراحی غدد درون‌ریز ایران، تحت نظارت دکتر کاوه همدانی."
-        : settings.FooterText;
+    var contact = SiteContactInfo.From(settings);
+    var brand = contact.Brand;
+    var logoUrl = contact.LogoUrl
+        ?? Url.Content("~/template/assets/images/common/logo-nova-transparent.png");
+    var phoneDisplay = contact.PhoneDisplay;
+    var telHref = contact.TelHref;
+    var email = contact.Email;
+    var address = contact.Address;
+    var footerText = contact.FooterText;
     var year = DateTime.Now.Year;
 
     IReadOnlyList<PublicServiceItemSummaryDto> navServices = Array.Empty<PublicServiceItemSummaryDto>();
@@ -48,9 +41,14 @@
           <a asp-controller="Home" asp-action="Index" class="footer-brand__logo" aria-label="@brand">
             <img src="@logoUrl" width="140" height="63" alt="@brand">
           </a>
+          @if (!string.IsNullOrWhiteSpace(footerText))
+          {
           <p class="footer-brand__text">
             @footerText
           </p>
+          }
+          @if (contact.HasPhone)
+          {
           <a class="footer-cta" href="@telHref">
             <span class="ui-icon btn-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -59,6 +57,7 @@
             </span>
             رزرو مشاوره · <span class="phone-ltr">@phoneDisplay</span>
           </a>
+          }
         </div>
 
         <nav class="footer-nav" aria-label="لینک‌های فوتر">
@@ -85,6 +84,8 @@
           <div class="footer-col footer-col--contact">
             <h3 class="footer-heading">ارتباط</h3>
             <ul class="footer-contact">
+              @if (contact.HasPhone)
+              {
               <li>
                 <span class="footer-contact__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -96,6 +97,9 @@
                   <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
                 </span>
               </li>
+              }
+              @if (contact.HasEmail)
+              {
               <li>
                 <span class="footer-contact__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -108,6 +112,9 @@
                   <a href="mailto:@email">@email</a>
                 </span>
               </li>
+              }
+              @if (contact.HasAddress)
+              {
               <li>
                 <span class="footer-contact__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -120,6 +127,7 @@
                   <span>@address</span>
                 </span>
               </li>
+              }
             </ul>
           </div>
         </nav>
@@ -128,32 +136,44 @@
       <div class="footer-bottom">
         <p class="footer-copy">© @year @brand</p>
         <div class="footer-social">
-          <a href="@(settings.InstagramUrl ?? "https://www.instagram.com/dr_kaveh_hamedani")" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام">
+          @if (!string.IsNullOrWhiteSpace(contact.InstagramUrl))
+          {
+          <a href="@contact.InstagramUrl" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="3" y="3" width="18" height="18" rx="5"/>
               <circle cx="12" cy="12" r="4"/>
               <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
             </svg>
           </a>
-          <a href="@(settings.LinkedInUrl ?? "https://www.linkedin.com/company/nova-clinic-iran")" target="_blank" rel="noopener noreferrer" aria-label="لینکدین">
+          }
+          @if (!string.IsNullOrWhiteSpace(contact.LinkedInUrl))
+          {
+          <a href="@contact.LinkedInUrl" target="_blank" rel="noopener noreferrer" aria-label="لینکدین">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
               <rect x="2" y="9" width="4" height="12"/>
               <circle cx="4" cy="4" r="2"/>
             </svg>
           </a>
-          <a href="@(settings.YouTubeUrl ?? "https://www.youtube.com/@novaclinic_org")" target="_blank" rel="noopener noreferrer" aria-label="یوتیوب">
+          }
+          @if (!string.IsNullOrWhiteSpace(contact.YouTubeUrl))
+          {
+          <a href="@contact.YouTubeUrl" target="_blank" rel="noopener noreferrer" aria-label="یوتیوب">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M22.5 7.5a3 3 0 0 0-2.1-2.1C18.6 5 12 5 12 5s-6.6 0-8.4.4A3 3 0 0 0 1.5 7.5 31 31 0 0 0 1 12a31 31 0 0 0 .5 4.5 3 3 0 0 0 2.1 2.1C5.4 19 12 19 12 19s6.6 0 8.4-.4a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23 12a31 31 0 0 0-.5-4.5z"/>
               <path d="m10 15 5-3-5-3v6z"/>
             </svg>
           </a>
-          <a href="@(settings.AparatUrl ?? "https://www.aparat.com/")" target="_blank" rel="noopener noreferrer" aria-label="آپارات">
+          }
+          @if (!string.IsNullOrWhiteSpace(contact.AparatUrl))
+          {
+          <a href="@contact.AparatUrl" target="_blank" rel="noopener noreferrer" aria-label="آپارات">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="3" y="5" width="18" height="14" rx="3"/>
               <path d="M8 10.5v3M12 9v6M16 10.5v3"/>
             </svg>
           </a>
+          }
         </div>
       </div>
 

@@ -59,9 +59,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.ContactEmail).HasMaxLength(256);
             entity.Property(x => x.ContactPhone).HasMaxLength(40);
             entity.Property(x => x.Address).HasMaxLength(1000);
+            entity.Property(x => x.BusinessHours).HasMaxLength(200);
             entity.Property(x => x.FooterText).HasMaxLength(500);
             entity.Property(x => x.LogoUrl).HasMaxLength(2000);
             entity.Property(x => x.FaviconUrl).HasMaxLength(2000);
+            entity.Property(x => x.PrivacyHtml);
             entity.Property(x => x.MetaTitle).HasMaxLength(200);
             entity.Property(x => x.MetaDescription).HasMaxLength(500);
             entity.Property(x => x.DefaultOgImageUrl).HasMaxLength(2000);

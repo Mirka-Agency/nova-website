@@ -10,19 +10,15 @@
     ViewData["Title"] = "خانه";
     ViewData["NavActive"] = "home";
     var settings = await SiteSettings.GetAsync();
-    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
-    var contactEmail = string.IsNullOrWhiteSpace(settings.ContactEmail) ? "info@nova-clinic.org" : settings.ContactEmail;
-    var address = string.IsNullOrWhiteSpace(settings.Address)
-        ? "شریعتی، بالاتر از خواجه عبدالله، نبش کوچه ذکایی (جنب آرش موتورز)، ساختمان کسری، طبقه ۴، واحد ۱۵"
-        : settings.Address;
-    var heroLead = string.IsNullOrWhiteSpace(settings.Tagline)
-        ? "جراحی تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین و کم‌تهاجمی."
-        : settings.Tagline;
+    var contact = SiteContactInfo.From(settings);
+    var brand = contact.Brand;
+    var phoneDisplay = contact.PhoneDisplay;
+    var telHref = contact.TelHref;
+    var contactEmail = contact.Email;
+    var address = contact.Address;
+    var businessHours = contact.BusinessHours;
+    var heroLead = contact.Tagline
+        ?? "جراحی تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین و کم‌تهاجمی.";
     var services = Model?.Services ?? Array.Empty<PublicServiceItemSummaryDto>();
     var team = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
     var articles = Model?.Articles ?? Array.Empty<PublicArticleSummaryDto>();
@@ -1159,7 +1155,7 @@ else
                   </span>
                   <div class="cta-contact__body">
                     <strong>ساعات پاسخگویی</strong>
-                    شنبه تا پنجشنبه، ۹ تا ۲۱
+                    @(businessHours ?? "—")
                   </div>
                 </div>
                 <div class="cta-contact__item">

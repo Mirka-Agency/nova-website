@@ -66,6 +66,10 @@
   <data name="Tagline" xml:space="preserve"><value>شعار</value></data>
   <data name="ContactEmail" xml:space="preserve"><value>ایمیل تماس</value></data>
   <data name="ContactPhone" xml:space="preserve"><value>تلفن تماس</value></data>
+  <data name="BusinessHours" xml:space="preserve"><value>ساعات کاری</value></data>
+  <data name="BusinessHoursHint" xml:space="preserve"><value>مثال: شنبه تا پنجشنبه · ۹ تا ۲۱</value></data>
+  <data name="PrivacyHtml" xml:space="preserve"><value>حریم خصوصی</value></data>
+  <data name="PrivacyHtmlHint" xml:space="preserve"><value>متن صفحه حریم خصوصی؛ در مسیر /Home/Privacy نمایش داده می‌شود.</value></data>
   <data name="Address" xml:space="preserve"><value>آدرس</value></data>
   <data name="FooterText" xml:space="preserve"><value>متن فوتر</value></data>
   <data name="SettingsSectionIdentity" xml:space="preserve"><value>هویت برند</value></data>

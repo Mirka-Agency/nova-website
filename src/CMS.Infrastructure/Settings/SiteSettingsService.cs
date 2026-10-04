@@ -58,6 +58,7 @@ public sealed class SiteSettingsService : ISiteSettingsService
             command.ContactEmail,
             command.ContactPhone,
             command.Address,
+            command.BusinessHours,
             command.FooterText,
             command.LogoUrl,
             command.FaviconUrl,
@@ -72,6 +73,7 @@ public sealed class SiteSettingsService : ISiteSettingsService
             command.FacebookUrl,
             command.YouTubeUrl,
             command.WhatsAppUrl,
+            command.PrivacyHtml,
             command.MaintenanceMode,
             command.MaintenanceMessage));
         await _db.SaveChangesAsync(cancellationToken);
@@ -113,6 +115,7 @@ public sealed class SiteSettingsService : ISiteSettingsService
             settings.ContactEmail,
             settings.ContactPhone,
             settings.Address,
+            settings.BusinessHours,
             settings.FooterText,
             settings.LogoUrl,
             settings.FaviconUrl,
@@ -127,6 +130,7 @@ public sealed class SiteSettingsService : ISiteSettingsService
             settings.FacebookUrl,
             settings.YouTubeUrl,
             settings.WhatsAppUrl,
+            settings.PrivacyHtml,
             settings.HeadScripts,
             settings.BodyOpenScripts,
             settings.BodyCloseScripts,

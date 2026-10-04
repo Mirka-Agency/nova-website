@@ -182,6 +182,10 @@ namespace CMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(16000)
                         .HasColumnType("character varying(16000)");
 
+                    b.Property<string>("BusinessHours")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<string>("ContactEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -208,6 +212,9 @@ namespace CMS.Infrastructure.Persistence.Migrations
                     b.Property<string>("FooterText")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<string>("PrivacyHtml")
+                        .HasColumnType("text");
 
                     b.Property<string>("HeadScripts")
                         .HasMaxLength(16000)

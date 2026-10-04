@@ -2,11 +2,14 @@ using CMS.Modules.News.Domain.Enums;
 
 namespace CMS.Modules.News.Application.Articles;
 
+public sealed record PublicArticleCategoryDto(string Name, string Slug);
+
 public sealed record PublicArticleSummaryDto(
     string Title,
     string Slug,
     ArticleKind Kind,
     string? CategoryName,
+    string? CategorySlug,
     string? CoverImageUrl,
     DateTime PublishedAtUtc,
     DateTime? EventStartAtUtc,
@@ -22,6 +25,7 @@ public sealed record PublicArticleDetailDto(
     string Body,
     ArticleKind Kind,
     string? CategoryName,
+    string? CategorySlug,
     string? CoverImageUrl,
     string? GalleryJson,
     string? AttachmentUrl,

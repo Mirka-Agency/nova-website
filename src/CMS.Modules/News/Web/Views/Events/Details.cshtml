@@ -10,12 +10,10 @@
     ViewData["Title"] = Model.Title;
     ViewData["NavActive"] = "events";
     var settings = await SiteSettings.GetAsync();
-    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
+    var contact = SiteContactInfo.From(settings);
+    var brand = contact.Brand;
+    var phoneDisplay = contact.PhoneDisplay;
+    var telHref = contact.TelHref;
     var type = string.IsNullOrWhiteSpace(Model.CategoryName) ? "رویداد تخصصی" : Model.CategoryName;
     var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
         ? $"جزئیات رویداد «{Model.Title}» در {brand}."

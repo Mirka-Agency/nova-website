@@ -43,10 +43,12 @@ public class NewsController : Controller
         ViewData["NavActive"] = "articles";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("NewsArticles", "مدیریت مقالات تخصصی", "ViewNews");
         var result = await _articles.ListPublishedByKindPagedAsync(ArticleKind.News, page, 48, cancellationToken);
+        var categories = await _articles.ListPublishedCategoriesAsync(ArticleKind.News, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;
         ViewBag.TotalPages = result.TotalPages;
+        ViewBag.Categories = categories;
         return View(result.Items);
     }
 

@@ -1,18 +1,17 @@
 @using CMS.Application.Settings
 @inject ISiteSettingsService SiteSettings
 @{
-    var settings = await SiteSettings.GetAsync();
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
+    var contact = SiteContactInfo.From(await SiteSettings.GetAsync());
+    if (!contact.HasPhone)
+    {
+        return;
+    }
 }
 <div class="float-call" data-float-call aria-hidden="true">
     <a
       class="float-call__btn float-call__btn--phone"
-      href="@telHref"
-      aria-label="تماس با کلینیک: @phoneDisplay"
+      href="@contact.TelHref"
+      aria-label="تماس با کلینیک: @contact.PhoneDisplay"
       tabindex="-1"
     >
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

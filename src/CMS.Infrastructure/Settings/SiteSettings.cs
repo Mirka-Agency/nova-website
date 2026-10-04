@@ -14,10 +14,12 @@ public class SiteSettings : BaseEntity
     public string? ContactEmail { get; private set; }
     public string? ContactPhone { get; private set; }
     public string? Address { get; private set; }
+    public string? BusinessHours { get; private set; }
     public string? FooterText { get; private set; }
 
     public string? LogoUrl { get; private set; }
     public string? FaviconUrl { get; private set; }
+    public string? PrivacyHtml { get; private set; }
 
     public string? MetaTitle { get; private set; }
     public string? MetaDescription { get; private set; }
@@ -57,10 +59,12 @@ public class SiteSettings : BaseEntity
         ContactEmail = NormalizeOptional(values.ContactEmail, 256);
         ContactPhone = NormalizeOptional(values.ContactPhone, 40);
         Address = NormalizeOptional(values.Address, 1000);
+        BusinessHours = NormalizeOptional(values.BusinessHours, 200);
         FooterText = NormalizeOptional(values.FooterText, 500);
 
         LogoUrl = NormalizeOptional(values.LogoUrl, 2000);
         FaviconUrl = NormalizeOptional(values.FaviconUrl, 2000);
+        PrivacyHtml = NormalizeOptional(values.PrivacyHtml, 100_000);
 
         MetaTitle = NormalizeOptional(values.MetaTitle, 200);
         MetaDescription = NormalizeOptional(values.MetaDescription, 500);
@@ -105,6 +109,7 @@ public sealed record SiteSettingsValues(
     string? ContactEmail,
     string? ContactPhone,
     string? Address,
+    string? BusinessHours,
     string? FooterText,
     string? LogoUrl,
     string? FaviconUrl,
@@ -119,5 +124,6 @@ public sealed record SiteSettingsValues(
     string? FacebookUrl,
     string? YouTubeUrl,
     string? WhatsAppUrl,
+    string? PrivacyHtml,
     bool MaintenanceMode,
     string? MaintenanceMessage);

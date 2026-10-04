@@ -21,8 +21,13 @@ public sealed class SiteSettingsFormViewModel
     [StringLength(1000, ErrorMessage = "آدرس خیلی طولانی است.")]
     public string? Address { get; set; }
 
+    [StringLength(200, ErrorMessage = "ساعات کاری حداکثر ۲۰۰ نویسه می‌تواند باشد.")]
+    public string? BusinessHours { get; set; }
+
     [StringLength(500, ErrorMessage = "متن پاورقی خیلی طولانی است.")]
     public string? FooterText { get; set; }
+
+    public string? PrivacyHtml { get; set; }
 
     [StringLength(2000, ErrorMessage = "آدرس لوگو خیلی طولانی است.")]
     public string? LogoUrl { get; set; }

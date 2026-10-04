@@ -6,11 +6,9 @@
     ViewData["Title"] = "وبلاگ";
     ViewData["NavActive"] = "blog";
     var settings = await SiteSettings.GetAsync();
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
+    var contact = SiteContactInfo.From(settings);
+    var phoneDisplay = contact.PhoneDisplay;
+    var telHref = contact.TelHref;
     var items = Model ?? Array.Empty<PublicPostSummaryDto>();
     var hasCmsPosts = items.Count > 0;
     var fa = CultureInfo.GetCultureInfo("fa-IR");

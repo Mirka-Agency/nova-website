@@ -23,6 +23,7 @@
             <textarea asp-for="Description"
                       rows="10"
                       class="admin-ckeditor-source"></textarea>
+            <p class="admin-hint">@Localizer["DescriptionOptionalHint"]</p>
             <span asp-validation-for="Description" class="admin-field-error"></span>
         </div>
 

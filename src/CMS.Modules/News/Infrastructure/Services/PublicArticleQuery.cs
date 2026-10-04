@@ -68,6 +68,7 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
                 p.Slug,
                 p.Kind,
                 p.Category != null ? p.Category.Name : null,
+                p.Category != null ? p.Category.Slug : null,
                 p.CoverImageUrl,
                 p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.EventStartAtUtc,
@@ -80,6 +81,18 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
             .ToListAsync(cancellationToken);
 
         return new PagedResult<PublicArticleSummaryDto>(articles, totalCount, normalizedPage, normalizedPageSize);
+    }
+
+    public async Task<IReadOnlyList<PublicArticleCategoryDto>> ListPublishedCategoriesAsync(
+        ArticleKind kind,
+        CancellationToken cancellationToken = default)
+    {
+        return await _db.Categories
+            .AsNoTracking()
+            .Where(c => c.Articles.Any(a => a.Status == ArticleStatus.Published && a.Kind == kind))
+            .OrderBy(c => c.Name)
+            .Select(c => new PublicArticleCategoryDto(c.Name, c.Slug))
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<PublicArticleDetailDto?> GetPublishedBySlugAsync(
@@ -107,6 +120,7 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
             article.Body,
             article.Kind,
             article.Category?.Name,
+            article.Category?.Slug,
             article.CoverImageUrl,
             article.GalleryJson,
             article.AttachmentUrl,

@@ -1,6 +1,31 @@
-﻿@{
+﻿@using CMS.Application.Settings
+@inject ISiteSettingsService SiteSettings
+@{
     ViewData["Title"] = "حریم خصوصی";
+    ViewData["NavActive"] = "about";
+    var contact = SiteContactInfo.From(await SiteSettings.GetAsync());
 }
-<h1>@ViewData["Title"]</h1>
+<section class="page-hero" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">حریم خصوصی</span>
+    </nav>
+    <h1 class="page-hero__title reveal" id="page-hero-title">حریم خصوصی</h1>
+    <p class="page-hero__lead reveal">@contact.Brand</p>
+  </div>
+</section>
 
-<p>سیاست حریم خصوصی سایت را در این صفحه بنویسید.</p>
+<section class="container" style="padding-block: 2rem 4rem;">
+@if (contact.HasPrivacyHtml)
+{
+  <div class="reveal admin-rich-content">
+    @Html.Raw(contact.PrivacyHtml)
+  </div>
+}
+else
+{
+  <p class="reveal">متن حریم خصوصی هنوز در تنظیمات سایت تعریف نشده است.</p>
+}
+</section>

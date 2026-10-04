@@ -52,6 +52,7 @@ public class SettingsController : Controller
                     model.ContactEmail,
                     model.ContactPhone,
                     model.Address,
+                    model.BusinessHours,
                     model.FooterText,
                     NullIfWhiteSpace(model.LogoUrl),
                     NullIfWhiteSpace(model.FaviconUrl),
@@ -66,6 +67,7 @@ public class SettingsController : Controller
                     model.FacebookUrl,
                     model.YouTubeUrl,
                     model.WhatsAppUrl,
+                    model.PrivacyHtml,
                     model.MaintenanceMode,
                     model.MaintenanceMessage),
                 cancellationToken);
@@ -98,6 +100,7 @@ public class SettingsController : Controller
             ContactEmail = dto.ContactEmail,
             ContactPhone = dto.ContactPhone,
             Address = dto.Address,
+            BusinessHours = dto.BusinessHours,
             FooterText = dto.FooterText,
             LogoUrl = dto.LogoUrl,
             FaviconUrl = dto.FaviconUrl,
@@ -112,6 +115,7 @@ public class SettingsController : Controller
             FacebookUrl = dto.FacebookUrl,
             YouTubeUrl = dto.YouTubeUrl,
             WhatsAppUrl = dto.WhatsAppUrl,
+            PrivacyHtml = dto.PrivacyHtml,
             MaintenanceMode = dto.MaintenanceMode,
             MaintenanceMessage = dto.MaintenanceMessage
         };

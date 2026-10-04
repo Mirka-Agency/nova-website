@@ -14,15 +14,13 @@
     ViewData["Title"] = "درباره ما";
     ViewData["NavActive"] = "about";
     var settings = await SiteSettings.GetAsync();
-    var brand = string.IsNullOrWhiteSpace(settings.SiteName) ? "نووا کلینیک" : settings.SiteName;
-    var phoneRaw = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "02191093492" : settings.ContactPhone;
-    var phoneDigits = System.Text.RegularExpressions.Regex.Replace(phoneRaw, @"[^\d+]", "");
-    if (string.IsNullOrWhiteSpace(phoneDigits)) { phoneDigits = "02191093492"; }
-    var phoneDisplay = string.IsNullOrWhiteSpace(settings.ContactPhone) ? "۰۲۱-۹۱۰۹۳۴۹۲" : settings.ContactPhone;
-    var telHref = "tel:" + phoneDigits;
-    var heroLead = string.IsNullOrWhiteSpace(settings.Tagline)
-        ? "درمان تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس؛ با رویکرد بیمارمحور و پیگیری پس از درمان."
-        : settings.Tagline;
+    var contact = SiteContactInfo.From(settings);
+    var brand = contact.Brand;
+    var phoneDisplay = contact.PhoneDisplay;
+    var telHref = contact.TelHref;
+    var businessHours = contact.BusinessHours;
+    var heroLead = contact.Tagline
+        ?? "درمان تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس؛ با رویکرد بیمارمحور و پیگیری پس از درمان.";
     var teamItems = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
     var honorItems = Model?.Honors ?? Array.Empty<PublicHonorItemDto>();
     var hasCmsHonors = honorItems.Count > 0;
@@ -422,7 +420,7 @@ else
             <h2 class="consult-band__title" id="consult-band-heading">آماده شروع مسیر درمان هستید؟</h2>
             <p class="consult-band__lead">برای هماهنگی مشاوره تخصصی، نوبت رزرو کنید یا مستقیم تماس بگیرید.</p>
             <ul class="consult-band__chips" aria-label="ساعات پاسخگویی">
-              <li>شنبه تا پنجشنبه</li>
+              <li>@(businessHours ?? "ساعات کاری در تنظیمات سایت")</li>
               <li>۹ تا ۲۱</li>
             </ul>
           </div>

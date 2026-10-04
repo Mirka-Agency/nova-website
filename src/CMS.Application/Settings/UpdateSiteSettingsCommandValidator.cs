@@ -12,7 +12,9 @@ public sealed class UpdateSiteSettingsCommandValidator : AbstractValidator<Updat
         RuleFor(x => x.ContactEmail).EmailAddress().When(x => !string.IsNullOrWhiteSpace(x.ContactEmail)).MaximumLength(256);
         RuleFor(x => x.ContactPhone).MaximumLength(40);
         RuleFor(x => x.Address).MaximumLength(1000);
+        RuleFor(x => x.BusinessHours).MaximumLength(200);
         RuleFor(x => x.FooterText).MaximumLength(500);
+        RuleFor(x => x.PrivacyHtml).MaximumLength(100_000);
 
         RuleFor(x => x.LogoUrl).MaximumLength(2000).Must(BeHttpOrSiteUrl).When(x => !string.IsNullOrWhiteSpace(x.LogoUrl))
             .WithMessage("آدرس لوگو باید http(s) یا مسیر نسبی سایت باشد.");

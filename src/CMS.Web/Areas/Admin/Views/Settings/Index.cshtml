@@ -76,9 +76,23 @@
             <span asp-validation-for="Address" class="admin-field-error"></span>
         </div>
         <div class="admin-field">
+            <label asp-for="BusinessHours">@Localizer["BusinessHours"]</label>
+            <input asp-for="BusinessHours" />
+            <p class="admin-hint">@Localizer["BusinessHoursHint"]</p>
+            <span asp-validation-for="BusinessHours" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
             <label asp-for="FooterText">@Localizer["FooterText"]</label>
             <input asp-for="FooterText" />
             <span asp-validation-for="FooterText" class="admin-field-error"></span>
+        </div>
+        <div class="admin-field">
+            <label asp-for="PrivacyHtml">@Localizer["PrivacyHtml"]</label>
+            <textarea asp-for="PrivacyHtml"
+                      rows="10"
+                      class="admin-ckeditor-source"></textarea>
+            <p class="admin-hint">@Localizer["PrivacyHtmlHint"]</p>
+            <span asp-validation-for="PrivacyHtml" class="admin-field-error"></span>
         </div>
     </fieldset>
 

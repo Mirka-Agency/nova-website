@@ -16,5 +16,8 @@ public interface IPublicArticleQuery
         int page,
         int pageSize,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PublicArticleCategoryDto>> ListPublishedCategoriesAsync(
+        ArticleKind kind,
+        CancellationToken cancellationToken = default);
     Task<PublicArticleDetailDto?> GetPublishedBySlugAsync(string slug, CancellationToken cancellationToken = default);
 }
