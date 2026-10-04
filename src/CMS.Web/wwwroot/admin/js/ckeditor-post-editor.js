@@ -52,6 +52,8 @@
     IndentBlock,
     FindAndReplace,
     PageBreak,
+    PasteFromOffice,
+    UpcastWriter,
   } = CKEDITOR;
 
   const mediaLibraryImageIcon =
@@ -154,6 +156,7 @@
         IndentBlock,
         FindAndReplace,
         PageBreak,
+        PasteFromOffice,
       ],
       toolbar: {
         items: [
@@ -237,7 +240,7 @@
       htmlSupport: {
         allow: [
           {
-            name: /.*/,
+            name: /^(div|section|article|figure|figcaption|iframe|video|audio|source)$/,
             attributes: true,
             classes: true,
             styles: true,
@@ -250,10 +253,113 @@
     };
   };
 
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /** Plain text: single newlines → <br>, blank lines → new <p>. */
+  function plainTextToEditorHtml(text) {
+    const normalized = String(text).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    const blocks = normalized.split(/\n{2,}/);
+    return blocks
+      .map(function (block) {
+        const lines = block.split("\n").map(escapeHtml);
+        return "<p>" + lines.join("<br>") + "</p>";
+      })
+      .join("");
+  }
+
+  function collectViewElements(node, out) {
+    if (!node) return;
+    if (node.is && node.is("element")) {
+      out.push(node);
+      for (const child of node.getChildren()) {
+        collectViewElements(child, out);
+      }
+      return;
+    }
+    if (typeof node.getChildren === "function") {
+      for (const child of node.getChildren()) {
+        collectViewElements(child, out);
+      }
+    }
+  }
+
+  /**
+   * Strip inline styles / Word junk from pasted HTML so each line
+   * does not keep its own pasted style.
+   */
+  function sanitizePastedViewFragment(viewFragment, viewDocument) {
+    if (!viewFragment || !UpcastWriter) {
+      return viewFragment;
+    }
+
+    const writer = new UpcastWriter(viewDocument);
+    const elements = [];
+    collectViewElements(viewFragment, elements);
+
+    elements.forEach(function (el) {
+      if (el.hasAttribute("style")) {
+        writer.removeAttribute("style", el);
+      }
+
+      if (el.hasAttribute("class")) {
+        const cls = String(el.getAttribute("class") || "");
+        if (/Mso|mso-|Apple-|moz-|Normal|BodyText/i.test(cls)) {
+          writer.removeAttribute("class", el);
+        }
+      }
+
+      ["face", "size", "color", "align"].forEach(function (attr) {
+        if (el.hasAttribute(attr)) {
+          writer.removeAttribute(attr, el);
+        }
+      });
+    });
+
+    return viewFragment;
+  }
+
+  function bindPasteSanitizer(editor) {
+    const viewDocument = editor.editing.view.document;
+    const clipboardPipeline = editor.plugins.get("ClipboardPipeline");
+
+    // Plain-text paste: single newlines stay as <br>, not a new block per line.
+    viewDocument.on(
+      "clipboardInput",
+      function (evt, data) {
+        if (evt.defaultPrevented || !data.dataTransfer) return;
+
+        const html = data.dataTransfer.getData("text/html");
+        const text = data.dataTransfer.getData("text/plain");
+        if (html || !text) return;
+
+        data.content = editor.data.htmlProcessor.toView(plainTextToEditorHtml(text));
+      },
+      { priority: "high" }
+    );
+
+    if (!clipboardPipeline) return;
+
+    clipboardPipeline.on(
+      "inputTransformation",
+      function (evt, data) {
+        if (!data.content) return;
+        data.content = sanitizePastedViewFragment(data.content, viewDocument);
+      },
+      { priority: "low" }
+    );
+  }
+
   textareas.forEach(function (textarea) {
     ClassicEditor.create(textarea, editorConfig())
       .then(function (editor) {
         textarea.ckEditorInstance = editor;
+        bindPasteSanitizer(editor);
         textarea.dispatchEvent(new CustomEvent("ckeditor:ready", { bubbles: true }));
         const form = textarea.closest("form");
         if (form) {
