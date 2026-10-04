@@ -267,7 +267,9 @@ public class NewsArticlesController : Controller
                 seoDoc,
                 previewTitle: FirstNonEmpty(post.MetaTitle, post.Title),
                 previewDescription: FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                previewUrl: $"/news/{post.Slug}");
+                previewUrl: post.Kind == ArticleKind.Event
+                    ? $"/event/{post.Slug}"
+                    : $"/news/{post.Slug}");
         }
 
         return View(await BuildFormAsync(model, cancellationToken));

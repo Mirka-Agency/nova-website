@@ -24,7 +24,7 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
         var entries = new List<SitemapUrlEntry>
         {
             new("/news", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8),
-            new("/events", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
+            new("/event", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
         };
 
         var articles = await _db.Articles
@@ -41,7 +41,7 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
         foreach (var article in articles)
         {
             var path = article.Kind == ArticleKind.Event
-                ? $"/events/{article.Slug}"
+                ? $"/event/{article.Slug}"
                 : $"/news/{article.Slug}";
             entries.Add(new SitemapUrlEntry(
                 path,

@@ -10,7 +10,7 @@ using Microsoft.FeatureManagement;
 
 namespace CMS.Modules.News.Web.Controllers;
 
-[Route("events")]
+[Route("event")]
 public class EventsController : Controller
 {
     private readonly IPublicArticleQuery _articles;
@@ -85,7 +85,7 @@ public class EventsController : Controller
                         seo.SchemaType ?? "Event",
                         post.Title,
                         FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                        AbsoluteUrl(post.CanonicalUrl, $"/events/{post.Slug}"),
+                        AbsoluteUrl(post.CanonicalUrl, $"/event/{post.Slug}"),
                         FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl),
                         post.AuthorDisplayName,
                         post.EventStartAtUtc ?? post.PublishedAtUtc,
