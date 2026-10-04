@@ -130,6 +130,18 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function eventInfoJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-event-info-item]"));
+    const items = [];
+    for (const row of rows) {
+      const label = (row.querySelector("[data-event-info-label]")?.value || "").trim();
+      const value = (row.querySelector("[data-event-info-value]")?.value || "").trim();
+      if (!label || !value) continue;
+      items.push({ label, value });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
   function kindValue() {
     return fieldValue("Kind") || null;
   }
@@ -178,6 +190,7 @@
       eventStartAtUtc: eventUtcValue("[data-autosave-event-start]"),
       eventEndAtUtc: eventUtcValue("[data-autosave-event-end]"),
       location: (fieldValue("Location") || "").trim() || null,
+      eventInfoJson: eventInfoJsonValue(),
       metaTitle: (fieldValue("MetaTitle") || "").trim() || null,
       metaDescription: (fieldValue("MetaDescription") || "").trim() || null,
       seoKeywords: (fieldValue("SeoKeywords") || "").trim() || null,

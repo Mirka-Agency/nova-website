@@ -91,6 +91,8 @@ public class ArticleFormViewModel
     [MaxLength(300, ErrorMessage = "محل برگزاری حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
     public string? Location { get; set; }
 
+    public List<ArticleEventInfoFormItem> EventInfoItems { get; set; } = [];
+
     [MaxLength(200, ErrorMessage = "عنوان متا حداکثر ۲۰۰ نویسه می‌تواند باشد.")]
     public string? MetaTitle { get; set; }
 
@@ -126,6 +128,15 @@ public class ArticleGalleryImageFormItem
 
     [MaxLength(300, ErrorMessage = "متن جایگزین حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
     public string? AltText { get; set; }
+}
+
+public class ArticleEventInfoFormItem
+{
+    [MaxLength(80, ErrorMessage = "برچسب حداکثر ۸۰ نویسه می‌تواند باشد.")]
+    public string Label { get; set; } = string.Empty;
+
+    [MaxLength(300, ErrorMessage = "مقدار حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Value { get; set; } = string.Empty;
 }
 
 public class CategoryListItemViewModel

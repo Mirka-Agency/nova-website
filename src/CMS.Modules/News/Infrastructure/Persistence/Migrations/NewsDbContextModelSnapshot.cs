@@ -62,6 +62,9 @@ partial class NewsDbContextModelSnapshot : ModelSnapshot
                 b.Property<DateTime?>("EventEndAtUtc")
                     .HasColumnType("timestamp with time zone");
 
+                b.Property<string>("EventInfoJson")
+                    .HasColumnType("text");
+
                 b.Property<DateTime?>("EventStartAtUtc")
                     .HasColumnType("timestamp with time zone");
 

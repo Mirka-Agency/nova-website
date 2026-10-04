@@ -1699,6 +1699,39 @@ fieldset.admin-field legend {
   justify-content: space-between;
 }
 
+.admin-event-info-list {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-event-info-item {
+  display: grid;
+  gap: calc(var(--admin-space) * 2);
+  padding: calc(var(--admin-space) * 3);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface, #fff);
+}
+
+.admin-event-info-item__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: calc(var(--admin-space) * 2);
+}
+
+.admin-event-info-item__row input {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .admin-event-info-item__row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-spec-list {
   display: grid;
   gap: calc(var(--admin-space) * 3);

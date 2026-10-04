@@ -32,6 +32,12 @@
   <data name="EventEnd" xml:space="preserve"><value>پایان رویداد</value></data>
   <data name="Location" xml:space="preserve"><value>محل برگزاری</value></data>
   <data name="EventFieldsHint" xml:space="preserve"><value>برای رویدادها، تاریخ شروع/پایان و محل برگزاری را وارد کنید؛ برای مقاله تخصصی اختیاری است.</value></data>
+  <data name="EventInfo" xml:space="preserve"><value>اطلاعات رویداد</value></data>
+  <data name="EventInfoHint" xml:space="preserve"><value>ردیف‌های سفارشی مثل موضوع محوری، ظرفیت یا برگزارکننده را اضافه کنید؛ در سایدبار صفحه رویداد نمایش داده می‌شود.</value></data>
+  <data name="EventInfoEmpty" xml:space="preserve"><value>هنوز موردی اضافه نشده است.</value></data>
+  <data name="AddEventInfoItem" xml:space="preserve"><value>افزودن مورد</value></data>
+  <data name="EventInfoLabel" xml:space="preserve"><value>برچسب (مثلاً موضوع محوری)</value></data>
+  <data name="EventInfoValue" xml:space="preserve"><value>مقدار</value></data>
   <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
   <data name="Draft" xml:space="preserve"><value>پیش‌نویس</value></data>
   <data name="Published" xml:space="preserve"><value>منتشرشده</value></data>

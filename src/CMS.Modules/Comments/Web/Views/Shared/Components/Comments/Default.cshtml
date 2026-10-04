@@ -1,19 +1,33 @@
+@using System.Globalization
 @using CMS.Modules.Comments.Domain.Enums
 @using CMS.Modules.Comments.Web
 @using CMS.Modules.Comments.Web.ViewModels
 @model CommentsSectionViewModel
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CommentsPublic> Localizer
+@{
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
+            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
 
-<section class="cms-comments" id="comments">
-    <h2>@Localizer["Comments"] (@Model.Comments.Count)</h2>
+    var countLabel = ToPersianDigits(Model.Comments.Count.ToString(CultureInfo.InvariantCulture));
+}
+
+<section class="cms-comments reveal" id="comments" aria-labelledby="cms-comments-heading">
+    <div class="cms-comments__header">
+        <p class="section-kicker">@Localizer["CommentsKicker"]</p>
+        <h2 class="cms-comments__title" id="cms-comments-heading">
+            @Localizer["Comments"]
+            <span class="cms-comments__count">(@countLabel)</span>
+        </h2>
+    </div>
 
     @if (TempData["CommentSuccess"] is string success)
     {
-        <p class="cms-comments-success">@success</p>
+        <p class="cms-comments-success" role="status">@success</p>
     }
     @if (TempData["CommentError"] is string error)
     {
-        <p class="cms-comments-error">@error</p>
+        <p class="cms-comments-error" role="alert">@error</p>
     }
 
     @if (Model.Comments.Count == 0)
@@ -25,123 +39,113 @@
         <ul class="cms-comments-list">
             @foreach (var comment in Model.Comments)
             {
+                var localTime = comment.PublishedAtUtc.ToLocalTime();
+                var dateLabel = ToPersianDigits(localTime.ToString("yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture));
                 <li class="cms-comments-item">
                     <div class="cms-comments-meta">
-                        <strong>@comment.AuthorName</strong>
-                        <span>@comment.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+                        <strong class="cms-comments__author">@comment.AuthorName</strong>
+                        <time class="cms-comments__date" datetime="@localTime.ToString("o", CultureInfo.InvariantCulture)">@dateLabel</time>
                     </div>
-                    <p>@comment.Body</p>
+                    <p class="cms-comments__body">@comment.Body</p>
                 </li>
             }
         </ul>
     }
 
-    <h3>@Localizer["LeaveComment"]</h3>
+    <div class="cms-comments__panel">
+        <h3 class="cms-comments__form-title">@Localizer["LeaveComment"]</h3>
 
-    @if (Model.RequiresLogin)
-    {
-        <p class="cms-comments-login">@Localizer["LoginRequired"]</p>
-    }
-    else
-    {
-        <form method="post" action="/comments" class="cms-comments-form">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="TargetType" value="@((int)Model.Form.TargetType)" />
-            <input type="hidden" name="TargetId" value="@Model.Form.TargetId" />
-            <input type="hidden" name="TargetTitle" value="@Model.Form.TargetTitle" />
-            <input type="hidden" name="ReturnUrl" value="@Model.Form.ReturnUrl" />
+        @if (Model.RequiresLogin)
+        {
+            <p class="cms-comments-login">@Localizer["LoginRequired"]</p>
+        }
+        else
+        {
+            <form method="post" action="/comments" class="cms-comments-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="TargetType" value="@((int)Model.Form.TargetType)" />
+                <input type="hidden" name="TargetId" value="@Model.Form.TargetId" />
+                <input type="hidden" name="TargetTitle" value="@Model.Form.TargetTitle" />
+                <input type="hidden" name="ReturnUrl" value="@Model.Form.ReturnUrl" />
 
-            <div class="cms-comments-field">
-                <label for="AuthorName">@Localizer["AuthorName"] <span>*</span></label>
-                <input id="AuthorName" name="AuthorName" value="@Model.Form.AuthorName" required maxlength="200" />
-            </div>
-
-            @if (Model.Settings.ShowEmail)
-            {
                 <div class="cms-comments-field">
-                    <label for="AuthorEmail">
-                        @Localizer["AuthorEmail"]
-                        @if (Model.Settings.RequireEmail)
-                        {
-                            <span>*</span>
-                        }
-                    </label>
-                    <input id="AuthorEmail" name="AuthorEmail" type="email" value="@Model.Form.AuthorEmail"
-                           maxlength="256" @(Model.Settings.RequireEmail ? "required" : null) />
+                    <label for="AuthorName">@Localizer["AuthorName"] <span>*</span></label>
+                    <input id="AuthorName" name="AuthorName" value="@Model.Form.AuthorName" required maxlength="200" />
                 </div>
-            }
 
-            @if (Model.Settings.ShowPhone)
-            {
+                @if (Model.Settings.ShowEmail)
+                {
+                    <div class="cms-comments-field">
+                        <label for="AuthorEmail">
+                            @Localizer["AuthorEmail"]
+                            @if (Model.Settings.RequireEmail)
+                            {
+                                <span>*</span>
+                            }
+                        </label>
+                        <input id="AuthorEmail" name="AuthorEmail" type="email" value="@Model.Form.AuthorEmail"
+                               maxlength="256" @(Model.Settings.RequireEmail ? "required" : null) />
+                    </div>
+                }
+
+                @if (Model.Settings.ShowPhone)
+                {
+                    <div class="cms-comments-field">
+                        <label for="AuthorPhone">
+                            @Localizer["AuthorPhone"]
+                            @if (Model.Settings.RequirePhone)
+                            {
+                                <span>*</span>
+                            }
+                        </label>
+                        <input id="AuthorPhone" name="AuthorPhone" value="@Model.Form.AuthorPhone"
+                               maxlength="40" @(Model.Settings.RequirePhone ? "required" : null) />
+                    </div>
+                }
+
                 <div class="cms-comments-field">
-                    <label for="AuthorPhone">
-                        @Localizer["AuthorPhone"]
-                        @if (Model.Settings.RequirePhone)
-                        {
-                            <span>*</span>
-                        }
-                    </label>
-                    <input id="AuthorPhone" name="AuthorPhone" value="@Model.Form.AuthorPhone"
-                           maxlength="40" @(Model.Settings.RequirePhone ? "required" : null) />
+                    <label for="Body">@Localizer["Body"] <span>*</span></label>
+                    <textarea id="Body" name="Body" rows="4" required maxlength="4000">@Model.Form.Body</textarea>
                 </div>
-            }
 
-            <div class="cms-comments-field">
-                <label for="Body">@Localizer["Body"] <span>*</span></label>
-                <textarea id="Body" name="Body" rows="4" required maxlength="4000">@Model.Form.Body</textarea>
-            </div>
+                @if (Model.Settings.EnableCaptcha)
+                {
+                    if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Turnstile && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
+                    {
+                        <div class="cf-turnstile" data-sitekey="@Model.CaptchaSiteKey" data-callback="onCommentsCaptcha"></div>
+                        <input type="hidden" name="CaptchaToken" id="comments-captcha-token" />
+                        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                        <script>
+                            function onCommentsCaptcha(token) {
+                                document.getElementById('comments-captcha-token').value = token;
+                            }
+                        </script>
+                    }
+                    else if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Recaptcha && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
+                    {
+                        <input type="hidden" name="CaptchaToken" id="comments-captcha-token" value="" />
+                        <div data-recaptcha-v3
+                             data-recaptcha-sitekey="@Model.CaptchaSiteKey"
+                             data-recaptcha-action="comment"
+                             data-recaptcha-token="CaptchaToken"></div>
+                        <script src="https://www.google.com/recaptcha/api.js?render=@Model.CaptchaSiteKey" async defer></script>
+                        <script src="~/js/recaptcha-v3.js" asp-append-version="true" defer></script>
+                    }
+                    else if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Hcaptcha && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
+                    {
+                        <div class="h-captcha" data-sitekey="@Model.CaptchaSiteKey" data-callback="onCommentsCaptcha"></div>
+                        <input type="hidden" name="CaptchaToken" id="comments-captcha-token" />
+                        <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+                        <script>
+                            function onCommentsCaptcha(token) {
+                                document.getElementById('comments-captcha-token').value = token;
+                            }
+                        </script>
+                    }
+                }
 
-            @if (Model.Settings.EnableCaptcha)
-            {
-                if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Turnstile && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
-                {
-                    <div class="cf-turnstile" data-sitekey="@Model.CaptchaSiteKey" data-callback="onCommentsCaptcha"></div>
-                    <input type="hidden" name="CaptchaToken" id="comments-captcha-token" />
-                    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-                    <script>
-                        function onCommentsCaptcha(token) {
-                            document.getElementById('comments-captcha-token').value = token;
-                        }
-                    </script>
-                }
-                else if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Recaptcha && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
-                {
-                    <input type="hidden" name="CaptchaToken" id="comments-captcha-token" value="" />
-                    <div data-recaptcha-v3
-                         data-recaptcha-sitekey="@Model.CaptchaSiteKey"
-                         data-recaptcha-action="comment"
-                         data-recaptcha-token="CaptchaToken"></div>
-                    <script src="https://www.google.com/recaptcha/api.js?render=@Model.CaptchaSiteKey" async defer></script>
-                    <script src="~/js/recaptcha-v3.js" asp-append-version="true" defer></script>
-                }
-                else if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Hcaptcha && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
-                {
-                    <div class="h-captcha" data-sitekey="@Model.CaptchaSiteKey" data-callback="onCommentsCaptcha"></div>
-                    <input type="hidden" name="CaptchaToken" id="comments-captcha-token" />
-                    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-                    <script>
-                        function onCommentsCaptcha(token) {
-                            document.getElementById('comments-captcha-token').value = token;
-                        }
-                    </script>
-                }
-            }
-
-            <button type="submit" class="cms-comments-submit">@Localizer["Submit"]</button>
-        </form>
-    }
+                <button type="submit" class="btn-primary-custom cms-comments-submit">@Localizer["Submit"]</button>
+            </form>
+        }
+    </div>
 </section>
-
-<style>
-    .cms-comments { margin-block: 2rem; }
-    .cms-comments-list { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: 1rem; }
-    .cms-comments-item { border-block-end: 1px solid #e5e5e5; padding-block-end: 1rem; }
-    .cms-comments-meta { display: flex; gap: .75rem; color: #666; margin-block-end: .35rem; }
-    .cms-comments-field { margin-block-end: .85rem; }
-    .cms-comments-field label { display: block; margin-block-end: .35rem; }
-    .cms-comments-field input,
-    .cms-comments-field textarea { width: 100%; max-width: 40rem; }
-    .cms-comments-success { color: #16a34a; }
-    .cms-comments-error { color: #dc2626; }
-    .cms-comments-submit { margin-block-start: .5rem; }
-</style>

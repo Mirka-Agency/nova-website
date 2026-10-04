@@ -47,6 +47,8 @@ public sealed class SaveArticleApiRequest
     [MaxLength(300)]
     public string? Location { get; set; }
 
+    public string? EventInfoJson { get; set; }
+
     [MaxLength(200)]
     public string? MetaTitle { get; set; }
 

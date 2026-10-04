@@ -29,6 +29,8 @@ public class Article : BaseEntity
     public DateTime? EventStartAtUtc { get; private set; }
     public DateTime? EventEndAtUtc { get; private set; }
     public string? Location { get; private set; }
+    /// <summary>JSON array of custom event info rows: [{ label, value }].</summary>
+    public string? EventInfoJson { get; private set; }
     public string? AuthorUserId { get; private set; }
     public string? AuthorDisplayName { get; private set; }
     /// <summary>Identity user who owns this article for per-user auto-drafts.</summary>
@@ -146,6 +148,15 @@ public class Article : BaseEntity
         Touch();
     }
 
+    public void SetEventInfoJson(string? eventInfoJson)
+    {
+        if (eventInfoJson is { Length: > 20_000 })
+            throw new DomainException("اطلاعات رویداد خیلی طولانی است.");
+
+        EventInfoJson = string.IsNullOrWhiteSpace(eventInfoJson) ? null : eventInfoJson.Trim();
+        Touch();
+    }
+
     public void SetAttachment(string? attachmentUrl, string? attachmentFileName)
     {
         if (attachmentUrl is { Length: > 1000 })
@@ -235,6 +246,7 @@ public class Article : BaseEntity
         {
             EventStartAtUtc = null;
             EventEndAtUtc = null;
+            EventInfoJson = null;
         }
 
         AuthorUserId = NullIfWhiteSpace(authorUserId);

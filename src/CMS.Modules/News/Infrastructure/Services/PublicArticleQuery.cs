@@ -129,6 +129,7 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
             article.EventStartAtUtc,
             article.EventEndAtUtc,
             article.Location,
+            article.EventInfoJson,
             ResolveExcerpt(article.Excerpt, article.Body),
             article.AuthorDisplayName,
             article.MetaTitle,

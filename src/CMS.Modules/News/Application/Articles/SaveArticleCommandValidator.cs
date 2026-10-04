@@ -56,6 +56,16 @@ public sealed class SaveArticleCommandValidator : AbstractValidator<SaveArticleC
                 return error ?? "فرمت گالری تصاویر نامعتبر است.";
             });
 
+        RuleFor(x => x.EventInfoJson)
+            .MaximumLength(ArticleEventInfoJson.MaxJsonLength)
+            .Must(value => ArticleEventInfoJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.EventInfoJson))
+            .WithMessage(x =>
+            {
+                ArticleEventInfoJson.TryValidate(x.EventInfoJson, out var error);
+                return error ?? "فرمت اطلاعات رویداد نامعتبر است.";
+            });
+
         RuleFor(x => x.AttachmentUrl)
             .MaximumLength(1000)
             .Must(BeValidUrlOrPath)

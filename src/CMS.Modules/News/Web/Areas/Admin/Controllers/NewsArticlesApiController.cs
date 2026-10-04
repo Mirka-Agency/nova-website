@@ -159,6 +159,7 @@ public class NewsArticlesApiController : ControllerBase
             request.EventStartAtUtc,
             request.EventEndAtUtc,
             request.Location,
+            ArticleEventInfoJson.NormalizeJson(request.EventInfoJson),
             authorUserId,
             authorDisplayName,
             request.MetaTitle,

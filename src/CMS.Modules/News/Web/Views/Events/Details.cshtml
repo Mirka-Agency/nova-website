@@ -42,6 +42,7 @@
     var year = PersianYear(Model.EventStartAtUtc ?? Model.PublishedAtUtc);
     var startLocal = FormatLocal(Model.EventStartAtUtc);
     var endLocal = FormatLocal(Model.EventEndAtUtc);
+    var eventInfoItems = ArticleEventInfoJson.Parse(Model.EventInfoJson);
 
     // Only curated gallery images — never fall back to cover/body placeholders
     var gallery = ArticleGalleryJson.Parse(Model.GalleryJson)
@@ -198,6 +199,13 @@
             <li>
               <span class="event-info-list__label">مسئولیت علمی</span>
               <span class="event-info-list__value">@Model.AuthorDisplayName</span>
+            </li>
+          }
+          @foreach (var info in eventInfoItems)
+          {
+            <li>
+              <span class="event-info-list__label">@info.Label</span>
+              <span class="event-info-list__value">@info.Value</span>
             </li>
           }
           <li>

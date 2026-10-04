@@ -246,6 +246,9 @@ public class NewsArticlesController : Controller
             EventStartAtUtc = post.EventStartAtUtc,
             EventEndAtUtc = post.EventEndAtUtc,
             Location = post.Location,
+            EventInfoItems = ArticleEventInfoJson.Parse(post.EventInfoJson)
+                .Select(x => new ArticleEventInfoFormItem { Label = x.Label, Value = x.Value })
+                .ToList(),
             MetaTitle = post.MetaTitle,
             MetaDescription = post.MetaDescription,
             SeoKeywords = post.SeoKeywords,
@@ -358,6 +361,8 @@ public class NewsArticlesController : Controller
 
         var galleryJson = ArticleGalleryJson.Serialize(
             (model.GalleryImages ?? []).Select(x => new ArticleGalleryImageDto(x.Url, x.AltText)));
+        var eventInfoJson = ArticleEventInfoJson.Serialize(
+            (model.EventInfoItems ?? []).Select(x => new ArticleEventInfoItemDto(x.Label, x.Value)));
 
         return new SaveArticleCommand(
             string.IsNullOrWhiteSpace(model.Title) ? ArticleDraftDefaults.Title : model.Title.Trim(),
@@ -375,6 +380,7 @@ public class NewsArticlesController : Controller
             ToUtc(model.EventStartAtLocal, nameof(ArticleFormViewModel.EventStartAtLocal)),
             ToUtc(model.EventEndAtLocal, nameof(ArticleFormViewModel.EventEndAtLocal)),
             NullIfWhiteSpace(model.Location),
+            eventInfoJson,
             NullIfWhiteSpace(model.AuthorUserId),
             authorDisplayName,
             NullIfWhiteSpace(model.MetaTitle),
@@ -391,6 +397,7 @@ public class NewsArticlesController : Controller
         var categories = await _categories.ListAsync(cancellationToken);
         var authors = await _authors.ListContentAuthorsAsync(cancellationToken);
         model.GalleryImages ??= [];
+        model.EventInfoItems ??= [];
 
         model.Kinds =
         [

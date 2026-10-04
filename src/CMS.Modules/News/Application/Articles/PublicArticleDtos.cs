@@ -34,6 +34,7 @@ public sealed record PublicArticleDetailDto(
     DateTime? EventStartAtUtc,
     DateTime? EventEndAtUtc,
     string? Location,
+    string? EventInfoJson,
     string Excerpt,
     string? AuthorDisplayName,
     string? MetaTitle,

@@ -207,6 +207,9 @@ public sealed class ArticleService : IArticleService
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var galleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson);
+        var eventInfoJson = command.Kind == ArticleKind.Event
+            ? ArticleEventInfoJson.NormalizeJson(command.EventInfoJson)
+            : null;
         var article = Article.Create(
             command.Title,
             slug,
@@ -228,6 +231,7 @@ public sealed class ArticleService : IArticleService
             command.OgDescription,
             command.OgImageUrl);
         article.SetGalleryJson(galleryJson);
+        article.SetEventInfoJson(eventInfoJson);
         article.SetAttachment(command.AttachmentUrl, command.AttachmentFileName);
 
         ApplyPublishState(article, command);
@@ -251,6 +255,9 @@ public sealed class ArticleService : IArticleService
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var galleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson);
+        var eventInfoJson = command.Kind == ArticleKind.Event
+            ? ArticleEventInfoJson.NormalizeJson(command.EventInfoJson)
+            : null;
         article.Update(
             command.Title,
             slug,
@@ -272,6 +279,7 @@ public sealed class ArticleService : IArticleService
             command.OgDescription,
             command.OgImageUrl);
         article.SetGalleryJson(galleryJson);
+        article.SetEventInfoJson(eventInfoJson);
         article.SetAttachment(command.AttachmentUrl, command.AttachmentFileName);
 
         ApplyPublishState(article, command);
@@ -308,6 +316,7 @@ public sealed class ArticleService : IArticleService
             article.EventStartAtUtc,
             article.EventEndAtUtc,
             article.Location,
+            article.EventInfoJson,
             article.MetaTitle,
             article.MetaDescription,
             article.SeoKeywords,
@@ -327,7 +336,10 @@ public sealed class ArticleService : IArticleService
         {
             Title = title,
             Body = body,
-            GalleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson)
+            GalleryJson = ArticleGalleryJson.NormalizeJson(command.GalleryJson),
+            EventInfoJson = command.Kind == ArticleKind.Event
+                ? ArticleEventInfoJson.NormalizeJson(command.EventInfoJson)
+                : null
         };
     }
 
