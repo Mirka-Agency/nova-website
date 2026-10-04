@@ -260,18 +260,6 @@
 </section>
 }
 
-@if (!string.IsNullOrWhiteSpace(Model.Excerpt))
-{
-  <section class="doctor-highlight" aria-labelledby="doctor-highlight-heading">
-    <div class="container">
-      <blockquote class="doctor-highlight__quote reveal" id="doctor-highlight-heading">
-        <p>@Model.Excerpt</p>
-        <cite>@Model.Title · @brand</cite>
-      </blockquote>
-    </div>
-  </section>
-}
-
 @if (related.Count > 0)
 {
   <section class="about-team" aria-labelledby="doctor-related-heading">
