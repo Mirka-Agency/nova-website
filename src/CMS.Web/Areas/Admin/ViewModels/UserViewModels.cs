@@ -14,6 +14,8 @@ public class UserListItemViewModel
     public bool PhoneNumberConfirmed { get; set; }
     public IReadOnlyList<string> Roles { get; set; } = [];
     public bool IsLockedOut { get; set; }
+    public int AccessFailedCount { get; set; }
+    public bool HasLoginRestriction => IsLockedOut || AccessFailedCount > 0;
 }
 
 public class CreateUserViewModel
@@ -73,6 +75,10 @@ public class EditUserViewModel
 
     [Display(Name = "قفل حساب")]
     public bool IsLockedOut { get; set; }
+
+    public int AccessFailedCount { get; set; }
+
+    public bool HasLoginRestriction => IsLockedOut || AccessFailedCount > 0;
 }
 
 public class AdminSetUserPasswordViewModel

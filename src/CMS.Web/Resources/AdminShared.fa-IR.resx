@@ -184,6 +184,11 @@
   <data name="Locked" xml:space="preserve"><value>قفل‌شده</value></data>
   <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
   <data name="LockAccount" xml:space="preserve"><value>قفل حساب</value></data>
+  <data name="ClearLoginRestrictions" xml:space="preserve"><value>لغو قفل و محدودیت ورود</value></data>
+  <data name="LoginRestrictionsCleared" xml:space="preserve"><value>قفل و محدودیت ورود کاربر لغو شد.</value></data>
+  <data name="LoginRestricted" xml:space="preserve"><value>محدودیت ورود</value></data>
+  <data name="AccountCurrentlyLocked" xml:space="preserve"><value>این حساب هم‌اکنون قفل است و امکان ورود ندارد.</value></data>
+  <data name="FailedLoginAttempts" xml:space="preserve"><value>تعداد ورود ناموفق: {0}</value></data>
   <data name="NoUsers" xml:space="preserve"><value>هنوز کاربری ثبت نشده است.</value></data>
   <data name="UserCreated" xml:space="preserve"><value>کاربر با موفقیت ایجاد شد.</value></data>
   <data name="UserUpdated" xml:space="preserve"><value>کاربر به‌روزرسانی شد.</value></data>

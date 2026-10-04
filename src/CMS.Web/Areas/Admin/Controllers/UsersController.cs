@@ -85,7 +85,8 @@ public class UsersController : Controller
                     .OrderBy(r => r)
                     .Select(RoleDisplayName)
                     .ToList(),
-                IsLockedOut = await _userManager.IsLockedOutAsync(user)
+                IsLockedOut = await _userManager.IsLockedOutAsync(user),
+                AccessFailedCount = await _userManager.GetAccessFailedCountAsync(user)
             });
         }
 
@@ -171,7 +172,8 @@ public class UsersController : Controller
             AvatarUrl = user.AvatarUrl,
             PhoneNumber = user.PhoneNumber ?? string.Empty,
             SelectedRoles = (await _userManager.GetRolesAsync(user)).ToList(),
-            IsLockedOut = await _userManager.IsLockedOutAsync(user)
+            IsLockedOut = await _userManager.IsLockedOutAsync(user),
+            AccessFailedCount = await _userManager.GetAccessFailedCountAsync(user)
         };
 
         return View(await BuildEditModelAsync(model));
@@ -237,13 +239,37 @@ public class UsersController : Controller
         }
         else
         {
-            await _userManager.SetLockoutEndDateAsync(user, null);
+            await ClearLoginRestrictionsAsync(user);
         }
 
         _logger.LogInformation("Admin action: user {Actor} updated user {UserId}",
             User.Identity?.Name, user.Id);
         TempData["Success"] = _localizer["UserUpdated"].Value;
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UnlockLogin(string id, string? returnUrl = null)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        await _userManager.SetLockoutEnabledAsync(user, true);
+        await ClearLoginRestrictionsAsync(user);
+
+        _logger.LogInformation("Admin action: user {Actor} cleared login lock/restrictions for {UserId}",
+            User.Identity?.Name, user.Id);
+        TempData["Success"] = _localizer["LoginRestrictionsCleared"].Value;
+
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        return RedirectToAction(nameof(Edit), new { id = user.Id });
     }
 
     [HttpGet]
@@ -286,10 +312,18 @@ public class UsersController : Controller
             return View(model);
         }
 
+        await ClearLoginRestrictionsAsync(user);
+
         _logger.LogInformation("Admin action: user {Actor} set password for user {UserId}",
             User.Identity?.Name, user.Id);
         TempData["Success"] = _localizer["UserPasswordChanged"].Value;
         return RedirectToAction(nameof(Edit), new { id = user.Id });
+    }
+
+    private async Task ClearLoginRestrictionsAsync(ApplicationUser user)
+    {
+        await _userManager.SetLockoutEndDateAsync(user, null);
+        await _userManager.ResetAccessFailedCountAsync(user);
     }
 
     private void AddIdentityErrors(IdentityResult result)

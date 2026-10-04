@@ -72,9 +72,33 @@ else
                         }
                     </td>
                     <td>@(user.Roles.Count == 0 ? "—" : string.Join("، ", user.Roles))</td>
-                    <td>@(user.IsLockedOut ? Localizer["Locked"] : Localizer["Active"])</td>
                     <td>
+                        @if (user.IsLockedOut)
+                        {
+                            @Localizer["Locked"]
+                        }
+                        else if (user.AccessFailedCount > 0)
+                        {
+                            @Localizer["LoginRestricted"]
+                        }
+                        else
+                        {
+                            @Localizer["Active"]
+                        }
+                    </td>
+                    <td class="admin-row-actions">
                         <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@user.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
+                        @if (user.HasLoginRestriction)
+                        {
+                            <form asp-action="UnlockLogin" method="post" class="admin-inline-form">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <input type="hidden" name="returnUrl" value="@Url.Action("Index")" />
+                                <button type="submit" class="btn btn-ghost">
+                                    <i class="fas fa-unlock" aria-hidden="true"></i>
+                                    <span>@Localizer["ClearLoginRestrictions"]</span>
+                                </button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }
