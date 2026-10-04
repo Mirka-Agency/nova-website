@@ -1246,6 +1246,42 @@ html[dir="rtl"] .admin-upload-progress.is-determinate .admin-upload-progress-bar
   color: var(--admin-text);
 }
 
+.admin-password-field {
+  position: relative;
+  width: 100%;
+}
+
+.admin-password-field input {
+  padding-inline-end: 2.75rem;
+}
+
+.admin-password-toggle {
+  position: absolute;
+  inset-inline-end: 0.25rem;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--admin-text-secondary);
+  cursor: pointer;
+}
+
+.admin-password-toggle:hover {
+  color: var(--admin-text);
+  background: var(--admin-muted);
+}
+
+.admin-password-toggle:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: 0;
+}
+
 .admin-field input:focus {
   outline: 2px solid var(--admin-primary);
   outline-offset: 0;

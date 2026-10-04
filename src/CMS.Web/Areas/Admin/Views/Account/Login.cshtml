@@ -20,7 +20,18 @@
 
         <div class="admin-field">
             <label asp-for="Password">@Localizer["Password"]</label>
-            <input asp-for="Password" autocomplete="current-password" />
+            <div class="admin-password-field">
+                <input asp-for="Password" autocomplete="current-password" id="Password" />
+                <button type="button"
+                        class="admin-password-toggle"
+                        data-password-toggle="Password"
+                        data-label-show="@Localizer["ShowPassword"]"
+                        data-label-hide="@Localizer["HidePassword"]"
+                        aria-label="@Localizer["ShowPassword"]"
+                        aria-pressed="false">
+                    <i class="fas fa-eye" aria-hidden="true"></i>
+                </button>
+            </div>
             <span asp-validation-for="Password" class="admin-field-error"></span>
         </div>
 
@@ -90,3 +101,26 @@
         </button>
     </form>
 </div>
+
+<script>
+    (function () {
+        document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var input = document.getElementById(btn.getAttribute('data-password-toggle'));
+                var icon = btn.querySelector('i');
+                if (!input) return;
+
+                var showing = input.type === 'text';
+                input.type = showing ? 'password' : 'text';
+                btn.setAttribute('aria-pressed', showing ? 'false' : 'true');
+                btn.setAttribute('aria-label', showing
+                    ? (btn.getAttribute('data-label-show') || '')
+                    : (btn.getAttribute('data-label-hide') || ''));
+                if (icon) {
+                    icon.classList.toggle('fa-eye', showing);
+                    icon.classList.toggle('fa-eye-slash', !showing);
+                }
+            });
+        });
+    })();
+</script>
