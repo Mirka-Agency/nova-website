@@ -316,12 +316,14 @@
     <div class="doctor-jump">
       @foreach (var member in related)
       {
-        var memberCover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
+        var memberAvatar = !string.IsNullOrWhiteSpace(member.AvatarImageUrl)
+            ? member.AvatarImageUrl
+            : (!string.IsNullOrWhiteSpace(member.CoverImageUrl) ? member.CoverImageUrl : fallbackCover);
         var memberRole = string.IsNullOrWhiteSpace(member.CategoryName) ? "متخصص کلینیک" : member.CategoryName;
         var memberSpecialty = string.IsNullOrWhiteSpace(member.Subtitle) ? memberRole : member.Subtitle;
         <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
           <span class="doctor-jump__avatar">
-            <img src="@memberCover" width="72" height="72" alt="" loading="lazy">
+            <img src="@memberAvatar" width="72" height="72" alt="" loading="lazy">
           </span>
           <span class="doctor-jump__body">
             <span class="doctor-jump__role">@memberRole</span>

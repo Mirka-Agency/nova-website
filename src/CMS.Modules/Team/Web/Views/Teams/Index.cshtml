@@ -48,12 +48,14 @@
       {
         @foreach (var member in items)
         {
-          var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
+          var avatar = !string.IsNullOrWhiteSpace(member.AvatarImageUrl)
+              ? member.AvatarImageUrl
+              : (!string.IsNullOrWhiteSpace(member.CoverImageUrl) ? member.CoverImageUrl : fallbackCover);
           var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "متخصص کلینیک" : member.CategoryName;
           var specialty = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
           <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
             <span class="doctor-jump__avatar">
-              <img src="@cover" width="72" height="72" alt="" loading="lazy">
+              <img src="@avatar" width="72" height="72" alt="" loading="lazy">
             </span>
             <span class="doctor-jump__body">
               <span class="doctor-jump__role">@role</span>
