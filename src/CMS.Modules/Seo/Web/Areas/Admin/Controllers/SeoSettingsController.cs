@@ -57,7 +57,7 @@ public class SeoSettingsController : Controller
                 model.OrganizationUrl,
                 model.OrganizationLogoUrl,
                 model.DefaultSchemaType,
-                model.RobotsTxtExtra,
+                model.RobotsTxt,
                 model.TwitterSiteHandle,
                 model.EnableBrokenLinkChecks,
                 model.SitemapEnabled), cancellationToken);
@@ -86,7 +86,7 @@ public class SeoSettingsController : Controller
             OrganizationUrl = dto.OrganizationUrl,
             OrganizationLogoUrl = dto.OrganizationLogoUrl,
             DefaultSchemaType = dto.DefaultSchemaType,
-            RobotsTxtExtra = dto.RobotsTxtExtra,
+            RobotsTxt = dto.RobotsTxt,
             TwitterSiteHandle = dto.TwitterSiteHandle,
             EnableBrokenLinkChecks = dto.EnableBrokenLinkChecks,
             SitemapEnabled = dto.SitemapEnabled,

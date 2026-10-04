@@ -78,6 +78,29 @@ public class SeoRedirectTests
     }
 
     [Fact]
+    public void Create_WithRewriteStatus_NormalizesInternalTarget()
+    {
+        var redirect = SeoRedirect.Create("/pretty/", "/real-page/?x=1", 200, true, null);
+        redirect.FromPath.Should().Be("/pretty");
+        redirect.ToUrl.Should().Be("/real-page?x=1");
+        redirect.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public void Create_WithRewriteToAbsoluteUrl_Throws()
+    {
+        var act = () => SeoRedirect.Create("/pretty", "https://example.com/page", 200, true, null);
+        act.Should().Throw<DomainException>().WithMessage("*بازنویسی*");
+    }
+
+    [Fact]
+    public void Create_WithRewriteSamePath_Throws()
+    {
+        var act = () => SeoRedirect.Create("/same", "/same/", 200, true, null);
+        act.Should().Throw<DomainException>().WithMessage("*یکسان*");
+    }
+
+    [Fact]
     public void Create_WithEmptyFromPath_Throws()
     {
         var act = () => SeoRedirect.Create("  ", "/b", 301, true, null);

@@ -200,8 +200,9 @@ public class SeoRedirectsController : Controller
     {
         model.StatusCodeOptions =
         [
-            new SelectListItem("301", "301", model.StatusCode == 301),
-            new SelectListItem("302", "302", model.StatusCode == 302)
+            new SelectListItem(_localizer["StatusCode200"].Value, "200", model.StatusCode == 200),
+            new SelectListItem(_localizer["StatusCode301"].Value, "301", model.StatusCode == 301),
+            new SelectListItem(_localizer["StatusCode302"].Value, "302", model.StatusCode == 302)
         ];
         return model;
     }

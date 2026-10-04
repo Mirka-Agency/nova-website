@@ -15,7 +15,7 @@ public sealed class UpdateSeoSiteSettingsCommandValidator : AbstractValidator<Up
             .Must(v => string.IsNullOrWhiteSpace(v) || SeoSchemaTypes.IsKnown(v))
             .WithMessage("نوع اسکیمای پیش‌فرض نامعتبر است.")
             .When(x => !string.IsNullOrWhiteSpace(x.DefaultSchemaType));
-        RuleFor(x => x.RobotsTxtExtra).MaximumLength(8000).When(x => !string.IsNullOrWhiteSpace(x.RobotsTxtExtra));
+        RuleFor(x => x.RobotsTxt).MaximumLength(8000).When(x => !string.IsNullOrWhiteSpace(x.RobotsTxt));
         RuleFor(x => x.TwitterSiteHandle).MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.TwitterSiteHandle));
     }
 }

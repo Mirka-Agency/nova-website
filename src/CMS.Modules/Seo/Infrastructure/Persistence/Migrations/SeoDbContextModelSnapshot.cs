@@ -145,8 +145,9 @@ namespace CMS.Modules.Seo.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<string>("RobotsTxtExtra")
-                        .HasColumnType("text");
+                    b.Property<string>("RobotsTxt")
+                        .HasColumnType("text")
+                        .HasColumnName("RobotsTxtExtra");
 
                     b.Property<bool>("SitemapEnabled")
                         .ValueGeneratedOnAdd()

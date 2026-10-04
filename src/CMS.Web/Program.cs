@@ -230,8 +230,9 @@ try
 
     app.UseSerilogRequestLogging();
     app.UseRequestLocalization();
-    app.UseRouting();
+    // Before UseRouting so status-200 rewrites affect endpoint matching.
     app.UseSeoRedirects();
+    app.UseRouting();
     app.UseStaffResponseCacheBypass();
     app.UseResponseCaching();
     app.UseRateLimiter();

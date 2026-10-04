@@ -6,7 +6,7 @@ public sealed record SeoSiteSettingsDto(
     string? OrganizationUrl,
     string? OrganizationLogoUrl,
     string? DefaultSchemaType,
-    string? RobotsTxtExtra,
+    string? RobotsTxt,
     string? TwitterSiteHandle,
     bool EnableBrokenLinkChecks,
     bool SitemapEnabled,
@@ -18,7 +18,7 @@ public sealed record UpdateSeoSiteSettingsCommand(
     string? OrganizationUrl,
     string? OrganizationLogoUrl,
     string? DefaultSchemaType,
-    string? RobotsTxtExtra,
+    string? RobotsTxt,
     string? TwitterSiteHandle,
     bool EnableBrokenLinkChecks,
     bool SitemapEnabled);

@@ -15,7 +15,8 @@ public sealed class SeoSiteSettingsConfiguration : IEntityTypeConfiguration<SeoS
         builder.Property(x => x.OrganizationUrl).HasMaxLength(1000);
         builder.Property(x => x.OrganizationLogoUrl).HasMaxLength(1000);
         builder.Property(x => x.DefaultSchemaType).HasMaxLength(64);
-        builder.Property(x => x.RobotsTxtExtra);
+        // Existing column name kept for backward compatibility.
+        builder.Property(x => x.RobotsTxt).HasColumnName("RobotsTxtExtra");
         builder.Property(x => x.TwitterSiteHandle).HasMaxLength(100);
         builder.Property(x => x.EnableBrokenLinkChecks).IsRequired();
         builder.Property(x => x.SitemapEnabled).IsRequired().HasDefaultValue(true);

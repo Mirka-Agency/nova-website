@@ -34,7 +34,7 @@ public sealed class SeoSiteSettingsService : ISeoSiteSettingsService
             command.OrganizationUrl,
             command.OrganizationLogoUrl,
             command.DefaultSchemaType,
-            command.RobotsTxtExtra,
+            command.RobotsTxt,
             command.TwitterSiteHandle,
             command.EnableBrokenLinkChecks,
             command.SitemapEnabled);
@@ -45,12 +45,17 @@ public sealed class SeoSiteSettingsService : ISeoSiteSettingsService
     {
         var settings = await _db.SiteSettings
             .FirstOrDefaultAsync(s => s.Id == SeoSiteSettings.SingletonId, cancellationToken);
-        if (settings is not null)
+        if (settings is null)
+        {
+            settings = SeoSiteSettings.CreateDefault();
+            _db.SiteSettings.Add(settings);
+            await _db.SaveChangesAsync(cancellationToken);
             return settings;
+        }
 
-        settings = SeoSiteSettings.CreateDefault();
-        _db.SiteSettings.Add(settings);
-        await _db.SaveChangesAsync(cancellationToken);
+        if (settings.EnsureFullRobotsTxt())
+            await _db.SaveChangesAsync(cancellationToken);
+
         return settings;
     }
 
@@ -73,7 +78,7 @@ public sealed class SeoSiteSettingsService : ISeoSiteSettingsService
             s.OrganizationUrl,
             s.OrganizationLogoUrl,
             s.DefaultSchemaType,
-            s.RobotsTxtExtra,
+            s.RobotsTxt ?? SeoSiteSettings.DefaultRobotsTxt,
             s.TwitterSiteHandle,
             s.EnableBrokenLinkChecks,
             s.SitemapEnabled,

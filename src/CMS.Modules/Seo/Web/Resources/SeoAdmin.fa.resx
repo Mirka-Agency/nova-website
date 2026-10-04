@@ -14,7 +14,12 @@
   <data name="FromPath" xml:space="preserve"><value>مسیر مبدأ</value></data>
   <data name="FromPathHint" xml:space="preserve"><value>باید با / شروع شود، مثلاً /old-page</value></data>
   <data name="ToUrl" xml:space="preserve"><value>آدرس مقصد</value></data>
+  <data name="ToUrlHint" xml:space="preserve"><value>برای ۳۰۱/۳۰۲ مسیر یا URL کامل؛ برای ۲۰۰ فقط مسیر داخلی مثل /page</value></data>
   <data name="StatusCode" xml:space="preserve"><value>کد وضعیت</value></data>
+  <data name="StatusCodeHint" xml:space="preserve"><value>۲۰۰ محتوا را بدون تغییر آدرس مرورگر بازنویسی می‌کند؛ ۳۰۱/۳۰۲ ریدایرکت واقعی هستند.</value></data>
+  <data name="StatusCode200" xml:space="preserve"><value>200 — بازنویسی (بدون ریدایرکت)</value></data>
+  <data name="StatusCode301" xml:space="preserve"><value>301 — دائمی</value></data>
+  <data name="StatusCode302" xml:space="preserve"><value>302 — موقت</value></data>
   <data name="Note" xml:space="preserve"><value>یادداشت</value></data>
   <data name="Status" xml:space="preserve"><value>وضعیت</value></data>
   <data name="Active" xml:space="preserve"><value>فعال</value></data>
@@ -43,8 +48,10 @@
   <data name="TwitterSiteHandle" xml:space="preserve"><value>هندل توییتر / X</value></data>
   <data name="SitemapEnabled" xml:space="preserve"><value>نقشه سایت در robots.txt</value></data>
   <data name="EnableBrokenLinkChecks" xml:space="preserve"><value>فعال‌سازی بررسی لینک‌های شکسته</value></data>
-  <data name="RobotsTxtExtra" xml:space="preserve"><value>خطوط اضافی robots.txt</value></data>
-  <data name="RobotsTxtExtraHint" xml:space="preserve"><value>هر خط در انتهای فایل robots.txt اضافه می‌شود.</value></data>
+  <data name="RobotsTxt" xml:space="preserve"><value>محتوای robots.txt</value></data>
+  <data name="RobotsTxtHint" xml:space="preserve"><value>این متن عیناً به‌عنوان فایل /robots.txt سرو می‌شود. برای مسدود کردن همه ربات‌ها: User-agent: * و Disallow: /</value></data>
+  <data name="RobotsTxtExtra" xml:space="preserve"><value>محتوای robots.txt</value></data>
+  <data name="RobotsTxtExtraHint" xml:space="preserve"><value>این متن عیناً به‌عنوان فایل /robots.txt سرو می‌شود.</value></data>
   <data name="SeoAnalysis" xml:space="preserve"><value>تحلیل سئو</value></data>
   <data name="SeoAnalysisHint" xml:space="preserve"><value>بررسی هم‌زمان Mirka و Yoast برای محتوای فارسی</value></data>
   <data name="SeoScore" xml:space="preserve"><value>امتیاز سئو</value></data>

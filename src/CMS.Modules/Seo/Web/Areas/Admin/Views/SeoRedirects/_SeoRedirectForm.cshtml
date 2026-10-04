@@ -11,11 +11,13 @@
 <div class="admin-field">
     <label asp-for="ToUrl">@Localizer["ToUrl"]</label>
     <input asp-for="ToUrl" dir="ltr" placeholder="/new-path یا https://..." />
+    <p class="admin-hint">@Localizer["ToUrlHint"]</p>
     <span asp-validation-for="ToUrl" class="admin-field-error"></span>
 </div>
 <div class="admin-field">
     <label asp-for="StatusCode">@Localizer["StatusCode"]</label>
     <select asp-for="StatusCode" asp-items="Model.StatusCodeOptions"></select>
+    <p class="admin-hint">@Localizer["StatusCodeHint"]</p>
     <span asp-validation-for="StatusCode" class="admin-field-error"></span>
 </div>
 <div class="admin-field">

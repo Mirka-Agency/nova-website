@@ -39,22 +39,17 @@
         <legend>@Localizer["CrawlingSection"]</legend>
         <div class="admin-field">
             <label class="admin-checkbox">
-                <input asp-for="SitemapEnabled" />
-                <span>@Localizer["SitemapEnabled"]</span>
-            </label>
-        </div>
-        <div class="admin-field">
-            <label class="admin-checkbox">
                 <input asp-for="EnableBrokenLinkChecks" />
                 <span>@Localizer["EnableBrokenLinkChecks"]</span>
             </label>
         </div>
         <div class="admin-field">
-            <label asp-for="RobotsTxtExtra">@Localizer["RobotsTxtExtra"]</label>
-            <textarea asp-for="RobotsTxtExtra" rows="6" dir="ltr"></textarea>
-            <p class="admin-hint">@Localizer["RobotsTxtExtraHint"]</p>
-            <span asp-validation-for="RobotsTxtExtra" class="admin-field-error"></span>
+            <label asp-for="RobotsTxt">@Localizer["RobotsTxt"]</label>
+            <textarea asp-for="RobotsTxt" rows="12" dir="ltr" class="admin-code"></textarea>
+            <p class="admin-hint">@Localizer["RobotsTxtHint"]</p>
+            <span asp-validation-for="RobotsTxt" class="admin-field-error"></span>
         </div>
+        <input type="hidden" asp-for="SitemapEnabled" />
     </fieldset>
 
     <div class="admin-form-actions">

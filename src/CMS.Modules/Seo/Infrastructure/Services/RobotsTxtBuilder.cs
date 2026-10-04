@@ -1,6 +1,6 @@
-using System.Text;
 using CMS.Application.Seo;
 using CMS.Modules.Seo.Application.Interfaces;
+using CMS.Modules.Seo.Domain.Entities;
 
 namespace CMS.Modules.Seo.Infrastructure.Services;
 
@@ -15,23 +15,11 @@ public sealed class RobotsTxtBuilder : IRobotsTxtBuilder
 
     public async Task<string> BuildAsync(string baseUrl, CancellationToken cancellationToken = default)
     {
+        _ = baseUrl;
         var seo = await _settings.GetAsync(cancellationToken);
-        var trimmedBase = baseUrl.TrimEnd('/');
-        var sb = new StringBuilder();
-        sb.AppendLine("User-agent: *");
-        sb.AppendLine("Allow: /");
-        sb.AppendLine("Disallow: /forms/");
-        sb.AppendLine();
+        if (!string.IsNullOrWhiteSpace(seo.RobotsTxt))
+            return SeoSiteSettings.NormalizeRobotsTxt(seo.RobotsTxt);
 
-        if (seo.SitemapEnabled)
-            sb.AppendLine($"Sitemap: {trimmedBase}/sitemap.xml");
-
-        if (!string.IsNullOrWhiteSpace(seo.RobotsTxtExtra))
-        {
-            sb.AppendLine();
-            sb.AppendLine(seo.RobotsTxtExtra.Trim());
-        }
-
-        return sb.ToString();
+        return SeoSiteSettings.NormalizeRobotsTxt(SeoSiteSettings.DefaultRobotsTxt);
     }
 }

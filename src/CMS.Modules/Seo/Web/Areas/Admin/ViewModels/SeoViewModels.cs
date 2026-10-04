@@ -46,7 +46,7 @@ public class SeoSettingsViewModel
     public string? DefaultSchemaType { get; set; }
 
     [MaxLength(8000)]
-    public string? RobotsTxtExtra { get; set; }
+    public string? RobotsTxt { get; set; }
 
     [MaxLength(100)]
     public string? TwitterSiteHandle { get; set; }
@@ -86,7 +86,7 @@ public class SeoRedirectFormViewModel
     [MaxLength(2000)]
     public string ToUrl { get; set; } = string.Empty;
 
-    [Range(301, 302)]
+    [AllowedValues(200, 301, 302)]
     public int StatusCode { get; set; } = 301;
 
     public bool IsActive { get; set; } = true;

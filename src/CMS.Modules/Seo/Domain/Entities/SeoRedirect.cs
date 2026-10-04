@@ -41,7 +41,7 @@ public class SeoRedirect : BaseEntity
         Validate(fromPath, toUrl, statusCode, note);
 
         FromPath = NormalizePath(fromPath);
-        ToUrl = toUrl.Trim();
+        ToUrl = NormalizeTarget(toUrl, statusCode);
         StatusCode = statusCode;
         IsActive = isActive;
         Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
@@ -65,11 +65,37 @@ public class SeoRedirect : BaseEntity
         if (toUrl.Trim().Length > 2000)
             throw new DomainException("آدرس مقصد خیلی طولانی است.");
 
-        if (statusCode is not (301 or 302))
-            throw new DomainException("کد وضعیت باید ۳۰۱ یا ۳۰۲ باشد.");
+        if (statusCode is not (200 or 301 or 302))
+            throw new DomainException("کد وضعیت باید ۲۰۰، ۳۰۱ یا ۳۰۲ باشد.");
+
+        if (statusCode == 200)
+        {
+            var trimmed = toUrl.Trim();
+            if (Uri.TryCreate(trimmed, UriKind.Absolute, out _))
+                throw new DomainException("برای بازنویسی ۲۰۰ مقصد باید مسیر داخلی باشد (مثلاً /page)، نه آدرس کامل.");
+
+            var pathPart = trimmed.Split('?', 2)[0];
+            var targetPath = NormalizePath(pathPart);
+            if (!targetPath.StartsWith('/'))
+                throw new DomainException("برای بازنویسی ۲۰۰ مقصد باید با / شروع شود.");
+
+            if (string.Equals(normalized, targetPath, StringComparison.OrdinalIgnoreCase))
+                throw new DomainException("مسیر مبدأ و مقصد بازنویسی نمی‌توانند یکسان باشند.");
+        }
 
         if (!string.IsNullOrWhiteSpace(note) && note.Trim().Length > 500)
             throw new DomainException("یادداشت خیلی طولانی است.");
+    }
+
+    private static string NormalizeTarget(string toUrl, int statusCode)
+    {
+        var trimmed = toUrl.Trim();
+        if (statusCode != 200)
+            return trimmed;
+
+        var parts = trimmed.Split('?', 2);
+        var path = NormalizePath(parts[0]);
+        return parts.Length > 1 ? $"{path}?{parts[1]}" : path;
     }
 
     public static string NormalizePath(string? path)
