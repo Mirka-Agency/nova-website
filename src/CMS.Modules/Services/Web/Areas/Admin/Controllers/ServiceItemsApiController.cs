@@ -1,10 +1,13 @@
 using CMS.Application.Common.Features;
 using CMS.Application.Editing;
+using CMS.Application.Seo;
 using CMS.Application.Users;
 using CMS.Domain.Exceptions;
 using CMS.Modules.Services.Application.Interfaces;
 using CMS.Modules.Services.Application.ServiceItems;
 using CMS.Modules.Services.Web.Areas.Admin.ViewModels;
+using CMS.Modules.Seo.Application.Documents;
+using CMS.Modules.Seo.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +26,7 @@ public class ServiceItemsApiController : ControllerBase
     private readonly IContentAuthorLookup _authors;
     private readonly IFeatureManager _features;
     private readonly IAdminEditLockAccessor _editLocks;
+    private readonly ISeoDocumentService _seoDocuments;
     private readonly ILogger<ServiceItemsApiController> _logger;
 
     public ServiceItemsApiController(
@@ -30,12 +34,14 @@ public class ServiceItemsApiController : ControllerBase
         IContentAuthorLookup authors,
         IFeatureManager features,
         IAdminEditLockAccessor editLocks,
+        ISeoDocumentService seoDocuments,
         ILogger<ServiceItemsApiController> logger)
     {
         _posts = posts;
         _authors = authors;
         _features = features;
         _editLocks = editLocks;
+        _seoDocuments = seoDocuments;
         _logger = logger;
     }
 
@@ -97,6 +103,7 @@ public class ServiceItemsApiController : ControllerBase
         try
         {
             await _posts.UpdateAsync(id, await ToCommandAsync(request, cancellationToken), cancellationToken);
+            await UpsertSeoAsync(id, request, cancellationToken);
             var detail = await _posts.GetAsync(id, cancellationToken);
             _logger.LogInformation("Admin API: updated service item {PostId}", id);
             return Ok(new SaveServiceItemApiResponse { Id = id, Slug = detail?.Slug ?? string.Empty });
@@ -175,6 +182,21 @@ public class ServiceItemsApiController : ControllerBase
         foreach (var (key, messages) in ex.Errors)
             problem.Errors[key] = messages;
         return problem;
+    }
+
+    private async Task UpsertSeoAsync(Guid id, SaveServiceItemApiRequest request, CancellationToken cancellationToken)
+    {
+        if (!await _features.IsEnabledAsync(FeatureNames.Seo))
+            return;
+
+        await _seoDocuments.UpsertAsync(new SaveSeoDocumentCommand(
+            SeoContentTypeKeys.ServiceItem,
+            id,
+            request.FocusKeyword,
+            request.RobotsIndex,
+            request.RobotsFollow,
+            request.SchemaType,
+            SeoScore: request.SeoScore), cancellationToken);
     }
 
     private async Task<bool> EnsureEditLockAsync(Guid id, CancellationToken cancellationToken)

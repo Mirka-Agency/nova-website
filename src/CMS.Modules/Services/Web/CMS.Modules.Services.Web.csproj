@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\CMS.Modules.Services.Application.csproj" />
+    <ProjectReference Include="..\..\Seo\Web\CMS.Modules.Seo.Web.csproj" />
+    <ProjectReference Include="..\..\Seo\Application\CMS.Modules.Seo.Application.csproj" />
   </ItemGroup>
 
 </Project>

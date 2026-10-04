@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using CMS.Application.Common.Features;
 using CMS.Application.Editing;
+using CMS.Application.Seo;
 using CMS.Application.Users;
 using CMS.Domain.Exceptions;
 using CMS.Modules.Services.Application.Interfaces;
@@ -10,6 +11,8 @@ using CMS.Modules.Services.Application.ServiceItems;
 using CMS.Modules.Services.Domain.Enums;
 using CMS.Modules.Services.Web.Areas.Admin.ViewModels;
 using CMS.Modules.Services.Web;
+using CMS.Modules.Seo.Application.Interfaces;
+using CMS.Modules.Seo.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -30,6 +33,7 @@ public class ServiceItemsController : Controller
     private readonly IContentAuthorLookup _authors;
     private readonly IFeatureManager _features;
     private readonly IAdminEditLockAccessor _editLocks;
+    private readonly ISeoDocumentService _seoDocuments;
     private readonly IStringLocalizer<ServicesAdmin> _localizer;
     private readonly ILogger<ServiceItemsController> _logger;
 
@@ -39,6 +43,7 @@ public class ServiceItemsController : Controller
         IContentAuthorLookup authors,
         IFeatureManager features,
         IAdminEditLockAccessor editLocks,
+        ISeoDocumentService seoDocuments,
         IStringLocalizer<ServicesAdmin> localizer,
         ILogger<ServiceItemsController> logger)
     {
@@ -47,6 +52,7 @@ public class ServiceItemsController : Controller
         _authors = authors;
         _features = features;
         _editLocks = editLocks;
+        _seoDocuments = seoDocuments;
         _localizer = localizer;
         _logger = logger;
     }
@@ -224,6 +230,19 @@ public class ServiceItemsController : Controller
             OgDescription = post.OgDescription,
             OgImageUrl = post.OgImageUrl
         };
+
+        if (await _features.IsEnabledAsync(FeatureNames.Seo))
+        {
+            var seoDoc = await _seoDocuments.GetAsync(SeoContentTypeKeys.ServiceItem, post.Id, cancellationToken);
+            model.Seo = SeoEditorHelper.CreateFields(
+                SeoContentTypeKeys.ServiceItem,
+                post.Id,
+                seoDoc,
+                previewTitle: FirstNonEmpty(post.MetaTitle, post.Title),
+                previewDescription: FirstNonEmpty(post.MetaDescription, post.Excerpt),
+                previewUrl: $"/Services/{post.Slug}");
+        }
+
         return View(await BuildFormAsync(model, cancellationToken));
     }
 
@@ -252,6 +271,7 @@ public class ServiceItemsController : Controller
         try
         {
             await _posts.UpdateAsync(id, await ToCommandAsync(model, cancellationToken), cancellationToken);
+            await UpsertSeoAsync(id, model, cancellationToken);
             _logger.LogInformation("Admin action: updated service post {PostId}", id);
             TempData["Success"] = _localizer["PostUpdated"].Value;
             return RedirectToAction(nameof(Index));
@@ -344,7 +364,33 @@ public class ServiceItemsController : Controller
                 string.Equals(model.AuthorUserId, a.Id, StringComparison.Ordinal)))
         ];
 
+        model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.ServiceItem, model.Id);
+        model.Seo.ContentType = SeoContentTypeKeys.ServiceItem;
+        model.Seo.ContentId = model.Id;
+        SeoEditorHelper.EnsureSchemaOptions(model.Seo);
+
         return model;
+    }
+
+    private async Task UpsertSeoAsync(Guid contentId, ServiceItemFormViewModel model, CancellationToken cancellationToken)
+    {
+        if (!await _features.IsEnabledAsync(FeatureNames.Seo))
+            return;
+
+        model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.ServiceItem, contentId);
+        model.Seo.ContentType = SeoContentTypeKeys.ServiceItem;
+        await _seoDocuments.UpsertAsync(SeoEditorHelper.ToSaveCommand(model.Seo, contentId), cancellationToken);
+    }
+
+    private static string? FirstNonEmpty(params string?[] values)
+    {
+        foreach (var value in values)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                return value.Trim();
+        }
+
+        return null;
     }
 
     private static string? NullIfWhiteSpace(string? value) =>

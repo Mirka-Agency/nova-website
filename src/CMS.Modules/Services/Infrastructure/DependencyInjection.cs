@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPublicServiceItemQuery, PublicServiceItemQuery>();
         services.AddScoped<ISitemapUrlProvider, ServicesSitemapUrlProvider>();
+        services.AddScoped<IInternalLinkCandidateProvider, ServicesInternalLinkCandidateProvider>();
 
         return services;
     }

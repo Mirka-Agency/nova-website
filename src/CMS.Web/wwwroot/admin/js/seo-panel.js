@@ -1,4 +1,4 @@
-/* Bootstrap tabs; analyzer auto-inits via MirkaSeoAnalysis.autoInit in the bundle. */
+/* Editor content/SEO tabs + panel sub-tabs; analyzer auto-inits via MirkaSeoAnalysis. */
 (function () {
   "use strict";
 
@@ -28,8 +28,40 @@
     }
   }
 
+  function initEditorTabs(root) {
+    var tabs = root.querySelectorAll("[data-post-editor-tab]");
+    var panels = root.querySelectorAll("[data-post-editor-panel]");
+    if (!tabs.length || !panels.length) return;
+
+    function activate(name) {
+      var next = name || "content";
+      tabs.forEach(function (tab) {
+        tab.classList.toggle("is-active", tab.getAttribute("data-post-editor-tab") === next);
+      });
+      panels.forEach(function (panel) {
+        var match = panel.getAttribute("data-post-editor-panel") === next;
+        panel.classList.toggle("is-hidden", !match);
+        if (match) panel.removeAttribute("hidden");
+        else panel.setAttribute("hidden", "hidden");
+      });
+      if (next === "content") {
+        window.dispatchEvent(new Event("resize"));
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        activate(tab.getAttribute("data-post-editor-tab"));
+      });
+    });
+  }
+
   function boot() {
     document.querySelectorAll("[data-seo-panel]").forEach(initPanel);
+    document.querySelectorAll("[data-post-editor-tabs]").forEach(function (nav) {
+      var root = nav.closest(".admin-post-editor-main") || nav.parentElement;
+      if (root) initEditorTabs(root);
+    });
   }
 
   if (document.readyState === "loading") {

@@ -1565,6 +1565,37 @@ fieldset.admin-field legend {
   overflow-x: clip;
 }
 
+.admin-post-editor-tabs {
+  margin-block-end: 0;
+}
+
+.admin-post-editor-tabs .admin-tab {
+  background: transparent;
+  border: none;
+  border-block-end: 2px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  font: inherit;
+  padding: calc(var(--admin-space) * 3) calc(var(--admin-space) * 4);
+}
+
+.admin-post-editor-tabs .admin-tab.is-active {
+  color: var(--admin-text);
+  border-block-end-color: var(--admin-primary);
+  font-weight: 600;
+}
+
+.admin-post-editor-panel {
+  display: grid;
+  gap: calc(var(--admin-space) * 4);
+  min-width: 0;
+}
+
+.admin-post-editor-panel.is-hidden,
+.admin-post-editor-panel[hidden] {
+  display: none !important;
+}
+
 .admin-post-editor--video .admin-post-editor-main .admin-field,
 .admin-post-editor--video .admin-post-editor-main .admin-fieldset {
   max-width: 100%;

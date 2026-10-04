@@ -1,7 +1,10 @@
 using CMS.Application.Admin;
 using CMS.Application.Common.Features;
+using CMS.Application.Seo;
 using CMS.Modules.Services.Application.Interfaces;
 using CMS.Modules.Services.Web;
+using CMS.Modules.Seo.Application.Interfaces;
+using CMS.Modules.Seo.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.FeatureManagement;
@@ -13,15 +16,18 @@ public class ServicesController : Controller
 {
     private readonly IPublicServiceItemQuery _items;
     private readonly IFeatureManager _features;
+    private readonly ISeoDocumentService _seoDocuments;
     private readonly IStringLocalizer<ServicesPublic> _localizer;
 
     public ServicesController(
         IPublicServiceItemQuery items,
         IFeatureManager features,
+        ISeoDocumentService seoDocuments,
         IStringLocalizer<ServicesPublic> localizer)
     {
         _items = items;
         _features = features;
+        _seoDocuments = seoDocuments;
         _localizer = localizer;
     }
 
@@ -71,7 +77,36 @@ public class ServicesController : Controller
             .Take(4)
             .ToList();
 
+        if (await _features.IsEnabledAsync(FeatureNames.Seo))
+        {
+            var seo = await _seoDocuments.GetAsync(SeoContentTypeKeys.ServiceItem, item.Id, cancellationToken);
+            if (seo is not null)
+            {
+                ViewData["Robots"] = SeoEditorHelper.FormatRobotsMeta(seo.RobotsIndex, seo.RobotsFollow);
+                ViewData["SchemaJson"] = FirstNonEmpty(
+                    seo.SchemaJson,
+                    SeoSchemaBuilder.BuildContentSchema(
+                        seo.SchemaType ?? "Service",
+                        item.Title,
+                        FirstNonEmpty(item.MetaDescription, item.Excerpt),
+                        AbsoluteUrl(item.CanonicalUrl, $"/Services/{item.Slug}"),
+                        FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl),
+                        item.AuthorDisplayName,
+                        item.PublishedAtUtc,
+                        null));
+            }
+        }
+
         return View(item);
+    }
+
+    private string? AbsoluteUrl(string? canonical, string relativePath)
+    {
+        if (!string.IsNullOrWhiteSpace(canonical))
+            return canonical.Trim();
+        if (Request is null)
+            return relativePath;
+        return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";
     }
 
     private static string? FirstNonEmpty(params string?[] values)

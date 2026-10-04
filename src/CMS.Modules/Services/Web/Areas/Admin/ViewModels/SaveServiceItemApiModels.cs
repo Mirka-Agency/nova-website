@@ -49,6 +49,12 @@ public sealed class SaveServiceItemApiRequest
 
     [MaxLength(1000)]
     public string? OgImageUrl { get; set; }
+
+    public string? FocusKeyword { get; set; }
+    public bool RobotsIndex { get; set; } = true;
+    public bool RobotsFollow { get; set; } = true;
+    public string? SchemaType { get; set; }
+    public int? SeoScore { get; set; }
 }
 
 public sealed class SaveServiceItemApiResponse

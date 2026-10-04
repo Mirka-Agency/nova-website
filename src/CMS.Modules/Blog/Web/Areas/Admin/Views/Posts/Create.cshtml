@@ -1,4 +1,6 @@
 @model PostFormViewModel
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
 @{
     ViewData["Title"] = Localizer["CreatePost"];
 }
@@ -13,6 +15,10 @@
 @section Scripts {
     <partial name="_CkEditorScripts" />
     <partial name="_JalaliDatePickerScripts" />
+    @if (await FeatureManager.IsEnabledAsync(CMS.Application.Common.Features.FeatureNames.Seo))
+    {
+        <partial name="_SeoAnalysisScripts" />
+    }
     <script src="~/admin/js/admin-post-faq.js" asp-append-version="true"></script>
     <script src="~/admin/js/video-upload.js" asp-append-version="true"></script>
 }

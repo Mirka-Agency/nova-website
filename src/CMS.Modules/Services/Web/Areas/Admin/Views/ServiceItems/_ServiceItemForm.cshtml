@@ -1,9 +1,27 @@
 @model ServiceItemFormViewModel
+@using CMS.Application.Common.Features
+@using CMS.Modules.Seo.Web
+@using Microsoft.Extensions.Localization
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
+@inject IStringLocalizer<SeoAdmin> SeoLocalizer
+@{
+    var seoEnabled = await FeatureManager.IsEnabledAsync(FeatureNames.Seo);
+}
 
 <div asp-validation-summary="ModelOnly" class="admin-validation"></div>
 
 <div class="admin-post-editor">
     <div class="admin-post-editor-main">
+        @if (seoEnabled)
+        {
+            <nav class="admin-tabs admin-post-editor-tabs" data-post-editor-tabs aria-label="@SeoLocalizer["SeoAnalysis"]">
+                <button type="button" class="admin-tab is-active" data-post-editor-tab="content">@SeoLocalizer["TabContent"]</button>
+                <button type="button" class="admin-tab" data-post-editor-tab="seo">@SeoLocalizer["SeoAnalysis"]</button>
+            </nav>
+        }
+
+        <div class="admin-post-editor-panel" data-post-editor-panel="content">
         <div class="admin-field">
             <label asp-for="Title">@Localizer["Title"]</label>
             <input asp-for="Title" />
@@ -90,6 +108,14 @@
                 </div>
             </div>
         </fieldset>
+        </div>
+
+        @if (seoEnabled)
+        {
+            <div class="admin-post-editor-panel is-hidden" data-post-editor-panel="seo" hidden>
+                <partial name="_SeoAnalysisPanel" for="Seo" />
+            </div>
+        }
     </div>
 
     <aside class="admin-post-editor-side">

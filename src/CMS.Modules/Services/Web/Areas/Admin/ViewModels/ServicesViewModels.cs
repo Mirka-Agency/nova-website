@@ -80,6 +80,8 @@ public class ServiceItemFormViewModel
     [MaxLength(1000, ErrorMessage = "آدرس تصویر Open Graph حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? OgImageUrl { get; set; }
 
+    public CMS.Modules.Seo.Web.Areas.Admin.ViewModels.SeoEditorFieldsViewModel Seo { get; set; } = new();
+
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
 }

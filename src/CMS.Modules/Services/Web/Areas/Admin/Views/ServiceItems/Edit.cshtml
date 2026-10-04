@@ -1,4 +1,6 @@
 @model ServiceItemFormViewModel
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
 @{
     ViewData["Title"] = Model.Publish ? Localizer["EditPost"] : Localizer["CreatePost"];
     var autosaveUrl = Model.Id.HasValue
@@ -56,6 +58,10 @@
 @section Scripts {
     <partial name="_CkEditorScripts" />
     <partial name="_JalaliDatePickerScripts" />
+    @if (await FeatureManager.IsEnabledAsync(CMS.Application.Common.Features.FeatureNames.Seo))
+    {
+        <partial name="_SeoAnalysisScripts" />
+    }
     @if (!editLocked)
     {
         <script src="~/admin/js/post-autosave.js" asp-append-version="true"></script>

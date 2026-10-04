@@ -1,4 +1,6 @@
 @model ArticleFormViewModel
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
 @{
     ViewData["Title"] = Localizer["CreatePost"];
 }
@@ -16,4 +18,8 @@
     <script src="~/admin/js/admin-article-gallery.js" asp-append-version="true"></script>
     <script src="~/admin/js/admin-article-event-info.js" asp-append-version="true"></script>
     <script src="~/admin/js/admin-article-attachment.js" asp-append-version="true"></script>
+    @if (await FeatureManager.IsEnabledAsync(CMS.Application.Common.Features.FeatureNames.Seo))
+    {
+        <partial name="_SeoAnalysisScripts" />
+    }
 }
