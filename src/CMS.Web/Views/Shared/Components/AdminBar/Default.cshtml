@@ -1,7 +1,5 @@
 @model CMS.Web.Models.AdminBarViewModel
 @{
-    var hasCreate = Model.CreateLinks.Count > 0;
-    var hasManage = Model.ManageLinks.Count > 0 || Model.CanManageSettings;
     var hasUserExtras = Model.CanManageSettings;
 }
 <link rel="stylesheet" href="~/admin/vendor/fontawesome/css/all.min.css" asp-append-version="true" />
@@ -48,71 +46,6 @@
                 }
             }
 
-            @if (hasCreate)
-            {
-                <div class="site-admin-bar-menu site-admin-bar-menu--desktop" data-admin-bar-menu>
-                    <button type="button"
-                            class="site-admin-bar-item site-admin-bar-menu-trigger"
-                            data-admin-bar-menu-trigger
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            title="ایجاد محتوای جدید">
-                        <i class="fas fa-plus" aria-hidden="true"></i>
-                        <span class="site-admin-bar-label">جدید</span>
-                        <i class="fas fa-chevron-down site-admin-bar-caret" aria-hidden="true"></i>
-                    </button>
-                    <div class="site-admin-bar-menu-panel" data-admin-bar-menu-panel hidden role="menu">
-                        <div class="site-admin-bar-menu-heading">ایجاد سریع</div>
-                        @foreach (var link in Model.CreateLinks)
-                        {
-                            <a role="menuitem"
-                               asp-area="@link.Area"
-                               asp-controller="@link.Controller"
-                               asp-action="@link.Action">
-                                <i class="fas @(link.Icon ?? "fa-plus")" aria-hidden="true"></i>
-                                <span>@link.Label</span>
-                            </a>
-                        }
-                    </div>
-                </div>
-            }
-
-            @if (hasManage)
-            {
-                <div class="site-admin-bar-menu site-admin-bar-menu--desktop" data-admin-bar-menu>
-                    <button type="button"
-                            class="site-admin-bar-item site-admin-bar-menu-trigger"
-                            data-admin-bar-menu-trigger
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            title="مدیریت بخش‌های سایت">
-                        <i class="fas fa-folder-open" aria-hidden="true"></i>
-                        <span class="site-admin-bar-label">مدیریت</span>
-                        <i class="fas fa-chevron-down site-admin-bar-caret" aria-hidden="true"></i>
-                    </button>
-                    <div class="site-admin-bar-menu-panel" data-admin-bar-menu-panel hidden role="menu">
-                        <div class="site-admin-bar-menu-heading">بخش‌ها</div>
-                        @foreach (var link in Model.ManageLinks)
-                        {
-                            <a role="menuitem"
-                               asp-area="@link.Area"
-                               asp-controller="@link.Controller"
-                               asp-action="@link.Action">
-                                <i class="fas @(link.Icon ?? "fa-circle")" aria-hidden="true"></i>
-                                <span>@link.Label</span>
-                            </a>
-                        }
-                        @if (Model.CanManageSettings)
-                        {
-                            <a role="menuitem" asp-area="Admin" asp-controller="Settings" asp-action="Index">
-                                <i class="fas fa-cog" aria-hidden="true"></i>
-                                <span>تنظیمات سایت</span>
-                            </a>
-                        }
-                    </div>
-                </div>
-            }
-
             <div class="site-admin-bar-menu site-admin-bar-menu--mobile" data-admin-bar-menu>
                 <button type="button"
                         class="site-admin-bar-item site-admin-bar-menu-trigger"
@@ -128,41 +61,6 @@
                         <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
                         <span>داشبورد</span>
                     </a>
-                    @if (hasCreate)
-                    {
-                        <div class="site-admin-bar-menu-heading">ایجاد سریع</div>
-                        @foreach (var link in Model.CreateLinks)
-                        {
-                            <a role="menuitem"
-                               asp-area="@link.Area"
-                               asp-controller="@link.Controller"
-                               asp-action="@link.Action">
-                                <i class="fas @(link.Icon ?? "fa-plus")" aria-hidden="true"></i>
-                                <span>@link.Label</span>
-                            </a>
-                        }
-                    }
-                    @if (hasManage)
-                    {
-                        <div class="site-admin-bar-menu-heading">مدیریت</div>
-                        @foreach (var link in Model.ManageLinks)
-                        {
-                            <a role="menuitem"
-                               asp-area="@link.Area"
-                               asp-controller="@link.Controller"
-                               asp-action="@link.Action">
-                                <i class="fas @(link.Icon ?? "fa-circle")" aria-hidden="true"></i>
-                                <span>@link.Label</span>
-                            </a>
-                        }
-                        @if (Model.CanManageSettings)
-                        {
-                            <a role="menuitem" asp-area="Admin" asp-controller="Settings" asp-action="Index">
-                                <i class="fas fa-cog" aria-hidden="true"></i>
-                                <span>تنظیمات سایت</span>
-                            </a>
-                        }
-                    }
                     <div class="site-admin-bar-menu-heading">حساب</div>
                     <div class="site-admin-bar-menu-user" aria-hidden="true">@Model.DisplayName</div>
                     <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post" class="site-admin-bar-logout">
