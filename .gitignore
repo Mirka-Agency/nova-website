@@ -75,3 +75,7 @@ PublishScripts/
 # Node (SEO analyzer toolchain)
 tools/seo-analyzer/node_modules/
 node_modules/
+
+# CapRover temporary deploy archives
+temporary-captain-to-deploy.tar
+*.tar

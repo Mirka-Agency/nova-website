@@ -50,8 +50,6 @@
   <data name="EnableBrokenLinkChecks" xml:space="preserve"><value>فعال‌سازی بررسی لینک‌های شکسته</value></data>
   <data name="RobotsTxt" xml:space="preserve"><value>محتوای robots.txt</value></data>
   <data name="RobotsTxtHint" xml:space="preserve"><value>این متن عیناً به‌عنوان فایل /robots.txt سرو می‌شود. برای مسدود کردن همه ربات‌ها: User-agent: * و Disallow: /</value></data>
-  <data name="RobotsTxtExtra" xml:space="preserve"><value>محتوای robots.txt</value></data>
-  <data name="RobotsTxtExtraHint" xml:space="preserve"><value>این متن عیناً به‌عنوان فایل /robots.txt سرو می‌شود.</value></data>
   <data name="SeoAnalysis" xml:space="preserve"><value>تحلیل سئو</value></data>
   <data name="SeoAnalysisHint" xml:space="preserve"><value>بررسی هم‌زمان Mirka و Yoast برای محتوای فارسی</value></data>
   <data name="SeoScore" xml:space="preserve"><value>امتیاز سئو</value></data>

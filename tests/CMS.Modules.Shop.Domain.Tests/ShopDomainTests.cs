@@ -46,7 +46,7 @@ public class OrderTests
     [Fact]
     public void Create_AddLine_MarkPaid_Works()
     {
-        var order = Order.Create("ord-1", null, "Ali", "ali@example.com", null, null, null, "IRR", null, false);
+        var order = Order.Create("ord-1", null, "Ali", "ali@example.com", null, "Ali", "09120000000", "Address", null, "IRR", null, false);
         order.AddLine(Guid.NewGuid(), null, "Product", null, 1000, 2);
 
         order.TotalAmount.Should().Be(2000);
@@ -60,7 +60,7 @@ public class OrderTests
     [Fact]
     public void MarkPaid_OnCancelled_Throws()
     {
-        var order = Order.Create("ord-2", null, "Ali", "ali@example.com", null, null, null, "IRR", null, false);
+        var order = Order.Create("ord-2", null, "Ali", "ali@example.com", null, "Ali", "09120000000", "Address", null, "IRR", null, false);
         order.AddLine(Guid.NewGuid(), null, "Product", null, 100, 1);
         order.ChangeStatus(OrderStatus.Cancelled);
 
@@ -71,7 +71,7 @@ public class OrderTests
     [Fact]
     public void ChangeStatus_WithoutLines_Throws()
     {
-        var order = Order.Create("ord-3", null, "Ali", "ali@example.com", null, null, null, "IRR", null, false);
+        var order = Order.Create("ord-3", null, "Ali", "ali@example.com", null, "Ali", "09120000000", "Address", null, "IRR", null, false);
         var act = () => order.ChangeStatus(OrderStatus.Processing);
         act.Should().Throw<DomainException>();
     }
@@ -79,7 +79,7 @@ public class OrderTests
     [Fact]
     public void Create_WithEmptyCustomer_Throws()
     {
-        var act = () => Order.Create("ord-4", null, "", "ali@example.com", null, null, null, "IRR", null, false);
+        var act = () => Order.Create("ord-4", null, "", "ali@example.com", null, "Ali", "09120000000", "Address", null, "IRR", null, false);
         act.Should().Throw<DomainException>();
     }
 }

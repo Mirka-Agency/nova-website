@@ -51,11 +51,11 @@ public class UpdateSiteSettingsCommandValidatorTests
     public void Valid_Command_Passes()
     {
         var result = _validator.Validate(new UpdateSiteSettingsCommand(
-            "میرکا", "tag", "info@example.com", null, null, "footer",
+            "میرکا", "tag", "info@example.com", null, null, "۹–۱۷", "footer",
             "/media/logo.png", "/favicon.ico", "عنوان", "توضیح", "/media/og.png",
             "https://instagram.com/mirka", "https://t.me/mirka", "https://x.com/mirka", "https://linkedin.com/company/mirka",
             "https://www.aparat.com/mirka", "https://facebook.com/mirka", "https://youtube.com/@mirka", "https://wa.me/989121234567",
-            false, null));
+            null, false, null));
         result.IsValid.Should().BeTrue();
     }
 
@@ -87,11 +87,11 @@ public class UpdateSiteSettingsCommandValidatorTests
     }
 
     private static UpdateSiteSettingsCommand EmptyCommand =>
-        new("میرکا", null, null, null, null, null,
+        new("میرکا", null, null, null, null, null, null,
             null, null, null, null, null,
             null, null, null, null,
             null, null, null, null,
-            false, null);
+            null, false, null);
 }
 
 public class FileContentSnifferTests
