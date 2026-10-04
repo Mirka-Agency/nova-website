@@ -379,6 +379,15 @@ body.site > main {
   border-block-start: 1px solid rgba(9, 112, 125, 0.12);
 }
 
+.blog-comments {
+  padding-block: var(--section-space, 4rem);
+}
+
+.blog-comments .cms-comments {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
 /* ---------- Public comments (Nova chrome) ---------- */
 .cms-comments {
   display: grid;
