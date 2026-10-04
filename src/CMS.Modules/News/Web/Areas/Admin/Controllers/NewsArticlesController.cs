@@ -131,7 +131,7 @@ public class NewsArticlesController : Controller
                 CategoryName = p.CategoryName,
                 CreatedAtUtc = p.CreatedAtUtc,
                 CreatedAtLocal = ToIranDate(p.CreatedAtUtc),
-                EventStartLocal = p.EventStartAtUtc.HasValue ? ToIranDateTime(p.EventStartAtUtc.Value) : null
+                EventStartLocal = ToEventLocal(p.EventStartAtUtc)
             }).ToList()
         };
 
@@ -241,8 +241,8 @@ public class NewsArticlesController : Controller
             AuthorUserId = post.AuthorUserId,
             Publish = post.Status == ArticleStatus.Published,
             PublishedAtLocal = ToIranLocal(post.PublishedAtUtc),
-            EventStartAtLocal = ToIranLocal(post.EventStartAtUtc),
-            EventEndAtLocal = ToIranLocal(post.EventEndAtUtc),
+            EventStartAtLocal = ToEventLocal(post.EventStartAtUtc),
+            EventEndAtLocal = ToEventLocal(post.EventEndAtUtc),
             EventStartAtUtc = post.EventStartAtUtc,
             EventEndAtUtc = post.EventEndAtUtc,
             Location = post.Location,
@@ -468,11 +468,26 @@ public class NewsArticlesController : Controller
         if (string.IsNullOrWhiteSpace(localDate))
             return null;
 
+        var normalized = NormalizeDigits(localDate.Trim());
+        var yearOnly = YearOnlyRegex.IsMatch(normalized);
+
         if (!TryParseJalaliDateTime(localDate, out var local))
             return null;
 
-        if (endOfDay && !localDate.Contains(':'))
-            local = local.Date.AddDays(1).AddTicks(-1);
+        if (endOfDay)
+        {
+            if (yearOnly)
+            {
+                var persian = new PersianCalendar();
+                var year = persian.GetYear(local);
+                var lastDay = persian.GetDaysInMonth(year, 12);
+                local = persian.ToDateTime(year, 12, lastDay, 23, 59, 59, 0);
+            }
+            else if (!normalized.Contains(':'))
+            {
+                local = local.Date.AddDays(1).AddTicks(-1);
+            }
+        }
 
         var unspecified = DateTime.SpecifyKind(local, DateTimeKind.Unspecified);
         return TimeZoneInfo.ConvertTimeToUtc(unspecified, IranTimeZone);
@@ -499,6 +514,31 @@ public class NewsArticlesController : Controller
             $"{persian.GetYear(local):0000}/{persian.GetMonth(local):00}/{persian.GetDayOfMonth(local):00} {local.Hour:00}:{local.Minute:00}");
     }
 
+    /// <summary>
+    /// Formats event dates for admin inputs/lists. Year-only values (Farvardin 1 00:00) round-trip as <c>yyyy</c>.
+    /// </summary>
+    private static string? ToEventLocal(DateTime? utc)
+    {
+        if (!utc.HasValue)
+            return null;
+
+        var value = DateTime.SpecifyKind(utc.Value, DateTimeKind.Utc);
+        var local = TimeZoneInfo.ConvertTimeFromUtc(value, IranTimeZone);
+        var persian = new PersianCalendar();
+        if (IsYearOnlyPersian(local, persian))
+            return string.Create(CultureInfo.InvariantCulture, $"{persian.GetYear(local):0000}");
+
+        return string.Create(CultureInfo.InvariantCulture,
+            $"{persian.GetYear(local):0000}/{persian.GetMonth(local):00}/{persian.GetDayOfMonth(local):00} {local.Hour:00}:{local.Minute:00}");
+    }
+
+    private static bool IsYearOnlyPersian(DateTime local, PersianCalendar persian) =>
+        persian.GetMonth(local) == 1
+        && persian.GetDayOfMonth(local) == 1
+        && local.Hour == 0
+        && local.Minute == 0
+        && local.Second == 0;
+
     private static DateTime? ToUtc(string? jalaliLocal, string fieldName)
     {
         if (string.IsNullOrWhiteSpace(jalaliLocal))
@@ -514,13 +554,38 @@ public class NewsArticlesController : Controller
         return TimeZoneInfo.ConvertTimeToUtc(unspecified, IranTimeZone);
     }
 
+    private static readonly Regex YearOnlyRegex = new(
+        @"^\d{4}$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    private static readonly Regex JalaliDateTimeRegex = new(
+        @"^(?<y>\d{4})/(?<m>\d{1,2})/(?<d>\d{1,2})(?:\s+(?<h>\d{1,2}):(?<min>\d{1,2})(?::(?<s>\d{1,2}))?)?$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
     private static bool TryParseJalaliDateTime(string value, out DateTime local)
     {
         local = default;
-        var normalized = NormalizeDigits(value.Trim());
-        var match = Regex.Match(
-            normalized,
-            @"^(?<y>\d{4})/(?<m>\d{1,2})/(?<d>\d{1,2})(?:\s+(?<h>\d{1,2}):(?<min>\d{1,2})(?::(?<s>\d{1,2}))?)?$");
+        var normalized = NormalizeDigits(value.Trim()).Replace('-', '/');
+
+        // Year-only (e.g. 1404) → Farvardin 1 00:00 of that Persian year.
+        if (YearOnlyRegex.IsMatch(normalized))
+        {
+            var yearOnly = int.Parse(normalized, CultureInfo.InvariantCulture);
+            if (yearOnly is < 1200 or > 1600)
+                return false;
+
+            try
+            {
+                local = new PersianCalendar().ToDateTime(yearOnly, 1, 1, 0, 0, 0, 0);
+                return true;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
+            }
+        }
+
+        var match = JalaliDateTimeRegex.Match(normalized);
         if (!match.Success)
             return false;
 

@@ -36,6 +36,9 @@
         var y = persian.GetYear(local);
         var m = persian.GetMonth(local);
         var d = persian.GetDayOfMonth(local);
+        // Year-only stored values (Farvardin 1 00:00) are shown via the year meta, not as start/end.
+        if (m == 1 && d == 1 && local.Hour == 0 && local.Minute == 0 && local.Second == 0)
+            return null;
         return ToPersianDigits($"{y}/{m:00}/{d:00}");
     }
 
