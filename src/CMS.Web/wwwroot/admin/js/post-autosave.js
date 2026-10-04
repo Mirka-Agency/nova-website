@@ -87,8 +87,8 @@
       const text = (row.querySelector("[name$='.Text']")?.value || "").trim();
       const iconUrl = (row.querySelector("[name$='.IconUrl']")?.value || "").trim() || null;
       if (!title && !text && !iconUrl) continue;
-      if (!title || !text) continue;
-      items.push({ title, text, iconUrl });
+      if (!title) continue;
+      items.push({ title, text: text || "", iconUrl });
     }
     return items.length > 0 ? JSON.stringify(items) : null;
   }

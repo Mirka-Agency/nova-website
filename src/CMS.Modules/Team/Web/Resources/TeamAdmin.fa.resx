@@ -60,7 +60,7 @@
   <data name="Highlights" xml:space="preserve"><value>نکات برجسته</value></data>
   <data name="HighlightsHint" xml:space="preserve"><value>هر خط یک مورد؛ مثلاً نظام پزشکی، فلوشیپ، مجوز. در صفحه اصلی زیر بیو نمایش داده می‌شود.</value></data>
   <data name="SpecialtyPath" xml:space="preserve"><value>حوزه فعالیت</value></data>
-  <data name="SpecialtyPathHint" xml:space="preserve"><value>زمینه‌های اصلی فعالیت پزشک؛ برای هر مورد می‌توانید آیکون آپلود کنید یا آیکون پیش‌فرض بماند.</value></data>
+  <data name="SpecialtyPathHint" xml:space="preserve"><value>زمینه‌های اصلی فعالیت پزشک؛ توضیح هر مورد اختیاری است و می‌توانید آیکون آپلود کنید یا آیکون پیش‌فرض بماند.</value></data>
   <data name="SpecialtyPathTitle" xml:space="preserve"><value>عنوان</value></data>
   <data name="SpecialtyPathText" xml:space="preserve"><value>توضیح</value></data>
   <data name="SpecialtyPathTitlePlaceholder" xml:space="preserve"><value>مثلاً جراحی تیروئید</value></data>

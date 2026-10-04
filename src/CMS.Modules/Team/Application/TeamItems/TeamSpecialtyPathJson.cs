@@ -112,9 +112,9 @@ public static class TeamSpecialtyPathJson
             var iconUrl = (item.IconUrl ?? string.Empty).Trim();
             if (title.Length == 0 && text.Length == 0 && iconUrl.Length == 0)
                 continue;
-            if (title.Length == 0 || text.Length == 0)
+            if (title.Length == 0)
             {
-                error = "برای هر مورد حوزه فعالیت، هم عنوان و هم توضیح الزامی است.";
+                error = "برای هر مورد حوزه فعالیت، عنوان الزامی است.";
                 return false;
             }
 
@@ -154,7 +154,7 @@ public static class TeamSpecialtyPathJson
             var title = (item.Title ?? string.Empty).Trim();
             var text = (item.Text ?? string.Empty).Trim();
             var iconUrl = string.IsNullOrWhiteSpace(item.IconUrl) ? null : item.IconUrl.Trim();
-            if (title.Length == 0 || text.Length == 0)
+            if (title.Length == 0)
                 continue;
 
             if (title.Length > MaxTitleLength)

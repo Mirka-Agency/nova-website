@@ -249,7 +249,10 @@
           }
         </span>
         <h3 class="doctor-focus__title">@item.Title</h3>
-        <p class="doctor-focus__text">@item.Text</p>
+        @if (!string.IsNullOrWhiteSpace(item.Text))
+        {
+          <p class="doctor-focus__text">@item.Text</p>
+        }
       </article>
       }
     </div>
