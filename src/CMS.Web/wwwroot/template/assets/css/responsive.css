@@ -1019,7 +1019,12 @@
   }
 
   .blog-card--featured .blog-card__media {
-    max-height: 11rem;
+    min-height: 12.5rem;
+    max-height: none;
+  }
+
+  .blog-card__media {
+    max-height: 10.5rem;
   }
 
   .articles-archive__grid {
@@ -1712,7 +1717,7 @@
   .blog-card--featured .blog-card__media {
     aspect-ratio: 16 / 10;
     min-height: 0;
-    max-height: 10rem;
+    max-height: 12rem;
     height: auto;
   }
 
