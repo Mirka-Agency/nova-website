@@ -8,7 +8,6 @@ using Microsoft.FeatureManagement;
 
 namespace CMS.Modules.Team.Web.Controllers;
 
-[Route("Teams")]
 [Route("doctors")]
 public class TeamsController : Controller
 {

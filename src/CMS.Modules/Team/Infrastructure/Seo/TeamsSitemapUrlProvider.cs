@@ -23,7 +23,7 @@ public sealed class TeamsSitemapUrlProvider : ISitemapUrlProvider
     {
         var entries = new List<SitemapUrlEntry>
         {
-            new("/Teams", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
+            new("/doctors", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
         };
 
         var items = await _db.TeamItems
@@ -39,7 +39,7 @@ public sealed class TeamsSitemapUrlProvider : ISitemapUrlProvider
         foreach (var item in items)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/Teams/{item.Slug}",
+                $"/doctors/{item.Slug}",
                 item.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7));
