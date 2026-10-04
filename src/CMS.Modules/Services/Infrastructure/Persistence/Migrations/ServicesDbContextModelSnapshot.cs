@@ -99,6 +99,10 @@ namespace CMS.Modules.Services.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<string>("IconUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<string>("MetaDescription")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
