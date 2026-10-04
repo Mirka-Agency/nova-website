@@ -10,7 +10,7 @@
     var phoneDisplay = contact.PhoneDisplay;
     var telHref = contact.TelHref;
     var address = contact.Address;
-    var role = string.IsNullOrWhiteSpace(Model.CategoryName) ? "عضو تیم درمان" : Model.CategoryName;
+    var role = string.IsNullOrWhiteSpace(Model.CategoryName) ? "متخصص کلینیک" : Model.CategoryName;
     var specialty = string.IsNullOrWhiteSpace(Model.Subtitle) ? role : Model.Subtitle;
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/doctors/dr-hamedani.webp")
@@ -45,7 +45,7 @@
       <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
         <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
         <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
-        <a asp-controller="Teams" asp-action="Index">متخصصان</a>
+        <a asp-controller="Teams" asp-action="Index">متخصصان کلینیک</a>
         <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
         <span aria-current="page">@Model.Title</span>
       </nav>
@@ -124,13 +124,6 @@
             <span class="doctor-quick-list__label">نقش</span>
             <span class="doctor-quick-list__value">@role</span>
           </li>
-          @if (!string.IsNullOrWhiteSpace(Model.AuthorDisplayName))
-          {
-            <li>
-              <span class="doctor-quick-list__label">نام نمایشی</span>
-              <span class="doctor-quick-list__value">@Model.AuthorDisplayName</span>
-            </li>
-          }
           <li>
             <span class="doctor-quick-list__label">ساعات پاسخگویی</span>
             <span class="doctor-quick-list__value">شنبه تا پنجشنبه · ۹ تا ۲۱</span>
@@ -260,49 +253,6 @@
 </section>
 }
 
-@if (related.Count > 0)
-{
-  <section class="about-team" aria-labelledby="doctor-related-heading">
-    <div class="container">
-      <header class="about-team__head reveal">
-        <div class="about-team__intro">
-          <p class="section-kicker">تیم درمان</p>
-          <h2 class="about-team__heading" id="doctor-related-heading">سایر متخصصان</h2>
-          <p class="about-team__lead">با دیگر اعضای تیم @brand آشنا شوید.</p>
-        </div>
-        <a class="about-team__all" asp-controller="Teams" asp-action="Index">
-          آرشیو متخصصان
-          <span aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          </span>
-        </a>
-      </header>
-
-      <div class="about-team__grid">
-        @foreach (var member in related)
-        {
-          var memberCover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
-          var memberRole = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
-          var memberBio = string.IsNullOrWhiteSpace(member.Subtitle)
-              ? (string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName)
-              : member.Subtitle;
-          <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
-            <div class="about-team__photo">
-              <img src="@memberCover" width="640" height="800" alt="@member.Title" loading="lazy">
-            </div>
-            <div class="about-team__info">
-              <span class="about-team__role">@memberRole</span>
-              <h3 class="about-team__name">@member.Title</h3>
-              <p class="about-team__title">@memberBio</p>
-              <span class="about-team__cta">مشاهده پروفایل</span>
-            </div>
-          </a>
-        }
-      </div>
-    </div>
-  </section>
-}
-
 @if (scientificActivityItems.Count > 0)
 {
 <section class="doctor-activity" aria-labelledby="doctor-activity-heading">
@@ -348,6 +298,56 @@
         <div class="faq-item__answer">@faq.Answer</div>
       </div>
       }
+    </div>
+  </div>
+</section>
+}
+
+@if (related.Count > 0)
+{
+<section class="doctors-overview" aria-labelledby="doctor-related-heading">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-kicker">متخصصان کلینیک</p>
+      <h2 class="section-heading" id="doctor-related-heading">سایر متخصصان</h2>
+      <p class="section-lead">با دیگر متخصصان @brand آشنا شوید.</p>
+    </div>
+
+    <div class="doctor-jump">
+      @foreach (var member in related)
+      {
+        var memberCover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
+        var memberRole = string.IsNullOrWhiteSpace(member.CategoryName) ? "متخصص کلینیک" : member.CategoryName;
+        var memberSpecialty = string.IsNullOrWhiteSpace(member.Subtitle) ? memberRole : member.Subtitle;
+        <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
+          <span class="doctor-jump__avatar">
+            <img src="@memberCover" width="72" height="72" alt="" loading="lazy">
+          </span>
+          <span class="doctor-jump__body">
+            <span class="doctor-jump__role">@memberRole</span>
+            <span class="doctor-jump__name">@member.Title</span>
+            <span class="doctor-jump__title">@memberSpecialty</span>
+          </span>
+          <span class="doctor-jump__action" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+          </span>
+        </a>
+      }
+    </div>
+
+    <div class="articles-footer reveal">
+      <a class="btn-primary-custom" asp-controller="Teams" asp-action="Index">
+        <span class="ui-icon btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </span>
+        مشاهده آرشیو متخصصان
+      </a>
     </div>
   </div>
 </section>

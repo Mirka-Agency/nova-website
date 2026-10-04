@@ -203,8 +203,8 @@
       <div class="container">
         <header class="about-team__head reveal">
           <div class="about-team__intro">
-            <p class="section-kicker">متخصصان</p>
-            <h2 class="about-team__heading" id="about-team-heading">تیم درمان</h2>
+            <p class="section-kicker">متخصصان کلینیک</p>
+            <h2 class="about-team__heading" id="about-team-heading">متخصصان کلینیک</h2>
             <p class="about-team__lead">پزشکان اصلی @brand؛ مسیر درمان را با تخصص و همراهی شفاف پیش می‌برند.</p>
           </div>
           <a class="about-team__all" asp-controller="Teams" asp-action="Index">
@@ -221,7 +221,7 @@
             @foreach (var member in teamItems)
             {
               var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
-              var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
+              var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "متخصص کلینیک" : member.CategoryName;
               var bio = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
               <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
                 <div class="about-team__photo">

@@ -19,9 +19,9 @@
     <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
       <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
       <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
-      <span aria-current="page">متخصصان</span>
+      <span aria-current="page">متخصصان کلینیک</span>
     </nav>
-    <h1 class="page-hero__title reveal" id="page-hero-title">متخصصان @brand</h1>
+    <h1 class="page-hero__title reveal" id="page-hero-title">متخصصان کلینیک</h1>
     <p class="page-hero__lead reveal">
       تیمی متمرکز بر بیماری‌های غدد درون‌ریز؛ جایی که دانش جراحی و نگاه پژوهشی در کنار هم، مسیر درمان هر بیمار را دقیق و انسانی پیش می‌برند.
     </p>
@@ -36,8 +36,8 @@
 <section class="doctors-overview" aria-labelledby="doctors-overview-heading">
   <div class="container">
     <div class="section-header reveal">
-      <p class="section-kicker">متخصصان</p>
-      <h2 class="section-heading" id="doctors-overview-heading">با تیم درمان آشنا شوید</h2>
+      <p class="section-kicker">متخصصان کلینیک</p>
+      <h2 class="section-heading" id="doctors-overview-heading">با متخصصان کلینیک آشنا شوید</h2>
       <p class="section-lead">
         برای مشاهده جزئیات بیشتر، پروفایل هر پزشک را باز کنید.
       </p>
@@ -49,7 +49,7 @@
         @foreach (var member in items)
         {
           var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackCover : member.CoverImageUrl;
-          var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "عضو تیم درمان" : member.CategoryName;
+          var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "متخصص کلینیک" : member.CategoryName;
           var specialty = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
           <a class="doctor-jump__item reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
             <span class="doctor-jump__avatar">

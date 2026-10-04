@@ -369,7 +369,7 @@ else
     <section class="doctors-section" id="doctors" aria-labelledby="doctors-heading">
       <div class="container">
         <div class="section-header reveal">
-          <p class="section-kicker">تیم درمان</p>
+          <p class="section-kicker">متخصصان کلینیک</p>
           <h2 class="section-heading" id="doctors-heading">متخصصان کلینیک</h2>
           <p class="section-lead">
             تیم نووا کلینیک با تمرکز بر جراحی و درمان بیماری‌های غدد درون‌ریز فعالیت می‌کند.
@@ -415,7 +415,7 @@ else
         var tabId = member.Slug;
         var isFirst = teamIndex == 0;
         var cover = string.IsNullOrWhiteSpace(member.CoverImageUrl) ? fallbackDoctorCover : member.CoverImageUrl;
-        var role = string.IsNullOrWhiteSpace(member.CategoryName) ? $"عضو تیم {brand}" : member.CategoryName;
+        var role = string.IsNullOrWhiteSpace(member.CategoryName) ? "متخصص کلینیک" : member.CategoryName;
         var titleLine = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
         var bio = string.IsNullOrWhiteSpace(member.Excerpt)
             ? $"پروفایل تخصصی {member.Title} در {brand}."
