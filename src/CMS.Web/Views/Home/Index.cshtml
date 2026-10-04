@@ -20,7 +20,14 @@
     var heroLead = contact.Tagline
         ?? "جراحی تخصصی تیروئید، پاراتیروئید، فوق کلیه و پانکراس با روش‌های نوین و کم‌تهاجمی.";
     var services = Model?.Services ?? Array.Empty<PublicServiceItemSummaryDto>();
-    var team = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
+    // Dr. Hamedani first (default selected tab); others keep relative order after him.
+    var team = (Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>())
+        .OrderBy(m =>
+            (m.Slug?.Contains("hamedani", StringComparison.OrdinalIgnoreCase) == true
+             || (m.Title?.Contains("همدانی", StringComparison.Ordinal) == true))
+                ? 0
+                : 1)
+        .ToList();
     var articles = Model?.Articles ?? Array.Empty<PublicArticleSummaryDto>();
     var voices = Model?.Voices ?? Array.Empty<PublicVoiceItemDto>();
     var hasCmsServices = services.Count > 0;
