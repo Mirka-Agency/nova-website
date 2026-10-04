@@ -1054,3 +1054,10 @@ main > .error-page {
     padding-block-start: 1.5rem;
   }
 }
+
+/* Hide Google reCAPTCHA v3 floating badge (branding disclosed in privacy policy). */
+.grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

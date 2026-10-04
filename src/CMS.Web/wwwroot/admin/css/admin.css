@@ -3340,3 +3340,10 @@ fieldset.admin-field legend {
     grid-template-columns: 1fr;
   }
 }
+
+/* Hide Google reCAPTCHA v3 floating badge on admin login. */
+.grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
