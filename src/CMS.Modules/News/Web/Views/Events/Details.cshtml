@@ -1,10 +1,7 @@
 @model PublicArticleDetailDto
 @using System.Globalization
-@using System.Net
-@using System.Text.RegularExpressions
 @using CMS.Application.Settings
 @using CMS.Modules.News.Application.Articles
-@using CMS.Modules.News.Domain.Enums
 @inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
@@ -18,9 +15,6 @@
     var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
         ? $"جزئیات رویداد «{Model.Title}» در {brand}."
         : Model.Excerpt;
-    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
-        ? Url.Content("~/template/assets/images/events/adrenal-workshop.webp")
-        : Model.CoverImageUrl;
     var related = (ViewBag.Related as IReadOnlyList<PublicArticleSummaryDto>) ?? Array.Empty<PublicArticleSummaryDto>();
     var persian = new PersianCalendar();
 
@@ -49,50 +43,14 @@
     var startLocal = FormatLocal(Model.EventStartAtUtc);
     var endLocal = FormatLocal(Model.EventEndAtUtc);
 
-    var gallery = new List<(string Src, string Alt)>();
-    var curatedGallery = ArticleGalleryJson.Parse(Model.GalleryJson);
-    foreach (var image in curatedGallery)
-    {
-        if (gallery.Any(g => string.Equals(g.Src, image.Url, StringComparison.OrdinalIgnoreCase)))
-            continue;
-        gallery.Add((image.Url, string.IsNullOrWhiteSpace(image.AltText) ? Model.Title : image.AltText!));
-    }
-
-    if (gallery.Count == 0)
-    {
-        if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-            gallery.Add((Model.CoverImageUrl!, Model.Title));
-
-        foreach (Match img in Regex.Matches(Model.Body ?? string.Empty, @"<img[^>]+src=[""']([^""']+)[""'][^>]*>", RegexOptions.IgnoreCase))
-        {
-            var src = WebUtility.HtmlDecode(img.Groups[1].Value).Trim();
-            if (string.IsNullOrWhiteSpace(src)) continue;
-            if (gallery.Any(g => string.Equals(g.Src, src, StringComparison.OrdinalIgnoreCase))) continue;
-
-            var altMatch = Regex.Match(img.Value, @"alt=[""']([^""']*)[""']", RegexOptions.IgnoreCase);
-            var alt = altMatch.Success && !string.IsNullOrWhiteSpace(altMatch.Groups[1].Value)
-                ? WebUtility.HtmlDecode(altMatch.Groups[1].Value)
-                : Model.Title;
-            gallery.Add((src, alt));
-            if (gallery.Count >= 8) break;
-        }
-    }
-
-    if (gallery.Count == 0)
-        gallery.Add((cover, Model.Title));
-
-    var bodyWithoutGalleryDupes = Model.Body ?? string.Empty;
-    if (curatedGallery.Count == 0)
-    {
-        foreach (var item in gallery.Skip(string.IsNullOrWhiteSpace(Model.CoverImageUrl) ? 0 : 1))
-        {
-            bodyWithoutGalleryDupes = Regex.Replace(
-                bodyWithoutGalleryDupes,
-                $@"<figure[^>]*>\s*<img[^>]+src=[""']{Regex.Escape(item.Src)}[""'][^>]*>\s*</figure>",
-                string.Empty,
-                RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        }
-    }
+    // Only curated gallery images — never fall back to cover/body placeholders
+    var gallery = ArticleGalleryJson.Parse(Model.GalleryJson)
+        .GroupBy(image => image.Url, StringComparer.OrdinalIgnoreCase)
+        .Select(group => group.First())
+        .Select(image => (
+            Src: image.Url,
+            Alt: string.IsNullOrWhiteSpace(image.AltText) ? Model.Title : image.AltText!))
+        .ToList();
 }
 
 <section class="page-hero page-hero--event-single" aria-labelledby="page-hero-title">
@@ -140,9 +98,9 @@
           <p class="section-kicker">درباره رویداد</p>
           <h2 class="section-heading" id="event-detail-heading">@Model.Title</h2>
           <div class="event-prose__body">
-            @if (!string.IsNullOrWhiteSpace(bodyWithoutGalleryDupes))
+            @if (!string.IsNullOrWhiteSpace(Model.Body))
             {
-              @Html.Raw(bodyWithoutGalleryDupes)
+              @Html.Raw(Model.Body)
             }
             else
             {
