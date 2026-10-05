@@ -6688,7 +6688,7 @@ a.video-single-meta__value:focus-visible {
 .articles-archive__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 3.35rem 1.35rem;
+  gap: 8rem 1.35rem;
   padding-top: 6.25rem;
 }
 

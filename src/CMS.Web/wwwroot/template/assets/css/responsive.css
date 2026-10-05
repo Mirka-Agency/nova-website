@@ -1029,7 +1029,7 @@
 
   .articles-archive__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 3.1rem 1.15rem;
+    gap: 7.5rem 1.15rem;
     padding-top: 5.75rem;
   }
 
@@ -1724,7 +1724,7 @@
   .articles-archive__grid {
     grid-template-columns: minmax(0, 22rem);
     justify-content: center;
-    gap: 3rem;
+    gap: 7.25rem;
     padding-top: 5.5rem;
   }
 
