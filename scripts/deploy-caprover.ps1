@@ -4,8 +4,9 @@
 # Dashboard (one-time per app):
 #   Container HTTP Port = 8080
 #   Force HTTPS = on
-#   App env vars: AllowedHosts, ConnectionStrings__DefaultConnection,
+#   App env vars: TZ=Asia/Tehran, AllowedHosts, ConnectionStrings__DefaultConnection,
 #   Database__MigrateOnStartup=true, Storage__S3__*, Seed__Admin__*
+#   (TZ is also set in the Docker image; set it in App Configs to override/confirm.)
 #
 # Usage:
 #   Copy .env.caprover.example → .env.caprover and set CAPROVER_* values

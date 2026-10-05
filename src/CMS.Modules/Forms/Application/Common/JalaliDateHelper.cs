@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using CMS.Application.Common.Time;
 using CMS.Modules.Forms.Application.Fields;
 
 namespace CMS.Modules.Forms.Application.Common;
@@ -128,11 +129,7 @@ public static class JalaliDateHelper
     }
 
     public static string FormatFromUtc(DateTime utc, bool includeTime = true)
-    {
-        var value = DateTime.SpecifyKind(utc, DateTimeKind.Utc);
-        var local = TimeZoneInfo.ConvertTimeFromUtc(value, IranTimeZone);
-        return Format(local, includeTime);
-    }
+        => Format(IranTime.FromUtc(utc), includeTime);
 
     /// <summary>
     /// Formats a stored field value for admin/public display.
@@ -171,24 +168,5 @@ public static class JalaliDateHelper
             return Format(parsed, includeTime);
 
         return value.Trim();
-    }
-
-    private static readonly TimeZoneInfo IranTimeZone = ResolveIranTimeZone();
-
-    private static TimeZoneInfo ResolveIranTimeZone()
-    {
-        try
-        {
-            return TimeZoneInfo.FindSystemTimeZoneById(
-                OperatingSystem.IsWindows() ? "Iran Standard Time" : "Asia/Tehran");
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            return TimeZoneInfo.CreateCustomTimeZone(
-                "Asia/Tehran",
-                TimeSpan.FromHours(3.5),
-                "Iran Standard Time",
-                "Iran Standard Time");
-        }
     }
 }

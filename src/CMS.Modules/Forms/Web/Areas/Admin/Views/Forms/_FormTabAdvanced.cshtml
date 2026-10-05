@@ -75,7 +75,7 @@
                             }
                         </td>
                         <td>@Localizer[$"VersionState_{version.State}"]</td>
-                        <td>@((version.UpdatedAtUtc ?? version.CreatedAtUtc).ToLocalTime().ToString("yyyy/MM/dd HH:mm"))</td>
+                        <td>@CMS.Application.Common.Time.IranTime.Format(version.UpdatedAtUtc ?? version.CreatedAtUtc)</td>
                         <td class="admin-row-actions">
                             @if (!isCurrent && Model.Id.HasValue)
                             {

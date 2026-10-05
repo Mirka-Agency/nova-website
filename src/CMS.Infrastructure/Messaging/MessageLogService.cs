@@ -1,3 +1,4 @@
+using CMS.Application.Common.Time;
 using CMS.Application.Messaging;
 using CMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -104,18 +105,17 @@ public sealed class MessageLogQueryService : IMessageLogQueryService
         var emailFailed = rows.Count(x => x.Channel == MessageChannel.Email && x.Status == MessageSendStatus.Failed);
         var emailSkipped = rows.Count(x => x.Channel == MessageChannel.Email && x.Status == MessageSendStatus.Skipped);
 
-        var tz = MessageLogTimeZones.Iran;
         var dailyMap = rows
             .Where(x => x.Status == MessageSendStatus.Succeeded)
-            .GroupBy(x => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(x.CreatedAtUtc, tz)))
+            .GroupBy(x => DateOnly.FromDateTime(IranTime.FromUtc(x.CreatedAtUtc)))
             .ToDictionary(
                 g => g.Key,
                 g => (
                     Sms: g.Where(x => x.Channel == MessageChannel.Sms).Sum(x => x.RecipientCount),
                     Email: g.Where(x => x.Channel == MessageChannel.Email).Sum(x => x.RecipientCount)));
 
-        var fromLocal = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(fromUtc, tz));
-        var toLocal = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(toUtc.AddTicks(-1), tz));
+        var fromLocal = DateOnly.FromDateTime(IranTime.FromUtc(fromUtc));
+        var toLocal = DateOnly.FromDateTime(IranTime.FromUtc(toUtc.AddTicks(-1)));
         if (toLocal < fromLocal)
             toLocal = fromLocal;
 
@@ -160,33 +160,5 @@ public sealed class MessageLogQueryService : IMessageLogQueryService
                 x.ErrorMessage,
                 x.CreatedAtUtc))
             .ToListAsync(cancellationToken);
-    }
-}
-
-internal static class MessageLogTimeZones
-{
-    public static TimeZoneInfo Iran { get; } = ResolveIran();
-
-    private static TimeZoneInfo ResolveIran()
-    {
-        foreach (var id in new[] { "Asia/Tehran", "Iran Standard Time" })
-        {
-            try
-            {
-                return TimeZoneInfo.FindSystemTimeZoneById(id);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-            }
-            catch (InvalidTimeZoneException)
-            {
-            }
-        }
-
-        return TimeZoneInfo.CreateCustomTimeZone(
-            "Iran Standard Time",
-            TimeSpan.FromHours(3.5),
-            "Iran Standard Time",
-            "Iran Standard Time");
     }
 }

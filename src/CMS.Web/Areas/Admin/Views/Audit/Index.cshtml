@@ -25,7 +25,7 @@ else
         @foreach (var entry in Model)
         {
             <tr>
-                <td>@entry.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                <td>@CMS.Application.Common.Time.IranTime.Format(entry.CreatedAtUtc)</td>
                 <td>@(entry.UserEmail ?? "—")</td>
                 <td>@entry.Action</td>
                 <td>@entry.EntityType @(entry.EntityId is not null ? $"({entry.EntityId})" : "")</td>

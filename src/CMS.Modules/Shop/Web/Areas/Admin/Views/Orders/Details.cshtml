@@ -46,7 +46,7 @@
                 {
                     <span class="admin-badge admin-badge-muted">@Localizer["IsWholesale"]</span>
                 }
-                <span class="admin-order-header-date">@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+                <span class="admin-order-header-date">@CMS.Application.Common.Time.IranTime.Format(Model.CreatedAtUtc)</span>
             </div>
         </div>
         <div class="admin-order-header-total">
@@ -72,7 +72,7 @@
                 </tr>
                 <tr>
                     <th scope="row">@Localizer["CreatedAt"]</th>
-                    <td>@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                    <td>@CMS.Application.Common.Time.IranTime.Format(Model.CreatedAtUtc)</td>
                 </tr>
                 @if (Model.Status == OrderStatus.Pending && Model.PaymentExpiresAtUtc.HasValue)
                 {

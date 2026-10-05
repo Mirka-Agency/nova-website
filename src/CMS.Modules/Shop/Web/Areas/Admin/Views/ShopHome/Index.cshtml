@@ -71,7 +71,7 @@
                         <td>@item.CustomerName</td>
                         <td>@item.StatusDisplay</td>
                         <td>@item.TotalDisplay</td>
-                        <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                        <td>@CMS.Application.Common.Time.IranTime.Format(item.CreatedAtUtc)</td>
                         <td class="admin-row-actions">
                             <a class="btn btn-ghost" asp-controller="Orders" asp-action="Details" asp-route-id="@item.Id">@Localizer["View"]</a>
                         </td>

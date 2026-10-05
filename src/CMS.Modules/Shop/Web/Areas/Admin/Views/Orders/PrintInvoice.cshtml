@@ -325,7 +325,7 @@
             </div>
             <div class="meta-card">
                 <span class="label">@Localizer["InvoiceDate"]</span>
-                <span class="value">@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+                <span class="value">@CMS.Application.Common.Time.IranTime.Format(Model.CreatedAtUtc)</span>
             </div>
             <div class="meta-card">
                 <span class="label">@Localizer["Status"]</span>

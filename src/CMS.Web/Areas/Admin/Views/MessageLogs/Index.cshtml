@@ -1,4 +1,5 @@
 @model CMS.Web.Areas.Admin.ViewModels.MessageLogsDashboardViewModel
+@using CMS.Application.Common.Time
 @using CMS.Application.Messaging
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
 @{
@@ -156,7 +157,7 @@
                 if (!string.IsNullOrWhiteSpace(entry.ErrorMessage))
                     detail = entry.ErrorMessage;
                 <tr>
-                    <td>@entry.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                    <td>@IranTime.Format(entry.CreatedAtUtc)</td>
                     <td>@channel</td>
                     <td>@entry.Recipient</td>
                     <td>@status</td>

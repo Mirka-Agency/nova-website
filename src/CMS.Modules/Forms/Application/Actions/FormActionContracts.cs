@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.RegularExpressions;
+using CMS.Modules.Forms.Application.Common;
 using CMS.Modules.Forms.Application.Schema;
 using CMS.Modules.Forms.Application.Submissions;
 using CMS.Modules.Forms.Domain.Entities;
@@ -70,7 +71,7 @@ public static class FormTemplateRenderer
 
         if (token.Equals("submission.createdAt", StringComparison.OrdinalIgnoreCase)
             || token.Equals("submission.submittedAt", StringComparison.OrdinalIgnoreCase))
-            return context.Submission.SubmittedAtUtc.ToString("yyyy-MM-dd HH:mm") + " UTC";
+            return JalaliDateHelper.FormatFromUtc(context.Submission.SubmittedAtUtc);
 
         if (token.Equals("site.name", StringComparison.OrdinalIgnoreCase))
             return context.SiteName;

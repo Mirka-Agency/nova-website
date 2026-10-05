@@ -76,7 +76,7 @@ else
                     <td>@item.StatusLabel</td>
                     <td>@item.FieldCount</td>
                     <td>@item.SubmissionCount</td>
-                    <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd")</td>
+                    <td>@CMS.Application.Common.Time.IranTime.FormatDate(item.CreatedAtUtc)</td>
                     <td class="admin-row-actions">
                         <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit" aria-hidden="true"></i><span>@Localizer["Edit"]</span></a>
                         <a class="btn btn-ghost" asp-controller="FormSubmissions" asp-action="Index" asp-route-formId="@item.Id"><i class="fas fa-inbox" aria-hidden="true"></i><span>@Localizer["Inbox"]</span></a>

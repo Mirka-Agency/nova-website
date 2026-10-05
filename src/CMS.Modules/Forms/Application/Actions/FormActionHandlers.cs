@@ -2,6 +2,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
 using CMS.Application.Email;
+using CMS.Modules.Forms.Application.Common;
 using CMS.Modules.Forms.Application.Schema;
 using CMS.Modules.Forms.Application.Security;
 using Microsoft.Extensions.Logging;
@@ -63,7 +64,7 @@ public sealed class EmailNotificationActionHandler : IFormActionHandler
         {
             var sb = new StringBuilder();
             sb.AppendLine(WebUtilityEncode($"فرم جدید: {context.Form.Name}"));
-            sb.AppendLine(WebUtilityEncode($"زمان: {context.Submission.SubmittedAtUtc:yyyy-MM-dd HH:mm} UTC"));
+            sb.AppendLine(WebUtilityEncode($"زمان: {JalaliDateHelper.FormatFromUtc(context.Submission.SubmittedAtUtc)}"));
             sb.AppendLine();
             foreach (var (key, value) in context.FieldValuesByKey)
                 sb.AppendLine(WebUtilityEncode($"{key}: {value ?? "—"}"));

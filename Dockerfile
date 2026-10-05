@@ -31,8 +31,9 @@ RUN dotnet publish src/CMS.Web/CMS.Web.csproj -c Release -o /app/publish /p:UseA
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends curl tzdata \
     && rm -rf /var/lib/apt/lists/*
+ENV TZ=Asia/Tehran
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 # CapRover / container deploys have no migrate job; docker-compose sets the same override.

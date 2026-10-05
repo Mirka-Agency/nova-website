@@ -31,7 +31,7 @@
         <td>@typeLabel</td>
         <td>@amountLabel</td>
         <td>@(c.MinOrderAmount.HasValue ? c.MinOrderAmount.Value.ToString("N0") : "—")</td>
-        <td>@(c.EndsAtUtc.HasValue ? c.EndsAtUtc.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm") : "—")</td>
+        <td>@(c.EndsAtUtc.HasValue ? CMS.Application.Common.Time.IranTime.Format(c.EndsAtUtc.Value) : "—")</td>
         <td>@(string.IsNullOrWhiteSpace(c.AllowedUserId) ? "—" : Localizer["Yes"])</td>
         <td>@(c.IsActive ? Localizer["Yes"] : Localizer["No"])</td>
         <td><a class="btn btn-secondary" asp-action="Edit" asp-route-id="@c.Id">@Localizer["Edit"]</a></td>

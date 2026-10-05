@@ -1,3 +1,4 @@
+using CMS.Application.Common.Time;
 using CMS.Application.Messaging;
 using CMS.Infrastructure.Auth;
 using CMS.Web.Areas.Admin.ViewModels;
@@ -11,8 +12,6 @@ namespace CMS.Web.Areas.Admin.Controllers;
 [Authorize(Policy = AuthPolicies.AdminOnly)]
 public class MessageLogsController : Controller
 {
-    private static readonly TimeZoneInfo IranTz = ResolveIranTimeZone();
-
     private readonly IMessageLogQueryService _messageLogs;
     private readonly IStringLocalizer<AdminShared> _localizer;
 
@@ -67,7 +66,7 @@ public class MessageLogsController : Controller
         DateTime? from,
         DateTime? to)
     {
-        var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, IranTz);
+        var nowLocal = IranTime.FromUtc(DateTime.UtcNow);
         var today = DateOnly.FromDateTime(nowLocal);
 
         DateOnly fromDate;
@@ -101,32 +100,10 @@ public class MessageLogsController : Controller
 
         var fromLocal = fromDate.ToDateTime(TimeOnly.MinValue);
         var toLocalExclusive = toDateInclusive.AddDays(1).ToDateTime(TimeOnly.MinValue);
-        var fromUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(fromLocal, DateTimeKind.Unspecified), IranTz);
-        var toUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(toLocalExclusive, DateTimeKind.Unspecified), IranTz);
+        var iranTz = IranTime.TimeZone;
+        var fromUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(fromLocal, DateTimeKind.Unspecified), iranTz);
+        var toUtc = TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(toLocalExclusive, DateTimeKind.Unspecified), iranTz);
 
         return (fromUtc, toUtc, fromLocal, toDateInclusive.ToDateTime(TimeOnly.MinValue));
-    }
-
-    private static TimeZoneInfo ResolveIranTimeZone()
-    {
-        foreach (var id in new[] { "Asia/Tehran", "Iran Standard Time" })
-        {
-            try
-            {
-                return TimeZoneInfo.FindSystemTimeZoneById(id);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-            }
-            catch (InvalidTimeZoneException)
-            {
-            }
-        }
-
-        return TimeZoneInfo.CreateCustomTimeZone(
-            "Iran Standard Time",
-            TimeSpan.FromHours(3.5),
-            "Iran Standard Time",
-            "Iran Standard Time");
     }
 }

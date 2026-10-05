@@ -40,7 +40,7 @@ else
                     }
                 </td>
                 <td>@o.TotalAmount.ToString("N0") @o.Currency</td>
-                <td>@o.CreatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                <td>@CMS.Application.Common.Time.IranTime.Format(o.CreatedAtUtc)</td>
                 <td>
                     <a class="btn btn-secondary" asp-action="OrderDetails" asp-route-id="@o.Id">جزئیات</a>
                     @if (o.CanCancel)
