@@ -31,14 +31,21 @@ public sealed class AdminNotifier : IAdminNotifier, IAdminSmsNotifier
 
     public IReadOnlyList<string> GetAdminEmails() => _emailOptions.GetAdminNotifyEmailList();
 
+    /// <inheritdoc cref="IAdminSmsNotifier.NotifyAdminsAsync" />
     public Task NotifyAdminsAsync(string text, CancellationToken cancellationToken = default) =>
-        NotifyAdminsAsync("اطلاع‌رسانی سایت", text, cancellationToken);
+        SendSmsAsync(text, cancellationToken);
 
     public async Task NotifyAdminsAsync(string subject, string message, CancellationToken cancellationToken = default)
     {
         await SendSmsAsync(message, cancellationToken);
         await SendEmailsAsync(subject, message, cancellationToken);
     }
+
+    public Task NotifyAdminsByEmailAsync(
+        string subject,
+        string message,
+        CancellationToken cancellationToken = default) =>
+        SendEmailsAsync(subject, message, cancellationToken);
 
     private async Task SendSmsAsync(string text, CancellationToken cancellationToken)
     {

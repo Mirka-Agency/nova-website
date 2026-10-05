@@ -4,7 +4,12 @@ namespace CMS.Application.Email;
 public interface IAdminNotifier
 {
     IReadOnlyList<string> GetAdminEmails();
+
+    /// <summary>SMS + email to configured admin recipients.</summary>
     Task NotifyAdminsAsync(string subject, string message, CancellationToken cancellationToken = default);
+
+    /// <summary>Email only (no SMS). Use when SMS is sent separately.</summary>
+    Task NotifyAdminsByEmailAsync(string subject, string message, CancellationToken cancellationToken = default);
 }
 
 public sealed class EmailOptions

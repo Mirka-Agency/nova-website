@@ -523,6 +523,7 @@ public sealed class SubmissionService : ISubmissionService
             var fieldRegistry = sp.GetRequiredService<IFormFieldTypeRegistry>();
             var logger = sp.GetRequiredService<ILogger<SubmissionService>>();
             var siteSettings = sp.GetService<ISiteSettingsService>();
+            var adminSms = sp.GetService<IAdminSmsNotifier>();
             var adminNotifier = sp.GetService<IAdminNotifier>();
 
             var loadedForm = await db.Forms
@@ -562,21 +563,32 @@ public sealed class SubmissionService : ISubmissionService
                 siteName,
                 pageContext);
 
+            // Form actions first (e.g. email_notification) — at most one email path below.
             await actionExecutor.ExecuteAllAsync(context, ct);
 
-            if (adminNotifier is not null)
+            var hasFormEmailNotify = schema.Actions.Any(a =>
+                a.Enabled
+                && string.Equals(a.Type, FormActionTypeIds.EmailNotification, StringComparison.OrdinalIgnoreCase));
+
+            var adminMessage = $"فرم جدید «{formName}» در سایت ثبت شد.";
+            try
             {
-                try
+                // SMS once per submission (never via IAdminNotifier here — that would also email).
+                if (adminSms is not null)
+                    await adminSms.NotifyAdminsAsync(adminMessage, ct);
+
+                // Email once: form action OR global admin list — not both.
+                if (!hasFormEmailNotify && adminNotifier is not null)
                 {
-                    await adminNotifier.NotifyAdminsAsync(
+                    await adminNotifier.NotifyAdminsByEmailAsync(
                         $"ثبت فرم «{formName}»",
-                        $"فرم جدید «{formName}» در سایت ثبت شد.",
+                        adminMessage,
                         ct);
                 }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "Admin notify for form submission failed");
-                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Admin notify for form submission failed");
             }
         }, cancellationToken);
 
