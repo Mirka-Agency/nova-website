@@ -2478,7 +2478,6 @@ body.nav-open {
   height: 42px;
   width: auto;
   background: transparent;
-  filter: brightness(0) invert(1);
   opacity: 0.96;
 }
 

@@ -12,8 +12,7 @@
     var settings = await SiteSettings.GetAsync();
     var contact = SiteContactInfo.From(settings);
     var brand = contact.Brand;
-    var logoUrl = contact.LogoUrl
-        ?? Url.Content("~/template/assets/images/common/logo-nova-transparent.png");
+    var logoUrl = Url.Content("~/template/assets/images/common/Main color-white.png");
     var phoneDisplay = contact.PhoneDisplay;
     var telHref = contact.TelHref;
     var email = contact.Email;
@@ -47,6 +46,9 @@
             @footerText
           </p>
           }
+          <p class="footer-brand__text">
+            نووا کلینیک، اولین و تنها مرکز فلوشیپ جراحی غدد ایران، تحت نظارت دکتر کاوه همدانی (نظام پزشکی: 110614) است. ما با بهره‌گیری از تکنولوژی‌های روز دنیا، در تلاشیم با ارائه روش‌های نوین جراحی، عوارض را کاهش داده و کیفیت زندگی بیماران را بهبود بخشیم.
+          </p>
           @if (contact.HasPhone)
           {
           <a class="footer-cta" href="@telHref">
