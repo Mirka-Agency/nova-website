@@ -32,7 +32,7 @@ public class NewsController : Controller
         _localizer = localizer;
     }
 
-    [HttpGet("")]
+    [HttpGet("", Name = "education-articles")]
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["page"])]
     public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
     {
@@ -52,7 +52,7 @@ public class NewsController : Controller
         return View(result.Items);
     }
 
-    [HttpGet("{slug}")]
+    [HttpGet("{slug}", Name = "education-article")]
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
     {
@@ -66,12 +66,15 @@ public class NewsController : Controller
         if (post.Kind == ArticleKind.Event)
             return RedirectToActionPermanent("Details", "Events", new { slug = post.Slug });
 
+        var publicPath = $"/education-articles/{post.Slug}";
+        var canonical = AbsoluteUrl(post.CanonicalUrl, publicPath);
+
         ViewData["Title"] = post.Title;
         ViewData["NavActive"] = "articles";
         ViewData["MetaTitle"] = FirstNonEmpty(post.MetaTitle, post.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(post.MetaDescription, post.Excerpt);
         ViewData["MetaKeywords"] = post.SeoKeywords;
-        ViewData["CanonicalUrl"] = post.CanonicalUrl;
+        ViewData["CanonicalUrl"] = canonical;
         ViewData["OgTitle"] = FirstNonEmpty(post.OgTitle, post.MetaTitle, post.Title);
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
@@ -95,7 +98,7 @@ public class NewsController : Controller
                         seo.SchemaType ?? "NewsArticle",
                         post.Title,
                         FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                        AbsoluteUrl(post.CanonicalUrl, $"/education-articles/{post.Slug}"),
+                        canonical,
                         FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl),
                         post.AuthorDisplayName,
                         post.PublishedAtUtc,
@@ -106,13 +109,39 @@ public class NewsController : Controller
         return View(post);
     }
 
-    private string? AbsoluteUrl(string? canonical, string relativePath)
+    private string AbsoluteUrl(string? canonical, string relativePath)
     {
-        if (!string.IsNullOrWhiteSpace(canonical))
-            return canonical.Trim();
+        var normalized = NormalizePublicArticleUrl(canonical);
+        if (!string.IsNullOrWhiteSpace(normalized))
+        {
+            if (normalized.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || normalized.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return normalized;
+
+            if (Request is null)
+                return normalized;
+            return $"{Request.Scheme}://{Request.Host.Value}{normalized}";
+        }
+
         if (Request is null)
             return relativePath;
         return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";
+    }
+
+    private static string? NormalizePublicArticleUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        var value = url.Trim()
+            .Replace("/news/", "/education-articles/", StringComparison.OrdinalIgnoreCase)
+            .Replace("/news?", "/education-articles?", StringComparison.OrdinalIgnoreCase);
+
+        if (value.Equals("/news", StringComparison.OrdinalIgnoreCase)
+            || value.EndsWith("/news", StringComparison.OrdinalIgnoreCase))
+            return value[..^"/news".Length] + "/education-articles";
+
+        return value;
     }
 
     private static string? FirstNonEmpty(params string?[] values)

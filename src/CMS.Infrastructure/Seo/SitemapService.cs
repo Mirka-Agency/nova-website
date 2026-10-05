@@ -128,8 +128,8 @@ public sealed class StaticPagesSitemapUrlProvider : ISitemapUrlProvider
         IReadOnlyList<SitemapUrlEntry> entries =
         [
             new("/", today, SitemapChangeFrequency.Daily, 1.0),
-            new("/about", today, SitemapChangeFrequency.Monthly, 0.8),
-            new("/contact", today, SitemapChangeFrequency.Monthly, 0.8)
+            new("/about-us", today, SitemapChangeFrequency.Monthly, 0.8),
+            new("/contact-us", today, SitemapChangeFrequency.Monthly, 0.8)
         ];
         return Task.FromResult(entries);
     }

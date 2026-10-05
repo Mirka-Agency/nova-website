@@ -52,7 +52,7 @@
       <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
         <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
         <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
-        <a asp-controller="News" asp-action="Index">مقالات تخصصی</a>
+        <a asp-area="" asp-route="education-articles">مقالات تخصصی</a>
         <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
         <span aria-current="page">@Model.Title</span>
       </nav>
@@ -106,13 +106,12 @@
   </div>
 </section>
 
-<section class="article-detail" aria-labelledby="article-detail-heading">
+<section class="article-detail" aria-label="متن مقاله">
   <div class="container">
     <div class="article-detail__layout">
       <div class="article-detail__main">
         <article class="article-prose reveal">
           <p class="section-kicker">خلاصه پژوهش</p>
-          <h2 class="section-heading" id="article-detail-heading">درباره این مطالعه</h2>
           @if (!string.IsNullOrWhiteSpace(Model.Body))
           {
             <div class="article-prose__body">
@@ -234,7 +233,7 @@
           var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? relatedFallback : item.CoverImageUrl;
           var itemType = string.IsNullOrWhiteSpace(item.AuthorDisplayName) ? "مقاله تخصصی" : item.AuthorDisplayName;
           var itemTopic = string.IsNullOrWhiteSpace(item.CategoryName) ? "غدد درون‌ریز" : item.CategoryName;
-          <a class="article-card reveal" asp-controller="News" asp-action="Details" asp-route-slug="@item.Slug">
+          <a class="article-card reveal" asp-area="" asp-route="education-article" asp-route-slug="@item.Slug">
             <span class="article-card__media">
               <img
                 src="@itemCover"

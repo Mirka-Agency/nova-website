@@ -947,7 +947,7 @@ else
         var dateLabel = local.ToString("d MMMM yyyy", fa);
         var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? fallbackArticleCover : item.CoverImageUrl;
         var excerpt = string.IsNullOrWhiteSpace(item.Excerpt) ? "برای ادامه مطلب وارد شوید." : item.Excerpt;
-          <a class="article-item reveal" asp-controller="News" asp-action="Details" asp-route-slug="@item.Slug">
+          <a class="article-item reveal" asp-area="" asp-route="education-article" asp-route-slug="@item.Slug">
             <span class="article-item__media">
               <img
                 src="@cover"
@@ -979,7 +979,7 @@ else
 }
 else
 {
-          <a class="article-item reveal" asp-controller="News" asp-action="Index">
+          <a class="article-item reveal" asp-area="" asp-route="education-articles">
             <span class="article-item__media">
               <img
                 src="~/template/assets/images/articles/scientific-reports.jpg"
@@ -1011,7 +1011,7 @@ else
         </div>
 
         <div class="articles-footer reveal">
-          <a class="btn-primary-custom" asp-controller="News" asp-action="Index">
+          <a class="btn-primary-custom" asp-area="" asp-route="education-articles">
             <span class="ui-icon btn-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>

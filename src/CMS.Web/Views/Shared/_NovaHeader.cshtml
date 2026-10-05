@@ -93,7 +93,7 @@
           @if (newsOn)
           {
             <li>
-              <a class="@(IsActive("articles") ? "is-active" : null)" asp-controller="News" asp-action="Index" aria-current="@(IsActive("articles") ? "page" : null)">مقالات تخصصی</a>
+              <a class="@(IsActive("articles") ? "is-active" : null)" asp-area="" asp-route="education-articles" aria-current="@(IsActive("articles") ? "page" : null)">مقالات تخصصی</a>
             </li>
           }
           @if (blogOn)
@@ -103,14 +103,14 @@
             </li>
           }
           <li class="has-dropdown">
-            <a class="@(aboutGroupActive ? "is-active" : null)" asp-controller="Home" asp-action="About" aria-current="@(IsActive("about") ? "page" : null)" aria-haspopup="true" aria-expanded="false">
+            <a class="@(aboutGroupActive ? "is-active" : null)" asp-area="" asp-route="about-us" aria-current="@(IsActive("about") ? "page" : null)" aria-haspopup="true" aria-expanded="false">
               درباره ما
               <span class="nav-caret" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </span>
             </a>
             <ul class="nav-dropdown" aria-label="زیرمنوی درباره ما">
-              <li><a asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
+              <li><a asp-area="" asp-route="contact-us">تماس با ما</a></li>
               @if (teamOn)
               {
                 <li><a asp-controller="Teams" asp-action="Index">متخصصان کلینیک</a></li>
@@ -187,7 +187,7 @@
           }
           @if (newsOn)
           {
-            <li><a asp-controller="News" asp-action="Index">مقالات تخصصی</a></li>
+            <li><a asp-area="" asp-route="education-articles">مقالات تخصصی</a></li>
           }
           @if (blogOn)
           {
@@ -195,13 +195,13 @@
           }
           <li class="has-dropdown">
             <div class="mobile-nav__row">
-              <a asp-controller="Home" asp-action="About">درباره ما</a>
+              <a asp-area="" asp-route="about-us">درباره ما</a>
               <button class="mobile-nav__submenu-toggle" type="button" aria-expanded="false" aria-label="باز کردن زیرمنوی درباره ما">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
               </button>
             </div>
             <ul class="mobile-nav__submenu">
-              <li><a asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
+              <li><a asp-area="" asp-route="contact-us">تماس با ما</a></li>
               @if (teamOn)
               {
                 <li><a asp-controller="Teams" asp-action="Index">متخصصان کلینیک</a></li>

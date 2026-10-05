@@ -97,7 +97,7 @@ public class HomeController : Controller
         return View();
     }
 
-    [HttpGet("about")]
+    [HttpGet("about-us", Name = "about-us")]
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> About(CancellationToken cancellationToken)
     {
@@ -124,7 +124,7 @@ public class HomeController : Controller
         });
     }
 
-    [HttpGet("contact")]
+    [HttpGet("contact-us", Name = "contact-us")]
     [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Contact(CancellationToken cancellationToken)
     {

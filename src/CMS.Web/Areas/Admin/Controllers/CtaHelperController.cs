@@ -44,7 +44,7 @@ public sealed class CtaHelperController : Controller
             PhoneDigits = contact.PhoneDigits ?? "02191093492",
             TelHref = contact.TelHref ?? "tel:02191093492",
             WhatsAppUrl = contact.WhatsAppUrl ?? contact.TelHref ?? "tel:02191093492",
-            ContactUrl = Url.Action("Contact", "Home", new { area = "" }) ?? "/Home/Contact",
+            ContactUrl = Url.RouteUrl("contact-us") ?? "/contact-us",
             DoctorsUrl = "/doctors",
             ServicesUrl = "/Services",
             DoctorImageUrl = doctorImage ?? "/template/assets/images/doctors/dr-hamedani.webp",
