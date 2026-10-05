@@ -241,6 +241,8 @@ try
     app.UseMiddleware<CMS.Web.Middleware.CustomerPrincipalMiddleware>();
     app.UseAuthorization();
     app.UseMaintenanceMode();
+    // Long Cache-Control for CSS/JS/images/fonts outside Development (pairs with asp-append-version).
+    app.UseStaticAssetsCacheHeaders();
     app.MapStaticAssets();
 
     app.MapCmsHealthEndpoints();
