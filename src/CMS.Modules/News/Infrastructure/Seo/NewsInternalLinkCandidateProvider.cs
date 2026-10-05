@@ -34,7 +34,7 @@ public sealed class NewsInternalLinkCandidateProvider : IInternalLinkCandidatePr
             .ToListAsync(cancellationToken);
 
         return articles
-            .Select(a => new InternalLinkCandidate(a.Title, $"/news/{a.Slug}", SeoContentTypeKeys.NewsArticle, a.Id))
+            .Select(a => new InternalLinkCandidate(a.Title, $"/education-articles/{a.Slug}", SeoContentTypeKeys.NewsArticle, a.Id))
             .ToList();
     }
 }

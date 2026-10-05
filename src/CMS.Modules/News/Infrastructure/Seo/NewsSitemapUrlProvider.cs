@@ -23,7 +23,7 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
     {
         var entries = new List<SitemapUrlEntry>
         {
-            new("/news", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8),
+            new("/education-articles", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8),
             new("/event", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
         };
 
@@ -42,7 +42,7 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
         {
             var path = article.Kind == ArticleKind.Event
                 ? $"/event/{article.Slug}"
-                : $"/news/{article.Slug}";
+                : $"/education-articles/{article.Slug}";
             entries.Add(new SitemapUrlEntry(
                 path,
                 article.LastMod,

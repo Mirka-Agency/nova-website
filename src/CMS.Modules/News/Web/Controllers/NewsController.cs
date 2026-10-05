@@ -12,7 +12,7 @@ using Microsoft.FeatureManagement;
 
 namespace CMS.Modules.News.Web.Controllers;
 
-[Route("news")]
+[Route("education-articles")]
 public class NewsController : Controller
 {
     private readonly IPublicArticleQuery _articles;
@@ -95,7 +95,7 @@ public class NewsController : Controller
                         seo.SchemaType ?? "NewsArticle",
                         post.Title,
                         FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                        AbsoluteUrl(post.CanonicalUrl, $"/news/{post.Slug}"),
+                        AbsoluteUrl(post.CanonicalUrl, $"/education-articles/{post.Slug}"),
                         FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl),
                         post.AuthorDisplayName,
                         post.PublishedAtUtc,
