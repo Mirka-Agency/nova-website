@@ -2475,8 +2475,10 @@ body.nav-open {
 }
 
 .footer-brand img {
-  height: 72px;
+  height: 96px;
   width: auto;
+  max-width: 100%;
+  object-fit: contain;
   background: transparent;
   opacity: 1;
 }
