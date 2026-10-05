@@ -34,29 +34,6 @@
         return ToPersianDigits($"{y}/{m:00}/{d:00}");
     }
 
-    string? ServiceFragment()
-    {
-        var hay = $"{topic} {Model.Title} {Model.Excerpt}";
-        if (hay.Contains("آدرنال", StringComparison.Ordinal) || hay.Contains("فوق کلیه", StringComparison.Ordinal) || hay.Contains("adrenal", StringComparison.OrdinalIgnoreCase))
-            return "adrenal";
-        if (hay.Contains("پاراتیروئید", StringComparison.Ordinal) || hay.Contains("parathyroid", StringComparison.OrdinalIgnoreCase))
-            return "parathyroid";
-        if (hay.Contains("پانکراس", StringComparison.Ordinal) || hay.Contains("pancreas", StringComparison.OrdinalIgnoreCase))
-            return "pancreas";
-        if (hay.Contains("تیروئید", StringComparison.Ordinal) || hay.Contains("thyroid", StringComparison.OrdinalIgnoreCase))
-            return "thyroid";
-        return null;
-    }
-
-    var serviceFragment = ServiceFragment();
-    var serviceLabel = serviceFragment switch
-    {
-        "thyroid" => "مشاهده خدمت جراحی تیروئید",
-        "parathyroid" => "مشاهده خدمت جراحی پاراتیروئید",
-        "adrenal" => "مشاهده خدمت جراحی فوق کلیه",
-        "pancreas" => "مشاهده خدمت جراحی پانکراس",
-        _ => "مشاهده خدمات تخصصی"
-    };
     var publishedLocal = FormatPublished(Model.PublishedAtUtc);
     var gallery = ArticleGalleryJson.Parse(Model.GalleryJson)
         .Select(x => (
@@ -233,14 +210,6 @@
               }
             </span>
           </a>
-        }
-        @if (!string.IsNullOrWhiteSpace(serviceFragment))
-        {
-          <a class="article-detail__aside-service" asp-controller="Services" asp-action="Index" asp-fragment="@serviceFragment">@serviceLabel</a>
-        }
-        else
-        {
-          <a class="article-detail__aside-service" asp-controller="Services" asp-action="Index">@serviceLabel</a>
         }
       </aside>
     </div>

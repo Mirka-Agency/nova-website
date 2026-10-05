@@ -79,25 +79,42 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
             ? query.OrderByDescending(p => p.EventStartAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc)
             : query.OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc);
 
-        var articles = await ordered
+        var rows = await ordered
             .Skip((normalizedPage - 1) * normalizedPageSize)
             .Take(normalizedPageSize)
+            .Select(p => new
+            {
+                p.Title,
+                p.Slug,
+                p.Kind,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                CategorySlug = p.Category != null ? p.Category.Slug : null,
+                p.CoverImageUrl,
+                PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.EventStartAtUtc,
+                p.EventEndAtUtc,
+                p.Location,
+                p.Excerpt,
+                p.Body,
+                p.AuthorDisplayName
+            })
+            .ToListAsync(cancellationToken);
+
+        var articles = rows
             .Select(p => new PublicArticleSummaryDto(
                 p.Title,
                 p.Slug,
                 p.Kind,
-                p.Category != null ? p.Category.Name : null,
-                p.Category != null ? p.Category.Slug : null,
+                p.CategoryName,
+                p.CategorySlug,
                 p.CoverImageUrl,
-                p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.PublishedAtUtc,
                 p.EventStartAtUtc,
                 p.EventEndAtUtc,
                 p.Location,
-                p.Excerpt != null && p.Excerpt != string.Empty
-                    ? p.Excerpt
-                    : (p.Body.Length > ExcerptLength ? p.Body.Substring(0, ExcerptLength) : p.Body),
+                ResolveExcerpt(p.Excerpt, p.Body),
                 p.AuthorDisplayName))
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         return new PagedResult<PublicArticleSummaryDto>(articles, totalCount, normalizedPage, normalizedPageSize);
     }
@@ -179,7 +196,7 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>
-        !string.IsNullOrWhiteSpace(excerpt) ? excerpt.Trim() : MakeExcerpt(body);
+        MakeExcerpt(!string.IsNullOrWhiteSpace(excerpt) ? excerpt : body);
 
     private static string MakeExcerpt(string body)
     {
