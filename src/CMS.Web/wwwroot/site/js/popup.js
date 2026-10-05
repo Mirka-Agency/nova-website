@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  // Layout always loads this script; guard against a second include.
+  if (window.__cmsPopupInit) return;
+  window.__cmsPopupInit = true;
+
   var STORAGE_PREFIX = 'cms.popup.';
   var host = document.querySelector('[data-cms-popup-host]');
   if (!host) return;
@@ -143,9 +147,12 @@
 
     // AJAX form submit inside popup — keep dialog open on validation errors
     popup.querySelectorAll('form.public-form').forEach(function (form) {
+      if (form.getAttribute('data-popup-ajax-bound') === '1') return;
+      form.setAttribute('data-popup-ajax-bound', '1');
       form.addEventListener('submit', function (ev) {
         if (form.getAttribute('data-popup-ajax') === 'off') return;
         ev.preventDefault();
+        if (form.getAttribute('data-submitting') === '1') return;
         submitFormAjax(form, popup);
       });
     });
@@ -182,6 +189,9 @@
   }
 
   function submitFormAjax(form, popup) {
+    if (form.getAttribute('data-submitting') === '1') return;
+    form.setAttribute('data-submitting', '1');
+
     var action = form.getAttribute('action') || window.location.href;
     var fd = new FormData(form);
     var errorBox = form.querySelector('.public-form-errors') || form.querySelector('[data-valmsg-summary]');
@@ -213,7 +223,6 @@
         return { ok: res.ok, status: res.status, data: null };
       });
     }).then(function (result) {
-      if (submitBtn) submitBtn.disabled = false;
       var data = result.data || {};
       if (result.ok && data.ok) {
         markShown(popup);
@@ -228,6 +237,9 @@
         form.replaceWith(success);
         return;
       }
+
+      form.removeAttribute('data-submitting');
+      if (submitBtn) submitBtn.disabled = false;
 
       var errors = (data && data.errors) || {};
       var messages = [];
@@ -259,6 +271,7 @@
       }
       // keep popup open
     }).catch(function () {
+      form.removeAttribute('data-submitting');
       if (submitBtn) submitBtn.disabled = false;
       if (errorBox) {
         errorBox.textContent = 'ارسال فرم با خطا مواجه شد. دوباره تلاش کنید.';

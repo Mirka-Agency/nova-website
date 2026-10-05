@@ -93,6 +93,9 @@
   }
 
   function submitAjax(form) {
+    if (form.getAttribute('data-submitting') === '1') return;
+    form.setAttribute('data-submitting', '1');
+
     var action = form.getAttribute('action') || window.location.href;
     clearErrors(form);
     var submitBtn = form.querySelector('[type="submit"]');
@@ -119,7 +122,6 @@
           });
       })
       .then(function (result) {
-        if (submitBtn) submitBtn.disabled = false;
         var data = result.data || {};
         if (result.ok && data.ok) {
           if (data.redirectUrl) {
@@ -135,10 +137,13 @@
           form.replaceWith(success);
           return;
         }
+        form.removeAttribute('data-submitting');
+        if (submitBtn) submitBtn.disabled = false;
         showFieldErrors(form, data.errors);
         showSummary(form, data);
       })
       .catch(function () {
+        form.removeAttribute('data-submitting');
         if (submitBtn) submitBtn.disabled = false;
         showSummary(form, { message: 'ارسال فرم با خطا مواجه شد. دوباره تلاش کنید.' });
       });
@@ -150,6 +155,7 @@
     form.setAttribute('data-public-ajax-bound', '1');
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
+      if (form.getAttribute('data-submitting') === '1') return;
       submitAjax(form);
     });
   }
