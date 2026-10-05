@@ -120,7 +120,7 @@ public class CategoryFormViewModel
     [MaxLength(200, ErrorMessage = "نامک حداکثر ۲۰۰ نویسه می‌تواند باشد.")]
     public string? Slug { get; set; }
 
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     [MaxLength(1000, ErrorMessage = "آدرس تصویر حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? ImageUrl { get; set; }

@@ -15,6 +15,7 @@
   <data name="Slug" xml:space="preserve"><value>نامک</value></data>
   <data name="Body" xml:space="preserve"><value>متن</value></data>
   <data name="Description" xml:space="preserve"><value>توضیحات</value></data>
+  <data name="DescriptionOptionalHint" xml:space="preserve"><value>اختیاری است.</value></data>
   <data name="Image" xml:space="preserve"><value>تصویر</value></data>
   <data name="ImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
