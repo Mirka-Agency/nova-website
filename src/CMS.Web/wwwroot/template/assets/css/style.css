@@ -2475,10 +2475,10 @@ body.nav-open {
 }
 
 .footer-brand img {
-  height: 42px;
+  height: 72px;
   width: auto;
   background: transparent;
-  opacity: 0.96;
+  opacity: 1;
 }
 
 .footer-brand__text {
