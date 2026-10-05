@@ -1,0 +1,12 @@
+{
+  "name": "cms-asset-minify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "In-place CSS/JS minification for CMS.Web wwwroot (Production / Docker builds)",
+  "scripts": {
+    "minify": "node minify.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
