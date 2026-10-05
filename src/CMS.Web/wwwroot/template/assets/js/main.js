@@ -1288,8 +1288,7 @@
     var archive = document.querySelector("[data-articles-archive]");
     if (!archive) return;
 
-    var FIRST_PAGE_SIZE = 4;
-    var OTHER_PAGE_SIZE = 6;
+    var PAGE_SIZE = 6;
     var filters = archive.querySelectorAll("[data-article-filter]");
     var cards = Array.prototype.slice.call(archive.querySelectorAll("[data-article-card]"));
     var countEl = archive.querySelector("[data-articles-count]");
@@ -1308,17 +1307,13 @@
     }
 
     function getTotalPages(total) {
-      if (total <= FIRST_PAGE_SIZE) return Math.max(1, total > 0 ? 1 : 0);
-      return 1 + Math.ceil((total - FIRST_PAGE_SIZE) / OTHER_PAGE_SIZE);
+      if (total <= 0) return 0;
+      return Math.ceil(total / PAGE_SIZE);
     }
 
     function getPageRange(page) {
-      if (page <= 1) {
-        return { start: 0, end: FIRST_PAGE_SIZE };
-      }
-
-      var start = FIRST_PAGE_SIZE + (page - 2) * OTHER_PAGE_SIZE;
-      return { start: start, end: start + OTHER_PAGE_SIZE };
+      var start = (Math.max(1, page) - 1) * PAGE_SIZE;
+      return { start: start, end: start + PAGE_SIZE };
     }
 
     function updateCount(total) {
