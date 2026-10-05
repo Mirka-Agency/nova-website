@@ -69,12 +69,42 @@
     "</svg>";
 
   const CTA_HELPER_MESSAGE = "nova-cta-helper-insert";
+  const CTA_HELPER_READY = "nova-cta-helper-ready";
+  const CTA_HELPER_EDIT_CONTEXT = "nova-cta-helper-edit-context";
 
-  function insertCtaHtml(editor, html) {
+  function isNovaCtaHtml(html) {
+    return typeof html === "string" && html.indexOf("data-nova-cta=") !== -1;
+  }
+
+  function findSelectedCtaEmbed(editor) {
+    const selected = editor.model.document.selection.getSelectedElement();
+    if (selected && selected.is("element", "rawHtml")) {
+      const value = selected.getAttribute("value") || "";
+      if (isNovaCtaHtml(value)) return selected;
+    }
+    return null;
+  }
+
+  function elementStillInDocument(element) {
+    return !!(element && element.root && element.root.document);
+  }
+
+  function insertCtaHtml(editor, html, options) {
     if (!html) return;
+    const opts = options || {};
+    const replaceTarget =
+      opts.replace && opts.target && elementStillInDocument(opts.target)
+        ? opts.target
+        : null;
 
     try {
       editor.model.change(function (writer) {
+        if (replaceTarget) {
+          writer.setAttribute("value", html, replaceTarget);
+          writer.setSelection(replaceTarget, "on");
+          return;
+        }
+
         const embed = writer.createElement("rawHtml", { value: html });
         editor.model.insertContent(embed);
       });
@@ -85,6 +115,14 @@
     }
 
     try {
+      if (replaceTarget) {
+        editor.model.change(function (writer) {
+          writer.setAttribute("value", html, replaceTarget);
+        });
+        editor.editing.view.focus();
+        return;
+      }
+
       editor.execute("htmlEmbed");
       const selected = editor.model.document.selection.getSelectedElement();
       if (selected && selected.is("element", "rawHtml")) {
@@ -106,18 +144,99 @@
     init() {
       const editor = this.editor;
       let helperWindow = null;
+      let editingTarget = null;
+      let toolbarButtonView = null;
+
+      const openHelper = function () {
+        const selected = findSelectedCtaEmbed(editor);
+        editingTarget = selected;
+
+        const url = "/Admin/CtaHelper?embed=1";
+        if (helperWindow && !helperWindow.closed) {
+          helperWindow.focus();
+          helperWindow.postMessage(
+            {
+              type: CTA_HELPER_EDIT_CONTEXT,
+              html: selected ? selected.getAttribute("value") : null,
+              editing: !!selected,
+            },
+            window.location.origin
+          );
+          return;
+        }
+
+        helperWindow = window.open(
+          url,
+          "novaCtaHelper",
+          "popup=yes,width=1100,height=860,scrollbars=yes,resizable=yes"
+        );
+      };
+
+      const syncButtonLabel = function () {
+        if (!toolbarButtonView) return;
+        const selected = findSelectedCtaEmbed(editor);
+        toolbarButtonView.set({
+          label: selected ? "ویرایش CTA" : "درج CTA",
+        });
+      };
 
       const onMessage = function (event) {
         if (event.origin !== window.location.origin) return;
         const data = event.data;
-        if (!data || data.type !== CTA_HELPER_MESSAGE || typeof data.html !== "string") return;
-        insertCtaHtml(editor, data.html);
-        if (helperWindow && !helperWindow.closed) {
-          helperWindow.focus();
+        if (!data || typeof data !== "object") return;
+
+        if (data.type === CTA_HELPER_READY) {
+          const selected = findSelectedCtaEmbed(editor);
+          if (selected) editingTarget = selected;
+          if (event.source && !event.source.closed) {
+            event.source.postMessage(
+              {
+                type: CTA_HELPER_EDIT_CONTEXT,
+                html: editingTarget
+                  ? editingTarget.getAttribute("value")
+                  : selected
+                    ? selected.getAttribute("value")
+                    : null,
+                editing: !!(editingTarget || selected),
+              },
+              window.location.origin
+            );
+          }
+          return;
+        }
+
+        if (data.type === CTA_HELPER_MESSAGE && typeof data.html === "string") {
+          const replace = data.replace === true;
+          const target =
+            replace && elementStillInDocument(editingTarget)
+              ? editingTarget
+              : replace
+                ? findSelectedCtaEmbed(editor)
+                : null;
+
+          insertCtaHtml(editor, data.html, {
+            replace: !!target,
+            target: target,
+          });
+
+          if (target) {
+            editingTarget = target;
+          } else {
+            editingTarget = findSelectedCtaEmbed(editor);
+          }
+
+          syncButtonLabel();
+
+          if (helperWindow && !helperWindow.closed) {
+            helperWindow.focus();
+          }
         }
       };
 
       window.addEventListener("message", onMessage);
+
+      editor.model.document.selection.on("change:range", syncButtonLabel);
+      editor.model.document.selection.on("change:attribute", syncButtonLabel);
 
       editor.on("destroy", function () {
         window.removeEventListener("message", onMessage);
@@ -125,6 +244,7 @@
 
       editor.ui.componentFactory.add("ctaHelper", function (locale) {
         const view = new ButtonView(locale);
+        toolbarButtonView = view;
 
         view.set({
           label: "درج CTA",
@@ -132,20 +252,31 @@
           tooltip: true,
         });
 
-        view.on("execute", function () {
-          const url = "/Admin/CtaHelper?embed=1";
-          if (helperWindow && !helperWindow.closed) {
-            helperWindow.focus();
-            return;
-          }
-          helperWindow = window.open(
-            url,
-            "novaCtaHelper",
-            "popup=yes,width=1100,height=860,scrollbars=yes,resizable=yes"
-          );
-        });
+        view.on("execute", openHelper);
 
         return view;
+      });
+
+      // Double-click a CTA HTML embed to edit it.
+      editor.editing.view.document.on("dblclick", function (evt, data) {
+        let viewElement = data.target;
+        while (viewElement) {
+          const modelElement = editor.editing.mapper.toModelElement(viewElement);
+          if (
+            modelElement &&
+            modelElement.is("element", "rawHtml") &&
+            isNovaCtaHtml(modelElement.getAttribute("value") || "")
+          ) {
+            editor.model.change(function (writer) {
+              writer.setSelection(modelElement, "on");
+            });
+            data.preventDefault();
+            evt.stop();
+            openHelper();
+            return;
+          }
+          viewElement = viewElement.parent;
+        }
       });
     }
   }
@@ -360,6 +491,8 @@
               loading: true,
               target: true,
               rel: true,
+              "data-nova-cta": true,
+              "data-nova-cta-config": true,
             },
             classes: true,
             styles: true,

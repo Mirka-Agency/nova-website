@@ -5,6 +5,20 @@
   if (!root) return;
 
   var MSG_TYPE = "nova-cta-helper-insert";
+  var MSG_READY = "nova-cta-helper-ready";
+  var MSG_EDIT_CONTEXT = "nova-cta-helper-edit-context";
+  var editing = false;
+
+  var TYPE_TO_SECTION = {
+    appointment: "cta-appointment",
+    consultation: "cta-consultation",
+    doctor: "cta-doctor",
+    surgery: "cta-surgery",
+    articleEnd: "cta-article-end",
+    contact: "cta-contact",
+    inline: "cta-inline",
+    highlight: "cta-highlight"
+  };
 
   function esc(value) {
     return String(value == null ? "" : value)
@@ -272,13 +286,114 @@
     }
   };
 
+  function encodeConfig(data) {
+    try {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function decodeConfig(value) {
+    if (!value) return null;
+    try {
+      return JSON.parse(decodeURIComponent(escape(atob(value))));
+    } catch (err) {
+      try {
+        return JSON.parse(atob(value));
+      } catch (err2) {
+        return null;
+      }
+    }
+  }
+
+  function wrapCtaHtml(type, data, html) {
+    var config = encodeConfig(data);
+    var attrs =
+      ' data-nova-cta="' +
+      esc(type) +
+      '" data-nova-cta-config="' +
+      esc(config) +
+      '"';
+
+    if (/^<div\b/i.test(html)) {
+      return html.replace(/^<div\b/i, "<div" + attrs);
+    }
+
+    return (
+      '<div class="nova-cta-wrap"' +
+      attrs +
+      ' style="margin:1.75rem 0;">' +
+      html +
+      "</div>"
+    );
+  }
+
   function render(section) {
     var type = section.getAttribute("data-module");
     var builder = builders[type];
     if (!builder) return;
-    var html = builder(getData(section));
+    var data = getData(section);
+    var html = wrapCtaHtml(type, data, builder(data));
     section.querySelector("[data-preview]").innerHTML = html;
     section.querySelector("[data-code]").value = html;
+  }
+
+  function setEditMode(on) {
+    editing = !!on;
+    root.classList.toggle("is-editing", editing);
+
+    var banner = root.querySelector("[data-cta-edit-banner]");
+    if (banner) banner.hidden = !editing;
+
+    root.querySelectorAll("[data-insert]").forEach(function (btn) {
+      btn.textContent = editing ? "به‌روزرسانی در ادیتور" : "درج در ادیتور";
+    });
+
+    root.querySelectorAll("[data-insert-new]").forEach(function (btn) {
+      btn.hidden = !editing;
+    });
+  }
+
+  function applyEditHtml(html) {
+    if (!html) {
+      setEditMode(false);
+      return false;
+    }
+
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    var el = doc.querySelector("[data-nova-cta]");
+    if (!el) {
+      setEditMode(false);
+      return false;
+    }
+
+    var type = el.getAttribute("data-nova-cta");
+    var sectionId = TYPE_TO_SECTION[type];
+    if (!sectionId) {
+      setEditMode(false);
+      return false;
+    }
+
+    var data = decodeConfig(el.getAttribute("data-nova-cta-config")) || {};
+    var selectEl = root.querySelector("[data-cta-select]");
+    if (selectEl) selectEl.value = sectionId;
+    showModule(sectionId, { skipScroll: true });
+
+    var section = document.getElementById(sectionId);
+    if (!section) {
+      setEditMode(false);
+      return false;
+    }
+
+    Object.keys(data).forEach(function (key) {
+      var input = section.querySelector('[data-key="' + key + '"]');
+      if (input) input.value = data[key] == null ? "" : String(data[key]);
+    });
+
+    render(section);
+    setEditMode(true);
+    return true;
   }
 
   function copyText(text) {
@@ -312,10 +427,14 @@
     }, 1800);
   }
 
-  function tryInsertIntoEditor(html) {
+  function tryInsertIntoEditor(html, replace) {
     if (window.opener && !window.opener.closed) {
       window.opener.postMessage(
-        { type: MSG_TYPE, html: html },
+        {
+          type: MSG_TYPE,
+          html: html,
+          replace: !!replace
+        },
         window.location.origin
       );
       return true;
@@ -323,7 +442,8 @@
     return false;
   }
 
-  function showModule(moduleId) {
+  function showModule(moduleId, options) {
+    var opts = options || {};
     var sections = root.querySelectorAll("[data-module]");
     var active = null;
 
@@ -338,9 +458,11 @@
       render(active);
     }
 
-    var picker = root.querySelector("[data-cta-picker]");
-    if (picker) {
-      picker.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!opts.skipScroll) {
+      var picker = root.querySelector("[data-cta-picker]");
+      if (picker) {
+        picker.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   }
 
@@ -379,8 +501,23 @@
     if (insertBtn) {
       insertBtn.addEventListener("click", function () {
         var html = codeEl.value;
-        if (tryInsertIntoEditor(html)) {
-          flash(feedback, "در ادیتور درج شد");
+        var replace = editing;
+        if (tryInsertIntoEditor(html, replace)) {
+          flash(feedback, replace ? "CTA به‌روزرسانی شد" : "در ادیتور درج شد");
+          return;
+        }
+        copyText(html).then(function () {
+          flash(feedback, "کپی شد — در بلوک HTML ادیتور جای‌گذاری کنید");
+        });
+      });
+    }
+
+    var insertNewBtn = section.querySelector("[data-insert-new]");
+    if (insertNewBtn) {
+      insertNewBtn.addEventListener("click", function () {
+        var html = codeEl.value;
+        if (tryInsertIntoEditor(html, false)) {
+          flash(feedback, "CTA جدید درج شد");
           return;
         }
         copyText(html).then(function () {
@@ -390,7 +527,31 @@
     }
   });
 
-  if (select) {
-    showModule(select.value);
+  function onParentMessage(event) {
+    if (event.origin !== window.location.origin) return;
+    var data = event.data;
+    if (!data || data.type !== MSG_EDIT_CONTEXT) return;
+    if (data.html) {
+      applyEditHtml(data.html);
+    } else {
+      setEditMode(false);
+    }
   }
+
+  function requestEditContext() {
+    window.addEventListener("message", onParentMessage);
+
+    if (!window.opener || window.opener.closed) {
+      setEditMode(false);
+      return;
+    }
+
+    window.opener.postMessage({ type: MSG_READY }, window.location.origin);
+  }
+
+  if (select) {
+    showModule(select.value, { skipScroll: true });
+  }
+
+  requestEditContext();
 })();

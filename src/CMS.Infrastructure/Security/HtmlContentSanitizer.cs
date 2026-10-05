@@ -30,7 +30,8 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "target", "rel", "width", "height",
             "controls", "playsinline", "poster", "type",
             "colspan", "rowspan", "scope", "span",
-            "dir", "lang", "loading", "style"
+            "dir", "lang", "loading", "style",
+            "data-nova-cta", "data-nova-cta-config"
         ]);
 
         _sanitizer.AllowedCssProperties.UnionWith(

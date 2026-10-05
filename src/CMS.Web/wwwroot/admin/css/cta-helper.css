@@ -62,6 +62,35 @@
   line-height: 1.8;
 }
 
+.cta-helper__edit-banner {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(196, 163, 90, 0.35);
+  border-radius: var(--cta-helper-radius);
+  background: linear-gradient(135deg, rgba(196, 163, 90, 0.14) 0%, #fff 70%);
+  color: #5c4a1f;
+}
+
+.cta-helper__edit-banner[hidden] {
+  display: none !important;
+}
+
+.cta-helper__edit-banner strong {
+  font-size: 0.95rem;
+}
+
+.cta-helper__edit-banner span {
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: #6b5a2e;
+}
+
+.cta-helper.is-editing .cta-helper__picker {
+  border-color: rgba(196, 163, 90, 0.35);
+}
+
 .cta-helper__picker {
   position: sticky;
   top: 0.75rem;
