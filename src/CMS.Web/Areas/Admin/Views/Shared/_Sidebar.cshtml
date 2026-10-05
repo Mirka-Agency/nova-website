@@ -16,6 +16,7 @@
 
     var blogActive = IsCtrl("Posts", "Categories");
     var newsActive = IsCtrl("NewsArticles", "NewsCategories");
+    var contentActive = IsCtrl("CtaHelper");
     var servicesActive = IsCtrl("ServiceItems", "ServiceCategories");
     var videoActive = IsCtrl("VideoItems", "VideoCategories");
     var teamActive = IsCtrl("TeamItems", "TeamCategories");
@@ -53,6 +54,33 @@
         <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
         <span>@Localizer["Dashboard"]</span>
     </a>
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewBlog)).Succeeded
+         || (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewNews)).Succeeded)
+    {
+        <div class="admin-nav-section @(contentActive ? "is-open" : null)"
+             data-admin-nav-section
+             data-admin-nav-section-id="content">
+            <button type="button"
+                    class="admin-nav-section-toggle @(contentActive ? "is-current" : null)"
+                    data-admin-nav-section-toggle
+                    aria-expanded="@(contentActive ? "true" : "false")"
+                    aria-controls="admin-nav-content">
+                <span class="admin-nav-section-label">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i>
+                    <span>@Localizer["Content"]</span>
+                </span>
+                <i class="fas fa-chevron-down admin-nav-section-caret" aria-hidden="true"></i>
+            </button>
+            <div class="admin-nav-subitems" id="admin-nav-content" data-admin-nav-subitems @(contentActive ? null : "hidden")>
+                <a class="admin-nav-sublink @(contentActive ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="CtaHelper" asp-action="Index">
+                    <i class="fas fa-mouse-pointer" aria-hidden="true"></i>
+                    <span>@Localizer["CtaHelper"]</span>
+                </a>
+            </div>
+        </div>
+    }
 
     @if (await FeatureManager.IsEnabledAsync(FeatureNames.Blog)
          && (await AuthorizationService.AuthorizeAsync(User, AuthPolicies.ViewBlog)).Succeeded)

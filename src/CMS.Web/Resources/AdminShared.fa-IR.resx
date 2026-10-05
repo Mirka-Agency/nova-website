@@ -281,4 +281,13 @@
   <data name="EditLockedBy" xml:space="preserve"><value>کاربر «{0}» در حال ویرایش این مورد است. فعلاً امکان ویرایش وجود ندارد.</value></data>
   <data name="EditLockedHint" xml:space="preserve"><value>اگر صفحهٔ آن کاربر بسته شود، حداکثر تا ۱ دقیقه دیگر قفل آزاد می‌شود.</value></data>
   <data name="EditLockLost" xml:space="preserve"><value>قفل ویرایش شما منقضی شده یا این مورد توسط کاربر دیگری گرفته شده است.</value></data>
+  <data name="Content" xml:space="preserve"><value>محتوا</value></data>
+  <data name="CtaHelper" xml:space="preserve"><value>CTA Helper</value></data>
+  <data name="CtaHelperHint" xml:space="preserve"><value>تولید HTML آمادهٔ بلوک‌های فراخوان اقدام برای درج در ادیتور محتوا.</value></data>
+  <data name="CtaHelperHowToTitle" xml:space="preserve"><value>نحوه استفاده</value></data>
+  <data name="CtaHelperHowToLead" xml:space="preserve"><value>هر کارت یک CTA مستقل با پیش‌نمایش زنده و تنظیمات قابل ویرایش است. خروجی با Design System نوا کلینیک هماهنگ است.</value></data>
+  <data name="CtaHelperStep1" xml:space="preserve"><value>متن‌ها، لینک‌ها و تصویر هر CTA را در بخش تنظیمات تغییر دهید.</value></data>
+  <data name="CtaHelperStep2" xml:space="preserve"><value>پیش‌نمایش زنده را بررسی کنید.</value></data>
+  <data name="CtaHelperStep3" xml:space="preserve"><value>روی «درج در ادیتور» بزنید یا HTML را کپی کرده و در بلوک HTML ادیتور جای‌گذاری کنید.</value></data>
+  <data name="CtaHelperJumpNav" xml:space="preserve"><value>انتخاب CTA</value></data>
 </root>

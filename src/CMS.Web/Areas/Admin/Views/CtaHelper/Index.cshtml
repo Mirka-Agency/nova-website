@@ -1,0 +1,445 @@
+@model CMS.Web.Areas.Admin.ViewModels.CtaHelperPageViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["CtaHelper"];
+    var phone = Model.PhoneDisplay;
+    var phoneDigits = Model.PhoneDigits;
+    var contactUrl = Model.ContactUrl;
+    var doctorsUrl = Model.DoctorsUrl;
+    var servicesUrl = Model.ServicesUrl;
+    var doctorImg = Model.DoctorImageUrl;
+    var whatsapp = Model.WhatsAppUrl;
+    var brand = Model.Brand;
+}
+
+<link rel="stylesheet" href="~/admin/css/cta-helper.css" asp-append-version="true" />
+
+@section Scripts {
+    <script src="~/admin/js/cta-helper.js" asp-append-version="true"></script>
+    @if (Model.IsPopup)
+    {
+        <script>
+            document.body.classList.add('is-cta-helper-popup');
+        </script>
+    }
+}
+
+<div class="cta-helper @(Model.IsPopup ? "cta-helper--popup" : null)" data-cta-helper>
+    <div class="admin-page-header">
+        <div class="admin-page-header-text">
+            <p class="admin-hint">@Localizer["CtaHelperHint"]</p>
+        </div>
+    </div>
+
+    <div class="cta-helper__intro">
+        <h2>@Localizer["CtaHelperHowToTitle"]</h2>
+        <p>@Localizer["CtaHelperHowToLead"]</p>
+        <ol>
+            <li>@Localizer["CtaHelperStep1"]</li>
+            <li>@Localizer["CtaHelperStep2"]</li>
+            <li>@Localizer["CtaHelperStep3"]</li>
+        </ol>
+    </div>
+
+    <div class="cta-helper__picker" data-cta-picker>
+        <label class="cta-helper__picker-label" for="cta-helper-select">@Localizer["CtaHelperJumpNav"]</label>
+        <select id="cta-helper-select" class="cta-helper__select" data-cta-select>
+            <option value="cta-appointment">۱) Appointment CTA — رزرو نوبت</option>
+            <option value="cta-consultation">۲) Consultation CTA — مشاوره</option>
+            <option value="cta-doctor">۳) Doctor CTA — معرفی پزشک</option>
+            <option value="cta-surgery">۴) Surgery CTA — جراحی</option>
+            <option value="cta-article-end">۵) Article End CTA — انتهای مقاله</option>
+            <option value="cta-contact">۶) Contact CTA — تماس سریع</option>
+            <option value="cta-inline">۷) Inline CTA — میانه مقاله</option>
+            <option value="cta-highlight">۸) Highlight CTA — هایلایت</option>
+        </select>
+    </div>
+
+    <!-- 1. Appointment -->
+    <section class="cta-mod is-active" id="cta-appointment" data-module="appointment">
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Appointment CTA</h2>
+                <p class="cta-mod__desc">بنر گرادیانی برای دعوت به رزرو نوبت در صفحات خدمات و مقالات.</p>
+            </div>
+            <span class="cta-mod__badge">gradient · appointment</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div>
+                <label for="cta1-eyebrow">Eyebrow</label>
+                <input id="cta1-eyebrow" data-key="eyebrow" value="رزرو نوبت" />
+            </div>
+            <div>
+                <label for="cta1-title">Title</label>
+                <input id="cta1-title" data-key="title" value="همین امروز نوبت مشاوره تخصصی بگیرید" />
+            </div>
+            <div class="span-2">
+                <label for="cta1-description">Description</label>
+                <textarea id="cta1-description" data-key="description" rows="2">در @brand مسیر تشخیص و درمان بیماری‌های غدد، با همراهی تیم تخصصی هماهنگ می‌شود.</textarea>
+            </div>
+            <div>
+                <label for="cta1-primaryText">Primary Button Text</label>
+                <input id="cta1-primaryText" data-key="primaryText" value="رزرو نوبت" />
+            </div>
+            <div>
+                <label for="cta1-primaryUrl">Primary Button URL</label>
+                <input id="cta1-primaryUrl" data-key="primaryUrl" value="@contactUrl" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta1-secondaryText">Secondary Button Text</label>
+                <input id="cta1-secondaryText" data-key="secondaryText" value="تماس با کلینیک" />
+            </div>
+            <div>
+                <label for="cta1-secondaryUrl">Secondary Button URL</label>
+                <input id="cta1-secondaryUrl" data-key="secondaryUrl" value="tel:@phoneDigits" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Appointment CTA"></textarea>
+    </section>
+
+    <!-- 2. Consultation -->
+    <section class="cta-mod" id="cta-consultation" data-module="consultation" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Consultation CTA</h2>
+                <p class="cta-mod__desc">کارت روشن برای درخواست مشاوره همراه با شماره تماس.</p>
+            </div>
+            <span class="cta-mod__badge">light · consultation</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div>
+                <label for="cta2-title">Title</label>
+                <input id="cta2-title" data-key="title" value="نیاز به مشاوره تخصصی دارید؟" />
+            </div>
+            <div>
+                <label for="cta2-buttonText">Button Text</label>
+                <input id="cta2-buttonText" data-key="buttonText" value="درخواست مشاوره" />
+            </div>
+            <div class="span-2">
+                <label for="cta2-description">Description</label>
+                <textarea id="cta2-description" data-key="description" rows="2">سوالات مربوط به تیروئید، پاراتیروئید و غدد فوق کلیوی را با تیم @brand مطرح کنید.</textarea>
+            </div>
+            <div>
+                <label for="cta2-buttonUrl">Button URL</label>
+                <input id="cta2-buttonUrl" data-key="buttonUrl" value="@contactUrl" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta2-phoneLabel">Phone Label</label>
+                <input id="cta2-phoneLabel" data-key="phoneLabel" value="مشاوره تلفنی" />
+            </div>
+            <div class="span-2">
+                <label for="cta2-phoneNumber">Phone Number</label>
+                <input id="cta2-phoneNumber" data-key="phoneNumber" value="@phone" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Consultation CTA"></textarea>
+    </section>
+
+    <!-- 3. Doctor -->
+    <section class="cta-mod" id="cta-doctor" data-module="doctor" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Doctor CTA</h2>
+                <p class="cta-mod__desc">معرفی دکتر کاوه همدانی با تصویر، تخصص و دو دکمه اقدام.</p>
+            </div>
+            <span class="cta-mod__badge">doctor image · split</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div class="span-2">
+                <label for="cta3-image">Doctor Image</label>
+                <input id="cta3-image" data-key="image" value="@doctorImg" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta3-name">Doctor Name</label>
+                <input id="cta3-name" data-key="name" value="دکتر کاوه همدانی" />
+            </div>
+            <div>
+                <label for="cta3-specialty">Specialty</label>
+                <input id="cta3-specialty" data-key="specialty" value="فلوشیپ جراحی غدد درون‌ریز" />
+            </div>
+            <div class="span-2">
+                <label for="cta3-description">Description</label>
+                <textarea id="cta3-description" data-key="description" rows="2">مدیر @brand؛ تمرکز بر جراحی تیروئید، پاراتیروئید و غدد فوق کلیوی با رویکرد تخصصی و دقیق.</textarea>
+            </div>
+            <div>
+                <label for="cta3-profileText">Profile Button</label>
+                <input id="cta3-profileText" data-key="profileText" value="مشاهده پروفایل" />
+            </div>
+            <div>
+                <label for="cta3-profileUrl">Profile URL</label>
+                <input id="cta3-profileUrl" data-key="profileUrl" value="@doctorsUrl" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta3-appointmentText">Appointment Button</label>
+                <input id="cta3-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
+            </div>
+            <div>
+                <label for="cta3-appointmentUrl">Appointment URL</label>
+                <input id="cta3-appointmentUrl" data-key="appointmentUrl" value="@contactUrl" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Doctor CTA"></textarea>
+    </section>
+
+    <!-- 4. Surgery -->
+    <section class="cta-mod" id="cta-surgery" data-module="surgery" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Surgery CTA</h2>
+                <p class="cta-mod__desc">مناسب صفحات جراحی تیروئید، پاراتیروئید و آدرنال.</p>
+            </div>
+            <span class="cta-mod__badge">split · surgery</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div>
+                <label for="cta4-badge">Badge</label>
+                <input id="cta4-badge" data-key="badge" value="جراحی تخصصی" />
+            </div>
+            <div>
+                <label for="cta4-serviceName">Service Name</label>
+                <input id="cta4-serviceName" data-key="serviceName" value="جراحی تیروئید" />
+            </div>
+            <div class="span-2">
+                <label for="cta4-title">Title</label>
+                <input id="cta4-title" data-key="title" value="تصمیم برای جراحی را با ارزیابی تخصصی بگیرید" />
+            </div>
+            <div class="span-2">
+                <label for="cta4-description">Description</label>
+                <textarea id="cta4-description" data-key="description" rows="2">مسیر درمان جراحی غدد در @brand با بررسی دقیق یافته‌ها، توضیح گزینه‌ها و برنامه‌ریزی مراقبت پس از عمل همراه است.</textarea>
+            </div>
+            <div>
+                <label for="cta4-buttonText">Button Text</label>
+                <input id="cta4-buttonText" data-key="buttonText" value="مشاهده خدمت" />
+            </div>
+            <div>
+                <label for="cta4-buttonUrl">Button URL</label>
+                <input id="cta4-buttonUrl" data-key="buttonUrl" value="@servicesUrl" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta4-secondaryText">Secondary Button</label>
+                <input id="cta4-secondaryText" data-key="secondaryText" value="رزرو مشاوره" />
+            </div>
+            <div>
+                <label for="cta4-secondaryUrl">Secondary URL</label>
+                <input id="cta4-secondaryUrl" data-key="secondaryUrl" value="@contactUrl" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Surgery CTA"></textarea>
+    </section>
+
+    <!-- 5. Article End -->
+    <section class="cta-mod" id="cta-article-end" data-module="articleEnd" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Article End CTA</h2>
+                <p class="cta-mod__desc">بلوک تمام‌عرض برای انتهای مقالات پزشکی با دو مسیر اقدام.</p>
+            </div>
+            <span class="cta-mod__badge">full width · article</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div class="span-2">
+                <label for="cta5-title">Title</label>
+                <input id="cta5-title" data-key="title" value="برای بررسی وضعیت خود آماده‌اید؟" />
+            </div>
+            <div class="span-2">
+                <label for="cta5-description">Description</label>
+                <textarea id="cta5-description" data-key="description" rows="2">اگر علائم یا نتیجه آزمایش نگران‌کننده‌ای دارید، می‌توانید برای نوبت حضوری یا مشاوره تخصصی با @brand هماهنگ شوید.</textarea>
+            </div>
+            <div>
+                <label for="cta5-appointmentText">Appointment Button</label>
+                <input id="cta5-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
+            </div>
+            <div>
+                <label for="cta5-appointmentUrl">Appointment URL</label>
+                <input id="cta5-appointmentUrl" data-key="appointmentUrl" value="@contactUrl" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta5-consultationText">Consultation Button</label>
+                <input id="cta5-consultationText" data-key="consultationText" value="درخواست مشاوره" />
+            </div>
+            <div>
+                <label for="cta5-consultationUrl">Consultation URL</label>
+                <input id="cta5-consultationUrl" data-key="consultationUrl" value="@contactUrl" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Article End CTA"></textarea>
+    </section>
+
+    <!-- 6. Contact -->
+    <section class="cta-mod" id="cta-contact" data-module="contact" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Contact CTA</h2>
+                <p class="cta-mod__desc">نوار فشرده تماس سریع با تلفن، واتساپ و لینک نوبت.</p>
+            </div>
+            <span class="cta-mod__badge">compact · contact</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div>
+                <label for="cta6-title">Title</label>
+                <input id="cta6-title" data-key="title" value="تماس سریع با کلینیک" />
+            </div>
+            <div>
+                <label for="cta6-phone">Phone</label>
+                <input id="cta6-phone" data-key="phone" value="@phone" dir="ltr" />
+            </div>
+            <div class="span-2">
+                <label for="cta6-description">Description</label>
+                <textarea id="cta6-description" data-key="description" rows="2">برای هماهنگی نوبت یا سوال کوتاه، همین حالا با تیم پذیرش در ارتباط باشید.</textarea>
+            </div>
+            <div>
+                <label for="cta6-whatsappText">WhatsApp / Contact Label</label>
+                <input id="cta6-whatsappText" data-key="whatsappText" value="واتساپ / تماس" />
+            </div>
+            <div>
+                <label for="cta6-whatsappUrl">WhatsApp / Contact Link</label>
+                <input id="cta6-whatsappUrl" data-key="whatsappUrl" value="@whatsapp" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta6-appointmentText">Appointment Label</label>
+                <input id="cta6-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
+            </div>
+            <div>
+                <label for="cta6-appointmentUrl">Appointment Link</label>
+                <input id="cta6-appointmentUrl" data-key="appointmentUrl" value="@contactUrl" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Contact CTA"></textarea>
+    </section>
+
+    <!-- 7. Inline -->
+    <section class="cta-mod" id="cta-inline" data-module="inline" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Inline CTA</h2>
+                <p class="cta-mod__desc">CTA کوچک برای میانه مقاله بدون قطع جریان مطالعه.</p>
+            </div>
+            <span class="cta-mod__badge">compact · inline</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div>
+                <label for="cta7-title">Small Title</label>
+                <input id="cta7-title" data-key="title" value="نیاز به ارزیابی تخصصی دارید؟" />
+            </div>
+            <div>
+                <label for="cta7-buttonText">Button Text</label>
+                <input id="cta7-buttonText" data-key="buttonText" value="رزرو نوبت" />
+            </div>
+            <div class="span-2">
+                <label for="cta7-description">Description</label>
+                <textarea id="cta7-description" data-key="description" rows="2">برای بررسی یافته‌های تصویربرداری یا آزمایش، نوبت مشاوره هماهنگ کنید.</textarea>
+            </div>
+            <div class="span-2">
+                <label for="cta7-buttonUrl">Button URL</label>
+                <input id="cta7-buttonUrl" data-key="buttonUrl" value="@contactUrl" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Inline CTA"></textarea>
+    </section>
+
+    <!-- 8. Highlight -->
+    <section class="cta-mod" id="cta-highlight" data-module="highlight" hidden>
+        <div class="cta-mod__head">
+            <div class="cta-mod__titles">
+                <h2>Highlight CTA</h2>
+                <p class="cta-mod__desc">CTA برجسته با تأکید طلایی برای بخش‌های مهم مقاله.</p>
+            </div>
+            <span class="cta-mod__badge">highlighted · accent</span>
+        </div>
+        <p class="cta-mod__label">پیش‌نمایش زنده</p>
+        <div class="cta-mod__preview" data-preview></div>
+        <p class="cta-mod__label">تنظیمات</p>
+        <div class="cta-mod__settings">
+            <div>
+                <label for="cta8-badge">Badge</label>
+                <input id="cta8-badge" data-key="badge" value="نکته مهم" />
+            </div>
+            <div>
+                <label for="cta8-title">Title</label>
+                <input id="cta8-title" data-key="title" value="تأخیر در ارزیابی می‌تواند مسیر درمان را پیچیده‌تر کند" />
+            </div>
+            <div class="span-2">
+                <label for="cta8-description">Description</label>
+                <textarea id="cta8-description" data-key="description" rows="2">اگر علائم جدید، تورم گردن یا تغییر در نتایج آزمایش دارید، بهتر است هرچه زودتر با متخصص جراحی غدد مشورت کنید.</textarea>
+            </div>
+            <div>
+                <label for="cta8-primaryText">Primary CTA</label>
+                <input id="cta8-primaryText" data-key="primaryText" value="رزرو نوبت" />
+            </div>
+            <div>
+                <label for="cta8-primaryUrl">Primary URL</label>
+                <input id="cta8-primaryUrl" data-key="primaryUrl" value="@contactUrl" dir="ltr" />
+            </div>
+            <div>
+                <label for="cta8-secondaryText">Secondary CTA</label>
+                <input id="cta8-secondaryText" data-key="secondaryText" value="تماس تلفنی" />
+            </div>
+            <div>
+                <label for="cta8-secondaryUrl">Secondary URL</label>
+                <input id="cta8-secondaryUrl" data-key="secondaryUrl" value="tel:@phoneDigits" dir="ltr" />
+            </div>
+        </div>
+        <div class="cta-mod__actions">
+            <button type="button" class="btn btn-primary" data-insert>درج در ادیتور</button>
+            <button type="button" class="btn btn-secondary" data-copy>کپی HTML</button>
+            <span class="cta-mod__feedback" data-feedback>کپی شد</span>
+        </div>
+        <textarea class="cta-mod__code" data-code readonly aria-label="HTML خروجی Highlight CTA"></textarea>
+    </section>
+</div>

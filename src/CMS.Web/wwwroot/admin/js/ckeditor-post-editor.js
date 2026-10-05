@@ -63,6 +63,93 @@
     '<path d="M6.91 10.54c.26-.23.64-.21.88.03l3.36 3.14 2.23-2.06a.64.64 0 0 1 .87 0l2.52 2.97V4.5H3.2v10.12l3.71-4.08zm10.27-7.51c.6 0 1.09.47 1.09 1.05v11.84c0 .59-.49 1.06-1.09 1.06H2.83c-.6 0-1.09-.47-1.09-1.06V4.08c0-.58.49-1.05 1.1-1.05h14.34zm-5.22 5.56a1.96 1.96 0 1 1 3.4-1.96 1.96 1.96 0 0 1-3.4 1.96z"/>' +
     "</svg>";
 
+  const ctaHelperIcon =
+    '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M3.2 4.2h13.6c.66 0 1.2.54 1.2 1.2v4.2c0 .66-.54 1.2-1.2 1.2H11l-2.2 2.6c-.3.36-.9.14-.9-.3V10.8H3.2c-.66 0-1.2-.54-1.2-1.2V5.4c0-.66.54-1.2 1.2-1.2zm1.1 2.1v1.8h5.4V6.3H4.3zm7.2 0v1.8h4.1V6.3h-4.1zM3.2 12.6h7.4c.66 0 1.2.54 1.2 1.2v2c0 .66-.54 1.2-1.2 1.2H3.2c-.66 0-1.2-.54-1.2-1.2v-2c0-.66.54-1.2 1.2-1.2z"/>' +
+    "</svg>";
+
+  const CTA_HELPER_MESSAGE = "nova-cta-helper-insert";
+
+  function insertCtaHtml(editor, html) {
+    if (!html) return;
+
+    try {
+      editor.model.change(function (writer) {
+        const embed = writer.createElement("rawHtml", { value: html });
+        editor.model.insertContent(embed);
+      });
+      editor.editing.view.focus();
+      return;
+    } catch (err) {
+      console.warn("rawHtml insert failed, falling back to htmlEmbed command", err);
+    }
+
+    try {
+      editor.execute("htmlEmbed");
+      const selected = editor.model.document.selection.getSelectedElement();
+      if (selected && selected.is("element", "rawHtml")) {
+        editor.model.change(function (writer) {
+          writer.setAttribute("value", html, selected);
+        });
+        editor.editing.view.focus();
+      }
+    } catch (err2) {
+      console.error("Failed to insert CTA HTML", err2);
+    }
+  }
+
+  class CtaHelperInsert extends Plugin {
+    static get pluginName() {
+      return "CtaHelperInsert";
+    }
+
+    init() {
+      const editor = this.editor;
+      let helperWindow = null;
+
+      const onMessage = function (event) {
+        if (event.origin !== window.location.origin) return;
+        const data = event.data;
+        if (!data || data.type !== CTA_HELPER_MESSAGE || typeof data.html !== "string") return;
+        insertCtaHtml(editor, data.html);
+        if (helperWindow && !helperWindow.closed) {
+          helperWindow.focus();
+        }
+      };
+
+      window.addEventListener("message", onMessage);
+
+      editor.on("destroy", function () {
+        window.removeEventListener("message", onMessage);
+      });
+
+      editor.ui.componentFactory.add("ctaHelper", function (locale) {
+        const view = new ButtonView(locale);
+
+        view.set({
+          label: "درج CTA",
+          icon: ctaHelperIcon,
+          tooltip: true,
+        });
+
+        view.on("execute", function () {
+          const url = "/Admin/CtaHelper?embed=1";
+          if (helperWindow && !helperWindow.closed) {
+            helperWindow.focus();
+            return;
+          }
+          helperWindow = window.open(
+            url,
+            "novaCtaHelper",
+            "popup=yes,width=1100,height=860,scrollbars=yes,resizable=yes"
+          );
+        });
+
+        return view;
+      });
+    }
+  }
+
   class MediaLibraryImage extends Plugin {
     static get pluginName() {
       return "MediaLibraryImage";
@@ -147,6 +234,7 @@
         ImageToolbar,
         ImageUtils,
         MediaLibraryImage,
+        CtaHelperInsert,
         Highlight,
         Font,
         Alignment,
@@ -190,6 +278,7 @@
           "|",
           "link",
           "mediaLibraryImage",
+          "ctaHelper",
           "mediaEmbed",
           "insertTable",
           "htmlEmbed",
@@ -259,12 +348,18 @@
       htmlSupport: {
         allow: [
           {
-            name: /^(div|section|article|figure|figcaption|iframe|video|audio|source|ul|ol|li|p|span|h2|h3|h4)$/,
+            name: /^(div|section|article|figure|figcaption|iframe|video|audio|source|ul|ol|li|p|span|strong|a|img|h2|h3|h4)$/,
             attributes: {
               dir: true,
               lang: true,
               style: true,
               class: true,
+              href: true,
+              src: true,
+              alt: true,
+              loading: true,
+              target: true,
+              rel: true,
             },
             classes: true,
             styles: true,

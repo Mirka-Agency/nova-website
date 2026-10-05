@@ -30,19 +30,35 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "target", "rel", "width", "height",
             "controls", "playsinline", "poster", "type",
             "colspan", "rowspan", "scope", "span",
-            "dir", "lang"
+            "dir", "lang", "loading", "style"
         ]);
 
         _sanitizer.AllowedCssProperties.UnionWith(
         [
-            "color", "background-color",
-            "text-align", "font-size", "font-weight", "font-style",
-            "text-decoration", "width", "height", "max-width",
-            "border", "border-collapse", "padding", "margin",
+            "color", "background", "background-color", "background-image",
+            "text-align", "font-size", "font-weight", "font-style", "font-family",
+            "line-height", "letter-spacing", "text-decoration",
+            "width", "height", "max-width", "min-width", "min-height", "max-height",
+            "border", "border-top", "border-right", "border-bottom", "border-left",
+            "border-inline-start", "border-inline-end", "border-block-start", "border-block-end",
+            "border-color", "border-style", "border-width", "border-radius", "border-collapse",
+            "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+            "padding-inline", "padding-inline-start", "padding-inline-end",
+            "padding-block", "padding-block-start", "padding-block-end",
+            "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+            "margin-inline", "margin-inline-start", "margin-inline-end",
+            "margin-block", "margin-block-start", "margin-block-end",
+            "display", "flex", "flex-wrap", "flex-direction", "flex-grow", "flex-shrink", "flex-basis",
+            "align-items", "justify-content", "gap", "row-gap", "column-gap",
+            "grid-template-columns", "place-items", "object-fit", "aspect-ratio",
+            "overflow", "position", "inset", "inset-block-start", "inset-inline-end",
+            "top", "right", "bottom", "left", "z-index", "pointer-events",
+            "box-shadow", "opacity", "white-space", "unicode-bidi", "letter-spacing",
+            "backdrop-filter", "-webkit-backdrop-filter",
             "list-style-type", "list-style", "direction"
         ]);
 
-        _sanitizer.AllowedSchemes.UnionWith(["http", "https", "mailto"]);
+        _sanitizer.AllowedSchemes.UnionWith(["http", "https", "mailto", "tel"]);
         _sanitizer.AllowDataAttributes = false;
     }
 
