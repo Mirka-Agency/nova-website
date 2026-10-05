@@ -1,9 +1,11 @@
+using CMS.Application.Caching;
 using CMS.Application.Common.Paging;
 using CMS.Modules.Blog.Application.Interfaces;
 using CMS.Modules.Blog.Application.Posts;
 using CMS.Modules.Blog.Domain.Enums;
 using CMS.Modules.Blog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.Blog.Infrastructure.Services;
 
@@ -12,10 +14,12 @@ public sealed class PublicPostQuery : IPublicPostQuery
     public const int DefaultPageSize = 12;
     private const int ExcerptLength = 180;
     private readonly BlogDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public PublicPostQuery(BlogDbContext db)
+    public PublicPostQuery(BlogDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedAsync(
@@ -25,14 +29,27 @@ public sealed class PublicPostQuery : IPublicPostQuery
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicPostSummaryDto>> ListPublishedPagedAsync(
+    public Task<PagedResult<PublicPostSummaryDto>> ListPublishedPagedAsync(
         int page,
         int pageSize,
         CancellationToken cancellationToken = default)
     {
         var normalizedPage = page < 1 ? 1 : page;
         var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+        var key = $"cms:public:blog:list:{normalizedPage}:{normalizedPageSize}";
 
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            ct => ListPublishedPagedCoreAsync(normalizedPage, normalizedPageSize, ct),
+            cancellationToken);
+    }
+
+    private async Task<PagedResult<PublicPostSummaryDto>> ListPublishedPagedCoreAsync(
+        int normalizedPage,
+        int normalizedPageSize,
+        CancellationToken cancellationToken)
+    {
         var query = _db.Posts
             .AsNoTracking()
             .Where(p => p.Status == PostStatus.Published);
@@ -58,14 +75,27 @@ public sealed class PublicPostQuery : IPublicPostQuery
         return new PagedResult<PublicPostSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
     }
 
-    public async Task<PublicPostDetailDto?> GetPublishedBySlugAsync(
+    public Task<PublicPostDetailDto?> GetPublishedBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(slug))
-            return null;
+            return Task.FromResult<PublicPostDetailDto?>(null);
 
         var normalized = slug.Trim().ToLowerInvariant();
+        var key = $"cms:public:blog:slug:{normalized}";
+
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedBySlugCoreAsync(normalized, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicPostDetailDto?> GetPublishedBySlugCoreAsync(
+        string normalized,
+        CancellationToken cancellationToken)
+    {
         var post = await _db.Posts
             .AsNoTracking()
             .Include(p => p.Category)

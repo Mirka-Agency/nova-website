@@ -48,6 +48,7 @@ public class HomeController : Controller
         _features = features;
     }
 
+    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         ViewData["Title"] = "خانه";
@@ -89,6 +90,7 @@ public class HomeController : Controller
         });
     }
 
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public IActionResult Privacy()
     {
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.SiteSettings();
@@ -96,6 +98,7 @@ public class HomeController : Controller
     }
 
     [HttpGet("about")]
+    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> About(CancellationToken cancellationToken)
     {
         ViewData["Title"] = "درباره ما";
@@ -122,6 +125,7 @@ public class HomeController : Controller
     }
 
     [HttpGet("contact")]
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Contact(CancellationToken cancellationToken)
     {
         ViewData["Title"] = "تماس با ما";

@@ -11,7 +11,7 @@ namespace CMS.Infrastructure.Settings;
 public sealed class SiteSettingsService : ISiteSettingsService
 {
     private const string CacheKey = "cms:site-settings";
-    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(45);
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(120);
 
     private readonly ApplicationDbContext _db;
     private readonly IMemoryCache _cache;

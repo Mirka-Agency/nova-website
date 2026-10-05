@@ -1,9 +1,11 @@
+using CMS.Application.Caching;
 using CMS.Application.Common.Paging;
 using CMS.Modules.News.Application.Articles;
 using CMS.Modules.News.Application.Interfaces;
 using CMS.Modules.News.Domain.Enums;
 using CMS.Modules.News.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.News.Infrastructure.Services;
 
@@ -12,10 +14,12 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
     public const int DefaultPageSize = 12;
     private const int ExcerptLength = 180;
     private readonly NewsDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public PublicArticleQuery(NewsDbContext db)
+    public PublicArticleQuery(NewsDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicArticleSummaryDto>> ListPublishedAsync(
@@ -31,14 +35,14 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
         CancellationToken cancellationToken = default) =>
         ListPublishedByKindPagedAsync(kind: null, page, pageSize, cancellationToken);
 
-    public async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedAsync(
+    public Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedAsync(
         ArticleKind kind,
         int page,
         int pageSize,
         CancellationToken cancellationToken = default) =>
-        await ListPublishedByKindPagedAsync((ArticleKind?)kind, page, pageSize, cancellationToken);
+        ListPublishedByKindPagedAsync((ArticleKind?)kind, page, pageSize, cancellationToken);
 
-    private async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedAsync(
+    private Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedAsync(
         ArticleKind? kind,
         int page,
         int pageSize,
@@ -46,7 +50,22 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
     {
         var normalizedPage = page < 1 ? 1 : page;
         var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+        var kindKey = kind?.ToString() ?? "all";
+        var key = $"cms:public:news:list:{kindKey}:{normalizedPage}:{normalizedPageSize}";
 
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            ct => ListPublishedByKindPagedCoreAsync(kind, normalizedPage, normalizedPageSize, ct),
+            cancellationToken);
+    }
+
+    private async Task<PagedResult<PublicArticleSummaryDto>> ListPublishedByKindPagedCoreAsync(
+        ArticleKind? kind,
+        int normalizedPage,
+        int normalizedPageSize,
+        CancellationToken cancellationToken)
+    {
         var query = _db.Articles
             .AsNoTracking()
             .Where(p => p.Status == ArticleStatus.Published);
@@ -83,26 +102,44 @@ public sealed class PublicArticleQuery : IPublicArticleQuery
         return new PagedResult<PublicArticleSummaryDto>(articles, totalCount, normalizedPage, normalizedPageSize);
     }
 
-    public async Task<IReadOnlyList<PublicArticleCategoryDto>> ListPublishedCategoriesAsync(
+    public Task<IReadOnlyList<PublicArticleCategoryDto>> ListPublishedCategoriesAsync(
         ArticleKind kind,
         CancellationToken cancellationToken = default)
     {
-        return await _db.Categories
-            .AsNoTracking()
-            .Where(c => c.Articles.Any(a => a.Status == ArticleStatus.Published && a.Kind == kind))
-            .OrderBy(c => c.Name)
-            .Select(c => new PublicArticleCategoryDto(c.Name, c.Slug))
-            .ToListAsync(cancellationToken);
+        var key = $"cms:public:news:categories:{kind}";
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            async ct => (IReadOnlyList<PublicArticleCategoryDto>)await _db.Categories
+                .AsNoTracking()
+                .Where(c => c.Articles.Any(a => a.Status == ArticleStatus.Published && a.Kind == kind))
+                .OrderBy(c => c.Name)
+                .Select(c => new PublicArticleCategoryDto(c.Name, c.Slug))
+                .ToListAsync(ct),
+            cancellationToken);
     }
 
-    public async Task<PublicArticleDetailDto?> GetPublishedBySlugAsync(
+    public Task<PublicArticleDetailDto?> GetPublishedBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(slug))
-            return null;
+            return Task.FromResult<PublicArticleDetailDto?>(null);
 
         var normalized = slug.Trim().ToLowerInvariant();
+        var key = $"cms:public:news:slug:{normalized}";
+
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedBySlugCoreAsync(normalized, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicArticleDetailDto?> GetPublishedBySlugCoreAsync(
+        string normalized,
+        CancellationToken cancellationToken)
+    {
         var article = await _db.Articles
             .AsNoTracking()
             .Include(p => p.Category)

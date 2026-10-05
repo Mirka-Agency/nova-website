@@ -1,9 +1,11 @@
+using CMS.Application.Caching;
 using CMS.Application.Common.Paging;
 using CMS.Modules.Team.Application.Interfaces;
 using CMS.Modules.Team.Application.TeamItems;
 using CMS.Modules.Team.Domain.Enums;
 using CMS.Modules.Team.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.Team.Infrastructure.Services;
 
@@ -12,10 +14,12 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
     public const int DefaultPageSize = 12;
     private const int ExcerptLength = 180;
     private readonly TeamDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public PublicTeamItemQuery(TeamDbContext db)
+    public PublicTeamItemQuery(TeamDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicTeamItemSummaryDto>> ListPublishedAsync(
@@ -25,14 +29,27 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicTeamItemSummaryDto>> ListPublishedPagedAsync(
+    public Task<PagedResult<PublicTeamItemSummaryDto>> ListPublishedPagedAsync(
         int page,
         int pageSize,
         CancellationToken cancellationToken = default)
     {
         var normalizedPage = page < 1 ? 1 : page;
         var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+        var key = $"cms:public:team:list:{normalizedPage}:{normalizedPageSize}";
 
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            ct => ListPublishedPagedCoreAsync(normalizedPage, normalizedPageSize, ct),
+            cancellationToken);
+    }
+
+    private async Task<PagedResult<PublicTeamItemSummaryDto>> ListPublishedPagedCoreAsync(
+        int normalizedPage,
+        int normalizedPageSize,
+        CancellationToken cancellationToken)
+    {
         var query = _db.TeamItems
             .AsNoTracking()
             .Where(p => p.Status == TeamStatus.Published);
@@ -59,14 +76,27 @@ public sealed class PublicTeamItemQuery : IPublicTeamItemQuery
         return new PagedResult<PublicTeamItemSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
     }
 
-    public async Task<PublicTeamItemDetailDto?> GetPublishedBySlugAsync(
+    public Task<PublicTeamItemDetailDto?> GetPublishedBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(slug))
-            return null;
+            return Task.FromResult<PublicTeamItemDetailDto?>(null);
 
         var normalized = slug.Trim().ToLowerInvariant();
+        var key = $"cms:public:team:slug:{normalized}";
+
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedBySlugCoreAsync(normalized, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicTeamItemDetailDto?> GetPublishedBySlugCoreAsync(
+        string normalized,
+        CancellationToken cancellationToken)
+    {
         var post = await _db.TeamItems
             .AsNoTracking()
             .Include(p => p.Category)

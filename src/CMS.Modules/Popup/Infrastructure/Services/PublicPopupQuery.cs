@@ -1,19 +1,24 @@
+using CMS.Application.Caching;
 using CMS.Modules.Popup.Application.Interfaces;
 using CMS.Modules.Popup.Application.Popups;
 using CMS.Modules.Popup.Domain.Entities;
 using CMS.Modules.Popup.Domain.Enums;
 using CMS.Modules.Popup.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.Popup.Infrastructure.Services;
 
 public sealed class PublicPopupQuery : IPublicPopupQuery
 {
+    private const string ActivePopupsCacheKey = "cms:public:popup:active";
     private readonly PopupDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public PublicPopupQuery(PopupDbContext db)
+    public PublicPopupQuery(PopupDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicPopupDto>> GetForPathAsync(
@@ -21,12 +26,16 @@ public sealed class PublicPopupQuery : IPublicPopupQuery
         CancellationToken cancellationToken = default)
     {
         var normalized = PopupPageMatcher.NormalizePath(path);
-        var candidates = await _db.Popups
-            .AsNoTracking()
-            .Where(p => p.IsActive)
-            .OrderBy(p => p.SortOrder)
-            .ThenBy(p => p.CreatedAtUtc)
-            .ToListAsync(cancellationToken);
+        var candidates = await PublicContentCache.GetOrCreateAsync(
+            _cache,
+            ActivePopupsCacheKey,
+            ct => _db.Popups
+                .AsNoTracking()
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.SortOrder)
+                .ThenBy(p => p.CreatedAtUtc)
+                .ToListAsync(ct),
+            cancellationToken);
 
         var targetSlugs = candidates.ToDictionary(p => p.Id, p => p.Slug);
 

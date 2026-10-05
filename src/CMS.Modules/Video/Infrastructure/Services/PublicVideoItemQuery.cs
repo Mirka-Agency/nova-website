@@ -1,9 +1,11 @@
+using CMS.Application.Caching;
 using CMS.Application.Common.Paging;
 using CMS.Modules.Video.Application.Interfaces;
 using CMS.Modules.Video.Application.VideoItems;
 using CMS.Modules.Video.Domain.Enums;
 using CMS.Modules.Video.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.Video.Infrastructure.Services;
 
@@ -12,10 +14,12 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
     public const int DefaultPageSize = 12;
     private const int ExcerptLength = 180;
     private readonly VideoDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public PublicVideoItemQuery(VideoDbContext db)
+    public PublicVideoItemQuery(VideoDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicVideoItemSummaryDto>> ListPublishedAsync(
@@ -25,14 +29,27 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicVideoItemSummaryDto>> ListPublishedPagedAsync(
+    public Task<PagedResult<PublicVideoItemSummaryDto>> ListPublishedPagedAsync(
         int page,
         int pageSize,
         CancellationToken cancellationToken = default)
     {
         var normalizedPage = page < 1 ? 1 : page;
         var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+        var key = $"cms:public:video:list:{normalizedPage}:{normalizedPageSize}";
 
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            ct => ListPublishedPagedCoreAsync(normalizedPage, normalizedPageSize, ct),
+            cancellationToken);
+    }
+
+    private async Task<PagedResult<PublicVideoItemSummaryDto>> ListPublishedPagedCoreAsync(
+        int normalizedPage,
+        int normalizedPageSize,
+        CancellationToken cancellationToken)
+    {
         var query = _db.VideoItems
             .AsNoTracking()
             .Where(p => p.Status == VideoStatus.Published);
@@ -60,25 +77,43 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
         return new PagedResult<PublicVideoItemSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
     }
 
-    public async Task<IReadOnlyList<PublicVideoCategoryDto>> ListPublishedCategoriesAsync(
+    public Task<IReadOnlyList<PublicVideoCategoryDto>> ListPublishedCategoriesAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _db.Categories
-            .AsNoTracking()
-            .Where(c => c.VideoItems.Any(v => v.Status == VideoStatus.Published))
-            .OrderBy(c => c.Name)
-            .Select(c => new PublicVideoCategoryDto(c.Name, c.Slug))
-            .ToListAsync(cancellationToken);
+        const string key = "cms:public:video:categories";
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            async ct => (IReadOnlyList<PublicVideoCategoryDto>)await _db.Categories
+                .AsNoTracking()
+                .Where(c => c.VideoItems.Any(v => v.Status == VideoStatus.Published))
+                .OrderBy(c => c.Name)
+                .Select(c => new PublicVideoCategoryDto(c.Name, c.Slug))
+                .ToListAsync(ct),
+            cancellationToken);
     }
 
-    public async Task<PublicVideoItemDetailDto?> GetPublishedBySlugAsync(
+    public Task<PublicVideoItemDetailDto?> GetPublishedBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(slug))
-            return null;
+            return Task.FromResult<PublicVideoItemDetailDto?>(null);
 
         var normalized = slug.Trim().ToLowerInvariant();
+        var key = $"cms:public:video:slug:{normalized}";
+
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedBySlugCoreAsync(normalized, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicVideoItemDetailDto?> GetPublishedBySlugCoreAsync(
+        string normalized,
+        CancellationToken cancellationToken)
+    {
         var post = await _db.VideoItems
             .AsNoTracking()
             .Include(p => p.Category)

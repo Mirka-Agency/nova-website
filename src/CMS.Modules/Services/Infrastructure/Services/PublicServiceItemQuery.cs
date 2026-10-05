@@ -1,9 +1,11 @@
+using CMS.Application.Caching;
 using CMS.Application.Common.Paging;
 using CMS.Modules.Services.Application.Interfaces;
 using CMS.Modules.Services.Application.ServiceItems;
 using CMS.Modules.Services.Domain.Enums;
 using CMS.Modules.Services.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.Services.Infrastructure.Services;
 
@@ -12,10 +14,12 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
     public const int DefaultPageSize = 12;
     private const int ExcerptLength = 180;
     private readonly ServicesDbContext _db;
+    private readonly IMemoryCache _cache;
 
-    public PublicServiceItemQuery(ServicesDbContext db)
+    public PublicServiceItemQuery(ServicesDbContext db, IMemoryCache cache)
     {
         _db = db;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicServiceItemSummaryDto>> ListPublishedAsync(
@@ -25,14 +29,27 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicServiceItemSummaryDto>> ListPublishedPagedAsync(
+    public Task<PagedResult<PublicServiceItemSummaryDto>> ListPublishedPagedAsync(
         int page,
         int pageSize,
         CancellationToken cancellationToken = default)
     {
         var normalizedPage = page < 1 ? 1 : page;
         var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+        var key = $"cms:public:services:list:{normalizedPage}:{normalizedPageSize}";
 
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            ct => ListPublishedPagedCoreAsync(normalizedPage, normalizedPageSize, ct),
+            cancellationToken);
+    }
+
+    private async Task<PagedResult<PublicServiceItemSummaryDto>> ListPublishedPagedCoreAsync(
+        int normalizedPage,
+        int normalizedPageSize,
+        CancellationToken cancellationToken)
+    {
         var query = _db.ServiceItems
             .AsNoTracking()
             .Where(p => p.Status == ServiceStatus.Published);
@@ -70,14 +87,27 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
         return new PagedResult<PublicServiceItemSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
     }
 
-    public async Task<PublicServiceItemDetailDto?> GetPublishedBySlugAsync(
+    public Task<PublicServiceItemDetailDto?> GetPublishedBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(slug))
-            return null;
+            return Task.FromResult<PublicServiceItemDetailDto?>(null);
 
         var normalized = slug.Trim().ToLowerInvariant();
+        var key = $"cms:public:services:slug:{normalized}";
+
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedBySlugCoreAsync(normalized, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicServiceItemDetailDto?> GetPublishedBySlugCoreAsync(
+        string normalized,
+        CancellationToken cancellationToken)
+    {
         var post = await _db.ServiceItems
             .AsNoTracking()
             .Include(p => p.Category)

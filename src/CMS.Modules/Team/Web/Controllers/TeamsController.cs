@@ -26,7 +26,7 @@ public class TeamsController : Controller
     }
 
     [HttpGet("")]
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["page"])]
+    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["page"])]
     public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
     {
         if (!await _features.IsEnabledAsync(FeatureNames.Team))
@@ -44,6 +44,7 @@ public class TeamsController : Controller
     }
 
     [HttpGet("{slug}")]
+    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
     {
         if (!await _features.IsEnabledAsync(FeatureNames.Team))

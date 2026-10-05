@@ -9,4 +9,9 @@ public sealed class CacheOptions
     /// Required in Production; optional in Development/Testing (falls back to memory).
     /// </summary>
     public string? RedisConnectionString { get; set; }
+
+    /// <summary>
+    /// TTL in seconds for public content query cache (lists, details, popups).
+    /// </summary>
+    public int PublicContentSeconds { get; set; } = 90;
 }
