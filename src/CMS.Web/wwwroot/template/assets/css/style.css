@@ -6446,7 +6446,7 @@ a.video-single-meta__value:focus-visible {
 
 .video-player {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 3 / 2;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: #0f1f22;
