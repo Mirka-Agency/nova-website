@@ -5027,6 +5027,24 @@ button.header-cta {
   background: var(--primary);
 }
 
+.service-prose [dir="ltr"],
+.blog-prose [dir="ltr"],
+.service-prose [lang="en"],
+.blog-prose [lang="en"] {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+.service-prose ol,
+.blog-prose ol {
+  margin: 0 0 1.15rem;
+  padding-inline-start: 1.5rem;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
 .service-prose ul li strong {
   color: var(--secondary);
   font-weight: 700;
@@ -7117,6 +7135,21 @@ a.video-single-meta__value:focus-visible {
   height: 0.45rem;
   border-radius: 50%;
   background: var(--primary);
+}
+
+.article-prose [dir="ltr"],
+.article-prose [lang="en"] {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+.article-prose ol {
+  margin: 0 0 1.15rem;
+  padding-inline-start: 1.5rem;
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.75;
 }
 
 .article-detail__aside {

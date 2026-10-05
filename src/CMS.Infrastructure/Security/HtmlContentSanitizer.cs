@@ -29,7 +29,8 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "href", "src", "alt", "title", "class", "id",
             "target", "rel", "width", "height",
             "controls", "playsinline", "poster", "type",
-            "colspan", "rowspan", "scope", "span"
+            "colspan", "rowspan", "scope", "span",
+            "dir", "lang"
         ]);
 
         _sanitizer.AllowedCssProperties.UnionWith(
@@ -37,7 +38,8 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "color", "background-color",
             "text-align", "font-size", "font-weight", "font-style",
             "text-decoration", "width", "height", "max-width",
-            "border", "border-collapse", "padding", "margin"
+            "border", "border-collapse", "padding", "margin",
+            "list-style-type", "list-style", "direction"
         ]);
 
         _sanitizer.AllowedSchemes.UnionWith(["http", "https", "mailto"]);

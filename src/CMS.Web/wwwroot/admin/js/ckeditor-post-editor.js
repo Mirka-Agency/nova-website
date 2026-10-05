@@ -23,7 +23,9 @@
     Superscript,
     Link,
     List,
+    ListProperties,
     TodoList,
+    TextPartLanguage,
     BlockQuote,
     Image,
     ImageCaption,
@@ -115,7 +117,14 @@
   const editorConfig = function () {
     return {
       licenseKey: "GPL",
-      language: "fa",
+      language: {
+        ui: "fa",
+        content: "fa",
+        textPartLanguage: [
+          { title: "فارسی", languageCode: "fa", textDirection: "rtl" },
+          { title: "English", languageCode: "en", textDirection: "ltr" },
+        ],
+      },
       plugins: [
         Essentials,
         Paragraph,
@@ -128,7 +137,9 @@
         Superscript,
         Link,
         List,
+        ListProperties,
         TodoList,
+        TextPartLanguage,
         BlockQuote,
         Image,
         ImageCaption,
@@ -193,11 +204,19 @@
           "outdent",
           "indent",
           "alignment",
+          "textPartLanguage",
           "|",
           "findAndReplace",
           "sourceEditing",
         ],
         shouldNotGroupWhenFull: false,
+      },
+      list: {
+        properties: {
+          styles: true,
+          startIndex: true,
+          reversed: true,
+        },
       },
       heading: {
         options: [
@@ -240,8 +259,13 @@
       htmlSupport: {
         allow: [
           {
-            name: /^(div|section|article|figure|figcaption|iframe|video|audio|source)$/,
-            attributes: true,
+            name: /^(div|section|article|figure|figcaption|iframe|video|audio|source|ul|ol|li|p|span|h2|h3|h4)$/,
+            attributes: {
+              dir: true,
+              lang: true,
+              style: true,
+              class: true,
+            },
             classes: true,
             styles: true,
           },

@@ -1929,6 +1929,31 @@ fieldset.admin-field legend {
   font-family: var(--admin-font);
 }
 
+.ck-content ul,
+.ck-content ol {
+  padding-inline-start: 1.75rem;
+}
+
+.ck-content [dir="ltr"],
+.ck-content [lang="en"] {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+.ck-content ul[dir="ltr"],
+.ck-content ol[dir="ltr"],
+.ck-content [dir="ltr"] ul,
+.ck-content [dir="ltr"] ol,
+.ck-content [lang="en"] ul,
+.ck-content [lang="en"] ol {
+  direction: ltr;
+  text-align: left;
+  padding-inline-start: 1.75rem;
+  padding-inline-end: 0;
+  list-style-position: outside;
+}
+
 .ck-content .marker-yellow {
   background-color: #fdfd77;
 }
