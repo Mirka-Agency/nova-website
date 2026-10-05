@@ -2507,8 +2507,12 @@ body.nav-open {
 
 .footer-nav {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.55fr);
   gap: 1.15rem 1.5rem;
+}
+
+.footer-col--contact {
+  min-width: 0;
 }
 
 .footer-heading {
