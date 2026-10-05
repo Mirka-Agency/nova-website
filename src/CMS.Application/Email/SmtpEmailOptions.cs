@@ -12,6 +12,12 @@ public sealed class SmtpEmailOptions
     public string? FromDisplayName { get; set; }
     public bool EnableSsl { get; set; } = true;
 
+    /// <summary>
+    /// Optional MailKit secure mode override: None, Auto, SslOnConnect, StartTls, StartTlsWhenAvailable.
+    /// When empty, derived from Port + EnableSsl (465 → SslOnConnect, else StartTls when SSL enabled).
+    /// </summary>
+    public string? SecureSocketOptions { get; set; }
+
     public bool IsConfigured =>
         !string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(From);
 }

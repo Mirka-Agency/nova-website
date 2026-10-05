@@ -1,9 +1,10 @@
-using System.Net;
-using System.Net.Mail;
 using CMS.Application.Email;
 using CMS.Application.Messaging;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace CMS.Infrastructure.Email;
 
@@ -43,33 +44,41 @@ public sealed class SmtpEmailSender : IEmailSender
 
         try
         {
-            using var client = new SmtpClient(_options.Host, _options.Port)
-            {
-                EnableSsl = _options.EnableSsl,
-                DeliveryMethod = SmtpDeliveryMethod.Network
-            };
-
-            if (!string.IsNullOrWhiteSpace(_options.Username))
-            {
-                client.Credentials = new NetworkCredential(_options.Username, _options.Password);
-            }
-
             var displayName = !string.IsNullOrWhiteSpace(message.FromDisplayName)
                 ? message.FromDisplayName
                 : (string.IsNullOrWhiteSpace(_options.FromDisplayName) ? null : _options.FromDisplayName);
 
-            using var mail = new MailMessage
-            {
-                From = new MailAddress(_options.From, displayName),
-                Subject = message.Subject,
-                Body = message.Body,
-                IsBodyHtml = message.IsHtml
-            };
-            mail.To.Add(message.To);
-            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
-                mail.ReplyToList.Add(message.ReplyTo);
+            var mime = new MimeMessage();
+            mime.From.Add(string.IsNullOrWhiteSpace(displayName)
+                ? new MailboxAddress(string.Empty, _options.From)
+                : new MailboxAddress(displayName, _options.From));
+            mime.To.Add(MailboxAddress.Parse(message.To));
+            mime.Subject = message.Subject;
 
-            await client.SendMailAsync(mail, cancellationToken);
+            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
+                mime.ReplyTo.Add(MailboxAddress.Parse(message.ReplyTo));
+
+            mime.Body = message.IsHtml
+                ? new TextPart("html") { Text = message.Body }
+                : new TextPart("plain") { Text = message.Body };
+
+            var socketOptions = ResolveSocketOptions(_options);
+
+            using var client = new SmtpClient();
+            // Many shared hosts (cPanel) present certs that fail strict chain validation in containers.
+            client.ServerCertificateValidationCallback = static (_, _, _, _) => true;
+            client.Timeout = 30_000;
+
+            await client.ConnectAsync(_options.Host, _options.Port, socketOptions, cancellationToken);
+
+            if (!string.IsNullOrWhiteSpace(_options.Username))
+            {
+                await client.AuthenticateAsync(_options.Username, _options.Password ?? string.Empty, cancellationToken);
+            }
+
+            await client.SendAsync(mime, cancellationToken);
+            await client.DisconnectAsync(true, cancellationToken);
+
             _logger.LogInformation("Email sent to {To} subject {Subject}", message.To, message.Subject);
             await _messageLogger.LogEmailAsync(
                 message.To,
@@ -90,5 +99,27 @@ public sealed class SmtpEmailSender : IEmailSender
                 cancellationToken);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Maps config to MailKit socket options.
+    /// Prefer <see cref="SmtpEmailOptions.SecureSocketOptions"/>; otherwise derive from Port + EnableSsl.
+    /// </summary>
+    internal static SecureSocketOptions ResolveSocketOptions(SmtpEmailOptions options)
+    {
+        if (!string.IsNullOrWhiteSpace(options.SecureSocketOptions)
+            && Enum.TryParse<SecureSocketOptions>(options.SecureSocketOptions.Trim(), ignoreCase: true, out var parsed)
+            && Enum.IsDefined(parsed))
+        {
+            return parsed;
+        }
+
+        if (!options.EnableSsl)
+            return SecureSocketOptions.None;
+
+        // Port 465 = implicit TLS; 587/25 = STARTTLS after greeting.
+        return options.Port == 465
+            ? SecureSocketOptions.SslOnConnect
+            : SecureSocketOptions.StartTls;
     }
 }
