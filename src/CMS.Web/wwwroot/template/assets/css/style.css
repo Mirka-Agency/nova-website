@@ -7399,7 +7399,7 @@ a.video-single-meta__value:focus-visible {
 }
 
 .about-hero__copy {
-  max-width: 34rem;
+  max-width: 42rem;
 }
 
 .about-hero__copy .page-breadcrumb {
@@ -7436,7 +7436,7 @@ a.video-single-meta__value:focus-visible {
 
 .about-hero__lead {
   margin: 0 0 1.7rem;
-  max-width: 30rem;
+  max-width: 40rem;
   font-size: 1.02rem;
   line-height: 1.85;
   color: var(--text-muted);
