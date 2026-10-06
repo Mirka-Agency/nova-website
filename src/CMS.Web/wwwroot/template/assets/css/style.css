@@ -7635,8 +7635,8 @@ a.video-single-meta__value:focus-visible {
 .about-story__focus-icon {
   display: inline-grid;
   place-items: center;
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 2.55rem;
+  height: 2.55rem;
   flex-shrink: 0;
   border-radius: 10px;
   background: var(--primary-soft);
@@ -7644,8 +7644,8 @@ a.video-single-meta__value:focus-visible {
 }
 
 .about-story__focus-icon svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 .about-story__focus-label {
