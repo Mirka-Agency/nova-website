@@ -18,7 +18,6 @@
     var email = contact.Email;
     var address = contact.Address;
     var footerText = contact.FooterText;
-    var year = DateTime.Now.Year;
 
     IReadOnlyList<PublicServiceItemSummaryDto> navServices = Array.Empty<PublicServiceItemSummaryDto>();
     if (await FeatureManager.IsEnabledAsync(FeatureNames.Services))
@@ -136,7 +135,7 @@
       </div>
 
       <div class="footer-bottom">
-        <p class="footer-copy">© @year @brand</p>
+        <p class="footer-copy">تمامی حقوق برای نووا کلینیک محفوظ میباشد.</p>
         <div class="footer-social">
           @if (!string.IsNullOrWhiteSpace(contact.InstagramUrl))
           {
