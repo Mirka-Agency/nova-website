@@ -1,5 +1,6 @@
 ﻿@model CMS.Web.Areas.Admin.ViewModels.CreateUserViewModel
 @using CMS.Application.Users
+@using CMS.Web.Areas.Admin.ViewModels
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
 @{
     ViewData["Title"] = Localizer["CreateUser"];
@@ -54,7 +55,8 @@
 
     <div class="admin-field">
         <label asp-for="Password">@Localizer["Password"]</label>
-        <input asp-for="Password" />
+        <input asp-for="Password" autocomplete="new-password" />
+        <p class="admin-hint">@Localizer["DefaultUserPasswordHint", CreateUserViewModel.DefaultPassword]</p>
         <span asp-validation-for="Password" class="admin-field-error"></span>
     </div>
 

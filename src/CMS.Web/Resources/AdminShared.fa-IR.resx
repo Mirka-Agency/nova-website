@@ -175,6 +175,7 @@
   <data name="FullName" xml:space="preserve"><value>نام کامل</value></data>
   <data name="PhoneNumber" xml:space="preserve"><value>شماره موبایل</value></data>
   <data name="Password" xml:space="preserve"><value>رمز عبور</value></data>
+  <data name="DefaultUserPasswordHint" xml:space="preserve"><value>رمز پیش‌فرض «{0}» است؛ در صورت نیاز آن را تغییر دهید.</value></data>
   <data name="ShowPassword" xml:space="preserve"><value>نمایش رمز عبور</value></data>
   <data name="HidePassword" xml:space="preserve"><value>مخفی کردن رمز عبور</value></data>
   <data name="Roles" xml:space="preserve"><value>نقش‌ها</value></data>

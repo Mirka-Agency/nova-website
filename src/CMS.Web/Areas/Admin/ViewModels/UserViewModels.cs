@@ -37,11 +37,13 @@ public class CreateUserViewModel
     [RegularExpression(@"^$|^09\d{9}$", ErrorMessage = "شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود.")]
     public string? PhoneNumber { get; set; }
 
+    public const string DefaultPassword = "Admin123!";
+
     [Required(ErrorMessage = "رمز عبور الزامی است.")]
     [StringLength(100, MinimumLength = 8, ErrorMessage = "رمز عبور باید حداقل ۸ کاراکتر باشد.")]
     [DataType(DataType.Password)]
     [Display(Name = "رمز عبور")]
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; set; } = DefaultPassword;
 
     [Display(Name = "نقش‌ها")]
     public List<string> SelectedRoles { get; set; } = [];
