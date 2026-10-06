@@ -24,6 +24,9 @@
     @if (TempData["CommentSuccess"] is string success)
     {
         <p class="cms-comments-success" role="status">@success</p>
+        <script>
+            window.alert(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(success)));
+        </script>
     }
     @if (TempData["CommentError"] is string error)
     {
