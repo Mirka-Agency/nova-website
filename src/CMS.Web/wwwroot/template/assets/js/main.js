@@ -336,12 +336,14 @@
       });
     }
 
+    var scrollStep = 2;
+
     prevButton.addEventListener("click", function () {
-      goToSlide(activeIndex - 1);
+      goToSlide(activeIndex - scrollStep);
     });
 
     nextButton.addEventListener("click", function () {
-      goToSlide(activeIndex + 1);
+      goToSlide(activeIndex + scrollStep);
     });
 
     viewport.addEventListener(
@@ -360,10 +362,10 @@
     viewport.addEventListener("keydown", function (event) {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        goToSlide(activeIndex + 1);
+        goToSlide(activeIndex + scrollStep);
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
-        goToSlide(activeIndex - 1);
+        goToSlide(activeIndex - scrollStep);
       }
     });
 
