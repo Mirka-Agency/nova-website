@@ -94,7 +94,7 @@ public class ShopController : Controller
         ViewData["MetaTitle"] = product.MetaTitle;
         ViewData["MetaDescription"] = product.MetaDescription;
         ViewData["MetaKeywords"] = product.SeoKeywords;
-        ViewData["CanonicalUrl"] = product.CanonicalUrl;
+        ViewData["CanonicalUrl"] = AbsoluteUrl(product.CanonicalUrl, $"/shop/{product.Slug}");
         ViewData["OgTitle"] = product.OgTitle;
         ViewData["OgDescription"] = product.OgDescription;
         ViewData["OgImage"] = FirstNonEmpty(product.OgImageUrl, product.CoverImageUrl);
@@ -137,6 +137,28 @@ public class ShopController : Controller
         }
 
         return RedirectToAction(nameof(Details), new { slug });
+    }
+
+    private string AbsoluteUrl(string? canonical, string relativePath)
+    {
+        if (!string.IsNullOrWhiteSpace(canonical))
+        {
+            var value = canonical.Trim();
+            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return value;
+
+            if (!value.StartsWith('/'))
+                value = "/" + value;
+
+            if (Request is null)
+                return value;
+            return $"{Request.Scheme}://{Request.Host.Value}{value}";
+        }
+
+        if (Request is null)
+            return relativePath;
+        return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";
     }
 
     private static string? FirstNonEmpty(params string?[] values)

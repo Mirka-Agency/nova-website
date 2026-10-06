@@ -66,7 +66,7 @@ public class ServicesController : Controller
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;
-        ViewData["CanonicalUrl"] = item.CanonicalUrl;
+        ViewData["CanonicalUrl"] = AbsoluteUrl(item.CanonicalUrl, $"/Services/{item.Slug}");
         ViewData["OgTitle"] = FirstNonEmpty(item.OgTitle, item.MetaTitle, item.Title);
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
@@ -101,10 +101,23 @@ public class ServicesController : Controller
         return View(item);
     }
 
-    private string? AbsoluteUrl(string? canonical, string relativePath)
+    private string AbsoluteUrl(string? canonical, string relativePath)
     {
         if (!string.IsNullOrWhiteSpace(canonical))
-            return canonical.Trim();
+        {
+            var value = canonical.Trim();
+            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return value;
+
+            if (!value.StartsWith('/'))
+                value = "/" + value;
+
+            if (Request is null)
+                return value;
+            return $"{Request.Scheme}://{Request.Host.Value}{value}";
+        }
+
         if (Request is null)
             return relativePath;
         return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";

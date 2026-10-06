@@ -62,7 +62,7 @@ public class EventsController : Controller
         ViewData["MetaTitle"] = FirstNonEmpty(post.MetaTitle, post.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(post.MetaDescription, post.Excerpt);
         ViewData["MetaKeywords"] = post.SeoKeywords;
-        ViewData["CanonicalUrl"] = post.CanonicalUrl;
+        ViewData["CanonicalUrl"] = AbsoluteUrl(post.CanonicalUrl, $"/event/{post.Slug}");
         ViewData["OgTitle"] = FirstNonEmpty(post.OgTitle, post.MetaTitle, post.Title);
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
@@ -97,10 +97,23 @@ public class EventsController : Controller
         return View(post);
     }
 
-    private string? AbsoluteUrl(string? canonical, string relativePath)
+    private string AbsoluteUrl(string? canonical, string relativePath)
     {
         if (!string.IsNullOrWhiteSpace(canonical))
-            return canonical.Trim();
+        {
+            var value = canonical.Trim();
+            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return value;
+
+            if (!value.StartsWith('/'))
+                value = "/" + value;
+
+            if (Request is null)
+                return value;
+            return $"{Request.Scheme}://{Request.Host.Value}{value}";
+        }
+
         if (Request is null)
             return relativePath;
         return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";

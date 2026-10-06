@@ -62,7 +62,7 @@ public class VideosController : Controller
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;
-        ViewData["CanonicalUrl"] = item.CanonicalUrl;
+        ViewData["CanonicalUrl"] = AbsoluteUrl(item.CanonicalUrl, $"/Videos/{item.Slug}");
         ViewData["OgTitle"] = FirstNonEmpty(item.OgTitle, item.MetaTitle, item.Title);
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
@@ -75,6 +75,28 @@ public class VideosController : Controller
             .ToList();
 
         return View(item);
+    }
+
+    private string AbsoluteUrl(string? canonical, string relativePath)
+    {
+        if (!string.IsNullOrWhiteSpace(canonical))
+        {
+            var value = canonical.Trim();
+            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                return value;
+
+            if (!value.StartsWith('/'))
+                value = "/" + value;
+
+            if (Request is null)
+                return value;
+            return $"{Request.Scheme}://{Request.Host.Value}{value}";
+        }
+
+        if (Request is null)
+            return relativePath;
+        return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";
     }
 
     private static string? FirstNonEmpty(params string?[] values)
