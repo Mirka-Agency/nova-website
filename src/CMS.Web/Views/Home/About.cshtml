@@ -215,7 +215,7 @@
               var bio = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
               <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
                 <div class="about-team__photo">
-                  <img src="@cover" width="640" height="800" alt="@member.Title" loading="lazy">
+                  <img src="@cover" alt="@member.Title" loading="lazy">
                 </div>
                 <div class="about-team__info">
                   <span class="about-team__role">@role</span>
@@ -230,7 +230,7 @@
           {
             <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
               <div class="about-team__photo">
-                <img src="~/template/assets/images/doctors/dr-hamedani-portrait.webp" width="640" height="800" alt="دکتر کاوه همدانی" loading="lazy">
+                <img src="~/template/assets/images/doctors/dr-hamedani-portrait.webp" width="358" height="537" alt="دکتر کاوه همدانی" loading="lazy">
               </div>
               <div class="about-team__info">
                 <span class="about-team__role">مدیر @brand</span>
@@ -241,7 +241,7 @@
             </a>
             <a class="about-team__card reveal" asp-controller="Teams" asp-action="Index">
               <div class="about-team__photo">
-                <img src="~/template/assets/images/doctors/dr-takyar.jpeg" width="640" height="800" alt="دکتر میرعلیرضا تکیار" loading="lazy">
+                <img src="~/template/assets/images/doctors/dr-takyar.jpeg" width="436" height="351" alt="دکتر میرعلیرضا تکیار" loading="lazy">
               </div>
               <div class="about-team__info">
                 <span class="about-team__role">پزشک‌پژوهشگر</span>
