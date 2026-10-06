@@ -21,20 +21,24 @@ public sealed class TeamsSitemapUrlProvider : ISitemapUrlProvider
 
     public async Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var entries = new List<SitemapUrlEntry>
-        {
-            new("/doctors", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
-        };
-
         var items = await _db.TeamItems
             .AsNoTracking()
             .Where(p => p.Status == TeamStatus.Published)
             .Select(p => new
             {
                 p.Slug,
-                LastMod = p.PublishedAtUtc ?? p.UpdatedAtUtc ?? p.CreatedAtUtc
+                LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
+
+        var listingLastMod = items.Count > 0
+            ? items.Max(p => p.LastMod)
+            : DateTime.UtcNow.Date;
+
+        var entries = new List<SitemapUrlEntry>
+        {
+            new("/doctors", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+        };
 
         foreach (var item in items)
         {

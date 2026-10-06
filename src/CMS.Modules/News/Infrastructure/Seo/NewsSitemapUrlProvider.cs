@@ -21,12 +21,6 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
 
     public async Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var entries = new List<SitemapUrlEntry>
-        {
-            new("/education-articles", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8),
-            new("/event", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
-        };
-
         var articles = await _db.Articles
             .AsNoTracking()
             .Where(a => a.Status == ArticleStatus.Published)
@@ -34,9 +28,27 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
             {
                 a.Slug,
                 a.Kind,
-                LastMod = a.PublishedAtUtc ?? a.UpdatedAtUtc ?? a.CreatedAtUtc
+                LastMod = a.UpdatedAtUtc ?? a.PublishedAtUtc ?? a.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
+
+        var educationArticles = articles.Where(a => a.Kind != ArticleKind.Event).ToList();
+        var events = articles.Where(a => a.Kind == ArticleKind.Event).ToList();
+        var today = DateTime.UtcNow.Date;
+
+        var entries = new List<SitemapUrlEntry>
+        {
+            new(
+                "/education-articles",
+                educationArticles.Count > 0 ? educationArticles.Max(a => a.LastMod) : today,
+                SitemapChangeFrequency.Daily,
+                0.8),
+            new(
+                "/event",
+                events.Count > 0 ? events.Max(a => a.LastMod) : today,
+                SitemapChangeFrequency.Daily,
+                0.8)
+        };
 
         foreach (var article in articles)
         {

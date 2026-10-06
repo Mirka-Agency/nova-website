@@ -21,11 +21,6 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
 
     public async Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var entries = new List<SitemapUrlEntry>
-        {
-            new("/shop", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
-        };
-
         var categories = await _db.Categories
             .AsNoTracking()
             .Where(c => c.IsActive)
@@ -36,6 +31,28 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
             })
             .ToListAsync(cancellationToken);
 
+        var products = await _db.Products
+            .AsNoTracking()
+            .Where(p => p.Status == ProductStatus.Active)
+            .Select(p => new
+            {
+                p.Slug,
+                LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
+            })
+            .ToListAsync(cancellationToken);
+
+        var listingCandidates = categories.Select(c => c.LastMod)
+            .Concat(products.Select(p => p.LastMod))
+            .ToList();
+        var listingLastMod = listingCandidates.Count > 0
+            ? listingCandidates.Max()
+            : DateTime.UtcNow.Date;
+
+        var entries = new List<SitemapUrlEntry>
+        {
+            new("/shop", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+        };
+
         foreach (var category in categories)
         {
             entries.Add(new SitemapUrlEntry(
@@ -44,16 +61,6 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
                 SitemapChangeFrequency.Weekly,
                 0.6));
         }
-
-        var products = await _db.Products
-            .AsNoTracking()
-            .Where(p => p.Status == ProductStatus.Active)
-            .Select(p => new
-            {
-                p.Slug,
-                LastMod = p.PublishedAtUtc ?? p.UpdatedAtUtc ?? p.CreatedAtUtc
-            })
-            .ToListAsync(cancellationToken);
 
         foreach (var product in products)
         {

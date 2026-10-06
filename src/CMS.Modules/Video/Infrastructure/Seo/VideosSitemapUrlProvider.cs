@@ -21,20 +21,24 @@ public sealed class VideosSitemapUrlProvider : ISitemapUrlProvider
 
     public async Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var entries = new List<SitemapUrlEntry>
-        {
-            new("/Videos", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
-        };
-
         var items = await _db.VideoItems
             .AsNoTracking()
             .Where(p => p.Status == VideoStatus.Published)
             .Select(p => new
             {
                 p.Slug,
-                LastMod = p.PublishedAtUtc ?? p.UpdatedAtUtc ?? p.CreatedAtUtc
+                LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
+
+        var listingLastMod = items.Count > 0
+            ? items.Max(p => p.LastMod)
+            : DateTime.UtcNow.Date;
+
+        var entries = new List<SitemapUrlEntry>
+        {
+            new("/Videos", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+        };
 
         foreach (var item in items)
         {

@@ -21,20 +21,24 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
 
     public async Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var entries = new List<SitemapUrlEntry>
-        {
-            new("/blog", DateTime.UtcNow.Date, SitemapChangeFrequency.Daily, 0.8)
-        };
-
         var posts = await _db.Posts
             .AsNoTracking()
             .Where(p => p.Status == PostStatus.Published)
             .Select(p => new
             {
                 p.Slug,
-                LastMod = p.PublishedAtUtc ?? p.UpdatedAtUtc ?? p.CreatedAtUtc
+                LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
+
+        var listingLastMod = posts.Count > 0
+            ? posts.Max(p => p.LastMod)
+            : DateTime.UtcNow.Date;
+
+        var entries = new List<SitemapUrlEntry>
+        {
+            new("/blog", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+        };
 
         foreach (var post in posts)
         {
