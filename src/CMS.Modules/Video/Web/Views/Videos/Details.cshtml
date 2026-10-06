@@ -49,46 +49,42 @@
   </div>
 </section>
 
-<section class="video-player-section" aria-label="پخش ویدئو">
-  <div class="container">
-    <div class="video-player reveal">
-      @if (!string.IsNullOrWhiteSpace(embedUrl))
-      {
-        <iframe
-          src="@embedUrl"
-          title="ویدئو @Model.Title"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowfullscreen
-          loading="lazy"
-          referrerpolicy="strict-origin-when-cross-origin"
-        ></iframe>
-      }
-      else if (hasFileVideo)
-      {
-        <video controls playsinline preload="metadata" poster="@cover" src="@Model.VideoUrl" title="@Model.Title"></video>
-      }
-      else if (!string.IsNullOrWhiteSpace(Model.VideoUrl) && VideoEmbedUrl.IsHostedPage(Model.VideoUrl))
-      {
-        <div class="video-player__fallback">
-          <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
-          <p class="video-player__fallback-text">
-            لینک ویدیو قابل پخش نیست.
-            <a href="@Model.VideoUrl" target="_blank" rel="noopener noreferrer">مشاهده در منبع</a>
-          </p>
-        </div>
-      }
-      else
-      {
-        <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
-      }
-    </div>
-  </div>
-</section>
-
 <section class="video-detail" aria-labelledby="video-detail-heading">
   <div class="container">
     <div class="video-detail__layout">
       <div class="video-detail__main">
+        <div class="video-player reveal">
+          @if (!string.IsNullOrWhiteSpace(embedUrl))
+          {
+            <iframe
+              src="@embedUrl"
+              title="ویدئو @Model.Title"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+          }
+          else if (hasFileVideo)
+          {
+            <video controls playsinline preload="metadata" poster="@cover" src="@Model.VideoUrl" title="@Model.Title"></video>
+          }
+          else if (!string.IsNullOrWhiteSpace(Model.VideoUrl) && VideoEmbedUrl.IsHostedPage(Model.VideoUrl))
+          {
+            <div class="video-player__fallback">
+              <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
+              <p class="video-player__fallback-text">
+                لینک ویدیو قابل پخش نیست.
+                <a href="@Model.VideoUrl" target="_blank" rel="noopener noreferrer">مشاهده در منبع</a>
+              </p>
+            </div>
+          }
+          else
+          {
+            <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
+          }
+        </div>
+
         <article class="video-prose reveal">
           <p class="section-kicker">توضیحات ویدئو</p>
           <h2 class="section-heading" id="video-detail-heading">@Model.Title</h2>

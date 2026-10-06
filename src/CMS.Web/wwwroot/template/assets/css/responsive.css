@@ -1083,6 +1083,10 @@
     grid-template-columns: 1fr;
   }
 
+  .video-detail__aside {
+    position: static;
+  }
+
   .event-card--featured {
     grid-template-columns: 1fr;
   }
@@ -1811,6 +1815,11 @@
   }
 
   .video-player {
+    border-radius: var(--radius-md);
+  }
+
+  .video-prose {
+    padding: 1.15rem 1.05rem 1.25rem;
     border-radius: var(--radius-md);
   }
 

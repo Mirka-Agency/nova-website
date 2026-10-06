@@ -6447,7 +6447,8 @@ a.video-single-meta__value:focus-visible {
 
 .video-player {
   position: relative;
-  aspect-ratio: 3 / 2;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: #0f1f22;
@@ -6456,7 +6457,8 @@ a.video-single-meta__value:focus-visible {
 }
 
 .video-player iframe,
-.video-player video {
+.video-player video,
+.video-player > img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -6469,6 +6471,10 @@ a.video-single-meta__value:focus-visible {
   background: #0f1f22;
 }
 
+.video-player > img {
+  object-fit: cover;
+}
+
 .video-detail {
   padding-block: var(--section-space);
   background: var(--white);
@@ -6476,13 +6482,24 @@ a.video-single-meta__value:focus-visible {
 
 .video-detail__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(16rem, 0.7fr);
-  gap: 1.75rem 2.25rem;
+  grid-template-columns: minmax(0, 1.7fr) minmax(16rem, 0.55fr);
+  gap: 1.5rem;
   align-items: start;
 }
 
 .video-detail__main {
   min-width: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.video-prose {
+  width: 100%;
+  padding: 1.45rem 1.5rem 1.55rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid rgba(9, 112, 125, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .video-prose .section-heading {
@@ -6540,10 +6557,11 @@ a.video-single-meta__value:focus-visible {
 }
 
 .video-detail__aside {
-  position: relative;
+  position: sticky;
+  top: 6.5rem;
   overflow: hidden;
   padding: 1.45rem 1.35rem;
-  border-radius: calc(var(--radius-lg) + 2px);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   border: 1px solid rgba(9, 112, 125, 0.14);
   box-shadow: var(--shadow-sm);
