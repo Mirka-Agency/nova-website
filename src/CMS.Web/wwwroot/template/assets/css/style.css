@@ -8703,13 +8703,6 @@ a.contact-channel:focus-visible {
   margin-bottom: 0.55rem;
 }
 
-.contact-map__lead {
-  margin: 0;
-  max-width: 22rem;
-  color: var(--text-muted);
-  line-height: 1.7;
-}
-
 .contact-map__frame {
   position: relative;
   overflow: hidden;
