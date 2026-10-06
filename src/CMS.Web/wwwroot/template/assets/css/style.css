@@ -2510,6 +2510,7 @@ body.nav-open {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.55fr);
   gap: 1.15rem 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .footer-col--contact {
