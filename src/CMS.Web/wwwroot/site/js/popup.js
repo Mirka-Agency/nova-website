@@ -99,24 +99,37 @@
     return true;
   }
 
+  function focusNoScroll(el) {
+    if (!el || typeof el.focus !== 'function') return;
+    try {
+      el.focus({ preventScroll: true });
+    } catch (e) {
+      var x = window.scrollX || window.pageXOffset || 0;
+      var y = window.scrollY || window.pageYOffset || 0;
+      el.focus();
+      window.scrollTo(x, y);
+    }
+  }
+
   function openPopup(popup, options) {
     if (!popup) return false;
     var force = options && options.force;
     if (!force && wasShown(popup)) return false;
     if (!popup.hidden) return true;
 
+    var scrollX = window.scrollX || window.pageXOffset || 0;
+    var scrollY = window.scrollY || window.pageYOffset || 0;
+
     resetPopupFormState(popup);
     popup.hidden = false;
     openCount++;
     if (popup.getAttribute('data-lock-scroll') === 'true') syncBodyLock();
 
+    // Never autofocus form fields — honeypot/off-screen inputs cause a white-page jump.
     var closeBtn = popup.querySelector('[data-popup-close]');
-    // Skip honeypot (.public-form-hp) — focusing it scrolls the page off-screen (white page).
-    var firstInput = popup.querySelector(
-      'form.public-form .public-form-field input:not([type="hidden"]), form.public-form .public-form-field textarea, form.public-form .public-form-field select'
-    );
-    if (firstInput) firstInput.focus();
-    else if (closeBtn) closeBtn.focus();
+    if (closeBtn) focusNoScroll(closeBtn);
+
+    window.scrollTo(scrollX, scrollY);
     markShown(popup);
     popup.dispatchEvent(new CustomEvent('cms-popup:open', { bubbles: true }));
     return true;

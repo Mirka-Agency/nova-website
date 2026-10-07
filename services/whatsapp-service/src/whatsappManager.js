@@ -26,6 +26,8 @@ class WhatsAppManager {
     this.lastError = null;
     this.starting = false;
     this.destroying = false;
+    this.cachedGroups = [];
+    this.cachedGroupsAt = null;
   }
 
   getSnapshot() {
@@ -149,6 +151,12 @@ class WhatsAppManager {
       } catch {
         // ignore
       }
+      // Warm group cache while the page is fresh (avoids later detached-frame empties).
+      try {
+        await this.listGroups({ allowCacheOnly: false });
+      } catch (err) {
+        console.warn('[whatsapp] warm groups failed:', safeError(err));
+      }
     });
 
     client.on('auth_failure', (msg) => {
@@ -158,6 +166,8 @@ class WhatsAppManager {
       this.qrRaw = null;
       this.qrDataUrl = null;
       this.phoneNumber = null;
+      this.cachedGroups = [];
+      this.cachedGroupsAt = null;
     });
 
     client.on('disconnected', (reason) => {
@@ -168,6 +178,8 @@ class WhatsAppManager {
       this.qrRaw = null;
       this.qrDataUrl = null;
       this.lastError = reason ? String(reason) : null;
+      this.cachedGroups = [];
+      this.cachedGroupsAt = null;
     });
   }
 
@@ -211,8 +223,9 @@ class WhatsAppManager {
     return this.getSnapshot();
   }
 
-  async listGroups() {
+  async listGroups(options = {}) {
     this.ensureConnected();
+    const allowCacheOnly = options.allowCacheOnly !== false;
 
     const byId = new Map();
     const add = (id, name) => {
@@ -228,42 +241,13 @@ class WhatsAppManager {
       }
     };
 
-    // Primary: WhatsApp Web module loader (window.Store is often missing on new WA builds)
+    // Collect groups from a live page/frame (pupPage often detaches after WA reloads).
     try {
-      const fromRequire = await this.client.pupPage.evaluate(() => {
-        const out = [];
-        const col = window.require('WAWebCollections');
-        const chatCol = col && col.Chat;
-        let models = [];
-        if (chatCol) {
-          if (typeof chatCol.getModelsArray === 'function') {
-            models = chatCol.getModelsArray() || [];
-          } else if (Array.isArray(chatCol._models)) {
-            models = chatCol._models;
-          } else if (Array.isArray(chatCol.models)) {
-            models = chatCol.models;
-          } else if (chatCol._models && typeof chatCol._models === 'object') {
-            models = Object.values(chatCol._models);
-          }
-        }
-
-        for (const c of models) {
-          const id = c?.id?._serialized;
-          if (!id) continue;
-          const isGroup = c?.isGroup === true || c?.id?.server === 'g.us' || String(id).endsWith('@g.us');
-          if (!isGroup) continue;
-          out.push({
-            id: String(id),
-            name: c.name || c.formattedTitle || String(id),
-          });
-        }
-        return out;
-      });
-
-      for (const g of fromRequire || []) add(g.id, g.name);
-      console.info('[whatsapp] WAWebCollections groups:', fromRequire?.length || 0);
+      const fromPage = await this.collectGroupsFromLivePage();
+      for (const g of fromPage || []) add(g.id, g.name);
+      console.info('[whatsapp] live page groups:', fromPage?.length || 0);
     } catch (err) {
-      console.warn('[whatsapp] WAWebCollections list failed:', safeError(err));
+      console.warn('[whatsapp] live page groups failed:', safeError(err));
     }
 
     // Fallback: classic getChats (may throw opaque "r" on some WA versions)
@@ -279,11 +263,92 @@ class WhatsAppManager {
       }
     }
 
-    const groups = [...byId.values()].sort((a, b) =>
+    let groups = [...byId.values()].sort((a, b) =>
       String(a.name).localeCompare(String(b.name), 'fa')
     );
+
+    if (groups.length > 0) {
+      this.cachedGroups = groups;
+      this.cachedGroupsAt = new Date().toISOString();
+    } else if (allowCacheOnly && this.cachedGroups.length > 0) {
+      console.warn(
+        '[whatsapp] live groups empty; returning cache (%s @ %s)',
+        this.cachedGroups.length,
+        this.cachedGroupsAt || 'unknown'
+      );
+      groups = this.cachedGroups;
+    }
+
     console.info('[whatsapp] returning groups:', groups.length);
     return groups;
+  }
+
+  async collectGroupsFromLivePage() {
+    const targets = await this.getEvaluationTargets();
+    let lastError = null;
+
+    for (const target of targets) {
+      try {
+        const groups = await target.evaluate(extractGroupsInPage);
+        if (Array.isArray(groups) && groups.length > 0) {
+          return groups;
+        }
+        // Keep trying other frames even if this one returned [].
+        if (Array.isArray(groups)) lastError = null;
+      } catch (err) {
+        lastError = err;
+        const msg = safeError(err);
+        if (/detached frame/i.test(msg)) {
+          console.warn('[whatsapp] skipping detached frame');
+          continue;
+        }
+        console.warn('[whatsapp] evaluate failed:', msg);
+      }
+    }
+
+    if (lastError) throw lastError;
+    return [];
+  }
+
+  async getEvaluationTargets() {
+    const targets = [];
+    const seen = new WeakSet();
+
+    const push = (frameOrPage) => {
+      if (!frameOrPage || typeof frameOrPage.evaluate !== 'function') return;
+      if (seen.has(frameOrPage)) return;
+      seen.add(frameOrPage);
+      targets.push(frameOrPage);
+    };
+
+    // Prefer current pupPage + child frames
+    try {
+      const page = this.client?.pupPage;
+      if (page && !page.isClosed?.()) {
+        push(page);
+        for (const frame of page.frames?.() || []) push(frame);
+      }
+    } catch {
+      // ignore
+    }
+
+    // Recover after reload: scan all browser pages/frames
+    try {
+      const browser = this.client?.pupBrowser
+        || (typeof this.client?.pupPage?.browser === 'function' ? this.client.pupPage.browser() : null);
+      if (browser) {
+        const pages = await browser.pages();
+        for (const page of pages) {
+          if (page.isClosed?.()) continue;
+          push(page);
+          for (const frame of page.frames?.() || []) push(frame);
+        }
+      }
+    } catch (err) {
+      console.warn('[whatsapp] browser page scan failed:', safeError(err));
+    }
+
+    return targets;
   }
 
   async sendMessage(groupId, message) {
@@ -350,6 +415,8 @@ class WhatsAppManager {
       this.destroying = false;
       this.qrRaw = null;
       this.qrDataUrl = null;
+      this.cachedGroups = [];
+      this.cachedGroupsAt = null;
       if (resetStatus) {
         this.status = Status.Disconnected;
       }
@@ -363,6 +430,63 @@ function normalizeGroupId(groupId) {
     return trimmed;
   }
   return `${trimmed}@g.us`;
+}
+
+/**
+ * Runs inside WhatsApp Web page/frame. Must stay a plain function for puppeteer.evaluate.
+ */
+function extractGroupsInPage() {
+  const out = [];
+  const seen = Object.create(null);
+
+  const push = (id, name) => {
+    if (!id) return;
+    const sid = String(id);
+    if (!sid.endsWith('@g.us') || seen[sid]) return;
+    seen[sid] = true;
+    out.push({
+      id: sid,
+      name: (name && String(name).trim()) || sid,
+    });
+  };
+
+  const readChatModels = (chatCol) => {
+    if (!chatCol) return [];
+    if (typeof chatCol.getModelsArray === 'function') return chatCol.getModelsArray() || [];
+    if (Array.isArray(chatCol._models)) return chatCol._models;
+    if (Array.isArray(chatCol.models)) return chatCol.models;
+    if (chatCol._models && typeof chatCol._models === 'object') return Object.values(chatCol._models);
+    return [];
+  };
+
+  try {
+    if (typeof window.require === 'function') {
+      const col = window.require('WAWebCollections');
+      for (const c of readChatModels(col && col.Chat)) {
+        const id = c?.id?._serialized;
+        const isGroup = c?.isGroup === true || c?.id?.server === 'g.us' || String(id || '').endsWith('@g.us');
+        if (isGroup) push(id, c.name || c.formattedTitle);
+      }
+    }
+  } catch {
+    // ignore require failures
+  }
+
+  try {
+    const models =
+      (window.Store && window.Store.Chat && typeof window.Store.Chat.getModelsArray === 'function'
+        ? window.Store.Chat.getModelsArray()
+        : []) || [];
+    for (const c of models) {
+      const id = c?.id?._serialized;
+      const isGroup = c?.isGroup === true || c?.id?.server === 'g.us' || String(id || '').endsWith('@g.us');
+      if (isGroup) push(id, c.name || c.formattedTitle);
+    }
+  } catch {
+    // ignore Store failures
+  }
+
+  return out;
 }
 
 function safeError(err) {

@@ -252,6 +252,28 @@
 
 body.cms-popup-open {
   overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Keep honeypot from expanding/scrolling the booking popup viewport */
+.cms-popup .public-form-hp,
+.cms-popup--booking .public-form-hp {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  inset-inline-start: 0 !important;
+  top: 0 !important;
+  pointer-events: none !important;
+}
+
+.cms-popup__dialog {
+  overflow-x: hidden;
 }
 
 /* Booking popup — compact, no inner scroll */
@@ -259,7 +281,8 @@ body.cms-popup-open {
 .cms-popup--booking .cms-popup__dialog.cms-popup__dialog--scroll {
   width: min(100%, 400px);
   max-height: none;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: visible;
   padding: 1rem 1rem 0.85rem;
 }
 
@@ -333,7 +356,8 @@ body.cms-popup-open {
   .cms-popup--booking .cms-popup__dialog.cms-popup__dialog--scroll {
     width: 100%;
     max-height: none;
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: visible;
     padding: 0.9rem 0.85rem 0.75rem;
   }
 }

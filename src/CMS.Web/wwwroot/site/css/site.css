@@ -1628,12 +1628,19 @@ a {
 }
 
 .public-form-hp {
-  position: absolute;
-  left: -10000px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  inset-inline-start: 0 !important;
+  top: 0 !important;
+  pointer-events: none !important;
 }
 
 .public-form-actions .btn {

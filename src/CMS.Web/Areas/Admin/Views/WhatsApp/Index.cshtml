@@ -105,7 +105,7 @@
                     }
                 }
             </select>
-            <p class="admin-hint">گروه‌هایی که شماره متصل‌شده عضو آن‌هاست از سرویس واتساپ دریافت می‌شوند.</p>
+            <p class="admin-hint">با انتخاب گروه، اطلاعات همان لحظه ذخیره می‌شود و بعد از رفرش صفحه باقی می‌ماند.</p>
         </div>
         <div class="admin-field">
             <label asp-for="Settings.DefaultGroupName">نام گروه</label>
@@ -323,15 +323,22 @@
         } catch { /* ignore poll errors */ }
     };
 
+    const settingsForm = document.querySelector('form.admin-form');
+
     const fillGroups = (groups) => {
-        const current = groupIdInput?.value || '';
+        const currentId = groupIdInput?.value || '';
+        const currentName = groupNameInput?.value || '';
+        const list = Array.isArray(groups) ? groups.slice() : [];
+        if (currentId && !list.some(g => g.id === currentId)) {
+            list.unshift({ id: currentId, name: currentName || currentId });
+        }
         groupSelect.innerHTML = '<option value="">— انتخاب گروه —</option>';
-        (groups || []).forEach(g => {
+        list.forEach(g => {
             const opt = document.createElement('option');
             opt.value = g.id;
             opt.textContent = g.name;
             opt.dataset.name = g.name;
-            if (g.id === current) opt.selected = true;
+            if (g.id === currentId) opt.selected = true;
             groupSelect.appendChild(opt);
         });
     };
@@ -347,14 +354,45 @@
         }
     };
 
-    groupSelect?.addEventListener('change', () => {
+    const saveSettingsAjax = async () => {
+        if (!settingsForm) return false;
+        setFeedback(actionFeedback, true, 'در حال ذخیره…');
+        try {
+            const res = await fetch('@Url.Action("SaveSettings")', {
+                method: 'POST',
+                headers: headers(),
+                body: new FormData(settingsForm)
+            });
+            const data = await res.json();
+            if (!data.ok) {
+                setFeedback(actionFeedback, false, data.error || 'ذخیره ناموفق بود.');
+                return false;
+            }
+            if (groupIdInput && data.defaultGroupId) groupIdInput.value = data.defaultGroupId;
+            if (groupNameInput && data.defaultGroupName) groupNameInput.value = data.defaultGroupName;
+            setFeedback(actionFeedback, true, 'تنظیمات ذخیره شد.');
+            return true;
+        } catch {
+            setFeedback(actionFeedback, false, 'خطا در ذخیره تنظیمات');
+            return false;
+        }
+    };
+
+    groupSelect?.addEventListener('change', async () => {
         const opt = groupSelect.selectedOptions[0];
-        if (!opt || !opt.value) return;
-        if (groupIdInput) groupIdInput.value = opt.value;
-        if (groupNameInput) groupNameInput.value = opt.dataset.name || opt.textContent;
+        if (!opt) return;
+        if (!opt.value) {
+            if (groupIdInput) groupIdInput.value = '';
+            if (groupNameInput) groupNameInput.value = '';
+        } else {
+            if (groupIdInput) groupIdInput.value = opt.value;
+            if (groupNameInput) groupNameInput.value = opt.dataset.name || opt.textContent;
+        }
+        await saveSettingsAjax();
     });
 
     document.getElementById('wa-refresh-groups')?.addEventListener('click', refreshGroups);
+    refreshGroups();
 
     const postAction = async (url) => {
         setFeedback(actionFeedback, true, 'در حال اجرا…');

@@ -55,7 +55,9 @@ public class WhatsAppController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Index(WhatsAppSettingsFormViewModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(
+        [Bind(Prefix = "Settings")] WhatsAppSettingsFormViewModel model,
+        CancellationToken cancellationToken)
     {
         ViewData["Title"] = _localizer["WhatsApp"].Value;
         if (!ModelState.IsValid)
@@ -73,38 +75,7 @@ public class WhatsAppController : Controller
 
         try
         {
-            var groupId = string.IsNullOrWhiteSpace(model.DefaultGroupId) ? null : model.DefaultGroupId.Trim();
-            var groupName = string.IsNullOrWhiteSpace(model.DefaultGroupName) ? null : model.DefaultGroupName.Trim();
-
-            if (!string.IsNullOrWhiteSpace(groupId) && string.IsNullOrWhiteSpace(groupName))
-            {
-                try
-                {
-                    var groups = await _gateway.ListGroupsAsync(cancellationToken);
-                    groupName = groups.FirstOrDefault(g =>
-                            string.Equals(g.Id, groupId, StringComparison.OrdinalIgnoreCase))
-                        ?.Name;
-                }
-                catch
-                {
-                    // keep name empty when service unavailable
-                }
-            }
-
-            await _settings.UpdateAsync(
-                new UpdateWhatsAppSettingsCommand(
-                    model.Enabled,
-                    groupId,
-                    groupName,
-                    model.DefaultTemplate),
-                cancellationToken);
-
-            await _audit.LogAsync(
-                "Update",
-                "WhatsAppSettings",
-                details: model.Enabled ? "enabled" : "disabled",
-                cancellationToken: cancellationToken);
-
+            await PersistSettingsAsync(model, cancellationToken, preserveTemplateIfEmpty: false);
             TempData["Success"] = _localizer["WhatsAppSettingsUpdated"].Value;
             return RedirectToAction(nameof(Index));
         }
@@ -120,6 +91,79 @@ public class WhatsAppController : Controller
             ModelState.AddModelError(string.Empty, ex.Message);
             return View(await BuildPageAsync(cancellationToken));
         }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveSettings(
+        [Bind(Prefix = "Settings")] WhatsAppSettingsFormViewModel model,
+        CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return Json(new { ok = false, error = "اطلاعات نامعتبر است." });
+
+        try
+        {
+            await PersistSettingsAsync(model, cancellationToken, preserveTemplateIfEmpty: true);
+            return Json(new
+            {
+                ok = true,
+                defaultGroupId = model.DefaultGroupId,
+                defaultGroupName = model.DefaultGroupName
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "WhatsApp settings AJAX save failed");
+            return Json(new { ok = false, error = ex.Message });
+        }
+    }
+
+    private async Task PersistSettingsAsync(
+        WhatsAppSettingsFormViewModel model,
+        CancellationToken cancellationToken,
+        bool preserveTemplateIfEmpty)
+    {
+        var groupId = string.IsNullOrWhiteSpace(model.DefaultGroupId) ? null : model.DefaultGroupId.Trim();
+        var groupName = string.IsNullOrWhiteSpace(model.DefaultGroupName) ? null : model.DefaultGroupName.Trim();
+
+        if (!string.IsNullOrWhiteSpace(groupId) && string.IsNullOrWhiteSpace(groupName))
+        {
+            try
+            {
+                var groups = await _gateway.ListGroupsAsync(cancellationToken);
+                groupName = groups.FirstOrDefault(g =>
+                        string.Equals(g.Id, groupId, StringComparison.OrdinalIgnoreCase))
+                    ?.Name;
+            }
+            catch
+            {
+                // keep name empty when service unavailable
+            }
+        }
+
+        if (preserveTemplateIfEmpty && string.IsNullOrWhiteSpace(model.DefaultTemplate))
+        {
+            var current = await _settings.GetAsync(cancellationToken);
+            model.DefaultTemplate = current.DefaultTemplate;
+        }
+
+        model.DefaultGroupId = groupId;
+        model.DefaultGroupName = groupName;
+
+        await _settings.UpdateAsync(
+            new UpdateWhatsAppSettingsCommand(
+                model.Enabled,
+                groupId,
+                groupName,
+                model.DefaultTemplate),
+            cancellationToken);
+
+        await _audit.LogAsync(
+            "Update",
+            "WhatsAppSettings",
+            details: model.Enabled ? "enabled" : "disabled",
+            cancellationToken: cancellationToken);
     }
 
     [HttpGet]
@@ -357,6 +401,20 @@ public class WhatsAppController : Controller
                     _logger.LogWarning(ex, "Failed to load WhatsApp groups for settings page");
                 }
             }
+        }
+
+        // Keep the saved group visible even if live list is temporarily empty.
+        if (!string.IsNullOrWhiteSpace(settings.DefaultGroupId)
+            && !groups.Any(g => string.Equals(g.Id, settings.DefaultGroupId, StringComparison.OrdinalIgnoreCase)))
+        {
+            groups = groups
+                .Prepend(new WhatsAppGroupDto(
+                    settings.DefaultGroupId!,
+                    string.IsNullOrWhiteSpace(settings.DefaultGroupName)
+                        ? settings.DefaultGroupId!
+                        : settings.DefaultGroupName!,
+                    null))
+                .ToList();
         }
 
         var recent = (await _messageLogs.ListRecentAsync(100, cancellationToken))
