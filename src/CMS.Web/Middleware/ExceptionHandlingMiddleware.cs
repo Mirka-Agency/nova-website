@@ -85,15 +85,15 @@ public sealed class ExceptionHandlingMiddleware
             return;
         }
 
-        var isAdmin = context.Request.Path.StartsWithSegments("/Admin");
+        var isAdmin = context.Request.Path.StartsWithSegments("/admin");
         var basePath = (statusCode, isAdmin) switch
         {
-            (StatusCodes.Status404NotFound, true) => "/Admin/Error/NotFound",
-            (StatusCodes.Status400BadRequest, true) => "/Admin/Error/BadRequest",
-            (_, true) => "/Admin/Error/ServerError",
-            (StatusCodes.Status404NotFound, false) => "/Home/Error",
-            (StatusCodes.Status400BadRequest, false) => "/Home/Error",
-            _ => "/Home/Error"
+            (StatusCodes.Status404NotFound, true) => "/admin/error/notfound",
+            (StatusCodes.Status400BadRequest, true) => "/admin/error/badrequest",
+            (_, true) => "/admin/error/servererror",
+            (StatusCodes.Status404NotFound, false) => "/home/error",
+            (StatusCodes.Status400BadRequest, false) => "/home/error",
+            _ => "/home/error"
         };
 
         var location = $"{basePath}?code={statusCode}&message={Uri.EscapeDataString(detail)}";

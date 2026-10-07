@@ -11,7 +11,7 @@ namespace CMS.Modules.Services.Web.Areas.Admin.Controllers;
 /// <summary>CKEditor Simple Upload Adapter endpoint for inline blog images.</summary>
 [Area("Admin")]
 [Authorize(Policy = "ViewServices")]
-[Route("Admin/ServicesMedia")]
+[Route("admin/servicesmedia")]
 public class ServicesMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

@@ -11,7 +11,7 @@ namespace CMS.Modules.News.Web.Areas.Admin.Controllers;
 /// <summary>CKEditor Simple Upload Adapter endpoint for inline news images.</summary>
 [Area("Admin")]
 [Authorize(Policy = "ViewNews")]
-[Route("Admin/NewsMedia")]
+[Route("admin/newsmedia")]
 public class NewsMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

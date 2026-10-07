@@ -37,13 +37,13 @@ public sealed class ServicesSitemapUrlProvider : ISitemapUrlProvider
 
         var entries = new List<SitemapUrlEntry>
         {
-            new("/Services", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+            new("/services", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
         };
 
         foreach (var item in items)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/Services/{item.Slug}",
+                $"/services/{item.Slug}",
                 item.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7));

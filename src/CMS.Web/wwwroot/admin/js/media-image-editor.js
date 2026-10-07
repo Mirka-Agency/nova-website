@@ -12,10 +12,10 @@
   const sizeBadge = editor.querySelector("[data-editor-size-badge]");
   const ctx = canvas?.getContext("2d");
 
-  const contentUrlBase = editor.getAttribute("data-content-url") || "/Admin/Media/Content";
-  const detailsUrlBase = editor.getAttribute("data-details-url") || "/Admin/Media/Details";
-  const replaceUrlBase = editor.getAttribute("data-replace-url") || "/Admin/Media/ReplaceImage";
-  const resolveUrlBase = editor.getAttribute("data-resolve-url") || "/Admin/Media/Resolve";
+  const contentUrlBase = editor.getAttribute("data-content-url") || "/admin/media/content";
+  const detailsUrlBase = editor.getAttribute("data-details-url") || "/admin/media/details";
+  const replaceUrlBase = editor.getAttribute("data-replace-url") || "/admin/media/replaceimage";
+  const resolveUrlBase = editor.getAttribute("data-resolve-url") || "/admin/media/resolve";
 
   let sourceImage = null;
   let workingCanvas = null;

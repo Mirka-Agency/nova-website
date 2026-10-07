@@ -8,7 +8,7 @@
   const urlInput = root.querySelector("[data-voice-url]");
   const preview = root.querySelector("[data-voice-preview]");
   const errorEl = root.querySelector("[data-voice-upload-error]");
-  const uploadUrl = root.getAttribute("data-upload-url") || "/Admin/VoicesMedia/UploadAudio";
+  const uploadUrl = root.getAttribute("data-upload-url") || "/admin/voicesmedia/uploadaudio";
 
   function token() {
     return (

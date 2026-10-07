@@ -21,7 +21,7 @@ public sealed class CustomerPrincipalMiddleware
         // Keep Identity admin principal for Admin UI and admin JSON APIs
         // (e.g. /api/v1/admin/blog/posts used by post autosave).
         var path = context.Request.Path;
-        if (path.StartsWithSegments("/Admin", StringComparison.OrdinalIgnoreCase)
+        if (path.StartsWithSegments("/admin", StringComparison.OrdinalIgnoreCase)
             || path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase))
         {
             await _next(context);

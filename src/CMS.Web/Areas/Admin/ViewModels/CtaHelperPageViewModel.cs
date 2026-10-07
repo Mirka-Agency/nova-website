@@ -9,7 +9,7 @@ public sealed class CtaHelperPageViewModel
     public string WhatsAppUrl { get; init; } = "tel:02191093492";
     public string ContactUrl { get; init; } = "/contact-us";
     public string DoctorsUrl { get; init; } = "/doctors";
-    public string ServicesUrl { get; init; } = "/Services";
+    public string ServicesUrl { get; init; } = "/services";
     public string DoctorImageUrl { get; init; } = "/template/assets/images/doctors/dr-hamedani.webp";
     public bool IsPopup { get; init; }
 }

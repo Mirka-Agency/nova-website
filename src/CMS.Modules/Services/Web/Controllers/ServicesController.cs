@@ -11,7 +11,7 @@ using Microsoft.FeatureManagement;
 
 namespace CMS.Modules.Services.Web.Controllers;
 
-[Route("Services")]
+[Route("services")]
 public class ServicesController : Controller
 {
     private readonly IPublicServiceItemQuery _items;
@@ -66,7 +66,7 @@ public class ServicesController : Controller
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;
-        ViewData["CanonicalUrl"] = AbsoluteUrl(item.CanonicalUrl, $"/Services/{item.Slug}");
+        ViewData["CanonicalUrl"] = AbsoluteUrl(item.CanonicalUrl, $"/services/{item.Slug}");
         ViewData["OgTitle"] = FirstNonEmpty(item.OgTitle, item.MetaTitle, item.Title);
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
@@ -90,7 +90,7 @@ public class ServicesController : Controller
                         seo.SchemaType ?? "Service",
                         item.Title,
                         FirstNonEmpty(item.MetaDescription, item.Excerpt),
-                        AbsoluteUrl(item.CanonicalUrl, $"/Services/{item.Slug}"),
+                        AbsoluteUrl(item.CanonicalUrl, $"/services/{item.Slug}"),
                         FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl),
                         item.AuthorDisplayName,
                         item.PublishedAtUtc,

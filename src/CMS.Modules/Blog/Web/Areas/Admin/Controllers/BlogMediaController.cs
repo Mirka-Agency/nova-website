@@ -12,7 +12,7 @@ namespace CMS.Modules.Blog.Web.Areas.Admin.Controllers;
 /// <summary>Media upload endpoints for the Blog module (CKEditor images + cover videos).</summary>
 [Area("Admin")]
 [Authorize(Policy = "ViewBlog")]
-[Route("Admin/BlogMedia")]
+[Route("admin/blogmedia")]
 public class BlogMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

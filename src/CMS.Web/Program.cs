@@ -71,6 +71,12 @@ try
     CultureInfo.DefaultThreadCurrentCulture = faIr;
     CultureInfo.DefaultThreadCurrentUICulture = faIr;
 
+    builder.Services.Configure<Microsoft.AspNetCore.Routing.RouteOptions>(options =>
+    {
+        options.LowercaseUrls = true;
+        options.LowercaseQueryStrings = true;
+    });
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -232,6 +238,7 @@ try
     app.UseRequestLocalization();
     // Before UseRouting so status-200 rewrites affect endpoint matching.
     app.UseSeoRedirects();
+    app.UseLowercaseUrlsRedirect();
     app.UseRouting();
     app.UseStaffResponseCacheBypass();
     app.UseResponseCaching();

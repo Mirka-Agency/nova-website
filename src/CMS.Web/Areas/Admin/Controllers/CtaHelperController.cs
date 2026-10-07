@@ -46,7 +46,7 @@ public sealed class CtaHelperController : Controller
             WhatsAppUrl = contact.WhatsAppUrl ?? contact.TelHref ?? "tel:02191093492",
             ContactUrl = Url.RouteUrl("contact-us") ?? "/contact-us",
             DoctorsUrl = "/doctors",
-            ServicesUrl = "/Services",
+            ServicesUrl = "/services",
             DoctorImageUrl = doctorImage ?? "/template/assets/images/doctors/dr-hamedani.webp",
             IsPopup = string.Equals(Request.Query["embed"], "1", StringComparison.Ordinal)
         });

@@ -11,7 +11,7 @@ namespace CMS.Modules.Shop.Web.Areas.Admin.Controllers;
 /// <summary>CKEditor Simple Upload Adapter endpoint for inline product description images.</summary>
 [Area("Admin")]
 [Authorize(Policy = "ViewShop")]
-[Route("Admin/ShopMedia")]
+[Route("admin/shopmedia")]
 public class ShopMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

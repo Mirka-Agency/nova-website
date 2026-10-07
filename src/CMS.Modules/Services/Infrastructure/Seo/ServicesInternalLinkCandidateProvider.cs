@@ -34,7 +34,7 @@ public sealed class ServicesInternalLinkCandidateProvider : IInternalLinkCandida
             .ToListAsync(cancellationToken);
 
         return items
-            .Select(p => new InternalLinkCandidate(p.Title, $"/Services/{p.Slug}", SeoContentTypeKeys.ServiceItem, p.Id))
+            .Select(p => new InternalLinkCandidate(p.Title, $"/services/{p.Slug}", SeoContentTypeKeys.ServiceItem, p.Id))
             .ToList();
     }
 }

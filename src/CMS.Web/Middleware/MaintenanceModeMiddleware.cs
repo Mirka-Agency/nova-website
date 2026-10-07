@@ -15,9 +15,9 @@ public sealed class MaintenanceModeMiddleware
     public async Task InvokeAsync(HttpContext context, ISiteSettingsService settings)
     {
         var path = context.Request.Path;
-        if (path.StartsWithSegments("/Admin")
+        if (path.StartsWithSegments("/admin")
             || path.StartsWithSegments("/api")
-            || path.StartsWithSegments("/Home/Error")
+            || path.StartsWithSegments("/home/error")
             || path.StartsWithSegments("/sitemap.xml")
             || path.StartsWithSegments("/sitemaps")
             || path.StartsWithSegments("/robots.txt")
@@ -26,7 +26,6 @@ public sealed class MaintenanceModeMiddleware
             || path.StartsWithSegments("/lib")
             || path.StartsWithSegments("/site")
             || path.StartsWithSegments("/template")
-            || path.StartsWithSegments("/admin")
             || path.StartsWithSegments("/favicon"))
         {
             await _next(context);

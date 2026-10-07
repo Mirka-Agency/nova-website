@@ -37,13 +37,13 @@ public sealed class VideosSitemapUrlProvider : ISitemapUrlProvider
 
         var entries = new List<SitemapUrlEntry>
         {
-            new("/Videos", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+            new("/videos", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
         };
 
         foreach (var item in items)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/Videos/{item.Slug}",
+                $"/videos/{item.Slug}",
                 item.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7));

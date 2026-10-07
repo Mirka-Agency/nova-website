@@ -10,7 +10,7 @@ namespace CMS.Modules.Voices.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Policy = "ViewVoices")]
-[Route("Admin/VoicesMedia")]
+[Route("admin/voicesmedia")]
 public class VoicesMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

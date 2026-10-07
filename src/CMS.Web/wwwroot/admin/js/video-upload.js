@@ -12,12 +12,12 @@
   const percentEl = root.querySelector("[data-video-upload-percent]");
   const previewEl = root.querySelector("[data-video-preview]");
   const progressWrap = root.querySelector("[data-video-upload-progress-wrap]");
-  const uploadUrl = root.getAttribute("data-upload-url") || "/Admin/VideosMedia/UploadVideo";
-  const initUrl = root.getAttribute("data-chunk-init-url") || "/Admin/VideosMedia/InitVideoUpload";
-  const chunkUrl = root.getAttribute("data-chunk-url") || "/Admin/VideosMedia/UploadVideoChunk";
+  const uploadUrl = root.getAttribute("data-upload-url") || "/admin/videosmedia/uploadvideo";
+  const initUrl = root.getAttribute("data-chunk-init-url") || "/admin/videosmedia/initvideoupload";
+  const chunkUrl = root.getAttribute("data-chunk-url") || "/admin/videosmedia/uploadvideochunk";
   const completeUrl =
-    root.getAttribute("data-chunk-complete-url") || "/Admin/VideosMedia/CompleteVideoUpload";
-  const abortUrl = root.getAttribute("data-chunk-abort-url") || "/Admin/VideosMedia/AbortVideoUpload";
+    root.getAttribute("data-chunk-complete-url") || "/admin/videosmedia/completevideoupload";
+  const abortUrl = root.getAttribute("data-chunk-abort-url") || "/admin/videosmedia/abortvideoupload";
   const chunkThreshold = Number(root.getAttribute("data-chunk-threshold") || 5 * 1024 * 1024);
   const chunkSize = Number(root.getAttribute("data-chunk-size") || 5 * 1024 * 1024);
 

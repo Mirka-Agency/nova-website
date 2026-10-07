@@ -8,7 +8,7 @@ using Microsoft.FeatureManagement;
 
 namespace CMS.Modules.Video.Web.Controllers;
 
-[Route("Videos")]
+[Route("videos")]
 public class VideosController : Controller
 {
     private readonly IPublicVideoItemQuery _items;
@@ -62,7 +62,7 @@ public class VideosController : Controller
         ViewData["MetaTitle"] = FirstNonEmpty(item.MetaTitle, item.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(item.MetaDescription, item.Excerpt);
         ViewData["MetaKeywords"] = item.SeoKeywords;
-        ViewData["CanonicalUrl"] = AbsoluteUrl(item.CanonicalUrl, $"/Videos/{item.Slug}");
+        ViewData["CanonicalUrl"] = AbsoluteUrl(item.CanonicalUrl, $"/videos/{item.Slug}");
         ViewData["OgTitle"] = FirstNonEmpty(item.OgTitle, item.MetaTitle, item.Title);
         ViewData["OgDescription"] = FirstNonEmpty(item.OgDescription, item.MetaDescription, item.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);

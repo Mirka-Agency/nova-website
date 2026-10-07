@@ -432,7 +432,7 @@
 
     try {
       const response = await fetch(
-        `/Admin/Media/Picker?page=${pageToLoad}&pageSize=${PAGE_SIZE}`,
+        `/admin/media/picker?page=${pageToLoad}&pageSize=${PAGE_SIZE}`,
         {
           headers: { Accept: "application/json" },
           credentials: "same-origin"
@@ -583,7 +583,7 @@
     setUploading(true);
 
     try {
-      const response = await fetch("/Admin/Media/UploadPicker", {
+      const response = await fetch("/admin/media/uploadpicker", {
         method: "POST",
         headers: {
           RequestVerificationToken: token(),

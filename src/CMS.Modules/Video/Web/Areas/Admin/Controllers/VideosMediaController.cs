@@ -12,7 +12,7 @@ namespace CMS.Modules.Video.Web.Areas.Admin.Controllers;
 /// <summary>Media upload endpoints for the Video module (CKEditor images + video files).</summary>
 [Area("Admin")]
 [Authorize(Policy = "ViewVideo")]
-[Route("Admin/VideosMedia")]
+[Route("admin/videosmedia")]
 public class VideosMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

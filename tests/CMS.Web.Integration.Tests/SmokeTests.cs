@@ -21,10 +21,10 @@ public sealed class SmokeTests
         _fixture.EnsureAvailable();
         var client = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
 
-        var response = await client.GetAsync("/Admin/Dashboard");
+        var response = await client.GetAsync("/admin/dashboard");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
-        response.Headers.Location!.ToString().Should().Contain("/Admin/Account/Login");
+        response.Headers.Location!.ToString().Should().Contain("/admin/account/login");
     }
 
     [SkippableFact]
@@ -33,10 +33,10 @@ public sealed class SmokeTests
         _fixture.EnsureAvailable();
         var client = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
 
-        var response = await client.GetAsync("/Admin/Media");
+        var response = await client.GetAsync("/admin/media");
 
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
-        response.Headers.Location!.ToString().Should().Contain("/Admin/Account/Login");
+        response.Headers.Location!.ToString().Should().Contain("/admin/account/login");
     }
 
     [SkippableFact]
@@ -47,7 +47,7 @@ public sealed class SmokeTests
 
         await LoginAsync(client, CmsWebFixture.AdminEmail, CmsWebFixture.AdminPassword);
 
-        var response = await client.GetAsync("/Admin/Dashboard");
+        var response = await client.GetAsync("/admin/dashboard");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var html = System.Net.WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
         html.Should().Contain("داشبورد");
@@ -77,14 +77,14 @@ public sealed class SmokeTests
 
         var editorClient = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
         await LoginAsync(editorClient, CmsWebFixture.EditorEmail, CmsWebFixture.EditorPassword);
-        var editorResponse = await editorClient.GetAsync("/Admin/Products");
+        var editorResponse = await editorClient.GetAsync("/admin/products");
         editorResponse.StatusCode.Should().BeOneOf(HttpStatusCode.Forbidden, HttpStatusCode.Redirect);
         if (editorResponse.StatusCode == HttpStatusCode.Redirect)
-            editorResponse.Headers.Location!.ToString().Should().Contain("AccessDenied");
+            editorResponse.Headers.Location!.ToString().Should().Contain("accessdenied");
 
         var shopClient = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
         await LoginAsync(shopClient, CmsWebFixture.ShopManagerEmail, CmsWebFixture.ShopManagerPassword);
-        var shopResponse = await shopClient.GetAsync("/Admin/Products");
+        var shopResponse = await shopClient.GetAsync("/admin/products");
         shopResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -95,16 +95,16 @@ public sealed class SmokeTests
         var client = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
         await LoginAsync(client, CmsWebFixture.ViewerEmail, CmsWebFixture.ViewerPassword);
 
-        var list = await client.GetAsync("/Admin/Posts");
+        var list = await client.GetAsync("/admin/posts");
         list.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var create = await client.GetAsync("/Admin/Posts/Create");
+        var create = await client.GetAsync("/admin/posts/create");
         create.StatusCode.Should().BeOneOf(HttpStatusCode.Forbidden, HttpStatusCode.Redirect);
     }
 
     private static async Task LoginAsync(HttpClient client, string email, string password)
     {
-        var loginGet = await client.GetAsync("/Admin/Account/Login");
+        var loginGet = await client.GetAsync("/admin/account/login");
         loginGet.EnsureSuccessStatusCode();
         var html = await loginGet.Content.ReadAsStringAsync();
 
@@ -120,7 +120,7 @@ public sealed class SmokeTests
         });
         content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
 
-        var loginPost = await client.PostAsync("/Admin/Account/Login", content);
+        var loginPost = await client.PostAsync("/admin/account/login", content);
         loginPost.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.Redirect, HttpStatusCode.Found);
     }
 

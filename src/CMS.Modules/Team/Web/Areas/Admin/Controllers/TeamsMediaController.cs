@@ -11,7 +11,7 @@ namespace CMS.Modules.Team.Web.Areas.Admin.Controllers;
 /// <summary>CKEditor Simple Upload Adapter endpoint for inline blog images.</summary>
 [Area("Admin")]
 [Authorize(Policy = "ViewTeam")]
-[Route("Admin/TeamsMedia")]
+[Route("admin/teamsmedia")]
 public class TeamsMediaController : Controller
 {
     private readonly IObjectStorage _objectStorage;

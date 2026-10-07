@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Modules.Team.Web.Controllers;
 
-/// <summary>Permanent redirects from the old /Teams URLs to /doctors.</summary>
-[Route("Teams")]
+/// <summary>Permanent redirects from the old /teams (and /Teams via lowercase middleware) URLs to /doctors.</summary>
+[Route("teams")]
 public class TeamsLegacyRedirectController : Controller
 {
     [HttpGet("")]

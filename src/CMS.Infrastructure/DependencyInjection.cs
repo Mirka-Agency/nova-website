@@ -129,9 +129,9 @@ public static class DependencyInjection
 
         services.ConfigureApplicationCookie(options =>
         {
-            options.LoginPath = "/Admin/Account/Login";
-            options.AccessDeniedPath = "/Admin/Account/AccessDenied";
-            options.LogoutPath = "/Admin/Account/Logout";
+            options.LoginPath = "/admin/account/login";
+            options.AccessDeniedPath = "/admin/account/accessdenied";
+            options.LogoutPath = "/admin/account/logout";
             options.SlidingExpiration = true;
             options.ExpireTimeSpan = TimeSpan.FromHours(8);
             options.Cookie.Name = CMS.Application.Auth.StaffAuthDefaults.CookieName;

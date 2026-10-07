@@ -9,7 +9,7 @@
   const nameInput = root.querySelector("[data-attachment-name]");
   const preview = root.querySelector("[data-attachment-preview]");
   const errorEl = root.querySelector("[data-attachment-upload-error]");
-  const uploadUrl = root.getAttribute("data-upload-url") || "/Admin/NewsMedia/UploadAttachment";
+  const uploadUrl = root.getAttribute("data-upload-url") || "/admin/newsmedia/uploadattachment";
 
   function token() {
     return (

@@ -168,7 +168,7 @@
         const selected = findSelectedCtaEmbed(editor);
         editingTarget = selected;
 
-        const url = "/Admin/CtaHelper?embed=1";
+        const url = "/admin/ctahelper?embed=1";
         if (helperWindow && !helperWindow.closed) {
           helperWindow.focus();
           helperWindow.postMessage(
