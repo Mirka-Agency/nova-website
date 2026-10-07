@@ -366,13 +366,87 @@ class WhatsAppManager {
     this.ensureConnected();
 
     const chatId = normalizeGroupId(groupId);
-    const result = await this.client.sendMessage(chatId, message.trim());
+    const text = message.trim();
+
+    try {
+      return await this.sendMessageOnce(chatId, text);
+    } catch (err) {
+      const msg = safeError(err);
+      if (!/detached frame/i.test(msg)) throw err;
+
+      console.warn('[whatsapp] send hit detached frame; trying live-page fallback then reconnect');
+      try {
+        const viaPage = await this.sendViaLivePage(chatId, text);
+        if (viaPage) return viaPage;
+      } catch (pageErr) {
+        console.warn('[whatsapp] live-page send failed:', safeError(pageErr));
+      }
+
+      await this.reconnect();
+      await this.waitUntilConnected(45000);
+      return this.sendMessageOnce(chatId, text);
+    }
+  }
+
+  async sendMessageOnce(chatId, text) {
+    const result = await this.client.sendMessage(chatId, text);
     return {
       ok: true,
       messageId: result?.id?._serialized || result?.id?.id || null,
       groupId: chatId,
       timestamp: new Date().toISOString(),
     };
+  }
+
+  async sendViaLivePage(chatId, text) {
+    const targets = await this.getEvaluationTargets();
+    let lastError = null;
+
+    for (const target of targets) {
+      try {
+        const messageId = await target.evaluate(async (id, message) => {
+          const wweb = window.WWebJS;
+          if (!wweb || typeof wweb.sendMessage !== 'function') {
+            throw new Error('WWebJS.sendMessage unavailable');
+          }
+          const chat = typeof wweb.getChat === 'function'
+            ? await wweb.getChat(id)
+            : null;
+          if (!chat) throw new Error('chat not found on page');
+          const sent = await wweb.sendMessage(chat, message);
+          return sent?.id?._serialized || sent?.id?.id || null;
+        }, chatId, text);
+
+        return {
+          ok: true,
+          messageId: messageId || null,
+          groupId: chatId,
+          timestamp: new Date().toISOString(),
+        };
+      } catch (err) {
+        lastError = err;
+        if (/detached frame/i.test(safeError(err))) continue;
+      }
+    }
+
+    if (lastError) throw lastError;
+    return null;
+  }
+
+  async waitUntilConnected(timeoutMs = 30000) {
+    const started = Date.now();
+    while (Date.now() - started < timeoutMs) {
+      if (this.status === Status.Connected && this.client) return;
+      if (this.status === Status.AuthenticationFailed || this.status === Status.QrRequired) {
+        const error = new Error(`WhatsApp reconnect needs attention (status: ${this.status})`);
+        error.statusCode = 409;
+        throw error;
+      }
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    const error = new Error(`WhatsApp reconnect timed out (status: ${this.status})`);
+    error.statusCode = 409;
+    throw error;
   }
 
   ensureConnected() {
