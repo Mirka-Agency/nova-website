@@ -5,6 +5,7 @@ public sealed record PublicServiceItemSummaryDto(
     string Slug,
     string? CategoryName,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     DateTime PublishedAtUtc,
     string Excerpt,
     string? AuthorDisplayName);
@@ -16,6 +17,7 @@ public sealed record PublicServiceItemDetailDto(
     string Body,
     string? CategoryName,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     DateTime PublishedAtUtc,
     string Excerpt,
     string? AuthorDisplayName,

@@ -5,6 +5,7 @@ public sealed record PublicPostSummaryDto(
     string Slug,
     string? CategoryName,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     DateTime PublishedAtUtc,
     string Excerpt,
     string? AuthorDisplayName);
@@ -16,6 +17,7 @@ public sealed record PublicPostDetailDto(
     string Body,
     string? CategoryName,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     string? CoverVideoUrl,
     DateTime PublishedAtUtc,
     string Excerpt,

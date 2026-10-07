@@ -80,6 +80,8 @@
   <data name="NoCategory" xml:space="preserve"><value>بدون دسته</value></data>
   <data name="CoverImage" xml:space="preserve"><value>تصویر</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
+  <data name="CoverImageAlt" xml:space="preserve"><value>متن جایگزین تصویر</value></data>
+  <data name="CoverImageAltHint" xml:space="preserve"><value>برای دسترس‌پذیری و سئو؛ در صورت خالی بودن از عنوان محصول استفاده می‌شود.</value></data>
   <data name="ImageGallery" xml:space="preserve"><value>گالری تصاویر</value></data>
   <data name="ImageGalleryHint" xml:space="preserve"><value>چند تصویر از کتابخانه رسانه اضافه کنید. تصویر اصلی به‌عنوان تصویر شاخص هم استفاده می‌شود.</value></data>
   <data name="ImageGalleryEmpty" xml:space="preserve"><value>هنوز تصویری به گالری اضافه نشده است.</value></data>

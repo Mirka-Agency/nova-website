@@ -172,6 +172,16 @@
     syncActionButtons(selector);
   }
 
+  function findAltTarget(selector) {
+    if (!selector) return null;
+    const pickerBtn = document.querySelector(
+      `[data-media-picker][data-target="${CSS.escape(selector)}"]`
+    );
+    const altSelector = pickerBtn?.getAttribute("data-alt-target");
+    if (!altSelector) return null;
+    return document.querySelector(altSelector);
+  }
+
   function clearTarget(selector) {
     if (!selector) return;
 
@@ -181,6 +191,13 @@
       setMediaId(input, null);
       input.dispatchEvent(new Event("input", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    const altInput = findAltTarget(selector);
+    if (altInput) {
+      altInput.value = "";
+      altInput.dispatchEvent(new Event("input", { bubbles: true }));
+      altInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
     const preview = findPreview(selector);
@@ -204,9 +221,21 @@
       input.dispatchEvent(new Event("input", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
     }
+
+    const altInput = findAltTarget(selector);
+    if (altInput) {
+      const mediaAlt = (item.altText || "").trim();
+      if (mediaAlt && !altInput.value.trim()) {
+        altInput.value = mediaAlt;
+        altInput.dispatchEvent(new Event("input", { bubbles: true }));
+        altInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+
     const preview = findPreview(selector);
     if (preview) {
-      preview.innerHTML = `<img src="${item.publicUrl}" alt="" />`;
+      const alt = (altInput?.value || item.altText || "").trim();
+      preview.innerHTML = `<img src="${item.publicUrl}" alt="${alt}" />`;
     }
     syncActionButtons(selector);
   }

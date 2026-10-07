@@ -204,7 +204,7 @@ public sealed class ProductService : IProductService
         product.Update(
             sanitized.Title, slug, sanitized.ShortDescription, sanitized.Description, sanitized.Price, sanitized.SalePrice,
             sanitized.SaleStartsAtUtc, sanitized.SaleEndsAtUtc, sanitized.Currency, sanitized.IsAvailable, sanitized.IsPurchasable,
-            sanitized.CategoryId, sanitized.BrandId, sanitized.CoverImageUrl, sanitized.VideoUrl,
+            sanitized.CategoryId, sanitized.BrandId, sanitized.CoverImageUrl, sanitized.CoverImageAlt, sanitized.VideoUrl,
             sanitized.StockQuantity, sanitized.UnlimitedStock, sanitized.LowStockThreshold, sanitized.Weight,
             sanitized.MinimumOrderQuantity, sanitized.WholesaleMinimumOrderQuantity, sanitized.WholesaleMinimumOrderAmount,
             sanitized.Sku, sanitized.MetaTitle, sanitized.MetaDescription, sanitized.SeoKeywords,
@@ -351,7 +351,7 @@ public sealed class ProductService : IProductService
         var product = Product.Create(
             command.Title, slug, command.ShortDescription, command.Description, command.Price, command.SalePrice,
             command.SaleStartsAtUtc, command.SaleEndsAtUtc, command.Currency, command.IsAvailable, command.IsPurchasable,
-            command.CategoryId, command.BrandId, command.CoverImageUrl, command.VideoUrl,
+            command.CategoryId, command.BrandId, command.CoverImageUrl, command.CoverImageAlt, command.VideoUrl,
             command.StockQuantity, command.UnlimitedStock, command.LowStockThreshold, command.Weight,
             command.MinimumOrderQuantity, command.WholesaleMinimumOrderQuantity, command.WholesaleMinimumOrderAmount,
             command.Sku, command.MetaTitle, command.MetaDescription, command.SeoKeywords,
@@ -477,7 +477,7 @@ public sealed class ProductService : IProductService
         new(
             p.Id, p.Title, p.Slug, p.ShortDescription, p.Description, p.Price, p.SalePrice,
             p.SaleStartsAtUtc, p.SaleEndsAtUtc, p.Currency, p.IsAvailable, p.IsPurchasable, p.Status, p.ProductType,
-            p.CategoryId, p.BrandId, p.CoverImageUrl, p.VideoUrl, p.StockQuantity, p.UnlimitedStock,
+            p.CategoryId, p.BrandId, p.CoverImageUrl, p.CoverImageAlt, p.VideoUrl, p.StockQuantity, p.UnlimitedStock,
             p.LowStockThreshold, p.Weight, p.MinimumOrderQuantity,
             p.WholesaleMinimumOrderQuantity, p.WholesaleMinimumOrderAmount,
             p.Sku, p.MetaTitle, p.MetaDescription,

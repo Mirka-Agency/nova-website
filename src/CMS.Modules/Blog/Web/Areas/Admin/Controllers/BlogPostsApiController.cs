@@ -150,6 +150,7 @@ public class BlogPostsApiController : ControllerBase
             request.Excerpt,
             request.CategoryId,
             request.CoverImageUrl,
+            request.CoverImageAlt,
             request.CoverVideoUrl,
             request.Publish,
             request.PublishedAtUtc,

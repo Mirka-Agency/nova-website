@@ -440,7 +440,7 @@ else
                 src="@cover"
                 width="1200"
                 height="675"
-                alt="@member.Title"
+                alt="@(member.CoverImageAlt ?? member.Title)"
                 loading="lazy"
               >
             </div>
@@ -952,7 +952,7 @@ else
                 src="@cover"
                 width="800"
                 height="500"
-                alt="@item.Title"
+                alt="@(item.CoverImageAlt ?? item.Title)"
                 loading="lazy"
                 decoding="async"
               >

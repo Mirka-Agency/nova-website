@@ -33,6 +33,9 @@ public sealed class SaveTeamItemApiRequest
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
 
+    [MaxLength(300)]
+    public string? CoverImageAlt { get; set; }
+
     [MaxLength(1000)]
     public string? AvatarImageUrl { get; set; }
 

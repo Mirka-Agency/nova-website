@@ -52,7 +52,7 @@
                 src="@cover"
                 width="800"
                 height="500"
-                alt=""
+                alt="@(item.CoverImageAlt ?? item.Title)"
                 loading="@(index == 0 ? "eager" : "lazy")"
                 decoding="async"
               >

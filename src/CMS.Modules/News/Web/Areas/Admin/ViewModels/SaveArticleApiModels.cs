@@ -22,6 +22,9 @@ public sealed class SaveArticleApiRequest
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
 
+    [MaxLength(300)]
+    public string? CoverImageAlt { get; set; }
+
     public string? GalleryJson { get; set; }
 
     [MaxLength(1000)]

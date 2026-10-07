@@ -216,6 +216,7 @@ public class ServiceItemsController : Controller
             Body = post.Body,
             Excerpt = post.Excerpt,
             CoverImageUrl = post.CoverImageUrl,
+            CoverImageAlt = post.CoverImageAlt,
             CategoryId = post.CategoryId,
             AuthorUserId = post.AuthorUserId,
             // Fresh auto-drafts default Publish on (user preference); existing drafts keep unchecked.
@@ -331,6 +332,7 @@ public class ServiceItemsController : Controller
             NullIfWhiteSpace(model.Excerpt),
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
+            NullIfWhiteSpace(model.CoverImageAlt),
             model.Publish,
             ToUtc(model.PublishedAtLocal),
             NullIfWhiteSpace(model.AuthorUserId),

@@ -21,6 +21,8 @@
   <data name="Image" xml:space="preserve"><value>تصویر</value></data>
   <data name="ImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
+  <data name="CoverImageAlt" xml:space="preserve"><value>متن جایگزین تصویر شاخص</value></data>
+  <data name="CoverImageAltHint" xml:space="preserve"><value>اختیاری؛ برای دسترس‌پذیری و سئو تصویر شاخص.</value></data>
   <data name="CoverImage" xml:space="preserve"><value>تصویر شاخص</value></data>
   <data name="AvatarImage" xml:space="preserve"><value>تصویر آواتار</value></data>
   <data name="AvatarImageHint" xml:space="preserve"><value>برای سلکتور پزشک در صفحه اصلی؛ بهتر است پرتره مربعی باشد.</value></data>

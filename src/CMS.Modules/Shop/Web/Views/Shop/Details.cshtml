@@ -20,7 +20,7 @@
     if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl) &&
         images.All(i => !string.Equals(i.Url, Model.CoverImageUrl, StringComparison.OrdinalIgnoreCase)))
     {
-        images.Insert(0, (Model.CoverImageUrl!, Model.Title));
+        images.Insert(0, (Model.CoverImageUrl!, string.IsNullOrWhiteSpace(Model.CoverImageAlt) ? Model.Title : Model.CoverImageAlt));
     }
 
     var schema = new Dictionary<string, object?>

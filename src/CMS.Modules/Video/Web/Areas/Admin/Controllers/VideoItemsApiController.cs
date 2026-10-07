@@ -144,6 +144,7 @@ public class VideoItemsApiController : ControllerBase
             request.VideoUrl,
             request.CategoryId,
             request.CoverImageUrl,
+            request.CoverImageAlt,
             request.Publish,
             request.PublishedAtUtc,
             authorUserId,

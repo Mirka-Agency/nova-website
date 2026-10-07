@@ -150,6 +150,7 @@ public class ServiceItemsApiController : ControllerBase
             request.Excerpt,
             request.CategoryId,
             request.CoverImageUrl,
+            request.CoverImageAlt,
             request.Publish,
             request.PublishedAtUtc,
             authorUserId,

@@ -66,7 +66,7 @@
                     <a class="product-card-media" asp-action="Details" asp-route-slug="@item.Slug" tabindex="-1" aria-hidden="true">
                         @if (!string.IsNullOrWhiteSpace(item.CoverImageUrl))
                         {
-                            <img src="@item.CoverImageUrl" alt="" loading="lazy" decoding="async" />
+                            <img src="@item.CoverImageUrl" alt="@(string.IsNullOrWhiteSpace(item.CoverImageAlt) ? item.Title : item.CoverImageAlt)" loading="lazy" decoding="async" />
                         }
                         else
                         {

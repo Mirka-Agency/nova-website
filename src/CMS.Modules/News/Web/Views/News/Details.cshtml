@@ -98,7 +98,7 @@
         src="@cover"
         width="800"
         height="500"
-        alt="@Model.Title"
+        alt="@(Model.CoverImageAlt ?? Model.Title)"
         loading="eager"
         decoding="async"
       >
@@ -239,7 +239,7 @@
                 src="@itemCover"
                 width="480"
                 height="640"
-                alt="@item.Title"
+                alt="@(item.CoverImageAlt ?? item.Title)"
                 loading="lazy"
                 decoding="async"
               >

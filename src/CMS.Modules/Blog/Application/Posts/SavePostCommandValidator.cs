@@ -34,6 +34,10 @@ public sealed class SavePostCommandValidator : AbstractValidator<SavePostCommand
             .When(x => !string.IsNullOrWhiteSpace(x.CoverImageUrl))
             .WithMessage("تصویر شاخص باید آدرس مطلق یا مسیر نسبی سایت باشد.");
 
+        RuleFor(x => x.CoverImageAlt)
+            .MaximumLength(300)
+            .When(x => !string.IsNullOrWhiteSpace(x.CoverImageAlt));
+
         RuleFor(x => x.CoverVideoUrl)
             .MaximumLength(1000)
             .Must(BeValidUrlOrPath)

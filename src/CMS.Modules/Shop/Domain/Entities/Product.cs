@@ -28,6 +28,7 @@ public class Product : BaseEntity
     public ProductStatus Status { get; private set; } = ProductStatus.Draft;
     public ProductType ProductType { get; private set; } = ProductType.Simple;
     public string? CoverImageUrl { get; private set; }
+    public string? CoverImageAlt { get; private set; }
     public string? VideoUrl { get; private set; }
     public Guid? CategoryId { get; private set; }
     public ShopCategory? Category { get; private set; }
@@ -72,6 +73,7 @@ public class Product : BaseEntity
         Guid? categoryId,
         Guid? brandId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? videoUrl,
         int? stockQuantity,
         bool unlimitedStock,
@@ -93,7 +95,7 @@ public class Product : BaseEntity
         var product = new Product();
         product.Apply(
             title, slug, shortDescription, description, price, salePrice, saleStartsAtUtc, saleEndsAtUtc,
-            currency, isAvailable, isPurchasable, categoryId, brandId, coverImageUrl, videoUrl,
+            currency, isAvailable, isPurchasable, categoryId, brandId, coverImageUrl, coverImageAlt, videoUrl,
             stockQuantity, unlimitedStock, lowStockThreshold, weight, minimumOrderQuantity,
             wholesaleMinimumOrderQuantity, wholesaleMinimumOrderAmount, sku,
             metaTitle, metaDescription, seoKeywords, canonicalUrl, ogTitle, ogDescription, ogImageUrl, faqJson);
@@ -115,6 +117,7 @@ public class Product : BaseEntity
         Guid? categoryId,
         Guid? brandId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? videoUrl,
         int? stockQuantity,
         bool unlimitedStock,
@@ -135,7 +138,7 @@ public class Product : BaseEntity
     {
         Apply(
             title, slug, shortDescription, description, price, salePrice, saleStartsAtUtc, saleEndsAtUtc,
-            currency, isAvailable, isPurchasable, categoryId, brandId, coverImageUrl, videoUrl,
+            currency, isAvailable, isPurchasable, categoryId, brandId, coverImageUrl, coverImageAlt, videoUrl,
             stockQuantity, unlimitedStock, lowStockThreshold, weight, minimumOrderQuantity,
             wholesaleMinimumOrderQuantity, wholesaleMinimumOrderAmount, sku,
             metaTitle, metaDescription, seoKeywords, canonicalUrl, ogTitle, ogDescription, ogImageUrl, faqJson);
@@ -277,6 +280,7 @@ public class Product : BaseEntity
         Guid? categoryId,
         Guid? brandId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? videoUrl,
         int? stockQuantity,
         bool unlimitedStock,
@@ -317,6 +321,8 @@ public class Product : BaseEntity
             throw new DomainException("حداقل مبلغ عمده نمی‌تواند منفی باشد.");
         if (weight is < 0)
             throw new DomainException("وزن نمی‌تواند منفی باشد.");
+        if (coverImageAlt is { Length: > 300 })
+            throw new DomainException("متن جایگزین تصویر شاخص خیلی طولانی است.");
 
         Title = title.Trim();
         Slug = slug.Trim().ToLowerInvariant();
@@ -334,6 +340,7 @@ public class Product : BaseEntity
         CategoryId = categoryId;
         BrandId = brandId;
         CoverImageUrl = string.IsNullOrWhiteSpace(coverImageUrl) ? null : coverImageUrl.Trim();
+        CoverImageAlt = string.IsNullOrWhiteSpace(coverImageAlt) ? null : coverImageAlt.Trim();
         VideoUrl = string.IsNullOrWhiteSpace(videoUrl) ? null : videoUrl.Trim();
         UnlimitedStock = unlimitedStock;
         StockQuantity = unlimitedStock ? null : stockQuantity;

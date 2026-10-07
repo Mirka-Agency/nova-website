@@ -66,6 +66,7 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
                 p.Slug,
                 CategoryName = p.Category != null ? p.Category.Name : null,
                 p.CoverImageUrl,
+                p.CoverImageAlt,
                 PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.Excerpt,
                 p.Body,
@@ -79,6 +80,7 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
                 p.Slug,
                 p.CategoryName,
                 p.CoverImageUrl,
+                p.CoverImageAlt,
                 p.PublishedAtUtc,
                 ResolveExcerpt(p.Excerpt, p.Body),
                 p.AuthorDisplayName))
@@ -125,6 +127,7 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
             post.Body,
             post.Category?.Name,
             post.CoverImageUrl,
+            post.CoverImageAlt,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),
             post.AuthorDisplayName,

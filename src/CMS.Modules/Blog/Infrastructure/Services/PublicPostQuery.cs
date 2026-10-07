@@ -65,6 +65,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
                 p.Slug,
                 p.Category != null ? p.Category.Name : null,
                 p.CoverImageUrl,
+                p.CoverImageAlt,
                 p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.Excerpt != null && p.Excerpt != string.Empty
                     ? p.Excerpt
@@ -113,6 +114,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
             post.Body,
             post.Category?.Name,
             post.CoverImageUrl,
+            post.CoverImageAlt,
             post.CoverVideoUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),

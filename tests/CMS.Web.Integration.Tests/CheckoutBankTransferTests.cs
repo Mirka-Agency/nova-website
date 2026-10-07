@@ -100,6 +100,7 @@ public sealed class CheckoutBankTransferTests
             CategoryId: null,
             BrandId: null,
             CoverImageUrl: null,
+            CoverImageAlt: null,
             VideoUrl: null,
             StockQuantity: null,
             UnlimitedStock: true,

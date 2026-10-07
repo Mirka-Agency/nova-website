@@ -215,7 +215,7 @@
               var bio = string.IsNullOrWhiteSpace(member.Subtitle) ? role : member.Subtitle;
               <a class="about-team__card reveal" asp-controller="Teams" asp-action="Details" asp-route-slug="@member.Slug">
                 <div class="about-team__photo">
-                  <img src="@cover" alt="@member.Title" loading="lazy">
+                  <img src="@cover" alt="@(member.CoverImageAlt ?? member.Title)" loading="lazy">
                 </div>
                 <div class="about-team__info">
                   <span class="about-team__role">@role</span>

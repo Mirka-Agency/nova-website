@@ -37,6 +37,7 @@ public static class FluentValidationPersian
         ["Content"] = "محتوا",
         ["SizeBytes"] = "حجم فایل",
         ["CoverImageUrl"] = "تصویر شاخص",
+        ["CoverImageAlt"] = "متن جایگزین تصویر شاخص",
         ["ImageUrl"] = "آدرس تصویر",
         ["SiteName"] = "نام سایت",
         ["Tagline"] = "شعار",

@@ -16,6 +16,7 @@ public class Post : BaseEntity
     public string? Excerpt { get; private set; }
     public PostStatus Status { get; private set; } = PostStatus.Draft;
     public string? CoverImageUrl { get; private set; }
+    public string? CoverImageAlt { get; private set; }
     public string? CoverVideoUrl { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
@@ -41,6 +42,7 @@ public class Post : BaseEntity
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? coverVideoUrl,
         string? authorUserId,
         string? authorDisplayName,
@@ -55,7 +57,7 @@ public class Post : BaseEntity
     {
         var post = new Post();
         post.ApplyContent(
-            title, slug, body, excerpt, categoryId, coverImageUrl, coverVideoUrl,
+            title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl, faqJson);
@@ -69,6 +71,7 @@ public class Post : BaseEntity
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? coverVideoUrl,
         string? authorUserId,
         string? authorDisplayName,
@@ -82,7 +85,7 @@ public class Post : BaseEntity
         string? faqJson)
     {
         ApplyContent(
-            title, slug, body, excerpt, categoryId, coverImageUrl, coverVideoUrl,
+            title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl, faqJson);
@@ -131,6 +134,7 @@ public class Post : BaseEntity
         string? excerpt,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? coverVideoUrl,
         string? authorUserId,
         string? authorDisplayName,
@@ -157,6 +161,8 @@ public class Post : BaseEntity
             throw new DomainException("توضیحات کوتاه خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
+        if (coverImageAlt is { Length: > 300 })
+            throw new DomainException("متن جایگزین تصویر شاخص خیلی طولانی است.");
         if (coverVideoUrl is { Length: > 1000 })
             throw new DomainException("آدرس ویدیوی شاخص خیلی طولانی است.");
         if (authorUserId is { Length: > 450 })
@@ -186,6 +192,7 @@ public class Post : BaseEntity
         Excerpt = NullIfWhiteSpace(excerpt);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
+        CoverImageAlt = NullIfWhiteSpace(coverImageAlt);
         CoverVideoUrl = NullIfWhiteSpace(coverVideoUrl);
         AuthorUserId = NullIfWhiteSpace(authorUserId);
         AuthorDisplayName = NullIfWhiteSpace(authorDisplayName);

@@ -77,7 +77,8 @@ public sealed class PublicProductQuery : IPublicProductQuery
                 p.IsPurchasable,
                 CategoryName = p.Category != null ? p.Category.Name : null,
                 BrandName = p.Brand != null ? p.Brand.Name : null,
-                p.CoverImageUrl
+                p.CoverImageUrl,
+                p.CoverImageAlt
             })
             .ToListAsync(cancellationToken);
 
@@ -132,6 +133,7 @@ public sealed class PublicProductQuery : IPublicProductQuery
                 p.CategoryName,
                 p.BrandName,
                 p.CoverImageUrl,
+                p.CoverImageAlt,
                 stats.Count > 0 ? stats.Average : null,
                 stats.Count));
         }
@@ -239,6 +241,7 @@ public sealed class PublicProductQuery : IPublicProductQuery
             product.Category?.Name,
             product.Brand?.Name,
             product.CoverImageUrl,
+            product.CoverImageAlt,
             product.VideoUrl,
             product.MinimumOrderQuantity,
             product.StockQuantity,

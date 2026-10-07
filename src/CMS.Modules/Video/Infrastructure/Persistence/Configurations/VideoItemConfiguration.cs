@@ -16,6 +16,7 @@ public sealed class VideoItemConfiguration : IEntityTypeConfiguration<VideoItem>
         builder.Property(x => x.Excerpt).HasMaxLength(1000);
         builder.Property(x => x.VideoUrl).HasMaxLength(1000);
         builder.Property(x => x.CoverImageUrl).HasMaxLength(1000);
+        builder.Property(x => x.CoverImageAlt).HasMaxLength(300);
         builder.Property(x => x.AuthorUserId).HasMaxLength(450);
         builder.Property(x => x.AuthorDisplayName).HasMaxLength(200);
         builder.Property(x => x.OwnedByUserId).HasMaxLength(450);

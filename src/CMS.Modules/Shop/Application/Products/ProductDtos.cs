@@ -59,6 +59,7 @@ public sealed record ProductDetailDto(
     Guid? CategoryId,
     Guid? BrandId,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     string? VideoUrl,
     int? StockQuantity,
     bool UnlimitedStock,
@@ -110,6 +111,7 @@ public sealed record SaveProductCommand(
     Guid? CategoryId,
     Guid? BrandId,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     string? VideoUrl,
     int? StockQuantity,
     bool UnlimitedStock,
@@ -144,6 +146,7 @@ public sealed record PublicProductListItemDto(
     string? CategoryName,
     string? BrandName,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     double? AverageRating,
     int ReviewCount);
 
@@ -182,6 +185,7 @@ public sealed record PublicProductDetailDto(
     string? CategoryName,
     string? BrandName,
     string? CoverImageUrl,
+    string? CoverImageAlt,
     string? VideoUrl,
     int MinimumOrderQuantity,
     int? StockQuantity,

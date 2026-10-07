@@ -15,6 +15,7 @@ public sealed class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(x => x.Body).IsRequired();
         builder.Property(x => x.Excerpt).HasMaxLength(1000);
         builder.Property(x => x.CoverImageUrl).HasMaxLength(1000);
+        builder.Property(x => x.CoverImageAlt).HasMaxLength(300);
         builder.Property(x => x.CoverVideoUrl).HasMaxLength(1000);
         builder.Property(x => x.AuthorUserId).HasMaxLength(450);
         builder.Property(x => x.AuthorDisplayName).HasMaxLength(200);

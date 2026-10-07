@@ -19,6 +19,9 @@ public sealed class SaveServiceItemApiRequest
     [MaxLength(1000)]
     public string? CoverImageUrl { get; set; }
 
+    [MaxLength(300)]
+    public string? CoverImageAlt { get; set; }
+
     public Guid? CategoryId { get; set; }
 
     public string? AuthorUserId { get; set; }

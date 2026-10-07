@@ -9,11 +9,15 @@
     var telHref = contact.TelHref;
     var email = contact.Email;
     var addressShort = contact.Address;
-    var addressFull = contact.Address;
     var addressExact = contact.Address;
-    var mapQuery = contact.HasAddress ? Uri.EscapeDataString(addressFull!) : null;
-    var mapEmbedSrc = mapQuery is null ? null : $"https://maps.google.com/maps?q={mapQuery}&hl=fa&z=16&output=embed";
-    var directionsHref = mapQuery is null ? null : $"https://www.google.com/maps/dir/?api=1&destination={mapQuery}";
+    const double mapLat = 35.748276;
+    const double mapLng = 51.449691;
+    var mapEmbedSrc = contact.HasAddress
+        ? $"https://neshan.org/maps/@{mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)},17.0z,0.0p"
+        : null;
+    var directionsHref = contact.HasAddress
+        ? $"https://nshn.ir/?lat={mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)}&lng={mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)}"
+        : null;
     var hasContactForm = ViewBag.HasContactForm as bool? == true;
     var asideIntro = contact.HasAddress
         ? $"{brand} در آدرس زیر آماده پذیرش حضوری است."
@@ -284,7 +288,7 @@
         </div>
         <div class="contact-map__frame reveal">
           <iframe
-            title="نقشه موقعیت @brand روی گوگل مپ"
+            title="نقشه موقعیت @brand روی نشان"
             src="@mapEmbedSrc"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"

@@ -232,6 +232,7 @@ public class NewsArticlesController : Controller
             Excerpt = post.Excerpt,
             Kind = post.Kind,
             CoverImageUrl = post.CoverImageUrl,
+            CoverImageAlt = post.CoverImageAlt,
             GalleryImages = ArticleGalleryJson.Parse(post.GalleryJson)
                 .Select(x => new ArticleGalleryImageFormItem { Url = x.Url, AltText = x.AltText })
                 .ToList(),
@@ -374,6 +375,7 @@ public class NewsArticlesController : Controller
             model.Kind,
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
+            NullIfWhiteSpace(model.CoverImageAlt),
             galleryJson,
             NullIfWhiteSpace(model.AttachmentUrl),
             NullIfWhiteSpace(model.AttachmentFileName),

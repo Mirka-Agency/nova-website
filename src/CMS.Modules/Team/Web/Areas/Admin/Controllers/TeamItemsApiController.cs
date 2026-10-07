@@ -149,6 +149,7 @@ public class TeamItemsApiController : ControllerBase
             request.ScientificActivityJson,
             request.CategoryId,
             request.CoverImageUrl,
+            request.CoverImageAlt,
             request.AvatarImageUrl,
             request.Publish,
             request.PublishedAtUtc,

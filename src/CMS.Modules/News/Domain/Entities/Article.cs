@@ -17,6 +17,7 @@ public class Article : BaseEntity
     public ArticleStatus Status { get; private set; } = ArticleStatus.Draft;
     public ArticleKind Kind { get; private set; } = ArticleKind.News;
     public string? CoverImageUrl { get; private set; }
+    public string? CoverImageAlt { get; private set; }
     /// <summary>JSON array of gallery images: [{ url, altText }].</summary>
     public string? GalleryJson { get; private set; }
     /// <summary>Public URL of an optional downloadable attachment (PDF/DOC/…).</summary>
@@ -51,6 +52,7 @@ public class Article : BaseEntity
         ArticleKind kind,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? authorUserId,
         string? authorDisplayName,
         DateTime? eventStartAtUtc,
@@ -66,7 +68,7 @@ public class Article : BaseEntity
     {
         var article = new Article();
         article.ApplyContent(
-            title, slug, body, excerpt, kind, categoryId, coverImageUrl,
+            title, slug, body, excerpt, kind, categoryId, coverImageUrl, coverImageAlt,
             authorUserId, authorDisplayName,
             eventStartAtUtc, eventEndAtUtc, location,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
@@ -82,6 +84,7 @@ public class Article : BaseEntity
         ArticleKind kind,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? authorUserId,
         string? authorDisplayName,
         DateTime? eventStartAtUtc,
@@ -96,7 +99,7 @@ public class Article : BaseEntity
         string? ogImageUrl)
     {
         ApplyContent(
-            title, slug, body, excerpt, kind, categoryId, coverImageUrl,
+            title, slug, body, excerpt, kind, categoryId, coverImageUrl, coverImageAlt,
             authorUserId, authorDisplayName,
             eventStartAtUtc, eventEndAtUtc, location,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
@@ -178,6 +181,7 @@ public class Article : BaseEntity
         ArticleKind kind,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? authorUserId,
         string? authorDisplayName,
         DateTime? eventStartAtUtc,
@@ -205,6 +209,8 @@ public class Article : BaseEntity
             throw new DomainException("توضیحات کوتاه خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
+        if (coverImageAlt is { Length: > 300 })
+            throw new DomainException("متن جایگزین تصویر شاخص خیلی طولانی است.");
         if (location is { Length: > 300 })
             throw new DomainException("محل برگزاری خیلی طولانی است.");
         if (authorUserId is { Length: > 450 })
@@ -239,6 +245,7 @@ public class Article : BaseEntity
         Kind = kind;
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
+        CoverImageAlt = NullIfWhiteSpace(coverImageAlt);
         EventStartAtUtc = ToUtc(eventStartAtUtc);
         EventEndAtUtc = ToUtc(eventEndAtUtc);
         Location = kind == ArticleKind.Event ? NullIfWhiteSpace(location) : null;

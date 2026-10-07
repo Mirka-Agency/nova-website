@@ -110,7 +110,7 @@ else
               src="@cover"
               width="480"
               height="640"
-              alt="@item.Title"
+              alt="@(item.CoverImageAlt ?? item.Title)"
               loading="@(index == 0 ? "eager" : "lazy")"
               decoding="async"
             >

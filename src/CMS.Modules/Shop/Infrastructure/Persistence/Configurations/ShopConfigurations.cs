@@ -47,6 +47,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(32).IsRequired();
         builder.Property(x => x.ProductType).HasConversion<string>().HasMaxLength(32).IsRequired();
         builder.Property(x => x.CoverImageUrl).HasMaxLength(1000);
+        builder.Property(x => x.CoverImageAlt).HasMaxLength(300);
         builder.Property(x => x.VideoUrl).HasMaxLength(1000);
         builder.Property(x => x.Sku).HasMaxLength(100);
         builder.HasIndex(x => x.Sku).IsUnique();

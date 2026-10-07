@@ -66,6 +66,7 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
                 p.Category != null ? p.Category.Name : null,
                 p.Category != null ? p.Category.Slug : null,
                 p.CoverImageUrl,
+                p.CoverImageAlt,
                 p.VideoUrl,
                 p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.Excerpt != null && p.Excerpt != string.Empty
@@ -132,6 +133,7 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
             post.Category?.Name,
             post.Category?.Slug,
             post.CoverImageUrl,
+            post.CoverImageAlt,
             post.VideoUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),

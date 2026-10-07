@@ -230,6 +230,7 @@ public class TeamItemsController : Controller
                 .Select(x => new TeamFaqItemViewModel { Question = x.Question, Answer = x.Answer })
                 .ToList(),
             CoverImageUrl = post.CoverImageUrl,
+            CoverImageAlt = post.CoverImageAlt,
             AvatarImageUrl = post.AvatarImageUrl,
             CategoryId = post.CategoryId,
             AuthorUserId = post.AuthorUserId,
@@ -351,6 +352,7 @@ public class TeamItemsController : Controller
             scientificActivityJson,
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
+            NullIfWhiteSpace(model.CoverImageAlt),
             NullIfWhiteSpace(model.AvatarImageUrl),
             model.Publish,
             ToUtc(model.PublishedAtLocal),

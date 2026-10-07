@@ -84,6 +84,9 @@ public sealed class ProductFormViewModel
     [StringLength(1000, ErrorMessage = "آدرس تصویر شاخص حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? CoverImageUrl { get; set; }
 
+    [StringLength(300, ErrorMessage = "متن جایگزین تصویر شاخص حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string? CoverImageAlt { get; set; }
+
     [StringLength(1000)]
     public string? VideoUrl { get; set; }
 

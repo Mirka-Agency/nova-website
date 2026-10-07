@@ -62,6 +62,7 @@ else
         var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
             ? Url.Content("~/template/assets/images/videos/endocrine.webp")
             : item.CoverImageUrl;
+        var coverAlt = string.IsNullOrWhiteSpace(item.CoverImageAlt) ? item.Title : item.CoverImageAlt;
         <article class="video-card reveal" data-video-card data-video-category="@category">
           <a
             class="video-card__trigger"
@@ -75,7 +76,7 @@ else
                 src="@cover"
                 width="640"
                 height="360"
-                alt=""
+                alt="@coverAlt"
                 loading="@(isFirst ? "eager" : "lazy")"
                 decoding="async"
               >

@@ -14,6 +14,7 @@
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/videos/endocrine.webp")
         : Model.CoverImageUrl;
+    var coverAlt = string.IsNullOrWhiteSpace(Model.CoverImageAlt) ? Model.Title : Model.CoverImageAlt;
     var related = (ViewBag.Related as IReadOnlyList<PublicVideoItemSummaryDto>)
         ?? Array.Empty<PublicVideoItemSummaryDto>();
     var embedUrl = VideoEmbedUrl.Resolve(Model.VideoUrl);
@@ -72,7 +73,7 @@
           else if (!string.IsNullOrWhiteSpace(Model.VideoUrl) && VideoEmbedUrl.IsHostedPage(Model.VideoUrl))
           {
             <div class="video-player__fallback">
-              <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
+              <img src="@cover" width="1280" height="720" alt="@coverAlt" loading="eager">
               <p class="video-player__fallback-text">
                 لینک ویدیو قابل پخش نیست.
                 <a href="@Model.VideoUrl" target="_blank" rel="noopener noreferrer">مشاهده در منبع</a>
@@ -81,7 +82,7 @@
           }
           else
           {
-            <img src="@cover" width="1280" height="720" alt="@Model.Title" loading="eager">
+            <img src="@cover" width="1280" height="720" alt="@coverAlt" loading="eager">
           }
         </div>
 
@@ -146,6 +147,7 @@
         @foreach (var item in related)
         {
           var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? cover : item.CoverImageUrl;
+          var itemCoverAlt = string.IsNullOrWhiteSpace(item.CoverImageAlt) ? item.Title : item.CoverImageAlt;
           var itemType = string.IsNullOrWhiteSpace(item.CategoryName) ? "ویدئو" : item.CategoryName;
           <article class="video-card reveal">
             <a
@@ -160,7 +162,7 @@
                   src="@itemCover"
                   width="640"
                   height="360"
-                  alt=""
+                  alt="@itemCoverAlt"
                   loading="lazy"
                   decoding="async"
                 >

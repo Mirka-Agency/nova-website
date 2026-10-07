@@ -228,6 +228,7 @@ public sealed class ProductImportService : IProductImportService
             categoryId,
             brandId,
             coverImageUrl,
+            null,
             videoUrl,
             unlimitedStock ? null : stockQuantity,
             unlimitedStock,

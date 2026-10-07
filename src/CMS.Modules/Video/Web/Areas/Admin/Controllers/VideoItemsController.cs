@@ -212,6 +212,7 @@ public class VideoItemsController : Controller
             Excerpt = post.Excerpt,
             VideoUrl = post.VideoUrl,
             CoverImageUrl = post.CoverImageUrl,
+            CoverImageAlt = post.CoverImageAlt,
             CategoryId = post.CategoryId,
             AuthorUserId = post.AuthorUserId,
             // Fresh auto-drafts default Publish on (user preference); existing drafts keep unchecked.
@@ -314,6 +315,7 @@ public class VideoItemsController : Controller
             NullIfWhiteSpace(model.VideoUrl),
             model.CategoryId,
             NullIfWhiteSpace(model.CoverImageUrl),
+            NullIfWhiteSpace(model.CoverImageAlt),
             model.Publish,
             ToUtc(model.PublishedAtLocal),
             NullIfWhiteSpace(model.AuthorUserId),

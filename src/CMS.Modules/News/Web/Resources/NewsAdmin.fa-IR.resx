@@ -19,6 +19,8 @@
   <data name="Image" xml:space="preserve"><value>تصویر</value></data>
   <data name="ImageUrl" xml:space="preserve"><value>آدرس تصویر</value></data>
   <data name="CoverImageUrl" xml:space="preserve"><value>آدرس تصویر شاخص</value></data>
+  <data name="CoverImageAlt" xml:space="preserve"><value>متن جایگزین</value></data>
+  <data name="CoverImageAltHint" xml:space="preserve"><value>اختیاری؛ برای دسترس‌پذیری و سئو تصویر.</value></data>
   <data name="CoverImage" xml:space="preserve"><value>تصویر شاخص</value></data>
   <data name="CoverImageUploadHint" xml:space="preserve"><value>آپلود JPEG، PNG، WebP یا GIF (حداکثر ۵ مگابایت). در S3 ذخیره می‌شود.</value></data>
   <data name="CoverImageInvalidType" xml:space="preserve"><value>فقط تصاویر JPEG، PNG، WebP یا GIF مجاز هستند.</value></data>

@@ -44,6 +44,7 @@ public sealed class SaveProductCommandValidator : AbstractValidator<SaveProductC
         RuleFor(x => x.Currency).MaximumLength(8);
         RuleFor(x => x.Status).IsInEnum();
         RuleFor(x => x.CoverImageUrl).MaximumLength(1000);
+        RuleFor(x => x.CoverImageAlt).MaximumLength(300);
         RuleFor(x => x.LowStockThreshold).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Weight).GreaterThanOrEqualTo(0).When(x => x.Weight.HasValue);
         RuleFor(x => x.MinimumOrderQuantity).GreaterThanOrEqualTo(1);

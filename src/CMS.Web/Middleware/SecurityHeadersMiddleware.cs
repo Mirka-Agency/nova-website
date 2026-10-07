@@ -19,8 +19,8 @@ public sealed class SecurityHeadersMiddleware
         "style-src 'self' 'unsafe-inline'; " +
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com https://www.google.com https://www.gstatic.com https://js.hcaptcha.com; " +
         "connect-src 'self' https:; " +
-        // Captcha widgets + video embeds (Aparat / YouTube / Vimeo iframes on public + admin).
-        "frame-src https://challenges.cloudflare.com https://www.google.com https://www.gstatic.com https://recaptcha.google.com https://newassets.hcaptcha.com https://js.hcaptcha.com https://www.aparat.com https://aparat.com https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://player.vimeo.com";
+        // Captcha widgets + video/map embeds (Aparat / YouTube / Vimeo / Neshan / Google Maps).
+        "frame-src https://challenges.cloudflare.com https://www.google.com https://www.gstatic.com https://recaptcha.google.com https://newassets.hcaptcha.com https://js.hcaptcha.com https://www.aparat.com https://aparat.com https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://player.vimeo.com https://maps.google.com https://neshan.org https://maps.neshan.org https://nshn.ir";
 
     private readonly RequestDelegate _next;
 

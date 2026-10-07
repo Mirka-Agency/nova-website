@@ -177,6 +177,7 @@
       educationPathJson: educationPathJsonValue(),
       scientificActivityJson: scientificActivityJsonValue(),
       coverImageUrl: (fieldValue("CoverImageUrl") || "").trim() || null,
+      coverImageAlt: (fieldValue("CoverImageAlt") || "").trim() || null,
       avatarImageUrl: (fieldValue("AvatarImageUrl") || "").trim() || null,
       coverVideoUrl: (fieldValue("CoverVideoUrl") || "").trim() || null,
       videoUrl: (fieldValue("VideoUrl") || "").trim() || null,

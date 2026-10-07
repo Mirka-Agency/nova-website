@@ -56,6 +56,9 @@ public class ArticleFormViewModel
     [MaxLength(1000, ErrorMessage = "آدرس تصویر شاخص حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string? CoverImageUrl { get; set; }
 
+    [MaxLength(300, ErrorMessage = "متن جایگزین تصویر شاخص حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string? CoverImageAlt { get; set; }
+
     public List<ArticleGalleryImageFormItem> GalleryImages { get; set; } = [];
 
     [MaxLength(1000, ErrorMessage = "آدرس فایل پیوست حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]

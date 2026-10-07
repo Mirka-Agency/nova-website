@@ -17,6 +17,7 @@ public class VideoItem : BaseEntity
     public string? VideoUrl { get; private set; }
     public VideoStatus Status { get; private set; } = VideoStatus.Draft;
     public string? CoverImageUrl { get; private set; }
+    public string? CoverImageAlt { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public DateTime? PublishedAtUtc { get; private set; }
@@ -40,6 +41,7 @@ public class VideoItem : BaseEntity
         string? videoUrl,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -52,7 +54,7 @@ public class VideoItem : BaseEntity
     {
         var item = new VideoItem();
         item.ApplyContent(
-            title, slug, body, excerpt, videoUrl, categoryId, coverImageUrl,
+            title, slug, body, excerpt, videoUrl, categoryId, coverImageUrl, coverImageAlt,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -67,6 +69,7 @@ public class VideoItem : BaseEntity
         string? videoUrl,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -78,7 +81,7 @@ public class VideoItem : BaseEntity
         string? ogImageUrl)
     {
         ApplyContent(
-            title, slug, body, excerpt, videoUrl, categoryId, coverImageUrl,
+            title, slug, body, excerpt, videoUrl, categoryId, coverImageUrl, coverImageAlt,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -128,6 +131,7 @@ public class VideoItem : BaseEntity
         string? videoUrl,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? authorUserId,
         string? authorDisplayName,
         string? metaTitle,
@@ -154,6 +158,8 @@ public class VideoItem : BaseEntity
             throw new DomainException("آدرس ویدیو خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
+        if (coverImageAlt is { Length: > 300 })
+            throw new DomainException("متن جایگزین تصویر شاخص خیلی طولانی است.");
         if (authorUserId is { Length: > 450 })
             throw new DomainException("شناسه نویسنده نامعتبر است.");
         if (authorDisplayName is { Length: > 200 })
@@ -180,6 +186,7 @@ public class VideoItem : BaseEntity
         VideoUrl = NullIfWhiteSpace(videoUrl);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
+        CoverImageAlt = NullIfWhiteSpace(coverImageAlt);
         AuthorUserId = NullIfWhiteSpace(authorUserId);
         AuthorDisplayName = NullIfWhiteSpace(authorDisplayName);
         MetaTitle = NullIfWhiteSpace(metaTitle);

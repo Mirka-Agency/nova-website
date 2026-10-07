@@ -27,6 +27,7 @@ public class TeamItem : BaseEntity
     public string? ScientificActivityJson { get; private set; }
     public TeamStatus Status { get; private set; } = TeamStatus.Draft;
     public string? CoverImageUrl { get; private set; }
+    public string? CoverImageAlt { get; private set; }
     public string? AvatarImageUrl { get; private set; }
     public Guid? CategoryId { get; private set; }
     public Category? Category { get; private set; }
@@ -56,6 +57,7 @@ public class TeamItem : BaseEntity
         string? scientificActivityJson,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? avatarImageUrl,
         string? authorUserId,
         string? authorDisplayName,
@@ -71,7 +73,7 @@ public class TeamItem : BaseEntity
         item.ApplyContent(
             title, subtitle, slug, body, excerpt, highlights, specialtyPathJson, educationPathJson, faqJson,
             scientificActivityJson,
-            categoryId, coverImageUrl, avatarImageUrl,
+            categoryId, coverImageUrl, coverImageAlt, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -91,6 +93,7 @@ public class TeamItem : BaseEntity
         string? scientificActivityJson,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? avatarImageUrl,
         string? authorUserId,
         string? authorDisplayName,
@@ -105,7 +108,7 @@ public class TeamItem : BaseEntity
         ApplyContent(
             title, subtitle, slug, body, excerpt, highlights, specialtyPathJson, educationPathJson, faqJson,
             scientificActivityJson,
-            categoryId, coverImageUrl, avatarImageUrl,
+            categoryId, coverImageUrl, coverImageAlt, avatarImageUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
             ogTitle, ogDescription, ogImageUrl);
@@ -160,6 +163,7 @@ public class TeamItem : BaseEntity
         string? scientificActivityJson,
         Guid? categoryId,
         string? coverImageUrl,
+        string? coverImageAlt,
         string? avatarImageUrl,
         string? authorUserId,
         string? authorDisplayName,
@@ -197,6 +201,8 @@ public class TeamItem : BaseEntity
             throw new DomainException("فعالیت علمی خیلی طولانی است.");
         if (coverImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر شاخص خیلی طولانی است.");
+        if (coverImageAlt is { Length: > 300 })
+            throw new DomainException("متن جایگزین تصویر شاخص خیلی طولانی است.");
         if (avatarImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر آواتار خیلی طولانی است.");
         if (authorUserId is { Length: > 450 })
@@ -230,6 +236,7 @@ public class TeamItem : BaseEntity
         ScientificActivityJson = NullIfWhiteSpace(scientificActivityJson);
         CategoryId = categoryId;
         CoverImageUrl = NullIfWhiteSpace(coverImageUrl);
+        CoverImageAlt = NullIfWhiteSpace(coverImageAlt);
         AvatarImageUrl = NullIfWhiteSpace(avatarImageUrl);
         AuthorUserId = NullIfWhiteSpace(authorUserId);
         AuthorDisplayName = NullIfWhiteSpace(authorDisplayName);
