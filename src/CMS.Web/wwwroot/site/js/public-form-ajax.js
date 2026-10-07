@@ -10,6 +10,22 @@
     return input ? input.value : '';
   }
 
+  /** Standalone /forms/{slug} pages are removed; never navigate there after submit. */
+  function isStandaloneFormUrl(url) {
+    if (!url) return false;
+    try {
+      var parsed = new URL(url, window.location.origin);
+      var parts = parsed.pathname.replace(/^\/+|\/+$/g, '').split('/');
+      if (parts.length === 2 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() !== 'key')
+        return true;
+      if (parts.length === 3 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() === 'by-id')
+        return true;
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
+
   function clearErrors(form) {
     var errorBox = form.querySelector('.public-form-errors') || form.querySelector('[data-valmsg-summary]');
     if (errorBox) {
@@ -138,7 +154,7 @@
       .then(function (result) {
         var data = result.data || {};
         if (result.ok && data.ok) {
-          if (data.redirectUrl) {
+          if (data.redirectUrl && !isStandaloneFormUrl(data.redirectUrl)) {
             window.location.href = data.redirectUrl;
             return;
           }

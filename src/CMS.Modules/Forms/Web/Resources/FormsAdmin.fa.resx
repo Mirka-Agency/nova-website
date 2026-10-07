@@ -159,6 +159,12 @@
   <data name="PublicUrl" xml:space="preserve">
     <value>آدرس عمومی</value>
   </data>
+  <data name="SubmitEndpoint" xml:space="preserve">
+    <value>آدرس ارسال فرم</value>
+  </data>
+  <data name="SubmitEndpointHint" xml:space="preserve">
+    <value>صفحه تکی عمومی فرم حذف شده است؛ فرم فقط از طریق جاسازی (مودال/صفحه) نمایش داده می‌شود و ارسال روی این آدرس انجام می‌گیرد.</value>
+  </data>
   <data name="BackToForm" xml:space="preserve">
     <value>بازگشت به فرم</value>
   </data>

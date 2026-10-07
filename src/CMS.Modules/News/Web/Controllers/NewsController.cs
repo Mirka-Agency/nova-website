@@ -109,40 +109,8 @@ public class NewsController : Controller
         return View(post);
     }
 
-    private string AbsoluteUrl(string? canonical, string relativePath)
-    {
-        var normalized = NormalizePublicArticleUrl(canonical);
-        if (!string.IsNullOrWhiteSpace(normalized))
-        {
-            if (normalized.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                || normalized.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                return normalized;
-
-            if (Request is null)
-                return normalized;
-            return $"{Request.Scheme}://{Request.Host.Value}{normalized}";
-        }
-
-        if (Request is null)
-            return relativePath;
-        return $"{Request.Scheme}://{Request.Host.Value}{relativePath}";
-    }
-
-    private static string? NormalizePublicArticleUrl(string? url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return null;
-
-        var value = url.Trim()
-            .Replace("/news/", "/education-articles/", StringComparison.OrdinalIgnoreCase)
-            .Replace("/news?", "/education-articles?", StringComparison.OrdinalIgnoreCase);
-
-        if (value.Equals("/news", StringComparison.OrdinalIgnoreCase)
-            || value.EndsWith("/news", StringComparison.OrdinalIgnoreCase))
-            return value[..^"/news".Length] + "/education-articles";
-
-        return value;
-    }
+    private string AbsoluteUrl(string? canonical, string relativePath) =>
+        CanonicalUrlBuilder.ForContent(canonical, relativePath, Request.Scheme, Request.Host.Value ?? "localhost");
 
     private static string? FirstNonEmpty(params string?[] values)
     {

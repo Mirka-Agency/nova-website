@@ -52,14 +52,16 @@ Theme-safe JSON (no secrets / no action configs):
 | `GET /forms/key/{key}/schema` | By stable key |
 | `GET /forms/by-id/{id}/schema` | By form id |
 
-Mapped by `FormPublicContractMapper` from published schema (+ form meta). Public HTML routes use the same contract (`GetPublicContract*`).
+Mapped by `FormPublicContractMapper` from published schema (+ form meta). Embeds (`FormEmbed`) use the same contract (`GetPublicContract*`).
+
+Standalone HTML pages `GET /forms/{slug}` and `GET /forms/by-id/{id}` are **disabled** (404). Public forms render only via embeds/popups; submit remains `POST /forms/{slug}`.
 
 ## Submit behavior
 
 | Type | Result |
 |------|--------|
-| `message` | Show success message (no redirect) |
-| `redirect` | Redirect to absolute `http(s)` URL or site-relative path |
+| `message` | Show success message in embed/popup (no navigation to `/forms/...`) |
+| `redirect` | Redirect to absolute `http(s)` URL or site-relative path (standalone `/forms/{slug}` targets are ignored) |
 | `page` | Redirect to a **site-relative path** (e.g. `/thanks`) — stored as `submitBehavior.url` until a Pages CMS exists |
 
 ## Anti-spam (public)

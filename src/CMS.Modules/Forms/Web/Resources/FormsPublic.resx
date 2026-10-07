@@ -6,6 +6,7 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Submit" xml:space="preserve"><value>ارسال</value></data>
   <data name="SubmitSuccess" xml:space="preserve"><value>فرم با موفقیت ارسال شد.</value></data>
+  <data name="SubmitValidationFailed" xml:space="preserve"><value>لطفاً خطاهای فرم را بررسی کنید و دوباره ارسال کنید.</value></data>
   <data name="FormHasNoFields" xml:space="preserve"><value>این فرم هنوز فیلدی ندارد. از پنل مدیریت فیلد اضافه کنید.</value></data>
   <data name="Required" xml:space="preserve"><value>اجباری</value></data>
   <data name="Captcha" xml:space="preserve"><value>کد امنیتی</value></data>

@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CMS.Application.Admin;
 using CMS.Application.Common.Features;
 using CMS.Application.Storage;
 using CMS.Domain.Exceptions;
@@ -46,35 +45,14 @@ public class PublicFormsController : Controller
         _localizer = localizer;
     }
 
+    /// <summary>Standalone public form pages are disabled; forms are embed/popup only.</summary>
+    /// <summary>Standalone public form pages are disabled; forms are embed/popup only.</summary>
     [HttpGet("{slug}")]
-    public async Task<IActionResult> Show(string slug, CancellationToken cancellationToken)
-    {
-        if (!await _features.IsEnabledAsync(FeatureNames.Forms))
-            return NotFound();
+    public IActionResult Show(string slug) => NotFound();
 
-        var contract = await _forms.GetPublicContractBySlugAsync(slug, cancellationToken);
-        if (contract is null)
-            return NotFound();
-
-        ViewData["Title"] = contract.Name;
-        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("Forms", contract.Id, "ویرایش فرم", "ManageForms");
-        return View(Map(contract));
-    }
-
+    /// <summary>Standalone public form pages are disabled; forms are embed/popup only.</summary>
     [HttpGet("by-id/{id:guid}")]
-    public async Task<IActionResult> ShowById(Guid id, CancellationToken cancellationToken)
-    {
-        if (!await _features.IsEnabledAsync(FeatureNames.Forms))
-            return NotFound();
-
-        var contract = await _forms.GetPublicContractByIdAsync(id, cancellationToken);
-        if (contract is null)
-            return NotFound();
-
-        ViewData["Title"] = contract.Name;
-        ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("Forms", contract.Id, "ویرایش فرم", "ManageForms");
-        return View(nameof(Show), Map(contract));
-    }
+    public IActionResult ShowById(Guid id) => NotFound();
 
     /// <summary>Theme-safe public schema JSON (no secrets / no action configs).</summary>
     [HttpGet("{slug}/schema")]
@@ -175,33 +153,22 @@ public class PublicFormsController : Controller
                 BuildContext(),
                 model.AntiSpamToken), cancellationToken);
 
+            var successMessage = string.IsNullOrWhiteSpace(result.SuccessMessage)
+                ? _localizer["SubmitSuccess"].Value
+                : result.SuccessMessage;
+            var redirectUrl = SanitizePublicRedirectUrl(result.RedirectUrl);
+
             if (wantsJson)
             {
                 return Json(new
                 {
                     ok = true,
-                    message = string.IsNullOrWhiteSpace(result.SuccessMessage)
-                        ? _localizer["SubmitSuccess"].Value
-                        : result.SuccessMessage,
-                    redirectUrl = string.IsNullOrWhiteSpace(result.RedirectUrl) ? null : result.RedirectUrl.Trim()
+                    message = successMessage,
+                    redirectUrl
                 });
             }
 
-            if (!string.IsNullOrWhiteSpace(result.RedirectUrl))
-            {
-                var target = result.RedirectUrl.Trim();
-                if (target.StartsWith('/') && !target.StartsWith("//", StringComparison.Ordinal))
-                    return LocalRedirect(target);
-
-                if (Uri.TryCreate(target, UriKind.Absolute, out var absolute)
-                    && absolute.Scheme is "http" or "https")
-                    return Redirect(target);
-            }
-
-            TempData["Success"] = string.IsNullOrWhiteSpace(result.SuccessMessage)
-                ? _localizer["SubmitSuccess"].Value
-                : result.SuccessMessage;
-            return RedirectToAction(nameof(Show), new { slug = contract.Slug });
+            return RedirectAfterSuccessfulSubmit(redirectUrl, successMessage);
         }
         catch (ValidationException ex)
         {
@@ -219,14 +186,17 @@ public class PublicFormsController : Controller
                 return BadRequest(new { ok = false, errors });
             }
 
-            return View(nameof(Show), model);
+            TempData["Error"] = _localizer["SubmitValidationFailed"].Value;
+            return LocalRedirect(ResolveSafeReturnPath());
         }
         catch (DomainException ex)
         {
             ModelState.AddModelError(string.Empty, ex.Message);
             if (wantsJson)
                 return BadRequest(new { ok = false, message = ex.Message, errors = new Dictionary<string, string[]> { [""] = [ex.Message] } });
-            return View(nameof(Show), model);
+
+            TempData["Error"] = ex.Message;
+            return LocalRedirect(ResolveSafeReturnPath());
         }
     }
 
@@ -237,6 +207,80 @@ public class PublicFormsController : Controller
 
         var accept = Request.Headers.Accept.ToString();
         return accept.Contains("application/json", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private IActionResult RedirectAfterSuccessfulSubmit(string? redirectUrl, string successMessage)
+    {
+        if (!string.IsNullOrWhiteSpace(redirectUrl))
+        {
+            var target = redirectUrl.Trim();
+            if (target.StartsWith('/') && !target.StartsWith("//", StringComparison.Ordinal))
+                return LocalRedirect(target);
+
+            if (Uri.TryCreate(target, UriKind.Absolute, out var absolute)
+                && absolute.Scheme is "http" or "https")
+                return Redirect(target);
+        }
+
+        TempData["Success"] = successMessage;
+        return LocalRedirect(ResolveSafeReturnPath());
+    }
+
+    private string ResolveSafeReturnPath()
+    {
+        var referer = Request.Headers.Referer.ToString();
+        if (Uri.TryCreate(referer, UriKind.Absolute, out var uri)
+            && string.Equals(uri.Host, Request.Host.Host, StringComparison.OrdinalIgnoreCase)
+            && !IsStandaloneFormPath(uri.AbsolutePath))
+        {
+            var pathAndQuery = uri.PathAndQuery;
+            if (!string.IsNullOrWhiteSpace(pathAndQuery) && pathAndQuery.StartsWith('/'))
+                return pathAndQuery;
+        }
+
+        return "/";
+    }
+
+    /// <summary>
+    /// Drops redirects that would land on removed standalone form pages (e.g. /forms/booking).
+    /// </summary>
+    private static string? SanitizePublicRedirectUrl(string? redirectUrl)
+    {
+        if (string.IsNullOrWhiteSpace(redirectUrl))
+            return null;
+
+        var target = redirectUrl.Trim();
+        if (Uri.TryCreate(target, UriKind.Absolute, out var absolute)
+            && absolute.Scheme is "http" or "https")
+        {
+            return IsStandaloneFormPath(absolute.AbsolutePath) ? null : target;
+        }
+
+        if (target.StartsWith('/') && !target.StartsWith("//", StringComparison.Ordinal))
+        {
+            var path = target.Split('?', 2)[0];
+            return IsStandaloneFormPath(path) ? null : target;
+        }
+
+        return null;
+    }
+
+    private static bool IsStandaloneFormPath(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return false;
+
+        var segments = path.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0 || !segments[0].Equals("forms", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // /forms/{slug}
+        if (segments.Length == 2)
+            return !segments[1].Equals("key", StringComparison.OrdinalIgnoreCase);
+
+        // /forms/by-id/{id}
+        return segments.Length == 3
+               && segments[1].Equals("by-id", StringComparison.OrdinalIgnoreCase);
     }
 
     private SubmissionContextDocument BuildContext()
@@ -268,31 +312,6 @@ public class PublicFormsController : Controller
             UtmContent = Query("utm_content")
         };
     }
-
-    private PublicFormSubmitViewModel Map(FormPublicContract form) =>
-        new()
-        {
-            Id = form.Id,
-            Key = form.Key,
-            Slug = form.Slug,
-            Name = form.Name,
-            Description = form.Description,
-            PublishedVersionId = form.VersionId,
-            SubmitButtonText = form.Settings.SubmitButtonText,
-            SubmitBehaviorType = form.SubmitBehavior.Type,
-            SuccessMessage = form.SubmitBehavior.Message,
-            RedirectUrl = form.SubmitBehavior.Url,
-            EnableCaptcha = string.Equals(form.AntiSpam.Provider, "simple_captcha", StringComparison.OrdinalIgnoreCase),
-            AntiSpamEnabled = form.AntiSpam.Enabled,
-            AntiSpamProvider = form.AntiSpam.Provider,
-            AntiSpamSiteKey = form.AntiSpam.SiteKey,
-            SchemaUrl = $"/forms/{form.Slug}/schema",
-            Fields = form.Fields.Select(MapField).ToList(),
-            Values = form.Fields.ToDictionary(
-                f => f.Key,
-                f => f.DefaultValue,
-                StringComparer.OrdinalIgnoreCase)
-        };
 
     private PublicFormSubmitViewModel Remap(PublicFormSubmitViewModel model, FormPublicContract form)
     {

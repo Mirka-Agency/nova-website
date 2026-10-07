@@ -7,13 +7,9 @@
 </div>
 
 <div class="admin-field">
-    <label>@Localizer["PublicUrl"]</label>
-    <p><code dir="ltr">/forms/@Model.Slug</code></p>
-    <div class="admin-row-actions" style="justify-content: flex-start; margin-block-start: 0.5rem;">
-        <a class="btn btn-secondary" href="/forms/@Model.Slug" target="_blank" rel="noopener noreferrer">
-            <i class="fas fa-external-link-alt" aria-hidden="true"></i><span>@Localizer["OpenPublicForm"]</span>
-        </a>
-    </div>
+    <label>@Localizer["SubmitEndpoint"]</label>
+    <p><code dir="ltr">POST /forms/@Model.Slug</code></p>
+    <p class="admin-hint">@Localizer["SubmitEndpointHint"]</p>
 </div>
 
 <div class="admin-field">

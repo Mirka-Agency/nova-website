@@ -1,4 +1,5 @@
 ﻿@using CMS.Application.Common.Features
+@using CMS.Application.Seo
 @using CMS.Application.Settings
 @using Microsoft.FeatureManagement
 @inject IFeatureManager FeatureManager
@@ -16,7 +17,14 @@
             : (!string.IsNullOrWhiteSpace(settings.MetaTitle) ? settings.MetaTitle : brand);
     var description = FirstNonEmpty(pageMetaDescription, settings.MetaDescription);
     var keywords = ViewData["MetaKeywords"] as string;
-    var canonicalUrl = ResolveCanonicalUrl(ViewData["CanonicalUrl"] as string, Context.Request);
+    var request = Context.Request;
+    var canonicalUrl = CanonicalUrlBuilder.Build(
+        ViewData["CanonicalUrl"] as string,
+        request.Scheme,
+        request.Host.Value ?? "localhost",
+        request.PathBase.Value,
+        request.Path.Value,
+        request.Query["page"].FirstOrDefault());
     var ogTitle = FirstNonEmpty(ViewData["OgTitle"] as string, pageMetaTitle, documentTitle);
     var ogDescription = FirstNonEmpty(ViewData["OgDescription"] as string, pageMetaDescription, settings.MetaDescription);
     var ogImage = FirstNonEmpty(ViewData["OgImage"] as string, settings.DefaultOgImageUrl);
@@ -37,34 +45,6 @@
         }
 
         return null;
-    }
-
-    static string ResolveCanonicalUrl(string? configured, HttpRequest request)
-    {
-        var baseUrl = $"{request.Scheme}://{request.Host.Value}";
-
-        if (!string.IsNullOrWhiteSpace(configured))
-        {
-            var value = configured.Trim();
-            if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                return value;
-
-            if (!value.StartsWith('/'))
-                value = "/" + value;
-
-            return $"{baseUrl}{value}";
-        }
-
-        var path = $"{request.PathBase}{request.Path}";
-        if (string.IsNullOrEmpty(path))
-            path = "/";
-
-        // Keep pagination self-canonical; drop other query noise (utm, etc.).
-        if (int.TryParse(request.Query["page"], out var page) && page > 1)
-            return $"{baseUrl}{path}?page={page}";
-
-        return $"{baseUrl}{path}";
     }
 
     static string? TwitterHandle(string? url)
@@ -106,6 +86,7 @@
         <meta name="robots" content="@robots" />
     }
     <link rel="canonical" href="@canonicalUrl" />
+    <meta property="og:url" content="@canonicalUrl" />
     <meta property="og:title" content="@ogTitle" />
     <meta property="og:type" content="website" />
     @if (!string.IsNullOrWhiteSpace(ogDescription))

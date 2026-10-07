@@ -6,6 +6,23 @@
   window.__cmsPopupInit = true;
 
   var STORAGE_PREFIX = 'cms.popup.';
+
+  /** Standalone /forms/{slug} pages are removed; never navigate there after submit. */
+  function isStandaloneFormRedirect(url) {
+    if (!url) return false;
+    try {
+      var parsed = new URL(url, window.location.origin);
+      var parts = parsed.pathname.replace(/^\/+|\/+$/g, '').split('/');
+      if (parts.length === 2 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() !== 'key')
+        return true;
+      if (parts.length === 3 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() === 'by-id')
+        return true;
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
+
   var host = document.querySelector('[data-cms-popup-host]');
   if (!host) return;
 
@@ -280,7 +297,7 @@
       var data = result.data || {};
       if (result.ok && data.ok) {
         markShown(popup);
-        if (data.redirectUrl) {
+        if (data.redirectUrl && !isStandaloneFormRedirect(data.redirectUrl)) {
           window.location.href = data.redirectUrl;
           return;
         }
