@@ -119,9 +119,9 @@ public static class WhatsAppDefaultTemplate
         فرم: {{form_name}}
         نام: {{name}}
         موبایل: {{phone}}
+        خدمت: {{service}}
+        پیام: {{message}}
         تاریخ: {{date}}
         صفحه: {{page_url}}
-
-        {{fields}}
         """;
 }

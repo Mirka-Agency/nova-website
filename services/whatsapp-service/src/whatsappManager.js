@@ -2,9 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execFile } = require('child_process');
+const { promisify } = require('util');
 const QRCode = require('qrcode');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const { config } = require('./config');
+
+const execFileAsync = promisify(execFile);
 
 const Status = Object.freeze({
   Connected: 'Connected',
@@ -66,37 +70,21 @@ class WhatsAppManager {
     try {
       await this.ensureAuthDir();
       await this.destroyClient(false);
+      await this.killOrphanSessionBrowsers();
 
-      // On Windows local, headed Chrome is more reliable for WWebJS Store injection.
-      // In Docker/Linux keep headless for servers.
-      const isWin = process.platform === 'win32';
-      const puppeteer = {
-        headless: isWin ? false : true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--no-zygote',
-          '--disable-gpu',
-        ],
-      };
+      try {
+        await this.initializeClient();
+      } catch (err) {
+        const msg = safeError(err);
+        if (!/browser is already running|userDataDir/i.test(msg)) throw err;
 
-      if (config.puppeteerExecutablePath) {
-        puppeteer.executablePath = config.puppeteerExecutablePath;
+        console.warn('[whatsapp] session browser lock held; killing orphans and retrying once');
+        await this.destroyClient(false);
+        await this.killOrphanSessionBrowsers();
+        await sleep(1500);
+        await this.initializeClient();
       }
 
-      this.client = new Client({
-        authStrategy: new LocalAuth({
-          clientId: config.clientId,
-          dataPath: config.authPath,
-        }),
-        puppeteer,
-      });
-
-      this.bindEvents(this.client);
-      await this.client.initialize();
       return this.getSnapshot();
     } catch (err) {
       this.status = Status.AuthenticationFailed;
@@ -106,6 +94,39 @@ class WhatsAppManager {
     } finally {
       this.starting = false;
     }
+  }
+
+  async initializeClient() {
+    // On Windows local, headed Chrome is more reliable for WWebJS Store injection.
+    // In Docker/Linux keep headless for servers.
+    const isWin = process.platform === 'win32';
+    const puppeteer = {
+      headless: isWin ? false : true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu',
+      ],
+    };
+
+    if (config.puppeteerExecutablePath) {
+      puppeteer.executablePath = config.puppeteerExecutablePath;
+    }
+
+    this.client = new Client({
+      authStrategy: new LocalAuth({
+        clientId: config.clientId,
+        dataPath: config.authPath,
+      }),
+      puppeteer,
+    });
+
+    this.bindEvents(this.client);
+    await this.client.initialize();
   }
 
   bindEvents(client) {
@@ -475,6 +496,8 @@ class WhatsAppManager {
       if (resetStatus) {
         this.status = Status.Disconnected;
       }
+      // Still try to clear orphan Chromes holding the session lock.
+      await this.killOrphanSessionBrowsers();
       return;
     }
 
@@ -482,10 +505,19 @@ class WhatsAppManager {
     const client = this.client;
     this.client = null;
     try {
-      await client.destroy();
-    } catch (err) {
-      console.warn('[whatsapp] destroy warning:', safeError(err));
+      try {
+        const browser = client.pupBrowser;
+        if (browser) await browser.close();
+      } catch (err) {
+        console.warn('[whatsapp] browser.close warning:', safeError(err));
+      }
+      try {
+        await client.destroy();
+      } catch (err) {
+        console.warn('[whatsapp] destroy warning:', safeError(err));
+      }
     } finally {
+      await this.killOrphanSessionBrowsers();
       this.destroying = false;
       this.qrRaw = null;
       this.qrDataUrl = null;
@@ -496,6 +528,66 @@ class WhatsAppManager {
       }
     }
   }
+
+  sessionUserDataDir() {
+    return path.join(config.authPath, `session-${config.clientId}`);
+  }
+
+  async killOrphanSessionBrowsers() {
+    const marker = this.sessionUserDataDir();
+    if (process.platform !== 'win32') {
+      // Best-effort SingletonLock cleanup for non-Windows if browser died uncleanly.
+      await this.clearSingletonLocks(marker);
+      return;
+    }
+
+    try {
+      const { stdout } = await execFileAsync(
+        'powershell.exe',
+        [
+          '-NoProfile',
+          '-Command',
+          [
+            "$marker = $env:WA_SESSION_MARKER",
+            "Get-CimInstance Win32_Process -Filter \"Name='chrome.exe'\" |",
+            '  Where-Object { $_.CommandLine -and $_.CommandLine.IndexOf($marker, [StringComparison]::OrdinalIgnoreCase) -ge 0 } |',
+            '  ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue; $_.ProcessId }',
+          ].join(' '),
+        ],
+        {
+          env: { ...process.env, WA_SESSION_MARKER: marker },
+          windowsHide: true,
+          timeout: 15000,
+        }
+      );
+      const killed = String(stdout || '')
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (killed.length) {
+        console.warn('[whatsapp] killed orphan session chrome pids:', killed.join(', '));
+        await sleep(800);
+      }
+    } catch (err) {
+      console.warn('[whatsapp] orphan chrome cleanup warning:', safeError(err));
+    }
+
+    await this.clearSingletonLocks(marker);
+  }
+
+  async clearSingletonLocks(sessionDir) {
+    for (const name of ['SingletonLock', 'SingletonCookie', 'SingletonSocket']) {
+      try {
+        await fs.promises.rm(path.join(sessionDir, name), { force: true });
+      } catch {
+        // ignore
+      }
+    }
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function normalizeGroupId(groupId) {

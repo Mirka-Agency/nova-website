@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CMS.Application.WhatsApp;
 using CMS.Infrastructure.Persistence;
 using CMS.Infrastructure.WhatsApp;
 using CMS.Modules.Forms.Application.Actions;
@@ -102,7 +103,8 @@ if (args.Contains("--migrate", StringComparer.OrdinalIgnoreCase))
     Console.WriteLine("Migrate done.");
 }
 
-if (args.Contains("--enable-wa", StringComparer.OrdinalIgnoreCase))
+if (args.Contains("--enable-wa", StringComparer.OrdinalIgnoreCase)
+    || args.Contains("--reset-template", StringComparer.OrdinalIgnoreCase))
 {
     var entity = await appDb.WhatsAppSettings.FirstOrDefaultAsync(x => x.Id == WhatsAppSettings.SingletonId);
     if (entity is null)
@@ -111,13 +113,21 @@ if (args.Contains("--enable-wa", StringComparer.OrdinalIgnoreCase))
         appDb.WhatsAppSettings.Add(entity);
     }
 
+    var enable = args.Contains("--enable-wa", StringComparer.OrdinalIgnoreCase) || entity.Enabled;
+    var template = args.Contains("--reset-template", StringComparer.OrdinalIgnoreCase)
+        ? WhatsAppDefaultTemplate.Value
+        : entity.DefaultTemplate;
+
     entity.Update(
-        enabled: true,
+        enabled: enable,
         defaultGroupId: entity.DefaultGroupId,
         defaultGroupName: entity.DefaultGroupName,
-        defaultTemplate: entity.DefaultTemplate);
+        defaultTemplate: template);
     await appDb.SaveChangesAsync();
-    Console.WriteLine($"ENABLED WhatsApp: group={entity.DefaultGroupId ?? "(none)"} name={entity.DefaultGroupName ?? "(none)"}");
+    if (args.Contains("--enable-wa", StringComparer.OrdinalIgnoreCase))
+        Console.WriteLine($"ENABLED WhatsApp: group={entity.DefaultGroupId ?? "(none)"} name={entity.DefaultGroupName ?? "(none)"}");
+    if (args.Contains("--reset-template", StringComparer.OrdinalIgnoreCase))
+        Console.WriteLine($"RESET template (len={entity.DefaultTemplate.Length})");
 }
 
 Console.WriteLine("=== Pending / applied WhatsApp migration ===");
