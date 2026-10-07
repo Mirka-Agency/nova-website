@@ -32,6 +32,8 @@
     ImageStyle,
     ImageToolbar,
     ImageUtils,
+    ImageResize,
+    ImageCustomResizeUI,
     Plugin,
     ButtonView,
     Highlight,
@@ -61,6 +63,21 @@
   const mediaLibraryImageIcon =
     '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
     '<path d="M6.91 10.54c.26-.23.64-.21.88.03l3.36 3.14 2.23-2.06a.64.64 0 0 1 .87 0l2.52 2.97V4.5H3.2v10.12l3.71-4.08zm10.27-7.51c.6 0 1.09.47 1.09 1.05v11.84c0 .59-.49 1.06-1.09 1.06H2.83c-.6 0-1.09-.47-1.09-1.06V4.08c0-.58.49-1.05 1.1-1.05h14.34zm-5.22 5.56a1.96 1.96 0 1 1 3.4-1.96 1.96 1.96 0 0 1-3.4 1.96z"/>' +
+    "</svg>";
+
+  const replaceImageIcon =
+    '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M4.2 3.5h7.1c.6 0 1.1.5 1.1 1.1v2.2h-1.5V5H4.7v7.4H7v1.5H4.2c-.6 0-1.1-.5-1.1-1.1V4.6c0-.6.5-1.1 1.1-1.1zm5.8 5.2h6.8c.6 0 1.1.5 1.1 1.1v5.6c0 .6-.5 1.1-1.1 1.1H10c-.6 0-1.1-.5-1.1-1.1v-5.6c0-.6.5-1.1 1.1-1.1zm1.3 2.1v3.4h4.2v-3.4h-4.2zM8.1 2.2l2.1 2.1-2.1 2.1V4.9H3.8V3.7h4.3V2.2z"/>' +
+    "</svg>";
+
+  const editImageIcon =
+    '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M3.5 13.9V16.5h2.6l7.7-7.7-2.6-2.6L3.5 13.9zm12.6-7.4c.3-.3.3-.7 0-1l-1.6-1.6a.7.7 0 0 0-1 0l-1.2 1.2 2.6 2.6 1.2-1.2z"/>' +
+    "</svg>";
+
+  const deleteImageIcon =
+    '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M6.2 3.8h7.6v1.4H6.2V3.8zm1.2 3h1.4v7.2H7.4V6.8zm3.3 0h1.4v7.2h-1.4V6.8zm-5.1-4.4h7.2l.7 1.2H4.8l.7-1.2zM5.4 17.2c0 .6.5 1.1 1.1 1.1h7c.6 0 1.1-.5 1.1-1.1V6.2H5.4v11z"/>' +
     "</svg>";
 
   const ctaHelperIcon =
@@ -281,6 +298,36 @@
     }
   }
 
+  function getSelectedImageElement(editor) {
+    const imageUtils = editor.plugins.get("ImageUtils");
+    if (!imageUtils || typeof imageUtils.getClosestSelectedImageElement !== "function") {
+      return null;
+    }
+    return imageUtils.getClosestSelectedImageElement(editor.model.document.selection);
+  }
+
+  function bindImageButtonEnabled(editor, view) {
+    function refresh() {
+      view.isEnabled = !!getSelectedImageElement(editor);
+    }
+
+    refresh();
+    editor.model.document.selection.on("change", refresh);
+    return refresh;
+  }
+
+  function applyImageSource(editor, imageElement, item) {
+    if (!elementStillInDocument(imageElement) || !item || !item.publicUrl) return;
+
+    editor.model.change((writer) => {
+      writer.setAttribute("src", item.publicUrl, imageElement);
+      if (Object.prototype.hasOwnProperty.call(item, "alt")) {
+        writer.setAttribute("alt", item.alt || "", imageElement);
+      }
+    });
+    editor.editing.view.focus();
+  }
+
   class MediaLibraryImage extends Plugin {
     static get pluginName() {
       return "MediaLibraryImage";
@@ -329,6 +376,122 @@
 
         return view;
       });
+
+      editor.ui.componentFactory.add("replaceImage", (locale) => {
+        const view = new ButtonView(locale);
+
+        view.set({
+          label: "تعویض تصویر",
+          icon: replaceImageIcon,
+          tooltip: true,
+        });
+
+        bindImageButtonEnabled(editor, view);
+
+        view.on("execute", () => {
+          const imageElement = getSelectedImageElement(editor);
+          if (!imageElement) return;
+
+          const picker = window.AdminMediaPicker;
+          if (!picker || typeof picker.open !== "function") {
+            console.error("AdminMediaPicker is not available on this page.");
+            return;
+          }
+
+          picker.open({
+            onSelect(item) {
+              if (!item || !item.publicUrl) return;
+              applyImageSource(editor, imageElement, {
+                publicUrl: item.publicUrl,
+                alt: item.altText || item.title || imageElement.getAttribute("alt") || "",
+              });
+            },
+          });
+        });
+
+        return view;
+      });
+
+      editor.ui.componentFactory.add("editImage", (locale) => {
+        const view = new ButtonView(locale);
+
+        view.set({
+          label: "ویرایش تصویر",
+          icon: editImageIcon,
+          tooltip: true,
+        });
+
+        bindImageButtonEnabled(editor, view);
+
+        view.on("execute", async () => {
+          const imageElement = getSelectedImageElement(editor);
+          if (!imageElement) return;
+
+          const src = String(imageElement.getAttribute("src") || "").trim();
+          if (!src) return;
+
+          const mediaEditor = window.AdminMediaImageEditor;
+          if (!mediaEditor || typeof mediaEditor.open !== "function") {
+            window.alert("ویرایشگر تصویر در این صفحه در دسترس نیست.");
+            return;
+          }
+
+          try {
+            let asset = null;
+            let id = null;
+            if (typeof mediaEditor.resolveByUrl === "function") {
+              asset = await mediaEditor.resolveByUrl(src);
+              id = asset?.id || null;
+            }
+
+            if (!id) {
+              window.alert("این تصویر در کتابخانه رسانه پیدا نشد. ابتدا آن را از کتابخانه درج کنید.");
+              return;
+            }
+
+            await mediaEditor.open({
+              id,
+              asset: asset || undefined,
+              onSaved(data) {
+                if (!data?.publicUrl) return;
+                applyImageSource(editor, imageElement, {
+                  publicUrl: data.publicUrl,
+                  alt: imageElement.getAttribute("alt") || "",
+                });
+              },
+            });
+          } catch (err) {
+            console.error("Failed to edit media library image", err);
+            window.alert("ویرایش تصویر ممکن نشد.");
+          }
+        });
+
+        return view;
+      });
+
+      editor.ui.componentFactory.add("deleteImage", (locale) => {
+        const view = new ButtonView(locale);
+
+        view.set({
+          label: "حذف تصویر",
+          icon: deleteImageIcon,
+          tooltip: true,
+        });
+
+        bindImageButtonEnabled(editor, view);
+
+        view.on("execute", () => {
+          const imageElement = getSelectedImageElement(editor);
+          if (!elementStillInDocument(imageElement)) return;
+
+          editor.model.change((writer) => {
+            writer.remove(imageElement);
+          });
+          editor.editing.view.focus();
+        });
+
+        return view;
+      });
     }
   }
 
@@ -364,6 +527,8 @@
         ImageStyle,
         ImageToolbar,
         ImageUtils,
+        ImageResize,
+        ImageCustomResizeUI,
         MediaLibraryImage,
         CtaHelperInsert,
         Highlight,
@@ -457,10 +622,25 @@
       image: {
         toolbar: [
           "imageTextAlternative",
+          "toggleImageCaption",
           "|",
           "imageStyle:inline",
           "imageStyle:block",
           "imageStyle:side",
+          "|",
+          "resizeImage",
+          "|",
+          "editImage",
+          "replaceImage",
+          "deleteImage",
+        ],
+        resizeUnit: "%",
+        resizeOptions: [
+          { name: "resizeImage:original", value: null, label: "اندازه اصلی" },
+          { name: "resizeImage:25", value: "25", label: "۲۵٪" },
+          { name: "resizeImage:50", value: "50", label: "۵۰٪" },
+          { name: "resizeImage:75", value: "75", label: "۷۵٪" },
+          { name: "resizeImage:custom", value: "custom", label: "سفارشی" },
         ],
       },
       table: {
