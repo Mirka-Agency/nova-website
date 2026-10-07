@@ -940,7 +940,7 @@
   }
 
   .booking-modal {
-    padding: 0.75rem;
+    padding: 0.65rem;
     align-items: center;
   }
 
@@ -949,7 +949,7 @@
     max-height: none;
     overflow: visible;
     border-radius: 18px;
-    padding: 1.15rem 1rem 1rem;
+    padding: 0.9rem 0.85rem 0.75rem;
   }
 
   .booking-form {

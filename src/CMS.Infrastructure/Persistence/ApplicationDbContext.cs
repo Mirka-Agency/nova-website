@@ -3,6 +3,7 @@ using CMS.Infrastructure.Features;
 using CMS.Infrastructure.Identity;
 using CMS.Infrastructure.Messaging;
 using CMS.Infrastructure.Settings;
+using CMS.Infrastructure.WhatsApp;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         public DbSet<SiteSettings> SiteSettings => Set<SiteSettings>();
         public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
         public DbSet<MessageLog> MessageLogs => Set<MessageLog>();
+        public DbSet<WhatsAppSettings> WhatsAppSettings => Set<WhatsAppSettings>();
         public DbSet<OtpChallenge> OtpChallenges => Set<OtpChallenge>();
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -109,6 +111,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(x => x.ErrorMessage).HasMaxLength(1000);
             entity.HasIndex(x => x.CreatedAtUtc);
             entity.HasIndex(x => new { x.Channel, x.CreatedAtUtc });
+        });
+
+        builder.Entity<WhatsAppSettings>(entity =>
+        {
+            entity.ToTable("WhatsAppSettings", "core");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.DefaultGroupId).HasMaxLength(200);
+            entity.Property(x => x.DefaultGroupName).HasMaxLength(300);
+            entity.Property(x => x.DefaultTemplate).HasMaxLength(8000).IsRequired();
         });
     }
 }

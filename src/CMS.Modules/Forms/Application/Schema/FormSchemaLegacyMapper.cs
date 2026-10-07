@@ -82,6 +82,10 @@ public static class FormSchemaLegacyMapper
             command.WebhookEnabled,
             command.WebhookUrl,
             command.WebhookSecret,
+            command.SendWhatsAppNotification,
+            command.WhatsAppGroupId,
+            command.WhatsAppGroupName,
+            command.WhatsAppTemplate,
             command.AntiSpamEnabled,
             command.AntiSpamProvider,
             command.AntiSpamSiteKey,
@@ -107,6 +111,10 @@ public static class FormSchemaLegacyMapper
         bool webhookEnabled,
         string? webhookUrl,
         string? webhookSecret = null,
+        bool sendWhatsAppNotification = false,
+        string? whatsAppGroupId = null,
+        string? whatsAppGroupName = null,
+        string? whatsAppTemplate = null,
         bool antiSpamEnabled = true,
         string? antiSpamProvider = null,
         string? antiSpamSiteKey = null,
@@ -194,6 +202,24 @@ public static class FormSchemaLegacyMapper
                 Type = FormActionTypeIds.Webhook,
                 Enabled = true,
                 Config = webhookConfig
+            });
+        }
+
+        if (sendWhatsAppNotification)
+        {
+            var whatsAppConfig = new Dictionary<string, object?>
+            {
+                ["groupId"] = string.IsNullOrWhiteSpace(whatsAppGroupId) ? null : whatsAppGroupId.Trim(),
+                ["groupName"] = string.IsNullOrWhiteSpace(whatsAppGroupName) ? null : whatsAppGroupName.Trim(),
+                ["template"] = string.IsNullOrWhiteSpace(whatsAppTemplate) ? null : whatsAppTemplate.Trim()
+            };
+
+            actions.Add(new FormActionSchema
+            {
+                Id = $"action_whatsapp_{form.Id:N}"[..24],
+                Type = FormActionTypeIds.WhatsAppNotification,
+                Enabled = true,
+                Config = whatsAppConfig
             });
         }
 

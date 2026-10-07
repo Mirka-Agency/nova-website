@@ -64,18 +64,59 @@
     else document.body.classList.remove('cms-popup-open');
   }
 
+  function resetPopupFormState(popup) {
+    if (!popup) return;
+    var content = popup.querySelector('[data-popup-content]');
+    var success = popup.querySelector('[data-popup-success]');
+    if (content) content.hidden = false;
+    if (success) success.hidden = true;
+    var form = popup.querySelector('form.public-form');
+    if (form) {
+      form.removeAttribute('data-submitting');
+      try { form.reset(); } catch (e) { /* ignore */ }
+      var submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  }
+
+  function showPopupFormSuccess(popup, form, message) {
+    var success = popup.querySelector('[data-popup-success]');
+    if (success) {
+      var content = popup.querySelector('[data-popup-content]');
+      if (content) content.hidden = true;
+      var text = success.querySelector('[data-popup-success-text]');
+      if (text) text.textContent = message || 'ارسال با موفقیت انجام شد.';
+      success.hidden = false;
+      var closeBtn = success.querySelector('[data-popup-close]');
+      if (closeBtn) closeBtn.focus();
+      return true;
+    }
+    if (!form) return false;
+    var fallback = document.createElement('p');
+    fallback.className = 'public-form-success';
+    fallback.textContent = message || 'ارسال با موفقیت انجام شد.';
+    form.replaceWith(fallback);
+    return true;
+  }
+
   function openPopup(popup, options) {
     if (!popup) return false;
     var force = options && options.force;
     if (!force && wasShown(popup)) return false;
     if (!popup.hidden) return true;
 
+    resetPopupFormState(popup);
     popup.hidden = false;
     openCount++;
     if (popup.getAttribute('data-lock-scroll') === 'true') syncBodyLock();
 
     var closeBtn = popup.querySelector('[data-popup-close]');
-    if (closeBtn) closeBtn.focus();
+    // Skip honeypot (.public-form-hp) — focusing it scrolls the page off-screen (white page).
+    var firstInput = popup.querySelector(
+      'form.public-form .public-form-field input:not([type="hidden"]), form.public-form .public-form-field textarea, form.public-form .public-form-field select'
+    );
+    if (firstInput) firstInput.focus();
+    else if (closeBtn) closeBtn.focus();
     markShown(popup);
     popup.dispatchEvent(new CustomEvent('cms-popup:open', { bubbles: true }));
     return true;
@@ -86,6 +127,7 @@
     popup.hidden = true;
     openCount = Math.max(0, openCount - 1);
     syncBodyLock();
+    resetPopupFormState(popup);
     popup.dispatchEvent(new CustomEvent('cms-popup:close', { bubbles: true }));
   }
 
@@ -95,11 +137,10 @@
 
   popups.forEach(function (popup) {
     var backdrop = popup.querySelector('[data-popup-backdrop]');
-    var closeBtn = popup.querySelector('[data-popup-close]');
 
-    if (closeBtn) {
+    popup.querySelectorAll('[data-popup-close]').forEach(function (closeBtn) {
       closeBtn.addEventListener('click', function () { closePopup(popup); });
-    }
+    });
     if (backdrop && popup.getAttribute('data-close-overlay') === 'true') {
       backdrop.addEventListener('click', function () { closePopup(popup); });
     }
@@ -231,10 +272,7 @@
           return;
         }
         var msg = data.message || 'ارسال با موفقیت انجام شد.';
-        var success = document.createElement('p');
-        success.className = 'public-form-success';
-        success.textContent = msg;
-        form.replaceWith(success);
+        showPopupFormSuccess(popup, form, msg);
         return;
       }
 

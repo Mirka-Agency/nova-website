@@ -125,3 +125,31 @@
         </div>
     </div>
 </fieldset>
+
+<fieldset class="admin-field">
+    <legend>@Localizer["WhatsAppSettings"]</legend>
+    <label class="admin-check">
+        <input asp-for="SendWhatsAppNotification" id="SendWhatsAppNotification" />
+        @Localizer["SendWhatsAppNotification"]
+    </label>
+    <div data-action-panel="whatsapp">
+        <p class="admin-hint">@Localizer["WhatsAppFormHint"]</p>
+        <div class="admin-field">
+            <label asp-for="WhatsAppTemplate">@Localizer["WhatsAppTemplate"]</label>
+            <textarea asp-for="WhatsAppTemplate" rows="8"></textarea>
+            <p class="admin-hint">@Localizer["WhatsAppPlaceholdersHint"]</p>
+        </div>
+        <details class="admin-details">
+            <summary>@Localizer["WhatsAppGroupOverrideSummary"]</summary>
+            <p class="admin-hint">@Localizer["WhatsAppGroupOverrideHint"]</p>
+            <div class="admin-field">
+                <label asp-for="WhatsAppGroupName">@Localizer["WhatsAppGroupName"]</label>
+                <input asp-for="WhatsAppGroupName" placeholder="@Localizer["Optional"]" />
+            </div>
+            <div class="admin-field">
+                <label asp-for="WhatsAppGroupId">@Localizer["WhatsAppGroupId"]</label>
+                <input asp-for="WhatsAppGroupId" dir="ltr" placeholder="@Localizer["Optional"]" />
+            </div>
+        </details>
+    </div>
+</fieldset>

@@ -76,6 +76,11 @@ PublishScripts/
 tools/seo-analyzer/node_modules/
 node_modules/
 
+# WhatsApp LocalAuth sessions (never commit)
+services/whatsapp-service/.wwebjs_auth/
+services/whatsapp-service/.wwebjs_cache/
+**/wwebjs_auth/
+
 # CapRover temporary deploy archives
 temporary-captain-to-deploy.tar
 *.tar

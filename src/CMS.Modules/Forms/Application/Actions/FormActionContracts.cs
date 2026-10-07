@@ -57,7 +57,8 @@ public static class FormTemplateRenderer
     private static string? Resolve(string token, FormActionExecutionContext context)
     {
         if (token.Equals("form.title", StringComparison.OrdinalIgnoreCase)
-            || token.Equals("form.name", StringComparison.OrdinalIgnoreCase))
+            || token.Equals("form.name", StringComparison.OrdinalIgnoreCase)
+            || token.Equals("form_name", StringComparison.OrdinalIgnoreCase))
             return context.Form.Name;
 
         if (token.Equals("form.key", StringComparison.OrdinalIgnoreCase))
@@ -70,14 +71,19 @@ public static class FormTemplateRenderer
             return context.Submission.Id.ToString("D");
 
         if (token.Equals("submission.createdAt", StringComparison.OrdinalIgnoreCase)
-            || token.Equals("submission.submittedAt", StringComparison.OrdinalIgnoreCase))
+            || token.Equals("submission.submittedAt", StringComparison.OrdinalIgnoreCase)
+            || token.Equals("date", StringComparison.OrdinalIgnoreCase))
             return JalaliDateHelper.FormatFromUtc(context.Submission.SubmittedAtUtc);
 
         if (token.Equals("site.name", StringComparison.OrdinalIgnoreCase))
             return context.SiteName;
 
-        if (token.Equals("page.url", StringComparison.OrdinalIgnoreCase))
+        if (token.Equals("page.url", StringComparison.OrdinalIgnoreCase)
+            || token.Equals("page_url", StringComparison.OrdinalIgnoreCase))
             return context.PageUrl;
+
+        if (token.Equals("fields", StringComparison.OrdinalIgnoreCase))
+            return FormatAllFields(context);
 
         if (context.FieldValuesByKey.TryGetValue(token, out var byKey))
             return byKey;
@@ -87,10 +93,37 @@ public static class FormTemplateRenderer
 
         // Common aliases
         if (token.Equals("full_name", StringComparison.OrdinalIgnoreCase)
-            && context.FieldValuesByKey.TryGetValue("name", out var name))
-            return name;
+            || token.Equals("name", StringComparison.OrdinalIgnoreCase))
+        {
+            if (context.FieldValuesByKey.TryGetValue("name", out var name))
+                return name;
+            if (context.FieldValuesByKey.TryGetValue("full_name", out var fullName))
+                return fullName;
+        }
+
+        if (token.Equals("phone", StringComparison.OrdinalIgnoreCase)
+            || token.Equals("mobile", StringComparison.OrdinalIgnoreCase))
+        {
+            if (context.FieldValuesByKey.TryGetValue("phone", out var phone))
+                return phone;
+            if (context.FieldValuesByKey.TryGetValue("mobile", out var mobile))
+                return mobile;
+            if (context.FieldValuesByKey.TryGetValue("cellphone", out var cellphone))
+                return cellphone;
+        }
 
         return null;
+    }
+
+    private static string FormatAllFields(FormActionExecutionContext context)
+    {
+        if (context.FieldValuesByKey.Count == 0)
+            return "—";
+
+        var lines = context.FieldValuesByKey
+            .OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(kv => $"{kv.Key}: {kv.Value ?? "—"}");
+        return string.Join(Environment.NewLine, lines);
     }
 }
 

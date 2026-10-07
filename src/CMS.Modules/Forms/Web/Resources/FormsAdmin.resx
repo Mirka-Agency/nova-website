@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -827,5 +827,35 @@
   </data>
   <data name="SystemFieldContractHint" xml:space="preserve">
     <value>این مقدار در کد تعریف شده و فقط خواندنی است.</value>
+  </data>
+  <data name="WhatsAppSettings" xml:space="preserve">
+    <value>واتساپ</value>
+  </data>
+  <data name="SendWhatsAppNotification" xml:space="preserve">
+    <value>ارسال اعلان واتساپ پس از ثبت</value>
+  </data>
+  <data name="WhatsAppFormHint" xml:space="preserve">
+    <value>فقط تیک را بزنید؛ گروه و قالب از تنظیمات سیستم → واتساپ گرفته می‌شود. پر کردن شناسه گروه در این صفحه اجباری نیست.</value>
+  </data>
+  <data name="WhatsAppGroupName" xml:space="preserve">
+    <value>نام گروه مقصد</value>
+  </data>
+  <data name="WhatsAppGroupId" xml:space="preserve">
+    <value>شناسه گروه (Group ID)</value>
+  </data>
+  <data name="WhatsAppGroupOverrideHint" xml:space="preserve">
+    <value>اختیاری است؛ اگر خالی بگذارید از گروه پیش‌فرض صفحه تنظیمات واتساپ استفاده می‌شود.</value>
+  </data>
+  <data name="WhatsAppGroupOverrideSummary" xml:space="preserve">
+    <value>جایگزینی گروه (اختیاری)</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>اختیاری</value>
+  </data>
+  <data name="WhatsAppTemplate" xml:space="preserve">
+    <value>قالب پیام</value>
+  </data>
+  <data name="WhatsAppPlaceholdersHint" xml:space="preserve">
+    <value>Placeholderها: {{form_name}} {{name}} {{phone}} {{date}} {{page_url}} {{fields}} و کلید فیلدها مثل {{email}}</value>
   </data>
 </root>

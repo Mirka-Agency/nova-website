@@ -81,14 +81,19 @@
         <div class="admin-stat-value">@stats.EmailSucceeded.ToString("N0")</div>
     </article>
     <article class="admin-stat-card">
+        <div class="admin-stat-icon" aria-hidden="true"><i class="fab fa-whatsapp"></i></div>
+        <div class="admin-stat-label">@Localizer["WhatsAppSent"]</div>
+        <div class="admin-stat-value">@stats.WhatsAppSucceeded.ToString("N0")</div>
+    </article>
+    <article class="admin-stat-card">
         <div class="admin-stat-icon" aria-hidden="true"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="admin-stat-label">@Localizer["MessageFailed"]</div>
-        <div class="admin-stat-value">@((stats.SmsFailed + stats.EmailFailed).ToString("N0"))</div>
+        <div class="admin-stat-value">@((stats.SmsFailed + stats.EmailFailed + stats.WhatsAppFailed).ToString("N0"))</div>
     </article>
     <article class="admin-stat-card">
         <div class="admin-stat-icon" aria-hidden="true"><i class="fas fa-ban"></i></div>
         <div class="admin-stat-label">@Localizer["MessageSkipped"]</div>
-        <div class="admin-stat-value">@((stats.SmsSkipped + stats.EmailSkipped).ToString("N0"))</div>
+        <div class="admin-stat-value">@((stats.SmsSkipped + stats.EmailSkipped + stats.WhatsAppSkipped).ToString("N0"))</div>
     </article>
 </div>
 
@@ -105,7 +110,7 @@
                 <tr>
                     <th>@Localizer["Date"]</th>
                     <th>@Localizer["SmsSent"]</th>
-                    <th>@Localizer["EmailSent"]</th>
+                    <th>@Localizer["EmailSent"]</th>`n                    <th>@Localizer["WhatsAppSent"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -114,7 +119,7 @@
                 <tr>
                     <td>@day.Date.ToString("yyyy/MM/dd")</td>
                     <td>@day.SmsSucceeded.ToString("N0")</td>
-                    <td>@day.EmailSucceeded.ToString("N0")</td>
+                    <td>@day.EmailSucceeded.ToString("N0")</td>`n                    <td>@day.WhatsAppSucceeded.ToString("N0")</td>
                 </tr>
             }
             </tbody>
@@ -144,7 +149,7 @@
             <tbody>
             @foreach (var entry in Model.Recent)
             {
-                var channel = entry.Channel == MessageChannel.Sms ? Localizer["Sms"].Value : Localizer["Email"].Value;
+                var channel = entry.Channel switch { MessageChannel.Sms => Localizer["Sms"].Value, MessageChannel.WhatsApp => Localizer["WhatsAppChannel"].Value, _ => Localizer["Email"].Value };
                 var status = entry.Status switch
                 {
                     MessageSendStatus.Succeeded => Localizer["Succeeded"].Value,

@@ -60,17 +60,31 @@
 
   function onBookingSuccess(form, message) {
     var modal = form.closest('.booking-modal');
-    if (!modal) return false;
-    var host = modal.querySelector('[data-booking-form-host]');
-    var success = modal.querySelector('[data-booking-success]');
-    if (host) host.hidden = true;
-    if (success) {
-      var text = success.querySelector('[data-booking-success-text]');
-      if (text && message) text.textContent = message;
-      success.hidden = false;
-      var closeBtn = success.querySelector('[data-booking-close]');
-      if (closeBtn) closeBtn.focus();
+    if (modal) {
+      var host = modal.querySelector('[data-booking-form-host]');
+      var success = modal.querySelector('[data-booking-success]');
+      if (host) host.hidden = true;
+      if (success) {
+        var text = success.querySelector('[data-booking-success-text]');
+        if (text && message) text.textContent = message;
+        success.hidden = false;
+        var closeBtn = success.querySelector('[data-booking-close]');
+        if (closeBtn) closeBtn.focus();
+      }
+      return true;
     }
+
+    var cmsPopup = form.closest('.cms-popup--booking, [data-cms-popup]');
+    if (!cmsPopup) return false;
+    var popupSuccess = cmsPopup.querySelector('[data-popup-success]');
+    if (!popupSuccess) return false;
+    var content = cmsPopup.querySelector('[data-popup-content]');
+    if (content) content.hidden = true;
+    var popupText = popupSuccess.querySelector('[data-popup-success-text]');
+    if (popupText && message) popupText.textContent = message;
+    popupSuccess.hidden = false;
+    var popupClose = popupSuccess.querySelector('[data-popup-close]');
+    if (popupClose) popupClose.focus();
     return true;
   }
 

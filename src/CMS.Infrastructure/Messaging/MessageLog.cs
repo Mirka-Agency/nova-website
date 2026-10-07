@@ -67,6 +67,31 @@ public sealed class MessageLog : BaseEntity
         };
     }
 
+    public static MessageLog CreateWhatsApp(
+        string recipient,
+        string? formName,
+        string? body,
+        MessageSendStatus status,
+        string? providerMessageId,
+        string? errorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(recipient))
+            throw new ArgumentException("Recipient is required.", nameof(recipient));
+
+        return new MessageLog
+        {
+            Channel = MessageChannel.WhatsApp,
+            Status = status,
+            Recipient = NormalizeRequired(recipient, 500),
+            RecipientCount = 1,
+            Subject = Normalize(formName, 300),
+            BodyPreview = Normalize(body, 500),
+            Provider = "WhatsAppWeb",
+            ProviderMessageId = Normalize(providerMessageId, 200),
+            ErrorMessage = Normalize(errorMessage, 1000)
+        };
+    }
+
     private static string NormalizeRequired(string value, int max)
     {
         var trimmed = value.Trim();

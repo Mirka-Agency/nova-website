@@ -109,6 +109,17 @@ public sealed class FormFormViewModel
     [StringLength(500)]
     public string? WebhookSecret { get; set; }
 
+    public bool SendWhatsAppNotification { get; set; }
+
+    [StringLength(200)]
+    public string? WhatsAppGroupId { get; set; }
+
+    [StringLength(300)]
+    public string? WhatsAppGroupName { get; set; }
+
+    [StringLength(8000)]
+    public string? WhatsAppTemplate { get; set; }
+
     public bool EnableCaptcha { get; set; }
 
     public bool AntiSpamEnabled { get; set; } = true;

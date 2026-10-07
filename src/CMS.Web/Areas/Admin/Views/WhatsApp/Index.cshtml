@@ -1,0 +1,452 @@
+@model CMS.Web.Areas.Admin.ViewModels.WhatsAppSettingsPageViewModel
+@using CMS.Application.Common.Time
+@using CMS.Application.Messaging
+@using CMS.Application.WhatsApp
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CMS.Web.AdminShared> Localizer
+@{
+    ViewData["Title"] = Localizer["WhatsApp"];
+    var status = Model.Status;
+    var settings = Model.Settings;
+    var connected = status.Connected;
+    var statusClass = connected ? "is-success" : status.Status == WhatsAppConnectionStatuses.QrRequired ? "is-warning" : "is-danger";
+}
+
+@Html.AntiForgeryToken()
+
+@if (!string.IsNullOrWhiteSpace(Model.ServiceWarning))
+{
+    <div class="admin-alert admin-alert--error" role="alert">@Model.ServiceWarning</div>
+}
+
+<section class="admin-panel-section wa-status-card @statusClass" id="wa-status-card">
+    <div class="admin-panel-section-head">
+        <h2>وضعیت اتصال</h2>
+    </div>
+    <div class="wa-status-grid">
+        <div>
+            <p class="admin-muted" style="margin:0;">وضعیت فعلی</p>
+            <p class="wa-status-value" id="wa-status-text">@status.Status</p>
+        </div>
+        <div>
+            <p class="admin-muted" style="margin:0;">شماره متصل‌شده</p>
+            <p class="wa-status-value" id="wa-phone" dir="ltr">@(status.PhoneNumber ?? "—")</p>
+        </div>
+        <div>
+            <p class="admin-muted" style="margin:0;">آخرین اتصال</p>
+            <p class="wa-status-value" id="wa-last-connected">@(status.LastConnectedAtUtc is null ? "—" : IranTime.Format(status.LastConnectedAtUtc.Value))</p>
+        </div>
+        <div>
+            <p class="admin-muted" style="margin:0;">آخرین ارسال موفق</p>
+            <p class="wa-status-value" id="wa-last-send">@(settings.LastSuccessfulSendAtUtc is null ? "—" : IranTime.Format(settings.LastSuccessfulSendAtUtc.Value))</p>
+        </div>
+    </div>
+    <p class="admin-hint" id="wa-last-error" @(string.IsNullOrWhiteSpace(status.LastError) ? "hidden" : null)>@status.LastError</p>
+</section>
+
+<section class="admin-panel-section" id="wa-qr-section" @(connected ? "hidden" : null)>
+    <div class="admin-panel-section-head">
+        <h2>اتصال شماره</h2>
+    </div>
+    <p class="admin-hint">واتساپ موبایل → Linked Devices → Link a Device را باز کنید و QR زیر را اسکن کنید.</p>
+    <div class="wa-qr-box" id="wa-qr-box">
+        <div class="wa-qr-loading" id="wa-qr-loading">در حال آماده‌سازی QR…</div>
+        <img id="wa-qr-image" alt="QR Code واتساپ" hidden />
+        <p class="admin-muted" id="wa-qr-empty" hidden>QR آماده نیست. دکمه «تولید QR جدید» را بزنید.</p>
+    </div>
+</section>
+
+<section class="admin-panel-section">
+    <div class="admin-panel-section-head">
+        <h2>مدیریت اتصال</h2>
+    </div>
+    <div class="wa-actions">
+        <button type="button" class="btn btn-secondary" id="wa-reconnect">اتصال مجدد</button>
+        <button type="button" class="btn btn-secondary" id="wa-regenerate-qr">تولید QR جدید</button>
+        <button type="button" class="btn btn-ghost" id="wa-logout" data-confirm="آیا از خروج شماره واتساپ مطمئن هستید؟">Logout</button>
+        <button type="button" class="btn btn-ghost" id="wa-clear-session" data-confirm="سشن حذف می‌شود و باید دوباره QR اسکن شود. ادامه می‌دهید؟">حذف Session</button>
+    </div>
+    <p class="admin-hint" id="wa-action-feedback" hidden></p>
+</section>
+
+<form asp-action="Index" method="post" class="admin-form" style="max-width:720px;">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-field-error"></div>
+
+    <section class="admin-panel-section">
+        <div class="admin-panel-section-head">
+            <h2>تنظیم اعلان فرم‌ها</h2>
+        </div>
+        <label class="admin-check">
+            <input asp-for="Settings.Enabled" />
+            ارسال سراسری اعلان واتساپ برای فرم‌ها فعال باشد
+        </label>
+        <p class="admin-hint">حتی با فعال بودن این گزینه، فقط فرم‌هایی که در تب «اقدامات» گزینه واتساپ را روشن کرده‌اند پیام می‌فرستند.</p>
+    </section>
+
+    <section class="admin-panel-section">
+        <div class="admin-panel-section-head">
+            <h2>انتخاب گروه</h2>
+            <button type="button" class="btn btn-ghost" id="wa-refresh-groups">Refresh Groups</button>
+        </div>
+        <div class="admin-field">
+            <label for="wa-group-select">گروه مقصد پیش‌فرض</label>
+            <select id="wa-group-select">
+                <option value="">— انتخاب گروه —</option>
+                @foreach (var g in Model.Groups)
+                {
+                    var selected = string.Equals(g.Id, settings.DefaultGroupId, StringComparison.OrdinalIgnoreCase);
+                    if (selected)
+                    {
+                        <option value="@g.Id" data-name="@g.Name" selected>@g.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@g.Id" data-name="@g.Name">@g.Name</option>
+                    }
+                }
+            </select>
+            <p class="admin-hint">گروه‌هایی که شماره متصل‌شده عضو آن‌هاست از سرویس واتساپ دریافت می‌شوند.</p>
+        </div>
+        <div class="admin-field">
+            <label asp-for="Settings.DefaultGroupName">نام گروه</label>
+            <input asp-for="Settings.DefaultGroupName" id="Settings_DefaultGroupName" />
+        </div>
+        <div class="admin-field">
+            <label asp-for="Settings.DefaultGroupId">شناسه گروه (Group ID)</label>
+            <input asp-for="Settings.DefaultGroupId" id="Settings_DefaultGroupId" dir="ltr" />
+        </div>
+    </section>
+
+    <section class="admin-panel-section">
+        <div class="admin-panel-section-head">
+            <h2>Template پیام پیش‌فرض</h2>
+        </div>
+        <div class="admin-field">
+            <label asp-for="Settings.DefaultTemplate">قالب پیام</label>
+            <textarea asp-for="Settings.DefaultTemplate" rows="10"></textarea>
+            <p class="admin-hint">
+                Placeholderهای قابل استفاده:
+                <code>{{form_name}}</code>
+                <code>{{name}}</code>
+                <code>{{phone}}</code>
+                <code>{{date}}</code>
+                <code>{{page_url}}</code>
+                <code>{{fields}}</code>
+            </p>
+        </div>
+        <button type="submit" class="btn btn-primary">ذخیره تنظیمات</button>
+    </section>
+</form>
+
+<section class="admin-panel-section" style="max-width:720px;">
+    <div class="admin-panel-section-head">
+        <h2>ارسال پیام آزمایشی</h2>
+    </div>
+    <div class="admin-field">
+        <label for="wa-test-message">متن تست</label>
+        <textarea id="wa-test-message" rows="4">پیام آزمایشی از پنل مدیریت میرکا</textarea>
+    </div>
+    <button type="button" class="btn btn-secondary" id="wa-send-test">ارسال</button>
+    <p class="admin-hint" id="wa-test-result" hidden></p>
+</section>
+
+<section class="admin-panel-section">
+    <div class="admin-panel-section-head">
+        <h2>Message Log</h2>
+    </div>
+    @if (Model.RecentLogs.Count == 0)
+    {
+        <p class="admin-muted">هنوز ارسال واتساپی ثبت نشده است.</p>
+    }
+    else
+    {
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>تاریخ</th>
+                    <th>فرم</th>
+                    <th>مقصد</th>
+                    <th>وضعیت</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var log in Model.RecentLogs)
+            {
+                var statusLabel = log.Status switch
+                {
+                    MessageSendStatus.Succeeded => "Succeeded",
+                    MessageSendStatus.Failed => "Failed",
+                    _ => "Skipped"
+                };
+                <tr>
+                    <td>@IranTime.Format(log.CreatedAtUtc)</td>
+                    <td>@(log.Subject ?? "—")</td>
+                    <td>@log.Recipient</td>
+                    <td>@statusLabel</td>
+                    <td>
+                        <button type="button" class="btn btn-ghost wa-log-detail" data-id="@log.Id">جزئیات</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>
+
+<div class="admin-modal" id="wa-confirm-modal" hidden>
+    <div class="admin-modal-backdrop" data-wa-modal-close></div>
+    <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="wa-confirm-title">
+        <div class="admin-modal-header">
+            <h2 id="wa-confirm-title">تأیید</h2>
+            <button type="button" class="btn btn-ghost" data-wa-modal-close aria-label="بستن">×</button>
+        </div>
+        <p id="wa-confirm-text"></p>
+        <div class="wa-actions" style="margin-block-start:16px;">
+            <button type="button" class="btn btn-primary" id="wa-confirm-ok">تأیید</button>
+            <button type="button" class="btn btn-secondary" data-wa-modal-close>انصراف</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-modal" id="wa-log-modal" hidden>
+    <div class="admin-modal-backdrop" data-wa-log-close></div>
+    <div class="admin-modal-dialog" role="dialog" aria-modal="true">
+        <div class="admin-modal-header">
+            <h2>جزئیات ارسال</h2>
+            <button type="button" class="btn btn-ghost" data-wa-log-close aria-label="بستن">×</button>
+        </div>
+        <pre id="wa-log-body" class="wa-log-pre" dir="auto"></pre>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+    const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+    const headers = () => ({
+        'RequestVerificationToken': token(),
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json'
+    });
+    const jsonHeaders = () => ({
+        ...headers(),
+        'Content-Type': 'application/json'
+    });
+
+    const statusCard = document.getElementById('wa-status-card');
+    const statusText = document.getElementById('wa-status-text');
+    const phoneEl = document.getElementById('wa-phone');
+    const lastConnected = document.getElementById('wa-last-connected');
+    const lastSend = document.getElementById('wa-last-send');
+    const lastError = document.getElementById('wa-last-error');
+    const qrSection = document.getElementById('wa-qr-section');
+    const qrImage = document.getElementById('wa-qr-image');
+    const qrLoading = document.getElementById('wa-qr-loading');
+    const qrEmpty = document.getElementById('wa-qr-empty');
+    const actionFeedback = document.getElementById('wa-action-feedback');
+    const groupSelect = document.getElementById('wa-group-select');
+    const groupIdInput = document.getElementById('Settings_DefaultGroupId');
+    const groupNameInput = document.getElementById('Settings_DefaultGroupName');
+    let lastQrUrl = null;
+    let pendingConfirm = null;
+
+    const setFeedback = (el, ok, message) => {
+        if (!el) return;
+        el.hidden = !message;
+        el.textContent = message || '';
+        el.classList.toggle('wa-feedback-ok', !!ok);
+        el.classList.toggle('wa-feedback-err', !ok && !!message);
+    };
+
+    const applyStatus = (data) => {
+        if (!data) return;
+        const st = data.status || 'Disconnected';
+        const connected = !!data.connected || st === 'Connected';
+        statusText.textContent = st;
+        phoneEl.textContent = data.phoneNumber || '—';
+        if (data.lastConnectedAtUtc) lastConnected.textContent = new Date(data.lastConnectedAtUtc).toLocaleString('fa-IR');
+        if (data.lastSuccessfulSendAtUtc) lastSend.textContent = new Date(data.lastSuccessfulSendAtUtc).toLocaleString('fa-IR');
+        if (data.lastError) {
+            lastError.hidden = false;
+            lastError.textContent = data.lastError;
+        } else {
+            lastError.hidden = true;
+            lastError.textContent = '';
+        }
+        statusCard.classList.toggle('is-success', connected);
+        statusCard.classList.toggle('is-warning', st === 'QR Required');
+        statusCard.classList.toggle('is-danger', !connected && st !== 'QR Required' && st !== 'Connecting');
+        qrSection.hidden = connected;
+    };
+
+    const refreshQr = async () => {
+        try {
+            const res = await fetch('@Url.Action("Qr")', { headers: headers() });
+            const data = await res.json();
+            if (!data.ok) {
+                qrLoading.hidden = true;
+                qrImage.hidden = true;
+                qrEmpty.hidden = false;
+                return;
+            }
+            if (data.status) applyStatus({ status: data.status, connected: data.status === 'Connected' });
+            if (data.qrDataUrl) {
+                if (data.qrDataUrl !== lastQrUrl) {
+                    lastQrUrl = data.qrDataUrl;
+                    qrImage.src = data.qrDataUrl;
+                }
+                qrImage.hidden = false;
+                qrLoading.hidden = true;
+                qrEmpty.hidden = true;
+            } else {
+                qrImage.hidden = true;
+                qrLoading.hidden = data.status === 'Connecting';
+                qrEmpty.hidden = data.status === 'Connecting';
+            }
+        } catch {
+            qrLoading.hidden = true;
+            qrEmpty.hidden = false;
+        }
+    };
+
+    const refreshStatus = async () => {
+        try {
+            const res = await fetch('@Url.Action("Status")', { headers: headers() });
+            const data = await res.json();
+            if (data.ok) applyStatus(data);
+            if (!data.connected) await refreshQr();
+            else {
+                qrSection.hidden = true;
+                lastQrUrl = null;
+            }
+        } catch { /* ignore poll errors */ }
+    };
+
+    const fillGroups = (groups) => {
+        const current = groupIdInput?.value || '';
+        groupSelect.innerHTML = '<option value="">— انتخاب گروه —</option>';
+        (groups || []).forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g.id;
+            opt.textContent = g.name;
+            opt.dataset.name = g.name;
+            if (g.id === current) opt.selected = true;
+            groupSelect.appendChild(opt);
+        });
+    };
+
+    const refreshGroups = async () => {
+        try {
+            const res = await fetch('@Url.Action("Groups")', { headers: headers() });
+            const data = await res.json();
+            if (data.ok) fillGroups(data.groups);
+            else setFeedback(actionFeedback, false, data.error || 'دریافت گروه‌ها ناموفق بود.');
+        } catch (e) {
+            setFeedback(actionFeedback, false, 'خطا در دریافت گروه‌ها');
+        }
+    };
+
+    groupSelect?.addEventListener('change', () => {
+        const opt = groupSelect.selectedOptions[0];
+        if (!opt || !opt.value) return;
+        if (groupIdInput) groupIdInput.value = opt.value;
+        if (groupNameInput) groupNameInput.value = opt.dataset.name || opt.textContent;
+    });
+
+    document.getElementById('wa-refresh-groups')?.addEventListener('click', refreshGroups);
+
+    const postAction = async (url) => {
+        setFeedback(actionFeedback, true, 'در حال اجرا…');
+        try {
+            const res = await fetch(url, { method: 'POST', headers: headers() });
+            const data = await res.json();
+            if (!data.ok) {
+                setFeedback(actionFeedback, false, data.error || 'عملیات ناموفق بود.');
+                return;
+            }
+            setFeedback(actionFeedback, true, 'انجام شد.');
+            applyStatus(data);
+            await refreshStatus();
+        } catch {
+            setFeedback(actionFeedback, false, 'خطای شبکه');
+        }
+    };
+
+    const confirmModal = document.getElementById('wa-confirm-modal');
+    const confirmText = document.getElementById('wa-confirm-text');
+    const openConfirm = (message, onOk) => {
+        pendingConfirm = onOk;
+        confirmText.textContent = message;
+        confirmModal.hidden = false;
+    };
+    const closeConfirm = () => {
+        pendingConfirm = null;
+        confirmModal.hidden = true;
+    };
+    document.getElementById('wa-confirm-ok')?.addEventListener('click', async () => {
+        const fn = pendingConfirm;
+        closeConfirm();
+        if (fn) await fn();
+    });
+    confirmModal?.querySelectorAll('[data-wa-modal-close]').forEach(el => el.addEventListener('click', closeConfirm));
+
+    document.getElementById('wa-reconnect')?.addEventListener('click', () => postAction('@Url.Action("Reconnect")'));
+    document.getElementById('wa-regenerate-qr')?.addEventListener('click', () => postAction('@Url.Action("RegenerateQr")'));
+    document.getElementById('wa-logout')?.addEventListener('click', (e) => {
+        openConfirm(e.currentTarget.getAttribute('data-confirm'), () => postAction('@Url.Action("Logout")'));
+    });
+    document.getElementById('wa-clear-session')?.addEventListener('click', (e) => {
+        openConfirm(e.currentTarget.getAttribute('data-confirm'), () => postAction('@Url.Action("ClearSession")'));
+    });
+
+    const testResult = document.getElementById('wa-test-result');
+    document.getElementById('wa-send-test')?.addEventListener('click', async () => {
+        const message = document.getElementById('wa-test-message')?.value || '';
+        setFeedback(testResult, true, 'در حال ارسال…');
+        try {
+            const res = await fetch('@Url.Action("TestMessage")', {
+                method: 'POST',
+                headers: jsonHeaders(),
+                body: JSON.stringify({
+                    message,
+                    groupId: groupIdInput?.value || null
+                })
+            });
+            const data = await res.json();
+            if (data.ok) setFeedback(testResult, true, 'ارسال موفق بود.');
+            else setFeedback(testResult, false, data.error || 'ارسال ناموفق بود.');
+            await refreshStatus();
+        } catch {
+            setFeedback(testResult, false, 'خطای شبکه');
+        }
+    });
+
+    const logModal = document.getElementById('wa-log-modal');
+    const logBody = document.getElementById('wa-log-body');
+    document.querySelectorAll('.wa-log-detail').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            try {
+                const res = await fetch('@Url.Action("LogDetail")?id=' + encodeURIComponent(btn.dataset.id), { headers: headers() });
+                const data = await res.json();
+                if (!data.ok) return;
+                logBody.textContent = [
+                    'فرم: ' + (data.formName || '—'),
+                    'مقصد: ' + (data.recipient || '—'),
+                    'وضعیت: ' + (data.status || '—'),
+                    'خطا: ' + (data.errorMessage || '—'),
+                    'MessageId: ' + (data.providerMessageId || '—'),
+                    '',
+                    data.bodyPreview || ''
+                ].join('\n');
+                logModal.hidden = false;
+            } catch { /* ignore */ }
+        });
+    });
+    logModal?.querySelectorAll('[data-wa-log-close]').forEach(el => el.addEventListener('click', () => { logModal.hidden = true; }));
+
+    refreshStatus();
+    setInterval(refreshStatus, 4000);
+})();
+</script>
+}

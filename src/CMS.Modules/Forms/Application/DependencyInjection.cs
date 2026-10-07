@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IFormActionHandler, EmailNotificationActionHandler>();
         services.AddScoped<IFormActionHandler, AutoReplyActionHandler>();
         services.AddScoped<IFormActionHandler, WebhookActionHandler>();
+        services.AddScoped<IFormActionHandler, WhatsAppNotificationActionHandler>();
         services.AddScoped<IFormActionExecutor, FormActionExecutor>();
 
         services.AddSingleton<IFormAntiSpamCredentials, FormAntiSpamCredentials>();

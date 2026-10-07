@@ -9,6 +9,7 @@ using CMS.Application.Settings;
 using CMS.Application.Sms;
 using CMS.Application.Storage;
 using CMS.Application.Users;
+using CMS.Application.WhatsApp;
 using CMS.Infrastructure.Audit;
 using CMS.Infrastructure.Auth;
 using CMS.Infrastructure.Cache;
@@ -26,6 +27,7 @@ using CMS.Infrastructure.Settings;
 using CMS.Infrastructure.Sms;
 using CMS.Infrastructure.Storage;
 using CMS.Infrastructure.Users;
+using CMS.Infrastructure.WhatsApp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +62,7 @@ public static class DependencyInjection
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.Configure<SmsOptions>(configuration.GetSection(SmsOptions.SectionName));
         services.Configure<SmsIrOptions>(configuration.GetSection(SmsIrOptions.SectionName));
+        services.Configure<WhatsAppOptions>(configuration.GetSection(WhatsAppOptions.SectionName));
 
         services.AddSingleton<IObjectStorage, S3ObjectStorage>();
         services.AddSingleton<IHtmlContentSanitizer, HtmlContentSanitizer>();
@@ -80,6 +83,19 @@ public static class DependencyInjection
         services.AddSingleton<CMS.Infrastructure.Notifications.AdminNotifier>();
         services.AddSingleton<IAdminSmsNotifier>(sp => sp.GetRequiredService<CMS.Infrastructure.Notifications.AdminNotifier>());
         services.AddSingleton<IAdminNotifier>(sp => sp.GetRequiredService<CMS.Infrastructure.Notifications.AdminNotifier>());
+
+        services.AddHttpClient(WhatsAppGateway.HttpClientName, (sp, client) =>
+        {
+            var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<WhatsAppOptions>>().Value;
+            var baseUrl = string.IsNullOrWhiteSpace(options.ServiceBaseUrl)
+                ? "http://localhost:3100"
+                : options.ServiceBaseUrl.Trim().TrimEnd('/');
+            client.BaseAddress = new Uri(baseUrl + "/");
+            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(options.TimeoutSeconds, 5, 120));
+        });
+        services.AddSingleton<IWhatsAppGateway, WhatsAppGateway>();
+        services.AddScoped<IWhatsAppSettingsService, WhatsAppSettingsService>();
+        services.AddScoped<IWhatsAppNotifier, WhatsAppNotifier>();
 
         services.AddScoped<IPaymentGateway, ManualPaymentGateway>();
         services.AddSingleton<IPaymentSettingsProtector, DataProtectionPaymentSettingsProtector>();

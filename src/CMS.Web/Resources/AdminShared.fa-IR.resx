@@ -291,4 +291,8 @@
   <data name="CtaHelperStep2" xml:space="preserve"><value>پیش‌نمایش زنده را بررسی کنید.</value></data>
   <data name="CtaHelperStep3" xml:space="preserve"><value>روی «درج در ادیتور» بزنید یا HTML را کپی کرده و در بلوک HTML ادیتور جای‌گذاری کنید.</value></data>
   <data name="CtaHelperJumpNav" xml:space="preserve"><value>انتخاب CTA</value></data>
+  <data name="WhatsApp" xml:space="preserve"><value>واتساپ</value></data>
+  <data name="WhatsAppSettingsUpdated" xml:space="preserve"><value>تنظیمات واتساپ ذخیره شد.</value></data>
+  <data name="WhatsAppSent" xml:space="preserve"><value>واتساپ ارسال‌شده</value></data>
+  <data name="WhatsAppChannel" xml:space="preserve"><value>واتساپ</value></data>
 </root>

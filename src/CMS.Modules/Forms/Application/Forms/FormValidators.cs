@@ -59,6 +59,10 @@ public sealed class SaveFormCommandValidator : AbstractValidator<SaveFormCommand
             .MaximumLength(2000)
             .When(x => x.WebhookEnabled);
         RuleFor(x => x.WebhookSecret).MaximumLength(500);
+        // WhatsApp group/template overrides are optional; empty falls back to global WhatsApp settings.
+        RuleFor(x => x.WhatsAppGroupId).MaximumLength(200);
+        RuleFor(x => x.WhatsAppGroupName).MaximumLength(300);
+        RuleFor(x => x.WhatsAppTemplate).MaximumLength(8000);
         RuleFor(x => x.AntiSpamProvider)
             .Must(p => string.IsNullOrWhiteSpace(p)
                        || FormAntiSpamProviderIds.All.Contains(p.Trim(), StringComparer.OrdinalIgnoreCase))

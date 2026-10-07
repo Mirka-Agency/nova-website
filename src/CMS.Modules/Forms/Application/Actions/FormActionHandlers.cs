@@ -2,6 +2,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
 using CMS.Application.Email;
+using CMS.Application.WhatsApp;
 using CMS.Modules.Forms.Application.Common;
 using CMS.Modules.Forms.Application.Schema;
 using CMS.Modules.Forms.Application.Security;
@@ -271,6 +272,81 @@ public sealed class WebhookActionHandler : IFormActionHandler
         catch (Exception ex)
         {
             _logger.LogError(ex, "webhook action {ActionId} failed", action.Id);
+        }
+    }
+}
+
+public sealed class WhatsAppNotificationActionHandler : IFormActionHandler
+{
+    private readonly IWhatsAppNotifier _whatsApp;
+    private readonly IWhatsAppSettingsService _settings;
+    private readonly ILogger<WhatsAppNotificationActionHandler> _logger;
+
+    public WhatsAppNotificationActionHandler(
+        IWhatsAppNotifier whatsApp,
+        IWhatsAppSettingsService settings,
+        ILogger<WhatsAppNotificationActionHandler> logger)
+    {
+        _whatsApp = whatsApp;
+        _settings = settings;
+        _logger = logger;
+    }
+
+    public string TypeId => FormActionTypeIds.WhatsAppNotification;
+
+    public async Task ExecuteAsync(
+        FormActionSchema action,
+        FormActionExecutionContext context,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var global = await _settings.GetAsync(cancellationToken);
+            if (!global.Enabled)
+            {
+                _logger.LogInformation(
+                    "whatsapp_notification skipped for form {FormKey}: globally disabled",
+                    context.Form.Key);
+                return;
+            }
+
+            var groupId = FormActionConfigReader.GetString(action.Config, "groupId");
+            var groupName = FormActionConfigReader.GetString(action.Config, "groupName");
+            var template = FormActionConfigReader.GetString(action.Config, "template");
+
+            if (string.IsNullOrWhiteSpace(template))
+                template = global.DefaultTemplate;
+            if (string.IsNullOrWhiteSpace(template))
+                template = WhatsAppDefaultTemplate.Value;
+
+            var message = FormTemplateRenderer.Render(template, context, htmlEncode: false);
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogWarning(
+                    "whatsapp_notification action {ActionId} produced empty message",
+                    action.Id);
+                return;
+            }
+
+            var result = await _whatsApp.NotifyGroupAsync(
+                groupId,
+                groupName,
+                message,
+                context.Form.Name,
+                cancellationToken);
+
+            if (!result.Succeeded && !result.Skipped)
+            {
+                _logger.LogWarning(
+                    "whatsapp_notification action {ActionId} failed: {Error}",
+                    action.Id,
+                    result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Never fail the form submission pipeline because of WhatsApp.
+            _logger.LogError(ex, "whatsapp_notification action {ActionId} threw", action.Id);
         }
     }
 }

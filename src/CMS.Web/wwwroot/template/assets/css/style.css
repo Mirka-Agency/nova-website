@@ -2892,10 +2892,10 @@ body.booking-open .float-call {
 .booking-modal__dialog {
   position: relative;
   z-index: 1;
-  width: min(100%, 440px);
+  width: min(100%, 400px);
   max-height: none;
   overflow: visible;
-  padding: 1.35rem 1.25rem 1.2rem;
+  padding: 1rem 1rem 0.85rem;
   border-radius: var(--radius-lg);
   background: var(--white);
   border: 1px solid rgba(9, 112, 125, 0.12);

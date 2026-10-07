@@ -52,7 +52,7 @@
          aria-modal="true"
          aria-labelledby="cms-popup-title-@popup.Slug">
         <div class="cms-popup__backdrop" data-popup-backdrop @(popup.ShowOverlay ? null : "hidden")></div>
-        <div class="cms-popup__dialog @(popup.EnableContentScroll ? "cms-popup__dialog--scroll" : null)">
+        <div class="cms-popup__dialog @(!isBooking && popup.EnableContentScroll ? "cms-popup__dialog--scroll" : null)">
             @if (popup.ShowCloseButton)
             {
                 <button type="button" class="cms-popup__close" data-popup-close aria-label="بستن">
@@ -61,7 +61,7 @@
                     </svg>
                 </button>
             }
-            <div class="cms-popup__body">
+            <div class="cms-popup__body" data-popup-content>
                 <h2 class="cms-popup__title" id="cms-popup-title-@popup.Slug">@popup.Title</h2>
                 @if (!string.IsNullOrWhiteSpace(popup.ImageUrl))
                 {
@@ -109,6 +109,20 @@
                     </div>
                 }
             </div>
+            @if (isBooking && popup.FormId.HasValue && formsEnabled)
+            {
+                <div class="booking-success" data-popup-success hidden>
+                    <div class="booking-success__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="m8.5 12.5 2.2 2.2 4.8-5"/>
+                        </svg>
+                    </div>
+                    <h3 class="booking-success__title">درخواست شما ثبت شد</h3>
+                    <p class="booking-success__text" data-popup-success-text>به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.</p>
+                    <button class="btn-primary-custom" type="button" data-popup-close>بستن</button>
+                </div>
+            }
         </div>
     </div>
 }

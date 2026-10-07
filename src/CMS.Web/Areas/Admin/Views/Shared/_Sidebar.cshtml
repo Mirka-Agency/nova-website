@@ -33,7 +33,7 @@
     var popupActive = IsCtrl("Popups");
     var seoActive = IsCtrl("SeoSettings", "SeoRedirects");
     var mediaActive = IsCtrl("Media");
-    var systemActive = IsCtrl("Users", "Features", "Settings", "SiteScripts", "Audit", "MessageLogs");
+    var systemActive = IsCtrl("Users", "Features", "Settings", "SiteScripts", "Audit", "MessageLogs", "WhatsApp");
     var orderStatus = Context.Request.Query["status"].ToString();
     bool IsOrderStatus(string value) =>
         string.Equals(orderStatus, value, StringComparison.OrdinalIgnoreCase);
@@ -606,6 +606,11 @@
                    asp-area="Admin" asp-controller="MessageLogs" asp-action="Index">
                     <i class="fas fa-paper-plane" aria-hidden="true"></i>
                     <span>@Localizer["MessageLogs"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("WhatsApp") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="WhatsApp" asp-action="Index">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    <span>@Localizer["WhatsApp"]</span>
                 </a>
             </div>
         </div>

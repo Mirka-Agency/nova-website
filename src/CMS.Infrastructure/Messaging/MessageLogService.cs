@@ -51,6 +51,25 @@ public sealed class MessageLogger : IMessageLogger
         return PersistAsync(entry, cancellationToken);
     }
 
+    public Task LogWhatsAppAsync(
+        string recipient,
+        string? formName,
+        string body,
+        MessageSendStatus status,
+        string? providerMessageId = null,
+        string? errorMessage = null,
+        CancellationToken cancellationToken = default)
+    {
+        var entry = MessageLog.CreateWhatsApp(
+            recipient,
+            formName,
+            body,
+            status,
+            providerMessageId,
+            errorMessage);
+        return PersistAsync(entry, cancellationToken);
+    }
+
     private async Task PersistAsync(MessageLog entry, CancellationToken cancellationToken)
     {
         try
@@ -105,6 +124,11 @@ public sealed class MessageLogQueryService : IMessageLogQueryService
         var emailFailed = rows.Count(x => x.Channel == MessageChannel.Email && x.Status == MessageSendStatus.Failed);
         var emailSkipped = rows.Count(x => x.Channel == MessageChannel.Email && x.Status == MessageSendStatus.Skipped);
 
+        var whatsAppSucceeded = rows.Where(x => x.Channel == MessageChannel.WhatsApp && x.Status == MessageSendStatus.Succeeded)
+            .Sum(x => x.RecipientCount);
+        var whatsAppFailed = rows.Count(x => x.Channel == MessageChannel.WhatsApp && x.Status == MessageSendStatus.Failed);
+        var whatsAppSkipped = rows.Count(x => x.Channel == MessageChannel.WhatsApp && x.Status == MessageSendStatus.Skipped);
+
         var dailyMap = rows
             .Where(x => x.Status == MessageSendStatus.Succeeded)
             .GroupBy(x => DateOnly.FromDateTime(IranTime.FromUtc(x.CreatedAtUtc)))
@@ -112,7 +136,8 @@ public sealed class MessageLogQueryService : IMessageLogQueryService
                 g => g.Key,
                 g => (
                     Sms: g.Where(x => x.Channel == MessageChannel.Sms).Sum(x => x.RecipientCount),
-                    Email: g.Where(x => x.Channel == MessageChannel.Email).Sum(x => x.RecipientCount)));
+                    Email: g.Where(x => x.Channel == MessageChannel.Email).Sum(x => x.RecipientCount),
+                    WhatsApp: g.Where(x => x.Channel == MessageChannel.WhatsApp).Sum(x => x.RecipientCount)));
 
         var fromLocal = DateOnly.FromDateTime(IranTime.FromUtc(fromUtc));
         var toLocal = DateOnly.FromDateTime(IranTime.FromUtc(toUtc.AddTicks(-1)));
@@ -123,7 +148,7 @@ public sealed class MessageLogQueryService : IMessageLogQueryService
         for (var day = fromLocal; day <= toLocal; day = day.AddDays(1))
         {
             dailyMap.TryGetValue(day, out var counts);
-            daily.Add(new MessageLogDailyStatDto(day, counts.Sms, counts.Email));
+            daily.Add(new MessageLogDailyStatDto(day, counts.Sms, counts.Email, counts.WhatsApp));
         }
 
         return new MessageLogPeriodStatsDto(
@@ -135,7 +160,10 @@ public sealed class MessageLogQueryService : IMessageLogQueryService
             emailSucceeded,
             emailFailed,
             emailSkipped,
-            daily);
+            daily,
+            whatsAppSucceeded,
+            whatsAppFailed,
+            whatsAppSkipped);
     }
 
     public async Task<IReadOnlyList<MessageLogDto>> ListRecentAsync(

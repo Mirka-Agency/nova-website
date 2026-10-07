@@ -3,7 +3,8 @@ namespace CMS.Application.Messaging;
 public enum MessageChannel : byte
 {
     Sms = 1,
-    Email = 2
+    Email = 2,
+    WhatsApp = 3
 }
 
 public enum MessageSendStatus : byte
@@ -29,7 +30,8 @@ public sealed record MessageLogDto(
 public sealed record MessageLogDailyStatDto(
     DateOnly Date,
     int SmsSucceeded,
-    int EmailSucceeded);
+    int EmailSucceeded,
+    int WhatsAppSucceeded = 0);
 
 public sealed record MessageLogPeriodStatsDto(
     DateTime FromUtc,
@@ -40,7 +42,10 @@ public sealed record MessageLogPeriodStatsDto(
     int EmailSucceeded,
     int EmailFailed,
     int EmailSkipped,
-    IReadOnlyList<MessageLogDailyStatDto> Daily);
+    IReadOnlyList<MessageLogDailyStatDto> Daily,
+    int WhatsAppSucceeded = 0,
+    int WhatsAppFailed = 0,
+    int WhatsAppSkipped = 0);
 
 public interface IMessageLogger
 {
@@ -59,6 +64,15 @@ public interface IMessageLogger
         string subject,
         string body,
         MessageSendStatus status,
+        string? errorMessage = null,
+        CancellationToken cancellationToken = default);
+
+    Task LogWhatsAppAsync(
+        string recipient,
+        string? formName,
+        string body,
+        MessageSendStatus status,
+        string? providerMessageId = null,
         string? errorMessage = null,
         CancellationToken cancellationToken = default);
 }

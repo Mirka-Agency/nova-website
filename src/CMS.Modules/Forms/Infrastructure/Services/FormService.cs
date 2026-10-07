@@ -480,6 +480,19 @@ public sealed class FormService : IFormService
             : FormActionConfigReader.GetString(webhook.Config, "secretKey")
               ?? FormActionConfigReader.GetString(webhook.Config, "secret");
 
+        var whatsApp = schema?.Actions.FirstOrDefault(a =>
+            string.Equals(a.Type, FormActionTypeIds.WhatsAppNotification, StringComparison.OrdinalIgnoreCase));
+        var sendWhatsAppNotification = whatsApp is { Enabled: true };
+        var whatsAppGroupId = whatsApp is null
+            ? null
+            : FormActionConfigReader.GetString(whatsApp.Config, "groupId");
+        var whatsAppGroupName = whatsApp is null
+            ? null
+            : FormActionConfigReader.GetString(whatsApp.Config, "groupName");
+        var whatsAppTemplate = whatsApp is null
+            ? null
+            : FormActionConfigReader.GetString(whatsApp.Config, "template");
+
         var antiSpam = ResolveAntiSpamDisplay(schema);
         var enableCaptcha = string.Equals(
             antiSpam.Provider,
@@ -514,6 +527,10 @@ public sealed class FormService : IFormService
             webhookEnabled,
             webhookUrl,
             webhookSecret,
+            sendWhatsAppNotification,
+            whatsAppGroupId,
+            whatsAppGroupName,
+            whatsAppTemplate,
             enableCaptcha,
             antiSpam.Enabled,
             antiSpam.Provider,
@@ -604,6 +621,8 @@ public sealed class FormService : IFormService
             string.Equals(a.Type, FormActionTypeIds.AutoReply, StringComparison.OrdinalIgnoreCase));
         var webhook = source.Actions.FirstOrDefault(a =>
             string.Equals(a.Type, FormActionTypeIds.Webhook, StringComparison.OrdinalIgnoreCase));
+        var whatsApp = source.Actions.FirstOrDefault(a =>
+            string.Equals(a.Type, FormActionTypeIds.WhatsAppNotification, StringComparison.OrdinalIgnoreCase));
         var antiSpam = source.AntiSpam ?? new FormAntiSpamSchema();
 
         var submitType = string.IsNullOrWhiteSpace(source.SubmitBehavior?.Type)
@@ -632,6 +651,10 @@ public sealed class FormService : IFormService
                 ? null
                 : FormActionConfigReader.GetString(webhook.Config, "secretKey")
                   ?? FormActionConfigReader.GetString(webhook.Config, "secret"),
+            whatsApp is { Enabled: true },
+            whatsApp is null ? null : FormActionConfigReader.GetString(whatsApp.Config, "groupId"),
+            whatsApp is null ? null : FormActionConfigReader.GetString(whatsApp.Config, "groupName"),
+            whatsApp is null ? null : FormActionConfigReader.GetString(whatsApp.Config, "template"),
             antiSpam.Enabled,
             antiSpam.Provider,
             null,

@@ -1438,6 +1438,26 @@ fieldset.admin-field legend {
   font-size: 0.875rem;
 }
 
+.admin-details {
+  margin-block-start: calc(var(--admin-space) * 3);
+  padding: calc(var(--admin-space) * 3);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-muted);
+}
+
+.admin-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  list-style-position: outside;
+}
+
+.admin-details[open] > summary {
+  margin-block-end: calc(var(--admin-space) * 2);
+  color: var(--admin-text);
+}
+
 .admin-autosave-status {
   margin: calc(var(--admin-space) * 2) 0 0;
   color: var(--admin-text-secondary);
@@ -3371,4 +3391,77 @@ fieldset.admin-field legend {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+/* WhatsApp settings page */
+.wa-status-card.is-success {
+  border-inline-start: 3px solid #16A34A;
+}
+.wa-status-card.is-warning {
+  border-inline-start: 3px solid #CA8A04;
+}
+.wa-status-card.is-danger {
+  border-inline-start: 3px solid #DC2626;
+}
+.wa-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+.wa-status-value {
+  margin: 4px 0 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.wa-qr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  background: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  border-radius: 6px;
+  padding: 16px;
+}
+.wa-qr-box img {
+  max-width: 280px;
+  width: 100%;
+  height: auto;
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+}
+.wa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.wa-feedback-ok {
+  color: #16A34A;
+}
+.wa-feedback-err {
+  color: #DC2626;
+}
+.wa-log-pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  border-radius: 6px;
+  padding: 12px;
+  max-height: 360px;
+  overflow: auto;
+  font-family: 'Abar Mid Fanum', Tahoma, sans-serif;
+  font-size: 0.9rem;
+}
+.admin-alert {
+  padding: 12px 16px;
+  border: 1px solid #E5E5E5;
+  border-radius: 6px;
+  margin-block-end: 16px;
+  background: #fff;
+}
+.admin-alert--error {
+  border-color: #DC2626;
+  color: #DC2626;
 }

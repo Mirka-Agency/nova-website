@@ -36,7 +36,7 @@ public static IReadOnlyList<SystemFormDefinition> All { get; } =
 
 - `fields` — typed field definitions (`FormFieldTypeIds`)
 - `submitBehavior` — `message` | `redirect` | `page`
-- `actions` — `email_notification`, `auto_reply`, `webhook`
+- `actions` — `email_notification`, `auto_reply`, `webhook`, `whatsapp_notification`
 - `antiSpam` — provider + config
 - `settings` — e.g. `submitButtonText`
 
