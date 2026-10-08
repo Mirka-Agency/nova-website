@@ -7,5 +7,5 @@ namespace CMS.Web.Controllers;
 public class ContactLegacyRedirectController : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => RedirectPermanent("/contact-us");
+    public IActionResult Index() => RedirectPermanent("/contact-us/");
 }

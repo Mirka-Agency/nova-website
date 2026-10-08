@@ -269,8 +269,8 @@ public class NewsArticlesController : Controller
                 previewTitle: FirstNonEmpty(post.MetaTitle, post.Title),
                 previewDescription: FirstNonEmpty(post.MetaDescription, post.Excerpt),
                 previewUrl: post.Kind == ArticleKind.Event
-                    ? $"/event/{post.Slug}"
-                    : $"/education-articles/{post.Slug}");
+                    ? $"/event/{post.Slug}/"
+                    : $"/education-articles/{post.Slug}/");
         }
 
         return View(await BuildFormAsync(model, cancellationToken));

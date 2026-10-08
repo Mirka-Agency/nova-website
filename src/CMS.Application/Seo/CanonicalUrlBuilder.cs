@@ -1,7 +1,7 @@
 namespace CMS.Application.Seo;
 
 /// <summary>
-/// Builds a single absolute canonical URL: lowercase path, no trailing slash (except /),
+/// Builds a single absolute canonical URL: lowercase path, trailing slash (except root /),
 /// legacy public-path rewrites, and only <c>page</c> query when &gt; 1.
 /// </summary>
 public static class CanonicalUrlBuilder
@@ -97,8 +97,8 @@ public static class CanonicalUrlBuilder
                 path = "/privacy";
         }
 
-        if (path.Length > 1 && path.EndsWith('/'))
-            path = path.TrimEnd('/');
+        if (path.Length > 1 && !path.EndsWith('/'))
+            path += "/";
 
         return path;
     }

@@ -7,8 +7,8 @@ namespace CMS.Modules.News.Web.Controllers;
 public class NewsLegacyRedirectController : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => RedirectPermanent("/education-articles");
+    public IActionResult Index() => RedirectPermanent("/education-articles/");
 
     [HttpGet("{slug}")]
-    public IActionResult Details(string slug) => RedirectPermanent($"/education-articles/{slug}");
+    public IActionResult Details(string slug) => RedirectPermanent($"/education-articles/{slug}/");
 }

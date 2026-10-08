@@ -7,8 +7,8 @@ namespace CMS.Modules.News.Web.Controllers;
 public class EventsLegacyRedirectController : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => RedirectPermanent("/event");
+    public IActionResult Index() => RedirectPermanent("/event/");
 
     [HttpGet("{slug}")]
-    public IActionResult Details(string slug) => RedirectPermanent($"/event/{slug}");
+    public IActionResult Details(string slug) => RedirectPermanent($"/event/{slug}/");
 }

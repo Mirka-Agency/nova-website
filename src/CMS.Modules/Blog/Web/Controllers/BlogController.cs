@@ -57,7 +57,7 @@ public class BlogController : Controller
         if (string.IsNullOrWhiteSpace(slug))
             return NotFound();
 
-        return RedirectPermanent($"/{slug.Trim().Trim('/').ToLowerInvariant()}");
+        return RedirectPermanent($"/{slug.Trim().Trim('/').ToLowerInvariant()}/");
     }
 
     // Low priority so /admin, /shop, /services, … keep their own routes.

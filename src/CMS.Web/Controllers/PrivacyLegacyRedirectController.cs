@@ -7,5 +7,5 @@ namespace CMS.Web.Controllers;
 public class PrivacyLegacyRedirectController : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => RedirectPermanent("/privacy");
+    public IActionResult Index() => RedirectPermanent("/privacy/");
 }

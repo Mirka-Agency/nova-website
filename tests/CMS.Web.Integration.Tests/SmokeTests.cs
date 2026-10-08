@@ -61,11 +61,11 @@ public sealed class SmokeTests
         var client = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
 
         await _fixture.SetShopFeatureAsync(enabled: false);
-        var disabled = await client.GetAsync("/shop");
+        var disabled = await client.GetAsync("/shop/");
         disabled.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         await _fixture.SetShopFeatureAsync(enabled: true);
-        var enabled = await client.GetAsync("/shop");
+        var enabled = await client.GetAsync("/shop/");
         enabled.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 

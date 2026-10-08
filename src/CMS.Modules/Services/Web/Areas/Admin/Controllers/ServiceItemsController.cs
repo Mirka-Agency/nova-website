@@ -241,7 +241,7 @@ public class ServiceItemsController : Controller
                 seoDoc,
                 previewTitle: FirstNonEmpty(post.MetaTitle, post.Title),
                 previewDescription: FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                previewUrl: $"/services/{post.Slug}");
+                previewUrl: $"/services/{post.Slug}/");
         }
 
         return View(await BuildFormAsync(model, cancellationToken));

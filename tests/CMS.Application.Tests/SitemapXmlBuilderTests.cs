@@ -18,7 +18,7 @@ public class SitemapXmlBuilderTests
                     0.7)
             ]);
 
-        xml.Should().Contain("""<loc>https://example.com/blog/hello</loc>""");
+        xml.Should().Contain("""<loc>https://example.com/blog/hello/</loc>""");
         xml.Should().Contain("""<lastmod>2026-03-15T12:30:00Z</lastmod>""");
         xml.Should().Contain("""<changefreq>weekly</changefreq>""");
         xml.Should().Contain("""<priority>0.7</priority>""");
@@ -36,7 +36,7 @@ public class SitemapXmlBuilderTests
             ]);
 
         xml.Split("<url>", StringSplitOptions.None).Length.Should().Be(3); // header + 2 urls
-        xml.Should().Contain("""<loc>https://example.com/blog/b</loc>""");
+        xml.Should().Contain("""<loc>https://example.com/blog/b/</loc>""");
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class SitemapXmlBuilderTests
             "https://example.com",
             [new SitemapUrlEntry("/search?q=a&b=1")]);
 
-        xml.Should().Contain("""<loc>https://example.com/search?q=a&amp;b=1</loc>""");
+        xml.Should().Contain("""<loc>https://example.com/search/?q=a&amp;b=1</loc>""");
     }
 }
 
@@ -60,8 +60,8 @@ public class SitemapIndexXmlBuilderTests
             ["/sitemaps/pages", "/sitemaps/blog", "/sitemaps/shop"]);
 
         xml.Should().Contain("""<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">""");
-        xml.Should().Contain("""<loc>https://example.com/sitemaps/pages</loc>""");
-        xml.Should().Contain("""<loc>https://example.com/sitemaps/blog</loc>""");
-        xml.Should().Contain("""<loc>https://example.com/sitemaps/shop</loc>""");
+        xml.Should().Contain("""<loc>https://example.com/sitemaps/pages/</loc>""");
+        xml.Should().Contain("""<loc>https://example.com/sitemaps/blog/</loc>""");
+        xml.Should().Contain("""<loc>https://example.com/sitemaps/shop/</loc>""");
     }
 }

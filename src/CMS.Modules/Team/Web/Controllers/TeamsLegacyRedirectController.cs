@@ -7,8 +7,8 @@ namespace CMS.Modules.Team.Web.Controllers;
 public class TeamsLegacyRedirectController : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => RedirectPermanent("/doctors");
+    public IActionResult Index() => RedirectPermanent("/doctors/");
 
     [HttpGet("{slug}")]
-    public IActionResult Details(string slug) => RedirectPermanent($"/doctors/{slug}");
+    public IActionResult Details(string slug) => RedirectPermanent($"/doctors/{slug}/");
 }

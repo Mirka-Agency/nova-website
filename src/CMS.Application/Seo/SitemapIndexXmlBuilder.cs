@@ -23,6 +23,8 @@ public static class SitemapIndexXmlBuilder
             var path = relativePath.Trim();
             if (!path.StartsWith('/'))
                 path = "/" + path;
+            if (path.Length > 1 && !path.EndsWith('/'))
+                path += "/";
 
             sb.AppendLine("  <sitemap>");
             sb.Append("    <loc>").Append(XmlEscape(root + path)).AppendLine("</loc>");

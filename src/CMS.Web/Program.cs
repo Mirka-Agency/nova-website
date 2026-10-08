@@ -75,6 +75,7 @@ try
     {
         options.LowercaseUrls = true;
         options.LowercaseQueryStrings = true;
+        options.AppendTrailingSlash = true;
     });
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
