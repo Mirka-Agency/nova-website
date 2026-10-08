@@ -891,7 +891,7 @@ body.nav-open {
 
 .hero-text {
   margin: 0 0 1.6rem;
-  max-width: 30rem;
+  max-width: 36rem;
   font-size: 1.02rem;
   line-height: 1.85;
   color: var(--text-muted);

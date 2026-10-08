@@ -31,7 +31,8 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "controls", "playsinline", "poster", "type",
             "colspan", "rowspan", "scope", "span",
             "dir", "lang", "loading", "style",
-            "data-nova-cta", "data-nova-cta-config"
+            "data-nova-cta", "data-nova-cta-config",
+            "data-nova-scroll-highlight", "data-nova-sh-from", "data-nova-sh-to"
         ]);
 
         _sanitizer.AllowedCssProperties.UnionWith(
