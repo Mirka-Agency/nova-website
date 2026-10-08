@@ -85,6 +85,13 @@ public sealed class ExceptionHandlingMiddleware
             return;
         }
 
+        // Keep the original URL for server errors — do not redirect.
+        if (statusCode >= 500)
+        {
+            await WriteHtmlErrorAsync(context, title, detail);
+            return;
+        }
+
         var isAdmin = context.Request.Path.StartsWithSegments("/admin");
         var basePath = (statusCode, isAdmin) switch
         {
@@ -98,6 +105,40 @@ public sealed class ExceptionHandlingMiddleware
 
         var location = $"{basePath}?code={statusCode}&message={Uri.EscapeDataString(detail)}";
         context.Response.Redirect(location);
+    }
+
+    private static async Task WriteHtmlErrorAsync(HttpContext context, string title, string detail)
+    {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        var safeTitle = System.Net.WebUtility.HtmlEncode(title);
+        var safeDetail = System.Net.WebUtility.HtmlEncode(detail);
+        var safeTraceId = System.Net.WebUtility.HtmlEncode(context.TraceIdentifier);
+
+        await context.Response.WriteAsync(
+            $$"""
+            <!DOCTYPE html>
+            <html lang="fa" dir="rtl">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>{{safeTitle}}</title>
+              <style>
+                body{font-family:Tahoma,sans-serif;background:#f4f7f8;color:#12202a;display:grid;place-items:center;min-height:100vh;margin:0;padding:1.5rem;}
+                main{max-width:32rem;background:#fff;border:1px solid #d7e0e6;border-radius:.75rem;padding:2rem;line-height:1.8;}
+                h1{margin:0 0 .75rem;font-size:1.35rem;}
+                p{margin:0 0 .5rem;color:#5a6b76;}
+                .trace{font-size:.85rem;color:#8a9aa5;}
+              </style>
+            </head>
+            <body>
+              <main>
+                <h1>{{safeTitle}}</h1>
+                <p>{{safeDetail}}</p>
+                <p class="trace">کد پیگیری: {{safeTraceId}}</p>
+              </main>
+            </body>
+            </html>
+            """);
     }
 
     private static (int StatusCode, string Title, string Detail, IReadOnlyDictionary<string, string[]>? Errors)
