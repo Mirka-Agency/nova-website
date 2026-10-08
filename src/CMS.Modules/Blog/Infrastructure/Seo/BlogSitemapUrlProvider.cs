@@ -43,7 +43,7 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
         foreach (var post in posts)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/blog/{post.Slug}",
+                $"/{post.Slug}",
                 post.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7));

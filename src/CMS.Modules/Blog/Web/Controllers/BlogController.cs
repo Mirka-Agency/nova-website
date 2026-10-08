@@ -50,7 +50,18 @@ public class BlogController : Controller
         return View(result.Items);
     }
 
+    /// <summary>Old /blog/{slug} URLs permanently redirect to root /{slug}.</summary>
     [HttpGet("{slug}")]
+    public IActionResult LegacyDetails(string slug)
+    {
+        if (string.IsNullOrWhiteSpace(slug))
+            return NotFound();
+
+        return RedirectPermanent($"/{slug.Trim().Trim('/').ToLowerInvariant()}");
+    }
+
+    // Low priority so /admin, /shop, /services, … keep their own routes.
+    [HttpGet("/{slug:regex(^(?!admin$|api$|account$|blog$|shop$|services$|doctors$|teams$|news$|event$|events$|videos$|forms$|contact$|about$|health$|sitemaps$|sitemap\\.xml$|robots\\.txt$).+)}", Name = "blog-post", Order = 1000)]
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
     {
@@ -61,12 +72,13 @@ public class BlogController : Controller
         if (post is null)
             return NotFound();
 
+        var publicPath = $"/{post.Slug}";
         ViewData["Title"] = post.Title;
         ViewData["NavActive"] = "blog";
         ViewData["MetaTitle"] = FirstNonEmpty(post.MetaTitle, post.Title);
         ViewData["MetaDescription"] = FirstNonEmpty(post.MetaDescription, post.Excerpt);
         ViewData["MetaKeywords"] = post.SeoKeywords;
-        ViewData["CanonicalUrl"] = AbsoluteUrl(post.CanonicalUrl, $"/blog/{post.Slug}");
+        ViewData["CanonicalUrl"] = AbsoluteUrl(post.CanonicalUrl, publicPath);
         ViewData["OgTitle"] = FirstNonEmpty(post.OgTitle, post.MetaTitle, post.Title);
         ViewData["OgDescription"] = FirstNonEmpty(post.OgDescription, post.MetaDescription, post.Excerpt);
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
@@ -90,7 +102,7 @@ public class BlogController : Controller
                         seo.SchemaType,
                         post.Title,
                         FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                        AbsoluteUrl(post.CanonicalUrl, $"/blog/{post.Slug}"),
+                        AbsoluteUrl(post.CanonicalUrl, publicPath),
                         FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl),
                         post.AuthorDisplayName,
                         post.PublishedAtUtc,

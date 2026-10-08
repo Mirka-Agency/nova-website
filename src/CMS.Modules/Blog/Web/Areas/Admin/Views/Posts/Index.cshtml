@@ -47,8 +47,7 @@ else
                 <tr>
                     <td>
                         <a asp-area=""
-                           asp-controller="Blog"
-                           asp-action="Details"
+                           asp-route="blog-post"
                            asp-route-slug="@post.Slug"
                            target="_blank"
                            rel="noopener noreferrer">@post.Title</a>

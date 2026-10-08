@@ -55,6 +55,9 @@ public class CanonicalUrlBuilderTests
 
         CanonicalUrlBuilder.Build("/events/baz", "https", "example.com")
             .Should().Be("https://example.com/event/baz");
+
+        CanonicalUrlBuilder.Build("/Home/Privacy", "https", "example.com")
+            .Should().Be("https://example.com/privacy");
     }
 
     [Fact]

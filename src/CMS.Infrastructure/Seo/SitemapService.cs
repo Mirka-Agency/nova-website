@@ -129,7 +129,8 @@ public sealed class StaticPagesSitemapUrlProvider : ISitemapUrlProvider
         [
             new("/", today, SitemapChangeFrequency.Daily, 1.0),
             new("/about-us", today, SitemapChangeFrequency.Monthly, 0.8),
-            new("/contact-us", today, SitemapChangeFrequency.Monthly, 0.8)
+            new("/contact-us", today, SitemapChangeFrequency.Monthly, 0.8),
+            new("/privacy", today, SitemapChangeFrequency.Yearly, 0.3)
         ];
         return Task.FromResult(entries);
     }

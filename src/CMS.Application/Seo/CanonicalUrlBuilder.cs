@@ -93,6 +93,8 @@ public static class CanonicalUrlBuilder
                 path = "/about-us";
             else if (path == "/contact")
                 path = "/contact-us";
+            else if (path == "/home/privacy")
+                path = "/privacy";
         }
 
         if (path.Length > 1 && path.EndsWith('/'))

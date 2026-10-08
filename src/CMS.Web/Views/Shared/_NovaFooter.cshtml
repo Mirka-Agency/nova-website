@@ -135,7 +135,11 @@
       </div>
 
       <div class="footer-bottom">
-        <p class="footer-copy">تمامی حقوق برای نووا کلینیک محفوظ میباشد.</p>
+        <p class="footer-copy">
+          تمامی حقوق برای نووا کلینیک محفوظ میباشد.
+          <span aria-hidden="true"> · </span>
+          <a asp-area="" asp-route="privacy">حریم خصوصی</a>
+        </p>
         <div class="footer-social">
           @if (!string.IsNullOrWhiteSpace(contact.InstagramUrl))
           {

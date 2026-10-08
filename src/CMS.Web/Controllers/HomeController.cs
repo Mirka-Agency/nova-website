@@ -90,6 +90,7 @@ public class HomeController : Controller
         });
     }
 
+    [HttpGet("privacy", Name = "privacy")]
     [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
     public IActionResult Privacy()
     {

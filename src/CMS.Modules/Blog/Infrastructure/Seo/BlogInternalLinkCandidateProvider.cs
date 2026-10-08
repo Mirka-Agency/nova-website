@@ -34,7 +34,7 @@ public sealed class BlogInternalLinkCandidateProvider : IInternalLinkCandidatePr
             .ToListAsync(cancellationToken);
 
         return posts
-            .Select(p => new InternalLinkCandidate(p.Title, $"/blog/{p.Slug}", SeoContentTypeKeys.BlogPost, p.Id))
+            .Select(p => new InternalLinkCandidate(p.Title, $"/{p.Slug}", SeoContentTypeKeys.BlogPost, p.Id))
             .ToList();
     }
 }

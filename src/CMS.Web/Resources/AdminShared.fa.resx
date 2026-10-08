@@ -69,7 +69,7 @@
   <data name="BusinessHours" xml:space="preserve"><value>ساعات کاری</value></data>
   <data name="BusinessHoursHint" xml:space="preserve"><value>مثال: شنبه تا پنجشنبه · ۹ تا ۲۱</value></data>
   <data name="PrivacyHtml" xml:space="preserve"><value>حریم خصوصی</value></data>
-  <data name="PrivacyHtmlHint" xml:space="preserve"><value>متن صفحه حریم خصوصی؛ در مسیر /Home/Privacy نمایش داده می‌شود.</value></data>
+  <data name="PrivacyHtmlHint" xml:space="preserve"><value>متن سفارشی صفحه حریم خصوصی (اختیاری)؛ در مسیر /privacy نمایش داده می‌شود. اگر خالی بماند، متن پیش‌فرض سایت نشان داده می‌شود.</value></data>
   <data name="Address" xml:space="preserve"><value>آدرس</value></data>
   <data name="FooterText" xml:space="preserve"><value>متن فوتر</value></data>
   <data name="SettingsSectionIdentity" xml:space="preserve"><value>هویت برند</value></data>

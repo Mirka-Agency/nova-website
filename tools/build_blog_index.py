@@ -72,7 +72,7 @@ cshtml = r'''@model IReadOnlyList<PublicPostSummaryDto>
             : item.CoverImageUrl;
         var featuredClass = index == 0 ? " blog-card--featured" : null;
         <article class="blog-card@(featuredClass) reveal" data-blog-card>
-          <a class="blog-card__link" asp-controller="Blog" asp-action="Details" asp-route-slug="@item.Slug">
+          <a class="blog-card__link" asp-area="" asp-route="blog-post" asp-route-slug="@item.Slug">
             <span class="blog-card__media">
               <img
                 src="@cover"

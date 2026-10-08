@@ -243,7 +243,7 @@ public class PostsController : Controller
                 seoDoc,
                 previewTitle: FirstNonEmpty(post.MetaTitle, post.Title),
                 previewDescription: FirstNonEmpty(post.MetaDescription, post.Excerpt),
-                previewUrl: $"/blog/{post.Slug}");
+                previewUrl: $"/{post.Slug}");
         }
 
         return View(await BuildFormAsync(model, cancellationToken));

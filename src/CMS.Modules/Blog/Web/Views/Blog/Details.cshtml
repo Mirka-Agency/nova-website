@@ -268,7 +268,7 @@
               ? "برای ادامه مطلب وارد شوید."
               : item.Excerpt;
           <article class="blog-card reveal">
-            <a class="blog-card__link" asp-controller="Blog" asp-action="Details" asp-route-slug="@item.Slug">
+            <a class="blog-card__link" asp-area="" asp-route="blog-post" asp-route-slug="@item.Slug">
               <span class="blog-card__media">
                 <img
                   src="@itemCover"
