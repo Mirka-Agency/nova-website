@@ -15,11 +15,16 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
     private const int ExcerptLength = 180;
     private readonly VideoDbContext _db;
     private readonly IMemoryCache _cache;
+    private readonly IVideoThumbnailResolver _thumbnails;
 
-    public PublicVideoItemQuery(VideoDbContext db, IMemoryCache cache)
+    public PublicVideoItemQuery(
+        VideoDbContext db,
+        IMemoryCache cache,
+        IVideoThumbnailResolver thumbnails)
     {
         _db = db;
         _cache = cache;
+        _thumbnails = thumbnails;
     }
 
     public async Task<IReadOnlyList<PublicVideoItemSummaryDto>> ListPublishedAsync(
@@ -75,7 +80,9 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
                 p.AuthorDisplayName))
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<PublicVideoItemSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
+        var enriched = await EnrichCoversAsync(posts, cancellationToken);
+
+        return new PagedResult<PublicVideoItemSummaryDto>(enriched, totalCount, normalizedPage, normalizedPageSize);
     }
 
     public Task<IReadOnlyList<PublicVideoCategoryDto>> ListPublishedCategoriesAsync(
@@ -125,6 +132,10 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
         if (post is null)
             return null;
 
+        var cover = post.CoverImageUrl;
+        if (string.IsNullOrWhiteSpace(cover))
+            cover = await _thumbnails.ResolveAsync(post.VideoUrl, cancellationToken);
+
         return new PublicVideoItemDetailDto(
             post.Id,
             post.Title,
@@ -132,7 +143,7 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
             post.Body,
             post.Category?.Name,
             post.Category?.Slug,
-            post.CoverImageUrl,
+            cover,
             post.CoverImageAlt,
             post.VideoUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
@@ -145,6 +156,32 @@ public sealed class PublicVideoItemQuery : IPublicVideoItemQuery
             post.OgTitle,
             post.OgDescription,
             post.OgImageUrl);
+    }
+
+    private async Task<IReadOnlyList<PublicVideoItemSummaryDto>> EnrichCoversAsync(
+        IReadOnlyList<PublicVideoItemSummaryDto> posts,
+        CancellationToken cancellationToken)
+    {
+        if (posts.Count == 0)
+            return posts;
+
+        var result = new PublicVideoItemSummaryDto[posts.Count];
+        for (var i = 0; i < posts.Count; i++)
+        {
+            var item = posts[i];
+            if (!string.IsNullOrWhiteSpace(item.CoverImageUrl))
+            {
+                result[i] = item;
+                continue;
+            }
+
+            var resolved = await _thumbnails.ResolveAsync(item.VideoUrl, cancellationToken);
+            result[i] = string.IsNullOrWhiteSpace(resolved)
+                ? item
+                : item with { CoverImageUrl = resolved };
+        }
+
+        return result;
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>

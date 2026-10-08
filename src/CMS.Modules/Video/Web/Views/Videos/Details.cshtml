@@ -11,9 +11,8 @@
     var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
         ? $"ویدئوی آموزشی «{Model.Title}» از {brand}."
         : Model.Excerpt;
-    var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
-        ? Url.Content("~/template/assets/images/videos/endocrine.webp")
-        : Model.CoverImageUrl;
+    var cover = VideoThumbnailUrl.PreferCover(Model.CoverImageUrl, Model.VideoUrl)
+        ?? Url.Content("~/template/assets/images/videos/endocrine.webp");
     var coverAlt = string.IsNullOrWhiteSpace(Model.CoverImageAlt) ? Model.Title : Model.CoverImageAlt;
     var related = (ViewBag.Related as IReadOnlyList<PublicVideoItemSummaryDto>)
         ?? Array.Empty<PublicVideoItemSummaryDto>();
@@ -146,7 +145,8 @@
       <div class="videos-grid videos-grid--related">
         @foreach (var item in related)
         {
-          var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? cover : item.CoverImageUrl;
+          var itemCover = VideoThumbnailUrl.PreferCover(item.CoverImageUrl, item.VideoUrl)
+              ?? Url.Content("~/template/assets/images/videos/endocrine.webp");
           var itemCoverAlt = string.IsNullOrWhiteSpace(item.CoverImageAlt) ? item.Title : item.CoverImageAlt;
           var itemType = string.IsNullOrWhiteSpace(item.CategoryName) ? "ویدئو" : item.CategoryName;
           <article class="video-card reveal">

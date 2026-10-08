@@ -15,6 +15,7 @@
     ButtonView,
     View,
     createDropdown,
+    findAttributeRange,
   } = CKEDITOR;
 
   const INLINE_ATTR = "scrollHighlight";
@@ -102,74 +103,46 @@
   }
 
   function getInlineAttributeRange(editor, position) {
-    if (!position || !position.textNode) {
-      // Walk to nearest text with attribute.
-      const selection = editor.model.document.selection;
-      if (!selection.hasAttribute(INLINE_ATTR)) return null;
-    }
+    if (!position) return null;
+    const selection = editor.model.document.selection;
+    const attrValue = selection.getAttribute(INLINE_ATTR);
+    if (!attrValue) return null;
 
-    try {
-      const range = editor.model.document.selection.getFirstRange();
-      if (range && !range.isCollapsed && selectionHasAttrInRange(editor, range)) {
-        return range;
+    if (typeof findAttributeRange === "function") {
+      try {
+        return findAttributeRange(
+          position,
+          INLINE_ATTR,
+          attrValue,
+          editor.model
+        );
+      } catch (_) {
+        /* fall through */
       }
-    } catch (_) {
-      /* ignore */
     }
 
-    const model = editor.model;
-    const root = position.root;
-    const attr = INLINE_ATTR;
-
-    // Expand from caret across contiguous attributed text.
-    let start = position;
-    let end = position;
-
-    const walkerBack = model.createRange(model.createPositionAt(root, 0), position).getWalker({
-      direction: "backward",
-      ignoreElementEnd: true,
-    });
-    for (const value of walkerBack) {
-      if (value.type !== "text" || !value.item.hasAttribute(attr)) break;
-      start = model.createPositionAt(value.item.parent, value.item.startOffset);
-    }
-
-    const walkerFwd = model.createRange(position, model.createPositionAt(root, "end")).getWalker({
-      ignoreElementEnd: true,
-    });
-    for (const value of walkerFwd) {
-      if (value.type !== "text" || !value.item.hasAttribute(attr)) break;
-      end = model.createPositionAt(
-        value.item.parent,
-        value.item.startOffset + value.item.data.length
-      );
-    }
-
-    if (start.isEqual(end)) return null;
-    return model.createRange(start, end);
+    return selection.getFirstRange();
   }
 
-  function selectionHasAttrInRange(editor, range) {
-    for (const item of range.getItems()) {
-      if (item.is?.("$textProxy") && item.hasAttribute(INLINE_ATTR)) return true;
-      if (item.is?.("$text") && item.hasAttribute(INLINE_ATTR)) return true;
-    }
-    return false;
-  }
-
-  function blockViewAttributes(modelElement) {
-    return {
+  function blockViewAttributes(modelElement, forEditing) {
+    const from = normalizeHex(
+      modelElement.getAttribute("scrollHighlightFrom"),
+      DEFAULT_FROM
+    );
+    const to = normalizeHex(
+      modelElement.getAttribute("scrollHighlightTo"),
+      DEFAULT_TO
+    );
+    const attrs = {
       class: CLASS_NAME,
       [DATA_MARKER]: "1",
-      [DATA_FROM]: normalizeHex(
-        modelElement.getAttribute("scrollHighlightFrom"),
-        DEFAULT_FROM
-      ),
-      [DATA_TO]: normalizeHex(
-        modelElement.getAttribute("scrollHighlightTo"),
-        DEFAULT_TO
-      ),
+      [DATA_FROM]: from,
+      [DATA_TO]: to,
+      style: forEditing
+        ? `--nova-sh-preview-from:${from};--nova-sh-preview-to:${to};color:${from}`
+        : `color:${from}`,
     };
+    return attrs;
   }
 
   class ScrollHighlightCommand extends Command {
@@ -256,14 +229,18 @@
 
       model.change((writer) => {
         if (active && active.mode === "block" && active.element) {
-          const parent = active.element.parent;
-          const index = parent.getChildIndex(active.element);
-          const children = Array.from(active.element.getChildren());
-          writer.remove(active.element);
-          let at = index;
-          for (const child of children) {
-            writer.insert(child, parent, at);
-            at += 1;
+          if (typeof writer.unwrap === "function") {
+            writer.unwrap(active.element);
+          } else {
+            const parent = active.element.parent;
+            const index = parent.getChildIndex(active.element);
+            const children = Array.from(active.element.getChildren());
+            writer.remove(active.element);
+            let at = index;
+            for (const child of children) {
+              writer.insert(child, parent, at);
+              at += 1;
+            }
           }
           return;
         }
@@ -319,7 +296,7 @@
             tag: "label",
             attributes: { class: ["ck-scroll-highlight-form__label"] },
             children: [
-              { text: "رنگ اولیه متن" },
+              "رنگ اولیه متن",
               {
                 tag: "input",
                 attributes: {
@@ -335,7 +312,7 @@
             tag: "label",
             attributes: { class: ["ck-scroll-highlight-form__label"] },
             children: [
-              { text: "رنگ نهایی هایلایت" },
+              "رنگ نهایی هایلایت",
               {
                 tag: "input",
                 attributes: {
@@ -447,7 +424,7 @@
     _defineConverters() {
       const conversion = this.editor.conversion;
 
-      conversion.for("downcast").attributeToElement({
+      conversion.for("editingDowncast").attributeToElement({
         model: INLINE_ATTR,
         view: (value, { writer }) => {
           if (!value) return;
@@ -459,6 +436,27 @@
               [DATA_MARKER]: "1",
               [DATA_FROM]: colors.from,
               [DATA_TO]: colors.to,
+              style: `--nova-sh-preview-from:${colors.from};--nova-sh-preview-to:${colors.to};color:${colors.from}`,
+            },
+            { priority: 5 }
+          );
+        },
+      });
+
+      conversion.for("dataDowncast").attributeToElement({
+        model: INLINE_ATTR,
+        view: (value, { writer }) => {
+          if (!value) return;
+          const colors = decodeColors(value);
+          return writer.createAttributeElement(
+            "span",
+            {
+              class: CLASS_NAME,
+              [DATA_MARKER]: "1",
+              [DATA_FROM]: colors.from,
+              [DATA_TO]: colors.to,
+              // Readable before JS / with reduced-motion fallback via CSS.
+              style: `color:${colors.from}`,
             },
             { priority: 5 }
           );
@@ -488,7 +486,10 @@
       conversion.for("editingDowncast").elementToElement({
         model: BLOCK_NAME,
         view: (modelElement, { writer }) => {
-          const el = writer.createContainerElement("div", blockViewAttributes(modelElement));
+          const el = writer.createContainerElement(
+            "div",
+            blockViewAttributes(modelElement, true)
+          );
           writer.setCustomProperty("scrollHighlight", true, el);
           return el;
         },
@@ -497,7 +498,10 @@
       conversion.for("dataDowncast").elementToElement({
         model: BLOCK_NAME,
         view: (modelElement, { writer }) =>
-          writer.createContainerElement("div", blockViewAttributes(modelElement)),
+          writer.createContainerElement(
+            "div",
+            blockViewAttributes(modelElement, false)
+          ),
       });
 
       conversion.for("upcast").elementToElement({

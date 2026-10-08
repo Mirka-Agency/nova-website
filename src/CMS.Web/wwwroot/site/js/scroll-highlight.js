@@ -146,10 +146,9 @@
     var maxProgress = 0;
     var trigger = ScrollTrigger.create({
       trigger: el,
-      // Long scrub distance so highlight completes slowly.
       start: "top 80%",
       end: "bottom+=140% top",
-      scrub: 0.6,
+      scrub: 0.75,
       invalidateOnRefresh: true,
       onUpdate: function (self) {
         if (self.progress > maxProgress) {
@@ -158,7 +157,6 @@
         }
       },
       onRefresh: function (self) {
-        // Keep sticky progress after layout changes.
         if (maxProgress > 0) {
           applyProgress(chars, maxProgress, colors.from, colors.to);
         } else if (self.progress > 0) {
@@ -168,7 +166,6 @@
       },
     });
 
-    // If already past the end on load, complete.
     if (trigger.progress >= 1) {
       maxProgress = 1;
       applyProgress(chars, 1, colors.from, colors.to);
@@ -185,15 +182,29 @@
     var nodes = scope.querySelectorAll(SELECTOR);
     if (!nodes.length) return;
 
-    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
+    if (prefersReducedMotion()) {
+      nodes.forEach(function (el) {
+        var colors = readColors(el);
+        el.style.setProperty("--nova-sh-from", colors.from);
+        el.style.setProperty("--nova-sh-to", colors.to);
+        setSolidColor(el, colors.to);
+        el.setAttribute("data-nova-sh-ready", "1");
+      });
+      return;
     }
 
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      nodes.forEach(function (el) {
+        var colors = readColors(el);
+        setSolidColor(el, colors.to);
+        el.setAttribute("data-nova-sh-ready", "1");
+      });
+      return;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
     nodes.forEach(initOne);
-
-    if (typeof ScrollTrigger !== "undefined") {
-      ScrollTrigger.refresh();
-    }
+    ScrollTrigger.refresh();
   }
 
   function destroyAll() {

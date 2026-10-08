@@ -59,9 +59,8 @@ else
     {
         var category = string.IsNullOrWhiteSpace(item.CategorySlug) ? "uncategorized" : item.CategorySlug;
         var typeLabel = string.IsNullOrWhiteSpace(item.CategoryName) ? "ویدئو" : item.CategoryName;
-        var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
-            ? Url.Content("~/template/assets/images/videos/endocrine.webp")
-            : item.CoverImageUrl;
+        var cover = VideoThumbnailUrl.PreferCover(item.CoverImageUrl, item.VideoUrl)
+            ?? Url.Content("~/template/assets/images/videos/endocrine.webp");
         var coverAlt = string.IsNullOrWhiteSpace(item.CoverImageAlt) ? item.Title : item.CoverImageAlt;
         <article class="video-card reveal" data-video-card data-video-category="@category">
           <a

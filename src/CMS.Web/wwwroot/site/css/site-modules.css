@@ -218,6 +218,24 @@ main > .error-page {
 .blog-content .marker-pink { background-color: #fc7899; }
 .blog-content .marker-blue { background-color: #72cdfd; }
 
+/* Scroll-scrubbed text highlight (public runtime) */
+.nova-scroll-highlight {
+  --nova-sh-from: #6b7280;
+  --nova-sh-to: #0f172a;
+}
+
+.nova-scroll-highlight .nova-sh-char {
+  /* Color is driven by JS for soft scrub; inherit as fallback. */
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-scroll-highlight,
+  .nova-scroll-highlight .nova-sh-char {
+    color: var(--nova-sh-to) !important;
+  }
+}
+
 .blog-content table {
   width: 100%;
   border-collapse: collapse;

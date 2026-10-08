@@ -1990,6 +1990,64 @@ fieldset.admin-field legend {
   background-color: #72cdfd;
 }
 
+/* Scroll-scrubbed text highlight (editor chrome) */
+.ck-content .nova-scroll-highlight {
+  color: var(--nova-sh-preview-from, #6b7280);
+  background-color: rgba(15, 23, 42, 0.06);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  outline: 1px dashed #999;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.ck-content div.nova-scroll-highlight {
+  display: flow-root;
+  padding-block: 0.15em;
+  margin-block: 0.35em;
+}
+
+.ck-scroll-highlight-form {
+  display: grid;
+  gap: 12px;
+  min-width: 260px;
+  padding: 12px;
+  direction: rtl;
+}
+
+.ck-scroll-highlight-form__hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.ck-scroll-highlight-form__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #000;
+}
+
+.ck-scroll-highlight-form__color {
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ck-scroll-highlight-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-start: 4px;
+}
+
 /* Stack earlier: admin nav (~240px) leaves little room on tablets */
 @media (max-width: 1200px) {
   .admin-post-editor {

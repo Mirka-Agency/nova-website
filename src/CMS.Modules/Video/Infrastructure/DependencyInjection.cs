@@ -30,6 +30,12 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPublicVideoItemQuery, PublicVideoItemQuery>();
         services.AddScoped<ISitemapUrlProvider, VideosSitemapUrlProvider>();
+        services.AddHttpClient("AparatThumbnail", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(3);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("NovaClinicCMS/1.0");
+        });
+        services.AddScoped<IVideoThumbnailResolver, VideoThumbnailResolver>();
 
         return services;
     }
