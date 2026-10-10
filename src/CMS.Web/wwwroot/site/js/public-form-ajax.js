@@ -10,22 +10,6 @@
     return input ? input.value : '';
   }
 
-  /** Standalone /forms/{slug} pages are removed; never navigate there after submit. */
-  function isStandaloneFormUrl(url) {
-    if (!url) return false;
-    try {
-      var parsed = new URL(url, window.location.origin);
-      var parts = parsed.pathname.replace(/^\/+|\/+$/g, '').split('/');
-      if (parts.length === 2 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() !== 'key')
-        return true;
-      if (parts.length === 3 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() === 'by-id')
-        return true;
-    } catch (e) {
-      return false;
-    }
-    return false;
-  }
-
   function clearErrors(form) {
     var errorBox = form.querySelector('.public-form-errors') || form.querySelector('[data-valmsg-summary]');
     if (errorBox) {
@@ -74,54 +58,6 @@
     }
   }
 
-  function onBookingSuccess(form, message) {
-    var modal = form.closest('.booking-modal');
-    if (modal) {
-      var host = modal.querySelector('[data-booking-form-host]');
-      var success = modal.querySelector('[data-booking-success]');
-      if (host) host.hidden = true;
-      if (success) {
-        var text = success.querySelector('[data-booking-success-text]');
-        if (text && message) text.textContent = message;
-        success.hidden = false;
-        var closeBtn = success.querySelector('[data-booking-close]');
-        if (closeBtn) closeBtn.focus();
-      }
-      return true;
-    }
-
-    var cmsPopup = form.closest('.cms-popup--booking, [data-cms-popup]');
-    if (!cmsPopup) return false;
-    var popupSuccess = cmsPopup.querySelector('[data-popup-success]');
-    if (!popupSuccess) return false;
-    var content = cmsPopup.querySelector('[data-popup-content]');
-    if (content) content.hidden = true;
-    var popupText = popupSuccess.querySelector('[data-popup-success-text]');
-    if (popupText && message) popupText.textContent = message;
-    popupSuccess.hidden = false;
-    var popupClose = popupSuccess.querySelector('[data-popup-close]');
-    if (popupClose) popupClose.focus();
-    return true;
-  }
-
-  function onContactSuccess(form, message) {
-    var panel = form.closest('.contact-form');
-    if (!panel) return false;
-    form.hidden = true;
-    var existing = panel.querySelector('[data-contact-cms-success]');
-    if (existing) existing.remove();
-    var box = document.createElement('div');
-    box.className = 'contact-form__success';
-    box.setAttribute('data-contact-cms-success', '');
-    box.innerHTML =
-      '<p class="contact-form__success-title">پیام شما دریافت شد</p>' +
-      '<p class="contact-form__success-text"></p>';
-    var text = box.querySelector('.contact-form__success-text');
-    if (text) text.textContent = message || 'به‌زودی با شما تماس می‌گیریم.';
-    panel.appendChild(box);
-    return true;
-  }
-
   function submitAjax(form) {
     if (form.getAttribute('data-submitting') === '1') return;
     form.setAttribute('data-submitting', '1');
@@ -153,22 +89,16 @@
       })
       .then(function (result) {
         var data = result.data || {};
-        if (result.ok && data.ok) {
-          if (data.redirectUrl && !isStandaloneFormUrl(data.redirectUrl)) {
-            window.location.href = data.redirectUrl;
-            return;
-          }
-          var msg = data.message || 'ارسال با موفقیت انجام شد.';
-          if (onBookingSuccess(form, msg)) return;
-          if (onContactSuccess(form, msg)) return;
-          var success = document.createElement('p');
-          success.className = 'public-form-success';
-          success.textContent = msg;
-          form.replaceWith(success);
-          return;
-        }
         form.removeAttribute('data-submitting');
         if (submitBtn) submitBtn.disabled = false;
+
+        if (result.ok && data.ok) {
+          var msg = data.message || 'ارسال با موفقیت انجام شد.';
+          try { form.reset(); } catch (e) { /* ignore */ }
+          window.alert(msg);
+          return;
+        }
+
         showFieldErrors(form, data.errors);
         showSummary(form, data);
       })
@@ -182,6 +112,8 @@
   function bind(form) {
     if (!form || form.getAttribute('data-public-ajax') === 'off') return;
     if (form.getAttribute('data-public-ajax-bound') === '1') return;
+    // Popup forms are handled by popup.js
+    if (form.closest('[data-cms-popup]')) return;
     form.setAttribute('data-public-ajax-bound', '1');
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -191,11 +123,7 @@
   }
 
   function init() {
-    document
-      .querySelectorAll(
-        '.booking-modal form.public-form, .contact-form form.public-form, .contact-form-panel form.public-form'
-      )
-      .forEach(bind);
+    document.querySelectorAll('form.public-form').forEach(bind);
   }
 
   if (document.readyState === 'loading') {

@@ -973,12 +973,9 @@
           return;
         }
 
-        form.hidden = true;
-        if (success) {
-          success.hidden = false;
-          var closeBtn = success.querySelector("[data-booking-close]");
-          if (closeBtn) closeBtn.focus();
-        }
+        form.reset();
+        resetSelect();
+        window.alert("درخواست شما ثبت شد. به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.");
       });
     }
   })();

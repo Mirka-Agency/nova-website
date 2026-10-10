@@ -7,22 +7,6 @@
 
   var STORAGE_PREFIX = 'cms.popup.';
 
-  /** Standalone /forms/{slug} pages are removed; never navigate there after submit. */
-  function isStandaloneFormRedirect(url) {
-    if (!url) return false;
-    try {
-      var parsed = new URL(url, window.location.origin);
-      var parts = parsed.pathname.replace(/^\/+|\/+$/g, '').split('/');
-      if (parts.length === 2 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() !== 'key')
-        return true;
-      if (parts.length === 3 && parts[0].toLowerCase() === 'forms' && parts[1].toLowerCase() === 'by-id')
-        return true;
-    } catch (e) {
-      return false;
-    }
-    return false;
-  }
-
   var host = document.querySelector('[data-cms-popup-host]');
   if (!host) return;
 
@@ -94,26 +78,6 @@
       var submitBtn = form.querySelector('[type="submit"]');
       if (submitBtn) submitBtn.disabled = false;
     }
-  }
-
-  function showPopupFormSuccess(popup, form, message) {
-    var success = popup.querySelector('[data-popup-success]');
-    if (success) {
-      var content = popup.querySelector('[data-popup-content]');
-      if (content) content.hidden = true;
-      var text = success.querySelector('[data-popup-success-text]');
-      if (text) text.textContent = message || 'ارسال با موفقیت انجام شد.';
-      success.hidden = false;
-      var closeBtn = success.querySelector('[data-popup-close]');
-      if (closeBtn) closeBtn.focus();
-      return true;
-    }
-    if (!form) return false;
-    var fallback = document.createElement('p');
-    fallback.className = 'public-form-success';
-    fallback.textContent = message || 'ارسال با موفقیت انجام شد.';
-    form.replaceWith(fallback);
-    return true;
   }
 
   function focusNoScroll(el) {
@@ -295,19 +259,17 @@
       });
     }).then(function (result) {
       var data = result.data || {};
+      form.removeAttribute('data-submitting');
+      if (submitBtn) submitBtn.disabled = false;
+
       if (result.ok && data.ok) {
         markShown(popup);
-        if (data.redirectUrl && !isStandaloneFormRedirect(data.redirectUrl)) {
-          window.location.href = data.redirectUrl;
-          return;
-        }
         var msg = data.message || 'ارسال با موفقیت انجام شد.';
-        showPopupFormSuccess(popup, form, msg);
+        try { form.reset(); } catch (e) { /* ignore */ }
+        window.alert(msg);
         return;
       }
 
-      form.removeAttribute('data-submitting');
-      if (submitBtn) submitBtn.disabled = false;
 
       var errors = (data && data.errors) || {};
       var messages = [];
