@@ -1985,4 +1985,20 @@
     width: 0.95rem;
     height: 0.95rem;
   }
+
+  .error-page {
+    min-height: auto;
+    padding-block: 3.25rem 3.75rem;
+  }
+
+  .error-page__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .error-page__actions .btn-primary-custom,
+  .error-page__actions .btn-secondary-custom {
+    width: 100%;
+    justify-content: center;
+  }
 }

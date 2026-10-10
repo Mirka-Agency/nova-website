@@ -225,6 +225,7 @@ try
 
     app.UseForwardedHeaders();
     app.UseGlobalExceptionHandling();
+    app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
     app.UseSecurityHeaders();
 
     if (!app.Environment.IsDevelopment())

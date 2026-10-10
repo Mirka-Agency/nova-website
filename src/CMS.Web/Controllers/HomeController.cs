@@ -149,16 +149,18 @@ public class HomeController : Controller
     {
         var status = code ?? StatusCodes.Status500InternalServerError;
         Response.StatusCode = status;
+        ViewData["Robots"] = "noindex, nofollow";
 
         var (title, fallback) = status switch
         {
-            StatusCodes.Status404NotFound => ("یافت نشد", "صفحه مورد نظر یافت نشد."),
+            StatusCodes.Status404NotFound => ("صفحه پیدا نشد", "آدرسی که وارد کرده‌اید وجود ندارد یا منتقل شده است."),
             StatusCodes.Status400BadRequest => ("درخواست نامعتبر", "درخواست شما معتبر نیست."),
-            _ => ("خطای سرور", "خطای غیرمنتظره‌ای رخ داد.")
+            _ => ("خطای سرور", "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید.")
         };
 
         return View(new ErrorViewModel
         {
+            StatusCode = status,
             Title = title,
             Message = string.IsNullOrWhiteSpace(message) ? fallback : message,
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier

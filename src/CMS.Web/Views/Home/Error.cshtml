@@ -1,16 +1,59 @@
-@using System.Diagnostics
+@using System.Globalization
+@using CMS.Application.Common.Features
+@using Microsoft.FeatureManagement
 @model CMS.Web.Models.ErrorViewModel
+@inject IFeatureManager FeatureManager
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout";
-}
 
-<div class="text-center">
-    <h1 class="display-6">@Model.Title</h1>
-    <p>@Model.Message</p>
-    @if (Model.ShowRequestId)
-    {
-        <p><small>کد پیگیری: @Model.RequestId</small></p>
-    }
-    <p><a asp-controller="Home" asp-action="Index">بازگشت</a></p>
-</div>
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲')
+             .Replace('3', '۳').Replace('4', '۴').Replace('5', '۵')
+             .Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
+
+    var statusLabel = ToPersianDigits(Model.StatusCode.ToString(CultureInfo.InvariantCulture));
+    var kicker = Model.IsNotFound ? "خطای ۴۰۴" : "خطا";
+    var servicesOn = Model.IsNotFound && await FeatureManager.IsEnabledAsync(FeatureNames.Services);
+    var teamOn = Model.IsNotFound && await FeatureManager.IsEnabledAsync(FeatureNames.Team);
+    var blogOn = Model.IsNotFound && await FeatureManager.IsEnabledAsync(FeatureNames.Blog);
+}
+<section class="error-page" aria-labelledby="error-page-title">
+  <div class="container">
+    <div class="error-page__panel reveal">
+      <p class="error-page__code" aria-hidden="true">@statusLabel</p>
+      <p class="section-kicker">@kicker</p>
+      <h1 class="error-page__title" id="error-page-title">@Model.Title</h1>
+      <p class="error-page__lead">@Model.Message</p>
+
+      <div class="error-page__actions">
+        <a class="btn-primary-custom" asp-controller="Home" asp-action="Index">بازگشت به صفحه اصلی</a>
+        <a class="btn-secondary-custom" asp-area="" asp-route="contact-us">تماس با ما</a>
+      </div>
+
+      @if (Model.IsNotFound)
+      {
+        <nav class="error-page__links" aria-label="میانبرهای مفید">
+          @if (servicesOn)
+          {
+            <a asp-controller="Services" asp-action="Index">خدمات</a>
+          }
+          @if (teamOn)
+          {
+            <a asp-controller="Teams" asp-action="Index">متخصصان</a>
+          }
+          @if (blogOn)
+          {
+            <a asp-controller="Blog" asp-action="Index">وبلاگ</a>
+          }
+          <a asp-area="" asp-route="about-us">درباره ما</a>
+        </nav>
+      }
+
+      @if (Model.ShowRequestId && !Model.IsNotFound)
+      {
+        <p class="error-page__trace">کد پیگیری: <span dir="ltr">@Model.RequestId</span></p>
+      }
+    </div>
+  </div>
+</section>
