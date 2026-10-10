@@ -662,6 +662,62 @@
       },
       mediaEmbed: {
         previewsInData: true,
+        extraProviders: [
+          {
+            // Direct video files (S3 / CDN / Arvan / etc.) — protocol+www stripped before match.
+            name: "rawVideo",
+            url: [
+              /^.+\.mp4(?:[?#][^\s]*)?$/i,
+              /^.+\.webm(?:[?#][^\s]*)?$/i,
+              /^.+\.ogg(?:[?#][^\s]*)?$/i,
+              /^.+\.ogv(?:[?#][^\s]*)?$/i,
+              /^.+\.m4v(?:[?#][^\s]*)?$/i,
+              /^.+\.mov(?:[?#][^\s]*)?$/i,
+            ],
+            html: function (match) {
+              const path = match[0] || "";
+              const src = /^https?:\/\//i.test(path) ? path : "https://" + path;
+              const safe = String(src)
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+              return (
+                '<div style="position:relative;padding-bottom:56.25%;height:0;background:#0f1f22;">' +
+                '<video controls playsinline preload="metadata" src="' +
+                safe +
+                '" ' +
+                'style="position:absolute;inset:0;width:100%;height:100%;">' +
+                "</video></div>"
+              );
+            },
+          },
+          {
+            name: "aparat",
+            url: [
+              /^aparat\.com\/v\/([A-Za-z0-9_-]+)/i,
+              /^www\.aparat\.com\/v\/([A-Za-z0-9_-]+)/i,
+              /^aparat\.com\/video\/video\/embed(?:_box)?\/videohash\/([A-Za-z0-9_-]+)/i,
+              /^www\.aparat\.com\/video\/video\/embed(?:_box)?\/videohash\/([A-Za-z0-9_-]+)/i,
+            ],
+            html: function (match) {
+              const hash = match[1];
+              const src =
+                "https://www.aparat.com/video/video/embed/videohash/" +
+                hash +
+                "/vt/frame";
+              return (
+                '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+                '<iframe src="' +
+                src +
+                '" ' +
+                'style="position:absolute;inset:0;width:100%;height:100%;border:0;" ' +
+                'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" ' +
+                "allowfullscreen loading=\"lazy\"></iframe></div>"
+              );
+            },
+          },
+        ],
       },
       htmlSupport: {
         allow: [

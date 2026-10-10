@@ -266,6 +266,21 @@ main > .error-page {
   margin: 0 0 1em;
 }
 
+.blog-content figure.media > div {
+  position: relative;
+  width: 100%;
+}
+
+.blog-content figure.media iframe,
+.blog-content figure.media video {
+  max-width: 100%;
+  width: 100%;
+  display: block;
+  margin: 0;
+  border: 0;
+  background: #0f1f22;
+}
+
 .blog-content pre {
   overflow-x: auto;
   padding: 0.75rem 1rem;

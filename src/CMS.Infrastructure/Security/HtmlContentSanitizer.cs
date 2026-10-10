@@ -21,16 +21,18 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "a", "img", "figure", "figcaption",
             "span", "div",
             "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption", "colgroup", "col",
-            "video", "source"
+            "video", "source", "iframe", "oembed"
         ]);
 
         _sanitizer.AllowedAttributes.UnionWith(
         [
             "href", "src", "alt", "title", "class", "id",
             "target", "rel", "width", "height",
-            "controls", "playsinline", "poster", "type",
+            "controls", "playsinline", "poster", "type", "preload",
+            "allow", "allowfullscreen", "frameborder", "referrerpolicy", "scrolling",
             "colspan", "rowspan", "scope", "span",
-            "dir", "lang", "loading", "style",
+            "dir", "lang", "loading", "style", "url",
+            "data-oembed-url",
             "data-nova-cta", "data-nova-cta-config",
             "data-nova-scroll-highlight", "data-nova-sh-from", "data-nova-sh-to"
         ]);
