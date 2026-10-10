@@ -8,6 +8,8 @@ public sealed class CtaHelperPageViewModel
     public string TelHref { get; init; } = "tel:02191093492";
     public string WhatsAppUrl { get; init; } = "tel:02191093492";
     public string ContactUrl { get; init; } = "/contact-us/";
+    /// <summary>Special CTA href that opens the site booking popup (slug=booking).</summary>
+    public string BookingPopupUrl { get; init; } = "popup:booking";
     public string DoctorsUrl { get; init; } = "/doctors/";
     public string ServicesUrl { get; init; } = "/services/";
     public string DoctorImageUrl { get; init; } = "/template/assets/images/doctors/dr-hamedani.webp";

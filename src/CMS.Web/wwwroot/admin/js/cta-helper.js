@@ -56,11 +56,40 @@
     return data;
   }
 
+  function parsePopupHref(href) {
+    var raw = String(href == null ? "" : href).trim();
+    if (!raw) return null;
+
+    var lower = raw.toLowerCase();
+    if (lower.indexOf("popup:") === 0) {
+      var slug = raw.slice(6).trim();
+      return slug || "booking";
+    }
+    if (lower === "#booking" || lower === "booking") return "booking";
+    return null;
+  }
+
+  function btnOpenAttrs(href) {
+    var popupSlug = parsePopupHref(href);
+    if (popupSlug) {
+      var attrs =
+        ' href="#"' +
+        ' data-popup-open="' +
+        esc(popupSlug) +
+        '" role="button"';
+      if (popupSlug.toLowerCase() === "booking") {
+        attrs += " data-booking-open";
+      }
+      return attrs;
+    }
+    return ' href="' + esc(href) + '"';
+  }
+
   function btnPrimary(href, text) {
     return (
-      '<a href="' +
-      esc(href) +
-      '" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;box-shadow:0 8px 18px rgba(9,112,125,.22);">' +
+      "<a" +
+      btnOpenAttrs(href) +
+      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;box-shadow:0 8px 18px rgba(9,112,125,.22);">' +
       esc(text) +
       "</a>"
     );
@@ -68,9 +97,9 @@
 
   function btnSecondary(href, text) {
     return (
-      '<a href="' +
-      esc(href) +
-      '" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;">' +
+      "<a" +
+      btnOpenAttrs(href) +
+      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;">' +
       esc(text) +
       "</a>"
     );
@@ -78,9 +107,9 @@
 
   function btnLight(href, text) {
     return (
-      '<a href="' +
-      esc(href) +
-      '" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;box-shadow:0 8px 18px rgba(0,0,0,.12);">' +
+      "<a" +
+      btnOpenAttrs(href) +
+      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;box-shadow:0 8px 18px rgba(0,0,0,.12);">' +
       esc(text) +
       "</a>"
     );
@@ -88,9 +117,9 @@
 
   function btnOutlineOnDark(href, text) {
     return (
-      '<a href="' +
-      esc(href) +
-      '" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;backdrop-filter:blur(4px);">' +
+      "<a" +
+      btnOpenAttrs(href) +
+      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;backdrop-filter:blur(4px);">' +
       esc(text) +
       "</a>"
     );
@@ -98,9 +127,9 @@
 
   function btnCompact(href, text) {
     return (
-      '<a href="' +
-      esc(href) +
-      '" style="display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:.55rem 1.15rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;white-space:nowrap;box-shadow:0 6px 14px rgba(9,112,125,.2);">' +
+      "<a" +
+      btnOpenAttrs(href) +
+      ' style="display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:.55rem 1.15rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;white-space:nowrap;box-shadow:0 6px 14px rgba(9,112,125,.2);">' +
       esc(text) +
       "</a>"
     );

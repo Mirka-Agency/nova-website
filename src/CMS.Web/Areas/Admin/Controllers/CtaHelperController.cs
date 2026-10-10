@@ -45,6 +45,7 @@ public sealed class CtaHelperController : Controller
             TelHref = contact.TelHref ?? "tel:02191093492",
             WhatsAppUrl = contact.WhatsAppUrl ?? contact.TelHref ?? "tel:02191093492",
             ContactUrl = Url.RouteUrl("contact-us") ?? "/contact-us/",
+            BookingPopupUrl = "popup:booking",
             DoctorsUrl = "/doctors/",
             ServicesUrl = "/services/",
             DoctorImageUrl = doctorImage ?? "/template/assets/images/doctors/dr-hamedani.webp",

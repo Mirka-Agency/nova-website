@@ -4,7 +4,7 @@
     ViewData["Title"] = Localizer["CtaHelper"];
     var phone = Model.PhoneDisplay;
     var phoneDigits = Model.PhoneDigits;
-    var contactUrl = Model.ContactUrl;
+    var bookingPopupUrl = Model.BookingPopupUrl;
     var doctorsUrl = Model.DoctorsUrl;
     var servicesUrl = Model.ServicesUrl;
     var doctorImg = Model.DoctorImageUrl;
@@ -90,8 +90,8 @@
                 <input id="cta1-primaryText" data-key="primaryText" value="رزرو نوبت" />
             </div>
             <div>
-                <label for="cta1-primaryUrl">Primary Button URL</label>
-                <input id="cta1-primaryUrl" data-key="primaryUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta1-primaryUrl">Primary Button URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta1-primaryUrl" data-key="primaryUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
             <div>
                 <label for="cta1-secondaryText">Secondary Button Text</label>
@@ -137,8 +137,8 @@
                 <textarea id="cta2-description" data-key="description" rows="2">سوالات مربوط به تیروئید، پاراتیروئید و غدد فوق کلیوی را با تیم @brand مطرح کنید.</textarea>
             </div>
             <div>
-                <label for="cta2-buttonUrl">Button URL</label>
-                <input id="cta2-buttonUrl" data-key="buttonUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta2-buttonUrl">Button URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta2-buttonUrl" data-key="buttonUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
             <div>
                 <label for="cta2-phoneLabel">Phone Label</label>
@@ -200,8 +200,8 @@
                 <input id="cta3-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
             </div>
             <div>
-                <label for="cta3-appointmentUrl">Appointment URL</label>
-                <input id="cta3-appointmentUrl" data-key="appointmentUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta3-appointmentUrl">Appointment URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta3-appointmentUrl" data-key="appointmentUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -255,8 +255,8 @@
                 <input id="cta4-secondaryText" data-key="secondaryText" value="رزرو مشاوره" />
             </div>
             <div>
-                <label for="cta4-secondaryUrl">Secondary URL</label>
-                <input id="cta4-secondaryUrl" data-key="secondaryUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta4-secondaryUrl">Secondary URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta4-secondaryUrl" data-key="secondaryUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -294,16 +294,16 @@
                 <input id="cta5-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
             </div>
             <div>
-                <label for="cta5-appointmentUrl">Appointment URL</label>
-                <input id="cta5-appointmentUrl" data-key="appointmentUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta5-appointmentUrl">Appointment URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta5-appointmentUrl" data-key="appointmentUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
             <div>
                 <label for="cta5-consultationText">Consultation Button</label>
                 <input id="cta5-consultationText" data-key="consultationText" value="درخواست مشاوره" />
             </div>
             <div>
-                <label for="cta5-consultationUrl">Consultation URL</label>
-                <input id="cta5-consultationUrl" data-key="consultationUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta5-consultationUrl">Consultation URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta5-consultationUrl" data-key="consultationUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -353,8 +353,8 @@
                 <input id="cta6-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
             </div>
             <div>
-                <label for="cta6-appointmentUrl">Appointment Link</label>
-                <input id="cta6-appointmentUrl" data-key="appointmentUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta6-appointmentUrl">Appointment Link <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta6-appointmentUrl" data-key="appointmentUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -392,8 +392,8 @@
                 <textarea id="cta7-description" data-key="description" rows="2">برای بررسی یافته‌های تصویربرداری یا آزمایش، نوبت مشاوره هماهنگ کنید.</textarea>
             </div>
             <div class="span-2">
-                <label for="cta7-buttonUrl">Button URL</label>
-                <input id="cta7-buttonUrl" data-key="buttonUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta7-buttonUrl">Button URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta7-buttonUrl" data-key="buttonUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -435,8 +435,8 @@
                 <input id="cta8-primaryText" data-key="primaryText" value="رزرو نوبت" />
             </div>
             <div>
-                <label for="cta8-primaryUrl">Primary URL</label>
-                <input id="cta8-primaryUrl" data-key="primaryUrl" value="@contactUrl" dir="ltr" />
+                <label for="cta8-primaryUrl">Primary URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                <input id="cta8-primaryUrl" data-key="primaryUrl" value="@bookingPopupUrl" dir="ltr" />
             </div>
             <div>
                 <label for="cta8-secondaryText">Secondary CTA</label>
