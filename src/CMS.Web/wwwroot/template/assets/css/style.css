@@ -69,7 +69,7 @@
 
   --section-space: clamp(2.75rem, 5vw, 4.25rem);
   --container-max: 1140px;
-  --header-height: 80px;
+  --header-height: 96px;
 
   --transition: 280ms ease;
 }
@@ -4732,6 +4732,7 @@ button.header-cta {
   position: absolute;
   inset-inline: 0;
   inset-block-start: 0;
+  z-index: 0;
   height: 4.5rem;
   background: linear-gradient(180deg, rgba(230, 243, 245, 0.7), transparent);
   pointer-events: none;
@@ -4740,7 +4741,6 @@ button.header-cta {
 .service-article .container,
 .blog-post .container {
   position: relative;
-  z-index: 1;
 }
 
 .service-article__layout,
@@ -4755,6 +4755,8 @@ button.header-cta {
 .service-article__content,
 .blog-post__content {
   grid-area: content;
+  position: relative;
+  z-index: 1;
   min-width: 0;
   padding: 0.35rem 0 0;
 }
@@ -4762,6 +4764,9 @@ button.header-cta {
 .service-toc,
 .blog-toc {
   grid-area: toc;
+  position: relative;
+  /* Below site-header (1030); above article content. Avoid nesting under a low stacking context. */
+  z-index: 1025;
   min-width: 0;
   align-self: stretch;
 }
@@ -4770,7 +4775,7 @@ button.header-cta {
 .blog-toc__panel {
   position: sticky;
   top: calc(var(--header-height) + 1.25rem);
-  z-index: 2;
+  z-index: 1;
   max-height: calc(100dvh - var(--header-height) - 2.5rem);
   overflow-y: auto;
   overscroll-behavior: contain;

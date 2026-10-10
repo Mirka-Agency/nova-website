@@ -189,9 +189,18 @@
     }
   }
 
+  function syncHeaderHeight() {
+    if (!header) return;
+    var height = Math.ceil(header.getBoundingClientRect().height);
+    if (height > 0) {
+      document.documentElement.style.setProperty("--header-height", height + "px");
+    }
+  }
+
   function onScroll() {
     if (header) {
       header.classList.toggle("is-scrolled", window.scrollY > 24);
+      syncHeaderHeight();
     }
 
     var floatCall = document.querySelector("[data-float-call]");
@@ -214,6 +223,9 @@
       el.tabIndex = show ? 0 : -1;
     });
   }
+
+  syncHeaderHeight();
+  window.addEventListener("resize", syncHeaderHeight);
 
   if (navToggle && mobileNav) {
     navToggle.addEventListener("click", function () {
