@@ -259,16 +259,22 @@ main > .error-page {
   max-width: 100%;
   display: block;
   margin: 0 auto 1em;
+  border-radius: var(--radius-lg, 1rem);
+  overflow: hidden;
 }
 
 .blog-content figure.media,
 .blog-content .raw-html-embed {
   margin: 0 0 1em;
+  border-radius: var(--radius-lg, 1rem);
+  overflow: hidden;
 }
 
 .blog-content figure.media > div {
   position: relative;
   width: 100%;
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .blog-content figure.media iframe,
@@ -278,6 +284,7 @@ main > .error-page {
   display: block;
   margin: 0;
   border: 0;
+  border-radius: inherit;
   background: #0f1f22;
 }
 

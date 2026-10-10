@@ -355,6 +355,7 @@ body.site > main {
   height: 100%;
   object-fit: cover;
   border: 0;
+  border-radius: inherit;
   background: #0f1f22;
 }
 
@@ -367,6 +368,34 @@ body.site > main {
 
 .blog-prose figure {
   margin-block: 0 1rem;
+}
+
+.blog-prose iframe,
+.blog-prose video {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto 1rem;
+  border: 0;
+  border-radius: var(--radius-lg, 1rem);
+  overflow: hidden;
+  background: #0f1f22;
+}
+
+.blog-prose figure.media {
+  border-radius: var(--radius-lg, 1rem);
+  overflow: hidden;
+}
+
+.blog-prose figure.media > div {
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.blog-prose figure.media iframe,
+.blog-prose figure.media video {
+  width: 100%;
+  margin: 0;
+  border-radius: inherit;
 }
 
 .blog-prose ol {
