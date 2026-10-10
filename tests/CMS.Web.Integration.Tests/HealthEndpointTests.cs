@@ -14,6 +14,17 @@ public sealed class HealthEndpointTests
     }
 
     [SkippableFact]
+    public async Task Health_Root_Returns_Ok()
+    {
+        _fixture.EnsureAvailable();
+        var client = _fixture.Factory.CreateClient(new() { AllowAutoRedirect = false });
+
+        var response = await client.GetAsync("/health");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [SkippableFact]
     public async Task Health_Live_Returns_Ok()
     {
         _fixture.EnsureAvailable();

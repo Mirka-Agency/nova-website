@@ -85,6 +85,14 @@ public static class ObservabilityServiceCollectionExtensions
 
     public static WebApplication MapCmsHealthEndpoints(this WebApplication app)
     {
+        // Liveness: process is up (no dependency checks). CapRover / Docker default path.
+        app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                Predicate = _ => false
+            })
+            .AllowAnonymous()
+            .DisableRateLimiting();
+
         app.MapHealthChecks("/health/live", new HealthCheckOptions
             {
                 Predicate = _ => false

@@ -39,5 +39,7 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 # CapRover / container deploys have no migrate job; docker-compose sets the same override.
 ENV Database__MigrateOnStartup=true
 EXPOSE 8080
+HEALTHCHECK --interval=15s --timeout=5s --start-period=90s --retries=5 \
+  CMD curl -fsS http://127.0.0.1:8080/health || exit 1
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "CMS.Web.dll"]

@@ -3,6 +3,7 @@
 #
 # Dashboard (one-time per app):
 #   Container HTTP Port = 8080
+#   HTTP Health Check Path = /health  (liveness; also baked into Dockerfile HEALTHCHECK)
 #   Force HTTPS = on
 #   App env vars: TZ=Asia/Tehran, AllowedHosts, ConnectionStrings__DefaultConnection,
 #   Database__MigrateOnStartup=true, Storage__S3__*, Seed__Admin__*
@@ -225,7 +226,7 @@ elseif ($UseSavedLogin) {
 else {
     Write-Host "Auth: machine password → $AppName @ $CapRoverUrl"
 }
-Write-Host 'Reminder: set CapRover Container HTTP Port to 8080.'
+Write-Host 'Reminder: CapRover → Container HTTP Port = 8080, HTTP Health Check Path = /health.'
 
 Push-Location $RepoRoot
 try {
