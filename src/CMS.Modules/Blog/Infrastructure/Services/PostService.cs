@@ -154,7 +154,8 @@ public sealed class PostService : IPostService
             ogTitle: null,
             ogDescription: null,
             ogImageUrl: null,
-            faqJson: null);
+            faqJson: null,
+            videoSchemaJson: null);
         post.SetOwnedBy(userId);
 
         _db.Posts.Add(post);
@@ -190,6 +191,7 @@ public sealed class PostService : IPostService
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var faqJson = PostFaqJson.NormalizeJson(command.FaqJson);
+        var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         var post = Post.Create(
             command.Title,
             slug,
@@ -208,7 +210,8 @@ public sealed class PostService : IPostService
             command.OgTitle,
             command.OgDescription,
             command.OgImageUrl,
-            faqJson);
+            faqJson,
+            videoSchemaJson);
 
         ApplyPublishState(post, command);
 
@@ -231,6 +234,7 @@ public sealed class PostService : IPostService
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var faqJson = PostFaqJson.NormalizeJson(command.FaqJson);
+        var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         post.Update(
             command.Title,
             slug,
@@ -249,7 +253,8 @@ public sealed class PostService : IPostService
             command.OgTitle,
             command.OgDescription,
             command.OgImageUrl,
-            faqJson);
+            faqJson,
+            videoSchemaJson);
 
         ApplyPublishState(post, command);
 
@@ -288,6 +293,7 @@ public sealed class PostService : IPostService
             post.OgDescription,
             post.OgImageUrl,
             post.FaqJson,
+            post.VideoSchemaJson,
             post.CreatedAtUtc);
 
     private static SavePostCommand Normalize(SavePostCommand command)

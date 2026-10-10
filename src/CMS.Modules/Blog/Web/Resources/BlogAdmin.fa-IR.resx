@@ -108,4 +108,23 @@
   <data name="FaqAnswerPlaceholder" xml:space="preserve"><value>پاسخ را بنویسید…</value></data>
   <data name="AddFaqItem" xml:space="preserve"><value>افزودن سوال</value></data>
   <data name="FaqEmpty" xml:space="preserve"><value>هنوز سوالی ثبت نشده است. با دکمه افزودن، ردیف جدید بسازید.</value></data>
+  <data name="VideoSchemaSettings" xml:space="preserve"><value>اسکیمای ویدیوهای مطلب</value></data>
+  <data name="VideoSchemaSettingsHint" xml:space="preserve"><value>اختیاری؛ برای هر ویدیوی داخل مطلب یک VideoObject دستی بسازید تا در سئو منتشر شود.</value></data>
+  <data name="VideoSchemaItemLabel" xml:space="preserve"><value>ویدیو شماره</value></data>
+  <data name="VideoSchemaRemove" xml:space="preserve"><value>حذف این ویدیو</value></data>
+  <data name="VideoSchemaTitle" xml:space="preserve"><value>عنوان ویدیو</value></data>
+  <data name="VideoSchemaTitlePlaceholder" xml:space="preserve"><value>مثلاً معرفی محصول یا آموزش…</value></data>
+  <data name="VideoSchemaContentUrl" xml:space="preserve"><value>لینک مستقیم فایل ویدیو یا Embed</value></data>
+  <data name="VideoSchemaContentUrlPlaceholder" xml:space="preserve"><value>https://…</value></data>
+  <data name="VideoSchemaContentUrlHint" xml:space="preserve"><value>لینک فایل mp4/webm یا آدرس embed (یوتیوب، آپارات و مشابه).</value></data>
+  <data name="VideoSchemaThumbnail" xml:space="preserve"><value>تصویر کاور ویدیو</value></data>
+  <data name="VideoSchemaThumbnailHint" xml:space="preserve"><value>برای ریچ‌ریزالت گوگل توصیه می‌شود تصویر کاور را انتخاب کنید.</value></data>
+  <data name="VideoSchemaUploadDate" xml:space="preserve"><value>تاریخ انتشار ویدیو</value></data>
+  <data name="VideoSchemaDuration" xml:space="preserve"><value>مدت زمان</value></data>
+  <data name="VideoSchemaMinutes" xml:space="preserve"><value>دقیقه</value></data>
+  <data name="VideoSchemaSeconds" xml:space="preserve"><value>ثانیه</value></data>
+  <data name="VideoSchemaDescription" xml:space="preserve"><value>توضیحات ویدیو</value></data>
+  <data name="VideoSchemaDescriptionPlaceholder" xml:space="preserve"><value>خلاصه محتوای ویدیو را بنویسید…</value></data>
+  <data name="AddVideoSchemaItem" xml:space="preserve"><value>افزودن ویدیو</value></data>
+  <data name="VideoSchemaEmpty" xml:space="preserve"><value>هنوز ویدیویی برای اسکیما ثبت نشده است. با دکمه افزودن، مورد جدید بسازید.</value></data>
 </root>

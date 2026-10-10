@@ -1920,6 +1920,93 @@ fieldset.admin-field legend {
   background: transparent;
 }
 
+.admin-video-schema-list {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-video-schema-rows {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-video-schema-row {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+  padding: calc(var(--admin-space) * 4);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface, #fff);
+}
+
+.admin-video-schema-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--admin-space) * 3);
+  padding-block-end: calc(var(--admin-space) * 2);
+  border-block-end: 1px solid var(--admin-border);
+}
+
+.admin-video-schema-row-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--admin-text, #000);
+}
+
+.admin-video-schema-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-video-schema-duration {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: calc(var(--admin-space) * 2);
+}
+
+.admin-video-schema-duration-field label,
+.admin-label {
+  display: block;
+  margin-block-end: calc(var(--admin-space) * 1);
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
+}
+
+.admin-video-schema-thumb-preview {
+  margin-block-start: calc(var(--admin-space) * 2);
+  max-width: 12rem;
+}
+
+.admin-video-schema-thumb-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+  border: 1px solid var(--admin-border);
+}
+
+.admin-video-schema-add-row {
+  display: flex;
+  justify-content: flex-start;
+  padding: calc(var(--admin-space) * 3) calc(var(--admin-space) * 4);
+  border: 1px dashed var(--admin-border);
+  border-radius: 6px;
+  background: transparent;
+}
+
+@media (max-width: 720px) {
+  .admin-video-schema-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-video-schema-row-header {
+    flex-wrap: wrap;
+  }
+}
+
 .admin-specialty-path-icon-preview {
   max-width: 4.5rem;
 }

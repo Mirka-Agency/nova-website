@@ -231,6 +231,18 @@ public class PostsController : Controller
             OgImageUrl = post.OgImageUrl,
             FaqItems = PostFaqJson.Parse(post.FaqJson)
                 .Select(x => new PostFaqItemViewModel { Question = x.Question, Answer = x.Answer })
+                .ToList(),
+            VideoSchemaItems = PostVideoSchemaJson.Parse(post.VideoSchemaJson)
+                .Select(x => new PostVideoSchemaItemViewModel
+                {
+                    Title = x.Title,
+                    ContentUrl = x.ContentUrl,
+                    ThumbnailUrl = x.ThumbnailUrl,
+                    UploadDate = x.UploadDate,
+                    DurationMinutes = x.DurationMinutes,
+                    DurationSeconds = x.DurationSeconds,
+                    Description = x.Description
+                })
                 .ToList()
         };
 
@@ -349,7 +361,17 @@ public class PostsController : Controller
             NullIfWhiteSpace(model.OgImageUrl),
             PostFaqJson.Serialize(
                 (model.FaqItems ?? [])
-                    .Select(x => new PostFaqItemDto(x.Question ?? string.Empty, x.Answer ?? string.Empty))));
+                    .Select(x => new PostFaqItemDto(x.Question ?? string.Empty, x.Answer ?? string.Empty))),
+            PostVideoSchemaJson.Serialize(
+                (model.VideoSchemaItems ?? [])
+                    .Select(x => new PostVideoSchemaItemDto(
+                        x.Title ?? string.Empty,
+                        x.ContentUrl ?? string.Empty,
+                        x.ThumbnailUrl,
+                        x.UploadDate,
+                        x.DurationMinutes,
+                        x.DurationSeconds,
+                        x.Description))));
     }
 
     private async Task<PostFormViewModel> BuildFormAsync(PostFormViewModel model, CancellationToken cancellationToken)
@@ -373,6 +395,7 @@ public class PostsController : Controller
         ];
 
         model.FaqItems ??= [];
+        model.VideoSchemaItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.BlogPost, model.Id);
         model.Seo.ContentType = SeoContentTypeKeys.BlogPost;
         model.Seo.ContentId = model.Id;

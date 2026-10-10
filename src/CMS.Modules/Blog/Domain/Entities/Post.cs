@@ -34,6 +34,8 @@ public class Post : BaseEntity
     public string? OgImageUrl { get; private set; }
     /// <summary>JSON array of FAQ items: [{"question":"...","answer":"..."}].</summary>
     public string? FaqJson { get; private set; }
+    /// <summary>JSON array of manual VideoObject schema items.</summary>
+    public string? VideoSchemaJson { get; private set; }
 
     public static Post Create(
         string title,
@@ -53,14 +55,15 @@ public class Post : BaseEntity
         string? ogTitle,
         string? ogDescription,
         string? ogImageUrl,
-        string? faqJson)
+        string? faqJson,
+        string? videoSchemaJson = null)
     {
         var post = new Post();
         post.ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, faqJson);
+            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson);
         return post;
     }
 
@@ -82,13 +85,14 @@ public class Post : BaseEntity
         string? ogTitle,
         string? ogDescription,
         string? ogImageUrl,
-        string? faqJson)
+        string? faqJson,
+        string? videoSchemaJson = null)
     {
         ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, faqJson);
+            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson);
         Touch();
     }
 
@@ -145,7 +149,8 @@ public class Post : BaseEntity
         string? ogTitle,
         string? ogDescription,
         string? ogImageUrl,
-        string? faqJson)
+        string? faqJson,
+        string? videoSchemaJson)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("عنوان مطلب الزامی است.");
@@ -185,6 +190,8 @@ public class Post : BaseEntity
             throw new DomainException("آدرس تصویر Open Graph خیلی طولانی است.");
         if (faqJson is { Length: > 100_000 })
             throw new DomainException("سوالات متداول خیلی طولانی است.");
+        if (videoSchemaJson is { Length: > 100_000 })
+            throw new DomainException("اسکیمای ویدیو خیلی طولانی است.");
 
         Title = title.Trim();
         Slug = slug.Trim().ToLowerInvariant();
@@ -204,6 +211,7 @@ public class Post : BaseEntity
         OgDescription = NullIfWhiteSpace(ogDescription);
         OgImageUrl = NullIfWhiteSpace(ogImageUrl);
         FaqJson = NullIfWhiteSpace(faqJson);
+        VideoSchemaJson = NullIfWhiteSpace(videoSchemaJson);
     }
 
     private static string? NullIfWhiteSpace(string? value) =>

@@ -90,6 +90,8 @@ public class PostFormViewModel
 
     public List<PostFaqItemViewModel> FaqItems { get; set; } = [];
 
+    public List<PostVideoSchemaItemViewModel> VideoSchemaItems { get; set; } = [];
+
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
 }
@@ -101,6 +103,30 @@ public class PostFaqItemViewModel
 
     [MaxLength(5000, ErrorMessage = "پاسخ حداکثر ۵۰۰۰ نویسه می‌تواند باشد.")]
     public string Answer { get; set; } = string.Empty;
+}
+
+public class PostVideoSchemaItemViewModel
+{
+    [MaxLength(300, ErrorMessage = "عنوان ویدیو حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1000, ErrorMessage = "لینک ویدیو حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string ContentUrl { get; set; } = string.Empty;
+
+    [MaxLength(1000, ErrorMessage = "لینک تصویر کاور حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string? ThumbnailUrl { get; set; }
+
+    [MaxLength(32, ErrorMessage = "تاریخ انتشار ویدیو نامعتبر است.")]
+    public string? UploadDate { get; set; }
+
+    [Range(0, 1440, ErrorMessage = "دقیقه مدت زمان نامعتبر است.")]
+    public int DurationMinutes { get; set; }
+
+    [Range(0, 59, ErrorMessage = "ثانیه مدت زمان باید بین ۰ تا ۵۹ باشد.")]
+    public int DurationSeconds { get; set; }
+
+    [MaxLength(5000, ErrorMessage = "توضیحات ویدیو حداکثر ۵۰۰۰ نویسه می‌تواند باشد.")]
+    public string? Description { get; set; }
 }
 
 public class CategoryListItemViewModel

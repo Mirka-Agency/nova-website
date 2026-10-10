@@ -163,7 +163,8 @@ public class BlogPostsApiController : ControllerBase
             request.OgTitle,
             request.OgDescription,
             request.OgImageUrl,
-            request.FaqJson);
+            request.FaqJson,
+            request.VideoSchemaJson);
     }
 
     private ObjectResult DomainProblem(DomainException ex)

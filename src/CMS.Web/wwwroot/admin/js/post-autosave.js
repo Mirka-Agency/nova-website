@@ -80,6 +80,42 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function videoSchemaJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-video-schema-row]"));
+    const items = [];
+    for (const row of rows) {
+      const title = (row.querySelector("[name$='.Title']")?.value || "").trim();
+      const contentUrl = (row.querySelector("[name$='.ContentUrl']")?.value || "").trim();
+      const thumbnailUrl = (row.querySelector("[name$='.ThumbnailUrl']")?.value || "").trim() || null;
+      const uploadDate = (row.querySelector("[name$='.UploadDate']")?.value || "").trim() || null;
+      const durationMinutes = Number.parseInt(
+        row.querySelector("[name$='.DurationMinutes']")?.value || "0",
+        10
+      );
+      const durationSeconds = Number.parseInt(
+        row.querySelector("[name$='.DurationSeconds']")?.value || "0",
+        10
+      );
+      const description = (row.querySelector("[name$='.Description']")?.value || "").trim() || null;
+      if (!title && !contentUrl && !thumbnailUrl && !uploadDate && !description
+          && (!durationMinutes || durationMinutes === 0)
+          && (!durationSeconds || durationSeconds === 0)) {
+        continue;
+      }
+      if (!title || !contentUrl) continue;
+      items.push({
+        title,
+        contentUrl,
+        thumbnailUrl,
+        uploadDate,
+        durationMinutes: Number.isFinite(durationMinutes) ? durationMinutes : 0,
+        durationSeconds: Number.isFinite(durationSeconds) ? durationSeconds : 0,
+        description
+      });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
   function specialtyPathJsonValue() {
     const rows = Array.from(form.querySelectorAll("[data-specialty-path-row]"));
     const items = [];
@@ -202,6 +238,7 @@
       ogDescription: (fieldValue("OgDescription") || "").trim() || null,
       ogImageUrl: (fieldValue("OgImageUrl") || "").trim() || null,
       faqJson: faqJsonValue(),
+      videoSchemaJson: videoSchemaJsonValue(),
       focusKeyword: seoFieldValue("FocusKeyword"),
       robotsIndex: seoCheckboxValue("RobotsIndex", true),
       robotsFollow: seoCheckboxValue("RobotsFollow", true),

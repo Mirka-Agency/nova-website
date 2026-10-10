@@ -24,6 +24,7 @@
     var related = (ViewBag.Related as IReadOnlyList<PublicPostSummaryDto>)
         ?? Array.Empty<PublicPostSummaryDto>();
     var faqItems = PostFaqJson.Parse(Model.FaqJson);
+    var videoSchemaItems = PostVideoSchemaJson.Parse(Model.VideoSchemaJson);
     var fa = CultureInfo.GetCultureInfo("fa-IR");
     var publishedLocal = Model.PublishedAtUtc.Kind == DateTimeKind.Utc
         ? Model.PublishedAtUtc.ToLocalTime()
@@ -99,6 +100,11 @@
         };
         faqJsonLd = JsonSerializer.Serialize(schema);
     }
+
+    var pageUrl = string.IsNullOrWhiteSpace(Model.CanonicalUrl)
+        ? null
+        : Model.CanonicalUrl.Trim();
+    var videoSchemaJsonLd = PostVideoSchemaJson.BuildJsonLd(videoSchemaItems, pageUrl);
 }
 
 <section class="page-hero page-hero--blog-single" aria-labelledby="page-hero-title">
@@ -233,6 +239,13 @@
 @Html.Raw(faqJsonLd)
     </script>
   }
+}
+
+@if (!string.IsNullOrWhiteSpace(videoSchemaJsonLd))
+{
+  <script type="application/ld+json">
+@Html.Raw(videoSchemaJsonLd)
+  </script>
 }
 
 <div class="container blog-comments">
