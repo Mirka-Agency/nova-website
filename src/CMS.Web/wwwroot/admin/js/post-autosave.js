@@ -294,12 +294,20 @@
       }
 
       lastPayload = serialized;
-      dirty = false;
+      // Keep dirty if the form changed while this request was in flight
+      // (e.g. video upload finished after the payload was snapshotted).
+      const current = JSON.stringify(buildPayload());
+      dirty = current !== serialized;
       const time = new Date().toLocaleTimeString("fa-IR", {
         hour: "2-digit",
         minute: "2-digit",
       });
       setStatus(`${msgSaved} — ${time}`, false);
+      if (dirty) {
+        window.setTimeout(function () {
+          saveIfNeeded(false);
+        }, 250);
+      }
     } catch (err) {
       if (err?.name === "AbortError") return;
       setStatus(msgFailed, true);
@@ -317,6 +325,11 @@
   function markDirty() {
     dirty = true;
   }
+
+  form.addEventListener("post-autosave:now", function () {
+    dirty = true;
+    saveIfNeeded(true);
+  });
 
   form.addEventListener("input", markDirty);
   form.addEventListener("change", markDirty);

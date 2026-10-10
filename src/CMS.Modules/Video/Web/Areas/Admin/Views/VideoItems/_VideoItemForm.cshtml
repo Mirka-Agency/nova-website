@@ -49,11 +49,14 @@
             </div>
             <input asp-for="VideoUrl"
                    id="VideoUrl"
-                   type="url"
+                   type="text"
+                   inputmode="url"
                    dir="ltr"
                    class="admin-input-ltr"
                    data-video-url-input
-                   placeholder="https://..." />
+                   placeholder="https://..."
+                   autocomplete="off"
+                   spellcheck="false" />
             <p class="admin-hint">@Localizer["VideoUrlHint"]</p>
             <span asp-validation-for="VideoUrl" class="admin-field-error"></span>
             <p class="admin-field-error" data-video-upload-error hidden></p>

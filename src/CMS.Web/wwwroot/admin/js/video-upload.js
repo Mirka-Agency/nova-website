@@ -171,6 +171,20 @@
     }
     renderPreview(url);
     syncClear();
+    // Persist immediately so an in-flight autosave cannot overwrite with a stale empty URL.
+    urlInput?.form?.dispatchEvent(new CustomEvent("post-autosave:now", { bubbles: true }));
+  }
+
+  function normalizeUrlInput() {
+    if (!urlInput) return;
+    const raw = (urlInput.value || "").trim();
+    if (!raw) return;
+
+    // Paste of iframe HTML or share pages → store a clean absolute URL.
+    const embedUrl = resolveEmbedUrl(raw);
+    if (embedUrl && (/<iframe/i.test(raw) || !/^https?:\/\//i.test(raw))) {
+      urlInput.value = embedUrl;
+    }
   }
 
   function postJson(url, body) {
@@ -366,6 +380,7 @@
       urlInput.value = "";
       urlInput.dispatchEvent(new Event("input", { bubbles: true }));
       urlInput.dispatchEvent(new Event("change", { bubbles: true }));
+      urlInput.form?.dispatchEvent(new CustomEvent("post-autosave:now", { bubbles: true }));
     }
     renderPreview("");
     showError("");
@@ -377,6 +392,7 @@
     syncClear();
   });
   urlInput?.addEventListener("change", () => {
+    normalizeUrlInput();
     renderPreview(urlInput.value);
     syncClear();
   });

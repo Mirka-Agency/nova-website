@@ -257,11 +257,14 @@
             </div>
             <input asp-for="CoverVideoUrl"
                    id="CoverVideoUrl"
-                   type="url"
+                   type="text"
+                   inputmode="url"
                    dir="ltr"
                    class="admin-input-ltr"
                    data-video-url-input
-                   placeholder="https://..." />
+                   placeholder="https://..."
+                   autocomplete="off"
+                   spellcheck="false" />
             <p class="admin-hint">@Localizer["CoverVideoHint"]</p>
             <span asp-validation-for="CoverVideoUrl" class="admin-field-error"></span>
             <p class="admin-field-error" data-video-upload-error hidden></p>
