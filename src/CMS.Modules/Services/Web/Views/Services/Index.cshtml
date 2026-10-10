@@ -31,9 +31,6 @@
     var parathyroidService = FindService("parathyroid", "پاراتیروئید");
     var adrenalService = FindService("adrenal", "آدرنال", "فوق کلیه");
     var pancreasService = FindService("pancreas", "پانکراس");
-    var hereditaryService = FindService("hereditary", "ارثی", "MEN", "خانوادگی");
-    var pediatricService = FindService("pediatric", "کودک", "اطفال", "نوجوان");
-    var metabolicService = FindService("metabolic", "متابولیک", "دیابت", "چاقی");
 }
 
 <section class="page-hero" aria-labelledby="page-hero-title">
@@ -56,7 +53,7 @@
           <p class="section-kicker">گروه‌های تخصصی</p>
           <h2 class="section-heading" id="services-overview-heading">حوزه‌های درمانی کلینیک</h2>
           <p class="section-lead">
-            خدمات نووا کلینیک در هفت گروه تخصصی متمرکز است؛ برای جزئیات هر حوزه، مورد مربوط را انتخاب کنید.
+            خدمات نووا کلینیک در چهار گروه تخصصی متمرکز است؛ برای جزئیات هر حوزه، مورد مربوط را انتخاب کنید.
           </p>
         </div>
 
@@ -140,66 +137,6 @@
             <span class="service-group__body">
               <span class="service-group__title">@(pancreasService?.Title ?? "جراحی پانکراس")</span>
               <span class="service-group__text">@(string.IsNullOrWhiteSpace(pancreasService?.Excerpt) ? "تومورهای عملکردی، سرطان و تومورهای نورواندوکرین" : pancreasService!.Excerpt)</span>
-            </span>
-            <span class="service-group__action" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 5l-7 7 7 7"/>
-              </svg>
-            </span>
-          </a>
-
-          <a class="service-group reveal" href="@GroupHref(hereditaryService, "hereditary")">
-            <span class="service-group__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 20V10a5 5 0 0 1 10 0v10"/>
-                <path d="M7 14h10"/>
-                <path d="M12 5V3"/>
-                <path d="M9 20h6"/>
-              </svg>
-            </span>
-            <span class="service-group__body">
-              <span class="service-group__title">@(hereditaryService?.Title ?? "بیماری‌های ارثی غدد")</span>
-              <span class="service-group__text">@(string.IsNullOrWhiteSpace(hereditaryService?.Excerpt) ? "سندرم‌های خانوادگی غدد و مدیریت پیشگیرانه" : hereditaryService!.Excerpt)</span>
-            </span>
-            <span class="service-group__action" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 5l-7 7 7 7"/>
-              </svg>
-            </span>
-          </a>
-
-          <a class="service-group reveal" href="@GroupHref(pediatricService, "pediatric")">
-            <span class="service-group__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="8" r="3.2"/>
-                <path d="M5.5 20c.8-3.5 3.4-5.2 6.5-5.2s5.7 1.7 6.5 5.2"/>
-                <path d="M16.5 5.2c1-.9 2.3-1.2 3.2-.7"/>
-                <path d="M7.5 5.2C6.5 4.3 5.2 4 4.3 4.5"/>
-              </svg>
-            </span>
-            <span class="service-group__body">
-              <span class="service-group__title">@(pediatricService?.Title ?? "تیروئید کودکان")</span>
-              <span class="service-group__text">@(string.IsNullOrWhiteSpace(pediatricService?.Excerpt) ? "جراحی تیروئید و پاراتیروئید در کودکان و نوجوانان" : pediatricService!.Excerpt)</span>
-            </span>
-            <span class="service-group__action" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 5l-7 7 7 7"/>
-              </svg>
-            </span>
-          </a>
-
-          <a class="service-group reveal" href="@GroupHref(metabolicService, "metabolic")">
-            <span class="service-group__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3v18"/>
-                <path d="M7 8c2.5-2 7.5-2 10 0"/>
-                <path d="M6 13c3-2.5 9-2.5 12 0"/>
-                <path d="M7 18c2.5-2 7.5-2 10 0"/>
-              </svg>
-            </span>
-            <span class="service-group__body">
-              <span class="service-group__title">@(metabolicService?.Title ?? "جراحی متابولیک")</span>
-              <span class="service-group__text">@(string.IsNullOrWhiteSpace(metabolicService?.Excerpt) ? "کمک به کنترل دیابت و کاهش وزن با روش‌های کم‌تهاجمی" : metabolicService!.Excerpt)</span>
             </span>
             <span class="service-group__action" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -330,119 +267,11 @@
       </div>
     </section>
 
-    <section class="service-detail" id="hereditary" aria-labelledby="hereditary-heading">
-      <div class="container">
-        <div class="service-detail__grid reveal">
-          <div class="service-detail__content">
-            <p class="section-kicker">گروه ۳</p>
-            <h2 class="section-heading" id="hereditary-heading">بیماری‌های ارثی و سندرم‌های خانوادگی</h2>
-            <p class="service-detail__lead">
-              برخی بیماری‌های غدد درون‌ریز ماهیت ژنتیکی دارند و نیازمند مدیریت دقیق، تشخیص زودهنگام و درمان پیشگیرانه هستند.
-            </p>
-            <ul class="service-detail__list">
-              <li>سندرم نئوپلازی‌های متعدد غدد (MEN)</li>
-              <li>سرطان‌های خانوادگی مدولاری تیروئید</li>
-              <li>هیپرپاراتیروئیدیسم نوزادی و اطفال</li>
-              <li>رویکرد چندرشته‌ای برای پیشگیری از پیشرفت بیماری</li>
-            </ul>
-            <div class="service-detail__actions">
-              @if (hereditaryService is not null)
-              {
-                <a class="btn-secondary-custom" asp-controller="Services" asp-action="Details" asp-route-slug="@hereditaryService.Slug">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
-              <button class="btn-primary-custom" type="button" data-booking-open>
-                <span class="ui-icon btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <path d="M16 2v4M8 2v4M3 10h18"/>
-                  </svg>
-                </span>
-                درخواست مشاوره تخصصی
-              </button>
-            </div>
-          </div>
-          <aside class="service-detail__aside" aria-label="نکته بیماری‌های ارثی">
-            <span class="service-detail__aside-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 8h.01M11 12h1v4h1"/>
-              </svg>
-            </span>
-            <h3 class="service-detail__aside-title">تشخیص زودهنگام</h3>
-            <p>
-              در موارد ارثی، پیگیری منظم و هماهنگی میان تخصص‌های مرتبط نقش مهمی در پیشگیری و درمان به‌موقع دارد.
-            </p>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section class="service-detail service-detail--alt" id="pediatric" aria-labelledby="pediatric-heading">
-      <div class="container">
-        <div class="service-detail__grid reveal">
-          <div class="service-detail__content">
-            <p class="section-kicker">گروه ۴</p>
-            <h2 class="section-heading" id="pediatric-heading">تیروئید و پاراتیروئید کودکان و نوجوانان</h2>
-            <p class="service-detail__lead">
-              مدیریت بیماری‌های تیروئید و پاراتیروئید در سنین پایین به دلیل تفاوت‌های آناتومیکی و فیزیولوژیکی، نیازمند تجربه ویژه است.
-            </p>
-            <ul class="service-detail__list">
-              <li>مداخلات جراحی متناسب با سن و شرایط رشد</li>
-              <li>روش‌های کم‌تهاجمی برای کاهش عوارض</li>
-              <li>حفظ عملکرد طبیعی غدد تا حد امکان</li>
-              <li>پیگیری پس از درمان با رویکرد تخصصی کودکان</li>
-            </ul>
-            <div class="service-detail__actions">
-              @if (pediatricService is not null)
-              {
-                <a class="btn-secondary-custom" asp-controller="Services" asp-action="Details" asp-route-slug="@pediatricService.Slug">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
-              <button class="btn-primary-custom" type="button" data-booking-open>
-                <span class="ui-icon btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <path d="M16 2v4M8 2v4M3 10h18"/>
-                  </svg>
-                </span>
-                رزرو نوبت مشاوره
-              </button>
-            </div>
-          </div>
-          <aside class="service-detail__aside" aria-label="نکته جراحی کودکان">
-            <span class="service-detail__aside-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="m9 12 2 2 4-4"/>
-              </svg>
-            </span>
-            <h3 class="service-detail__aside-title">مراقبت ویژه</h3>
-            <p>
-              درمان‌ها طوری طراحی می‌شوند که کمترین آسیب و بیشترین حفظ عملکرد را برای بیماران جوان به همراه داشته باشند.
-            </p>
-          </aside>
-        </div>
-      </div>
-    </section>
-
     <section class="service-detail" id="adrenal" aria-labelledby="adrenal-heading">
       <div class="container">
         <div class="service-detail__grid reveal">
           <div class="service-detail__content">
-            <p class="section-kicker">گروه ۵</p>
+            <p class="section-kicker">گروه ۳</p>
             <h2 class="section-heading" id="adrenal-heading">گروه بیماری‌های آدرنال</h2>
             <p class="service-detail__lead">
               غدد فوق کلیوی نقش مهمی در تنظیم هورمون‌ها دارند. بسیاری از جراحی‌های این حوزه با روش لاپاراسکوپیک انجام می‌شوند؛ مگر در توده‌های بسیار بزرگ یا سرطانی.
@@ -496,7 +325,7 @@
       <div class="container">
         <div class="service-detail__grid reveal">
           <div class="service-detail__content">
-            <p class="section-kicker">گروه ۶</p>
+            <p class="section-kicker">گروه ۴</p>
             <h2 class="section-heading" id="pancreas-heading">تومورهای پانکراس و نورواندوکرین</h2>
             <p class="service-detail__lead">
               پانکراس می‌تواند دچار تومورهای عملکردی و غیرعملکردی شود که برخی بسیار نادر و پیچیده‌اند و اغلب به رویکرد چندرشته‌ای نیاز دارند.
@@ -540,60 +369,6 @@
             <h3 class="service-detail__aside-title">رویکرد چندرشته‌ای</h3>
             <p>
               در موارد پیچیده، ارتباط میان متخصصان مختلف برای برنامه‌ریزی دقیق درمان و کاهش عوارض برقرار می‌شود.
-            </p>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section class="service-detail" id="metabolic" aria-labelledby="metabolic-heading">
-      <div class="container">
-        <div class="service-detail__grid reveal">
-          <div class="service-detail__content">
-            <p class="section-kicker">گروه ۷</p>
-            <h2 class="section-heading" id="metabolic-heading">جراحی‌های متابولیک و باریاتریک</h2>
-            <p class="service-detail__lead">
-              این جراحی‌ها برای کمک به بیماران مبتلا به دیابت نوع ۲، چاقی شدید و مشکلات متابولیکی طراحی شده‌اند و با روش‌های لاپاراسکوپیک انجام می‌شوند.
-            </p>
-            <ul class="service-detail__list">
-              <li>اسلیو گاسترکتومی</li>
-              <li>بای‌پس معده</li>
-              <li>روش SASI</li>
-              <li>تأثیر بر کاهش وزن، بهبود قند خون و کنترل بیماری‌های مرتبط</li>
-            </ul>
-            <div class="service-detail__actions">
-              @if (metabolicService is not null)
-              {
-                <a class="btn-secondary-custom" asp-controller="Services" asp-action="Details" asp-route-slug="@metabolicService.Slug">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
-              <button class="btn-primary-custom" type="button" data-booking-open>
-                <span class="ui-icon btn-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <path d="M16 2v4M8 2v4M3 10h18"/>
-                  </svg>
-                </span>
-                رزرو مشاوره متابولیک
-              </button>
-            </div>
-          </div>
-          <aside class="service-detail__aside" aria-label="نکته جراحی متابولیک">
-            <span class="service-detail__aside-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 8h.01M11 12h1v4h1"/>
-              </svg>
-            </span>
-            <h3 class="service-detail__aside-title">بازگشت سریع‌تر</h3>
-            <p>
-              روش‌های کم‌تهاجمی به بیماران کمک می‌کنند سریع‌تر به زندگی عادی بازگردند و نتایج متابولیک پایدارتری داشته باشند.
             </p>
           </aside>
         </div>
