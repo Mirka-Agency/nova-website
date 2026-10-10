@@ -226,7 +226,7 @@ elseif ($UseSavedLogin) {
 else {
     Write-Host "Auth: machine password → $AppName @ $CapRoverUrl"
 }
-Write-Host 'Reminder: CapRover → Container HTTP Port = 8080, HTTP Health Check Path = /health.'
+Write-Host "Reminder: CapRover Container HTTP Port = 8080, HTTP Health Check Path = /health."
 
 Push-Location $RepoRoot
 try {
