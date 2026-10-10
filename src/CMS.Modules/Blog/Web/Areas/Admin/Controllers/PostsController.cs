@@ -115,8 +115,8 @@ public class PostsController : Controller
                 Slug = p.Slug,
                 Status = p.Status == PostStatus.Published ? _localizer["Published"] : _localizer["Draft"],
                 CategoryName = p.CategoryName,
-                CreatedAtUtc = p.CreatedAtUtc,
-                CreatedAtLocal = ToIranDate(p.CreatedAtUtc)
+                CreatedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                CreatedAtLocal = ToIranDate(p.PublishedAtUtc ?? p.CreatedAtUtc)
             }).ToList()
         };
 

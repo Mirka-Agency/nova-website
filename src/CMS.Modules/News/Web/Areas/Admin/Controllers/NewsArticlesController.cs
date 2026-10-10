@@ -129,8 +129,8 @@ public class NewsArticlesController : Controller
                 Status = p.Status == ArticleStatus.Published ? _localizer["Published"] : _localizer["Draft"],
                 Kind = p.Kind == ArticleKind.Event ? _localizer["EventKind"] : _localizer["NewsKind"],
                 CategoryName = p.CategoryName,
-                CreatedAtUtc = p.CreatedAtUtc,
-                CreatedAtLocal = ToIranDate(p.CreatedAtUtc),
+                CreatedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                CreatedAtLocal = ToIranDate(p.PublishedAtUtc ?? p.CreatedAtUtc),
                 EventStartLocal = ToEventLocal(p.EventStartAtUtc)
             }).ToList()
         };

@@ -110,8 +110,8 @@ public class TeamItemsController : Controller
                 Status = p.Status == TeamStatus.Published ? _localizer["Published"] : _localizer["Draft"],
                 IsPublished = p.Status == TeamStatus.Published,
                 CategoryName = p.CategoryName,
-                CreatedAtUtc = p.CreatedAtUtc,
-                CreatedAtLocal = ToIranDate(p.CreatedAtUtc)
+                CreatedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                CreatedAtLocal = ToIranDate(p.PublishedAtUtc ?? p.CreatedAtUtc)
             }).ToList()
         };
 

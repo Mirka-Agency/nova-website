@@ -110,8 +110,8 @@ public class VideoItemsController : Controller
                 Status = p.Status == VideoStatus.Published ? _localizer["Published"] : _localizer["Draft"],
                 IsPublished = p.Status == VideoStatus.Published,
                 CategoryName = p.CategoryName,
-                CreatedAtUtc = p.CreatedAtUtc,
-                CreatedAtLocal = ToIranDate(p.CreatedAtUtc)
+                CreatedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                CreatedAtLocal = ToIranDate(p.PublishedAtUtc ?? p.CreatedAtUtc)
             }).ToList()
         };
 
