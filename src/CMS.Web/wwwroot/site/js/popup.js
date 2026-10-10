@@ -80,6 +80,21 @@
     }
   }
 
+  function showPopupFormSuccess(popup, message) {
+    var msg = message || 'فرم شما با موفقیت ثبت شد.';
+    var content = popup.querySelector('[data-popup-content]');
+    var success = popup.querySelector('[data-popup-success]');
+    var text = popup.querySelector('[data-popup-success-text]');
+    if (text) text.textContent = msg;
+    if (success) {
+      if (content) content.hidden = true;
+      success.hidden = false;
+      var closeBtn = success.querySelector('[data-popup-close]');
+      if (closeBtn) focusNoScroll(closeBtn);
+    }
+    window.alert(msg);
+  }
+
   function focusNoScroll(el) {
     if (!el || typeof el.focus !== 'function') return;
     try {
@@ -252,11 +267,23 @@
       },
       credentials: 'same-origin'
     }).then(function (res) {
-      return res.json().then(function (data) {
-        return { ok: res.ok, status: res.status, data: data };
-      }).catch(function () {
-        return { ok: res.ok, status: res.status, data: null };
-      });
+      var ct = (res.headers.get('content-type') || '').toLowerCase();
+      if (ct.indexOf('application/json') !== -1) {
+        return res.json().then(function (data) {
+          return { ok: res.ok, status: res.status, data: data };
+        }).catch(function () {
+          return { ok: res.ok, status: res.status, data: null };
+        });
+      }
+      // Non-JSON (e.g. redirect follow): still treat HTTP success as submitted.
+      if (res.ok) {
+        return {
+          ok: true,
+          status: res.status,
+          data: { ok: true, message: 'فرم شما با موفقیت ثبت شد.' }
+        };
+      }
+      return { ok: false, status: res.status, data: null };
     }).then(function (result) {
       var data = result.data || {};
       form.removeAttribute('data-submitting');
@@ -264,12 +291,11 @@
 
       if (result.ok && data.ok) {
         markShown(popup);
-        var msg = data.message || 'ارسال با موفقیت انجام شد.';
+        var msg = data.message || 'فرم شما با موفقیت ثبت شد.';
         try { form.reset(); } catch (e) { /* ignore */ }
-        window.alert(msg);
+        showPopupFormSuccess(popup, msg);
         return;
       }
-
 
       var errors = (data && data.errors) || {};
       var messages = [];
@@ -307,6 +333,7 @@
         errorBox.textContent = 'ارسال فرم با خطا مواجه شد. دوباره تلاش کنید.';
         errorBox.classList.add('validation-summary-errors');
       }
+      window.alert('ارسال فرم با خطا مواجه شد. دوباره تلاش کنید.');
     });
   }
 

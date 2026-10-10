@@ -109,7 +109,7 @@
                     </div>
                 }
             </div>
-            @if (isBooking && popup.FormId.HasValue && formsEnabled)
+            @if (popup.FormId.HasValue && formsEnabled)
             {
                 <div class="booking-success" data-popup-success hidden>
                     <div class="booking-success__icon" aria-hidden="true">
@@ -118,8 +118,8 @@
                             <path d="m8.5 12.5 2.2 2.2 4.8-5"/>
                         </svg>
                     </div>
-                    <h3 class="booking-success__title">درخواست شما ثبت شد</h3>
-                    <p class="booking-success__text" data-popup-success-text>به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم.</p>
+                    <h3 class="booking-success__title">@(isBooking ? "درخواست شما ثبت شد" : "فرم با موفقیت ثبت شد")</h3>
+                    <p class="booking-success__text" data-popup-success-text>@(isBooking ? "به‌زودی برای هماهنگی نوبت با شما تماس می‌گیریم." : "پیام شما دریافت شد. به‌زودی با شما تماس می‌گیریم.")</p>
                     <button class="btn-primary-custom" type="button" data-popup-close>بستن</button>
                 </div>
             }
