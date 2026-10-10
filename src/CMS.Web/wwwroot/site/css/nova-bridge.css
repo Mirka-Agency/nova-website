@@ -649,6 +649,37 @@ a.doctor-focus__item {
   padding-inline-start: 1.25rem;
 }
 
+.doctor-about__body iframe,
+.doctor-about__body video {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto 1rem;
+  border: 0;
+  border-radius: var(--radius-lg, 1rem);
+  overflow: hidden;
+  background: #0f1f22;
+}
+
+.doctor-about__body figure.media,
+.doctor-about__body .raw-html-embed {
+  margin: 0 0 1rem;
+  border-radius: var(--radius-lg, 1rem);
+  overflow: hidden;
+}
+
+.doctor-about__body figure.media > div,
+.doctor-about__body figure.media .raw-html-embed {
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.doctor-about__body figure.media iframe,
+.doctor-about__body figure.media video {
+  width: 100%;
+  margin: 0;
+  border-radius: inherit;
+}
+
 .doctor-highlight__quote cite {
   display: block;
   margin-block-start: 0.75rem;
