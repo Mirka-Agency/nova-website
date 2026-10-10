@@ -67,7 +67,7 @@
             <ul class="footer-links">
               <li><a asp-controller="Teams" asp-action="Index">متخصصان کلینیک</a></li>
               <li><a href="#journey">مسیر درمان</a></li>
-              <li><a asp-area="" asp-route="education-articles">مقالات</a></li>
+              <li><a asp-area="" asp-route="privacy">حریم خصوصی</a></li>
               <li><a href="#faq">سوالات متداول</a></li>
             </ul>
           </div>
@@ -127,8 +127,6 @@
       <div class="footer-bottom">
         <p class="footer-copy">
           تمامی حقوق برای نووا کلینیک محفوظ میباشد.
-          <span aria-hidden="true"> · </span>
-          <a asp-area="" asp-route="privacy">حریم خصوصی</a>
         </p>
         <div class="footer-social">
           @if (!string.IsNullOrWhiteSpace(contact.InstagramUrl))
