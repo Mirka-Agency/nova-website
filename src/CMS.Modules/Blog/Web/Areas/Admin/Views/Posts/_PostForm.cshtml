@@ -182,130 +182,147 @@
             </template>
         </fieldset>
 
-        <fieldset class="admin-fieldset" data-post-video-schema>
+        <fieldset class="admin-fieldset admin-video-schema" data-post-video-schema>
             <legend>@Localizer["VideoSchemaSettings"]</legend>
-            <p class="admin-hint">@Localizer["VideoSchemaSettingsHint"]</p>
+            <p class="admin-hint admin-video-schema-intro">@Localizer["VideoSchemaSettingsHint"]</p>
 
             <div class="admin-video-schema-list">
                 <div class="admin-video-schema-rows" data-video-schema-list>
                     @for (var i = 0; i < Model.VideoSchemaItems.Count; i++)
                     {
                         var thumbId = $"VideoSchemaThumbnailUrl_{i}";
-                        <div class="admin-video-schema-row" data-video-schema-row>
-                            <div class="admin-video-schema-row-header">
-                                <h3 class="admin-video-schema-row-title">
-                                    @Localizer["VideoSchemaItemLabel"]
-                                    <span data-video-schema-index>@(i + 1)</span>
-                                </h3>
-                                <button type="button" class="btn btn-text-danger" data-video-schema-remove>
+                        var hasThumb = !string.IsNullOrWhiteSpace(Model.VideoSchemaItems[i].ThumbnailUrl);
+                        <article class="admin-video-schema-row" data-video-schema-row>
+                            <header class="admin-video-schema-row-header">
+                                <div class="admin-video-schema-row-heading">
+                                    <span class="admin-video-schema-badge" aria-hidden="true" data-video-schema-index>@(i + 1)</span>
+                                    <h3 class="admin-video-schema-row-title">@Localizer["VideoSchemaItemLabel"] <span data-video-schema-index-label>@(i + 1)</span></h3>
+                                </div>
+                                <button type="button" class="btn btn-ghost admin-video-schema-remove" data-video-schema-remove>
                                     <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                     <span>@Localizer["VideoSchemaRemove"]</span>
                                 </button>
-                            </div>
+                            </header>
 
-                            <div class="admin-field">
-                                <label asp-for="VideoSchemaItems[i].Title">@Localizer["VideoSchemaTitle"]</label>
-                                <input asp-for="VideoSchemaItems[i].Title"
-                                       placeholder="@Localizer["VideoSchemaTitlePlaceholder"]"
-                                       autocomplete="off"
-                                       maxlength="300" />
-                                <span asp-validation-for="VideoSchemaItems[i].Title" class="admin-field-error"></span>
-                            </div>
-
-                            <div class="admin-field">
-                                <label asp-for="VideoSchemaItems[i].ContentUrl">@Localizer["VideoSchemaContentUrl"]</label>
-                                <input asp-for="VideoSchemaItems[i].ContentUrl"
-                                       class="admin-input-ltr"
-                                       dir="ltr"
-                                       placeholder="@Localizer["VideoSchemaContentUrlPlaceholder"]"
-                                       autocomplete="off"
-                                       maxlength="1000" />
-                                <p class="admin-hint">@Localizer["VideoSchemaContentUrlHint"]</p>
-                                <span asp-validation-for="VideoSchemaItems[i].ContentUrl" class="admin-field-error"></span>
-                            </div>
-
-                            <div class="admin-field">
-                                <label>@Localizer["VideoSchemaThumbnail"]</label>
-                                <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
-                                    <button type="button"
-                                            class="btn btn-secondary"
-                                            data-media-picker
-                                            data-video-schema-thumb-picker
-                                            data-target="#@thumbId">
-                                        <i class="fas fa-images" aria-hidden="true"></i>
-                                        <span>@Localizer["SelectImage"]</span>
-                                    </button>
-                                </div>
-                                <input asp-for="VideoSchemaItems[i].ThumbnailUrl"
-                                       id="@thumbId"
-                                       type="hidden"
-                                       data-video-schema-thumb-input />
-                                <span asp-validation-for="VideoSchemaItems[i].ThumbnailUrl" class="admin-field-error"></span>
-                                <div class="admin-upload-preview admin-video-schema-thumb-preview"
-                                     data-media-preview-for="#@thumbId"
-                                     data-video-schema-thumb-preview>
-                                    @if (!string.IsNullOrWhiteSpace(Model.VideoSchemaItems[i].ThumbnailUrl))
-                                    {
-                                        <img src="@Model.VideoSchemaItems[i].ThumbnailUrl" alt="" />
-                                    }
-                                </div>
-                                <p class="admin-hint">@Localizer["VideoSchemaThumbnailHint"]</p>
-                            </div>
-
-                            <div class="admin-video-schema-meta">
-                                <div class="admin-field">
-                                    <label asp-for="VideoSchemaItems[i].UploadDate">@Localizer["VideoSchemaUploadDate"]</label>
-                                    <input asp-for="VideoSchemaItems[i].UploadDate"
-                                           type="date"
-                                           class="admin-input-ltr"
-                                           dir="ltr"
-                                           autocomplete="off" />
-                                    <span asp-validation-for="VideoSchemaItems[i].UploadDate" class="admin-field-error"></span>
-                                </div>
-                                <div class="admin-field">
-                                    <span class="admin-label">@Localizer["VideoSchemaDuration"]</span>
-                                    <div class="admin-video-schema-duration">
-                                        <div class="admin-video-schema-duration-field">
-                                            <label asp-for="VideoSchemaItems[i].DurationMinutes">@Localizer["VideoSchemaMinutes"]</label>
-                                            <input asp-for="VideoSchemaItems[i].DurationMinutes"
-                                                   type="number"
-                                                   min="0"
-                                                   max="1440"
-                                                   class="admin-input-ltr"
-                                                   dir="ltr"
-                                                   inputmode="numeric" />
+                            <div class="admin-video-schema-body">
+                                <aside class="admin-video-schema-media">
+                                    <span class="admin-video-schema-media-label">@Localizer["VideoSchemaThumbnail"]</span>
+                                    <div class="admin-video-schema-thumb @(hasThumb ? null : "is-empty")" data-video-schema-thumb>
+                                        <div class="admin-video-schema-thumb-frame"
+                                             data-media-preview-for="#@thumbId"
+                                             data-video-schema-thumb-preview>
+                                            @if (hasThumb)
+                                            {
+                                                <img src="@Model.VideoSchemaItems[i].ThumbnailUrl" alt="" />
+                                            }
                                         </div>
-                                        <div class="admin-video-schema-duration-field">
-                                            <label asp-for="VideoSchemaItems[i].DurationSeconds">@Localizer["VideoSchemaSeconds"]</label>
-                                            <input asp-for="VideoSchemaItems[i].DurationSeconds"
-                                                   type="number"
-                                                   min="0"
-                                                   max="59"
-                                                   class="admin-input-ltr"
-                                                   dir="ltr"
-                                                   inputmode="numeric" />
+                                        <div class="admin-video-schema-thumb-placeholder" aria-hidden="true">
+                                            <i class="fas fa-film" aria-hidden="true"></i>
+                                            <span>@Localizer["VideoSchemaThumbnail"]</span>
                                         </div>
                                     </div>
-                                    <span asp-validation-for="VideoSchemaItems[i].DurationMinutes" class="admin-field-error"></span>
-                                    <span asp-validation-for="VideoSchemaItems[i].DurationSeconds" class="admin-field-error"></span>
+                                    <div class="admin-row-actions admin-video-schema-media-actions">
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                data-media-picker
+                                                data-video-schema-thumb-picker
+                                                data-target="#@thumbId">
+                                            <i class="fas fa-images" aria-hidden="true"></i>
+                                            <span>@Localizer["SelectImage"]</span>
+                                        </button>
+                                    </div>
+                                    <p class="admin-hint">@Localizer["VideoSchemaThumbnailHint"]</p>
+                                    <input asp-for="VideoSchemaItems[i].ThumbnailUrl"
+                                           id="@thumbId"
+                                           type="hidden"
+                                           data-video-schema-thumb-input />
+                                    <span asp-validation-for="VideoSchemaItems[i].ThumbnailUrl" class="admin-field-error"></span>
+                                </aside>
+
+                                <div class="admin-video-schema-fields">
+                                    <div class="admin-field">
+                                        <label asp-for="VideoSchemaItems[i].Title">@Localizer["VideoSchemaTitle"]</label>
+                                        <input asp-for="VideoSchemaItems[i].Title"
+                                               placeholder="@Localizer["VideoSchemaTitlePlaceholder"]"
+                                               autocomplete="off"
+                                               maxlength="300" />
+                                        <span asp-validation-for="VideoSchemaItems[i].Title" class="admin-field-error"></span>
+                                    </div>
+
+                                    <div class="admin-field">
+                                        <label asp-for="VideoSchemaItems[i].ContentUrl">@Localizer["VideoSchemaContentUrl"]</label>
+                                        <input asp-for="VideoSchemaItems[i].ContentUrl"
+                                               class="admin-input-ltr"
+                                               dir="ltr"
+                                               placeholder="@Localizer["VideoSchemaContentUrlPlaceholder"]"
+                                               autocomplete="off"
+                                               maxlength="1000" />
+                                        <p class="admin-hint">@Localizer["VideoSchemaContentUrlHint"]</p>
+                                        <span asp-validation-for="VideoSchemaItems[i].ContentUrl" class="admin-field-error"></span>
+                                    </div>
+
+                                    <div class="admin-video-schema-meta">
+                                        <div class="admin-field">
+                                            <label asp-for="VideoSchemaItems[i].UploadDate">@Localizer["VideoSchemaUploadDate"]</label>
+                                            <input asp-for="VideoSchemaItems[i].UploadDate"
+                                                   type="date"
+                                                   class="admin-input-ltr"
+                                                   dir="ltr"
+                                                   autocomplete="off" />
+                                            <span asp-validation-for="VideoSchemaItems[i].UploadDate" class="admin-field-error"></span>
+                                        </div>
+                                        <div class="admin-field">
+                                            <span class="admin-label">@Localizer["VideoSchemaDuration"]</span>
+                                            <div class="admin-video-schema-duration" role="group" aria-label="@Localizer["VideoSchemaDuration"]">
+                                                <div class="admin-video-schema-duration-field">
+                                                    <input asp-for="VideoSchemaItems[i].DurationMinutes"
+                                                           type="number"
+                                                           min="0"
+                                                           max="1440"
+                                                           class="admin-input-ltr"
+                                                           dir="ltr"
+                                                           inputmode="numeric"
+                                                           aria-label="@Localizer["VideoSchemaMinutes"]" />
+                                                    <span>@Localizer["VideoSchemaMinutes"]</span>
+                                                </div>
+                                                <span class="admin-video-schema-duration-sep" aria-hidden="true">:</span>
+                                                <div class="admin-video-schema-duration-field">
+                                                    <input asp-for="VideoSchemaItems[i].DurationSeconds"
+                                                           type="number"
+                                                           min="0"
+                                                           max="59"
+                                                           class="admin-input-ltr"
+                                                           dir="ltr"
+                                                           inputmode="numeric"
+                                                           aria-label="@Localizer["VideoSchemaSeconds"]" />
+                                                    <span>@Localizer["VideoSchemaSeconds"]</span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="VideoSchemaItems[i].DurationMinutes" class="admin-field-error"></span>
+                                            <span asp-validation-for="VideoSchemaItems[i].DurationSeconds" class="admin-field-error"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-field">
+                                        <label asp-for="VideoSchemaItems[i].Description">@Localizer["VideoSchemaDescription"]</label>
+                                        <textarea asp-for="VideoSchemaItems[i].Description"
+                                                  rows="3"
+                                                  placeholder="@Localizer["VideoSchemaDescriptionPlaceholder"]"
+                                                  maxlength="5000"></textarea>
+                                        <span asp-validation-for="VideoSchemaItems[i].Description" class="admin-field-error"></span>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="admin-field">
-                                <label asp-for="VideoSchemaItems[i].Description">@Localizer["VideoSchemaDescription"]</label>
-                                <textarea asp-for="VideoSchemaItems[i].Description"
-                                          rows="4"
-                                          placeholder="@Localizer["VideoSchemaDescriptionPlaceholder"]"
-                                          maxlength="5000"></textarea>
-                                <span asp-validation-for="VideoSchemaItems[i].Description" class="admin-field-error"></span>
-                            </div>
-                        </div>
+                        </article>
                     }
                 </div>
 
-                <p class="admin-hint" data-video-schema-empty @(Model.VideoSchemaItems.Count > 0 ? "hidden" : null)>
-                    @Localizer["VideoSchemaEmpty"]
-                </p>
+                <div class="admin-video-schema-empty" data-video-schema-empty @(Model.VideoSchemaItems.Count > 0 ? "hidden" : null)>
+                    <div class="admin-video-schema-empty-icon" aria-hidden="true">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <p>@Localizer["VideoSchemaEmpty"]</p>
+                </div>
 
                 <div class="admin-video-schema-add-row">
                     <button type="button" class="btn btn-secondary" data-video-schema-add>
@@ -316,105 +333,118 @@
             </div>
 
             <template id="post-video-schema-row-template">
-                <div class="admin-video-schema-row" data-video-schema-row>
-                    <div class="admin-video-schema-row-header">
-                        <h3 class="admin-video-schema-row-title">
-                            @Localizer["VideoSchemaItemLabel"]
-                            <span data-video-schema-index>1</span>
-                        </h3>
-                        <button type="button" class="btn btn-text-danger" data-video-schema-remove>
+                <article class="admin-video-schema-row" data-video-schema-row>
+                    <header class="admin-video-schema-row-header">
+                        <div class="admin-video-schema-row-heading">
+                            <span class="admin-video-schema-badge" aria-hidden="true" data-video-schema-index>1</span>
+                            <h3 class="admin-video-schema-row-title">@Localizer["VideoSchemaItemLabel"] <span data-video-schema-index-label>1</span></h3>
+                        </div>
+                        <button type="button" class="btn btn-ghost admin-video-schema-remove" data-video-schema-remove>
                             <i class="fas fa-trash-alt" aria-hidden="true"></i>
                             <span>@Localizer["VideoSchemaRemove"]</span>
                         </button>
-                    </div>
+                    </header>
 
-                    <div class="admin-field">
-                        <label>@Localizer["VideoSchemaTitle"]</label>
-                        <input name="VideoSchemaItems[__INDEX__].Title"
-                               placeholder="@Localizer["VideoSchemaTitlePlaceholder"]"
-                               autocomplete="off"
-                               maxlength="300" />
-                    </div>
+                    <div class="admin-video-schema-body">
+                        <aside class="admin-video-schema-media">
+                            <span class="admin-video-schema-media-label">@Localizer["VideoSchemaThumbnail"]</span>
+                            <div class="admin-video-schema-thumb is-empty" data-video-schema-thumb>
+                                <div class="admin-video-schema-thumb-frame"
+                                     data-media-preview-for="#VideoSchemaThumbnailUrl___INDEX__"
+                                     data-video-schema-thumb-preview></div>
+                                <div class="admin-video-schema-thumb-placeholder" aria-hidden="true">
+                                    <i class="fas fa-film" aria-hidden="true"></i>
+                                    <span>@Localizer["VideoSchemaThumbnail"]</span>
+                                </div>
+                            </div>
+                            <div class="admin-row-actions admin-video-schema-media-actions">
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        data-media-picker
+                                        data-video-schema-thumb-picker
+                                        data-target="#VideoSchemaThumbnailUrl___INDEX__">
+                                    <i class="fas fa-images" aria-hidden="true"></i>
+                                    <span>@Localizer["SelectImage"]</span>
+                                </button>
+                            </div>
+                            <p class="admin-hint">@Localizer["VideoSchemaThumbnailHint"]</p>
+                            <input name="VideoSchemaItems[__INDEX__].ThumbnailUrl"
+                                   id="VideoSchemaThumbnailUrl___INDEX__"
+                                   type="hidden"
+                                   data-video-schema-thumb-input />
+                        </aside>
 
-                    <div class="admin-field">
-                        <label>@Localizer["VideoSchemaContentUrl"]</label>
-                        <input name="VideoSchemaItems[__INDEX__].ContentUrl"
-                               class="admin-input-ltr"
-                               dir="ltr"
-                               placeholder="@Localizer["VideoSchemaContentUrlPlaceholder"]"
-                               autocomplete="off"
-                               maxlength="1000" />
-                        <p class="admin-hint">@Localizer["VideoSchemaContentUrlHint"]</p>
-                    </div>
+                        <div class="admin-video-schema-fields">
+                            <div class="admin-field">
+                                <label>@Localizer["VideoSchemaTitle"]</label>
+                                <input name="VideoSchemaItems[__INDEX__].Title"
+                                       placeholder="@Localizer["VideoSchemaTitlePlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="300" />
+                            </div>
 
-                    <div class="admin-field">
-                        <label>@Localizer["VideoSchemaThumbnail"]</label>
-                        <div class="admin-row-actions" style="justify-content: flex-start; margin-block-end: 0.5rem;">
-                            <button type="button"
-                                    class="btn btn-secondary"
-                                    data-media-picker
-                                    data-video-schema-thumb-picker
-                                    data-target="#VideoSchemaThumbnailUrl___INDEX__">
-                                <i class="fas fa-images" aria-hidden="true"></i>
-                                <span>@Localizer["SelectImage"]</span>
-                            </button>
-                        </div>
-                        <input name="VideoSchemaItems[__INDEX__].ThumbnailUrl"
-                               id="VideoSchemaThumbnailUrl___INDEX__"
-                               type="hidden"
-                               data-video-schema-thumb-input />
-                        <div class="admin-upload-preview admin-video-schema-thumb-preview"
-                             data-media-preview-for="#VideoSchemaThumbnailUrl___INDEX__"
-                             data-video-schema-thumb-preview></div>
-                        <p class="admin-hint">@Localizer["VideoSchemaThumbnailHint"]</p>
-                    </div>
+                            <div class="admin-field">
+                                <label>@Localizer["VideoSchemaContentUrl"]</label>
+                                <input name="VideoSchemaItems[__INDEX__].ContentUrl"
+                                       class="admin-input-ltr"
+                                       dir="ltr"
+                                       placeholder="@Localizer["VideoSchemaContentUrlPlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="1000" />
+                                <p class="admin-hint">@Localizer["VideoSchemaContentUrlHint"]</p>
+                            </div>
 
-                    <div class="admin-video-schema-meta">
-                        <div class="admin-field">
-                            <label>@Localizer["VideoSchemaUploadDate"]</label>
-                            <input name="VideoSchemaItems[__INDEX__].UploadDate"
-                                   type="date"
-                                   class="admin-input-ltr"
-                                   dir="ltr"
-                                   autocomplete="off" />
-                        </div>
-                        <div class="admin-field">
-                            <span class="admin-label">@Localizer["VideoSchemaDuration"]</span>
-                            <div class="admin-video-schema-duration">
-                                <div class="admin-video-schema-duration-field">
-                                    <label>@Localizer["VideoSchemaMinutes"]</label>
-                                    <input name="VideoSchemaItems[__INDEX__].DurationMinutes"
-                                           type="number"
-                                           min="0"
-                                           max="1440"
-                                           value="0"
+                            <div class="admin-video-schema-meta">
+                                <div class="admin-field">
+                                    <label>@Localizer["VideoSchemaUploadDate"]</label>
+                                    <input name="VideoSchemaItems[__INDEX__].UploadDate"
+                                           type="date"
                                            class="admin-input-ltr"
                                            dir="ltr"
-                                           inputmode="numeric" />
+                                           autocomplete="off" />
                                 </div>
-                                <div class="admin-video-schema-duration-field">
-                                    <label>@Localizer["VideoSchemaSeconds"]</label>
-                                    <input name="VideoSchemaItems[__INDEX__].DurationSeconds"
-                                           type="number"
-                                           min="0"
-                                           max="59"
-                                           value="0"
-                                           class="admin-input-ltr"
-                                           dir="ltr"
-                                           inputmode="numeric" />
+                                <div class="admin-field">
+                                    <span class="admin-label">@Localizer["VideoSchemaDuration"]</span>
+                                    <div class="admin-video-schema-duration" role="group" aria-label="@Localizer["VideoSchemaDuration"]">
+                                        <div class="admin-video-schema-duration-field">
+                                            <input name="VideoSchemaItems[__INDEX__].DurationMinutes"
+                                                   type="number"
+                                                   min="0"
+                                                   max="1440"
+                                                   value="0"
+                                                   class="admin-input-ltr"
+                                                   dir="ltr"
+                                                   inputmode="numeric"
+                                                   aria-label="@Localizer["VideoSchemaMinutes"]" />
+                                            <span>@Localizer["VideoSchemaMinutes"]</span>
+                                        </div>
+                                        <span class="admin-video-schema-duration-sep" aria-hidden="true">:</span>
+                                        <div class="admin-video-schema-duration-field">
+                                            <input name="VideoSchemaItems[__INDEX__].DurationSeconds"
+                                                   type="number"
+                                                   min="0"
+                                                   max="59"
+                                                   value="0"
+                                                   class="admin-input-ltr"
+                                                   dir="ltr"
+                                                   inputmode="numeric"
+                                                   aria-label="@Localizer["VideoSchemaSeconds"]" />
+                                            <span>@Localizer["VideoSchemaSeconds"]</span>
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div class="admin-field">
+                                <label>@Localizer["VideoSchemaDescription"]</label>
+                                <textarea name="VideoSchemaItems[__INDEX__].Description"
+                                          rows="3"
+                                          placeholder="@Localizer["VideoSchemaDescriptionPlaceholder"]"
+                                          maxlength="5000"></textarea>
                             </div>
                         </div>
                     </div>
-
-                    <div class="admin-field">
-                        <label>@Localizer["VideoSchemaDescription"]</label>
-                        <textarea name="VideoSchemaItems[__INDEX__].Description"
-                                  rows="4"
-                                  placeholder="@Localizer["VideoSchemaDescriptionPlaceholder"]"
-                                  maxlength="5000"></textarea>
-                    </div>
-                </div>
+                </article>
             </template>
         </fieldset>
         </div>

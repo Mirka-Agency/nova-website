@@ -26,6 +26,14 @@
     }
   }
 
+  function syncThumbState(row) {
+    const shell = row.querySelector("[data-video-schema-thumb]");
+    const input = row.querySelector("[data-video-schema-thumb-input]");
+    if (!shell || !input) return;
+    const hasValue = !!(input.value || "").trim();
+    shell.classList.toggle("is-empty", !hasValue);
+  }
+
   function wireThumbnailPicker(row, index) {
     const input = row.querySelector("[data-video-schema-thumb-input]");
     const picker = row.querySelector("[data-video-schema-thumb-picker]");
@@ -39,24 +47,25 @@
     picker.setAttribute("data-target", selector);
     preview.setAttribute("data-media-preview-for", selector);
 
-    const url = (input.value || "").trim();
-    if (url) {
-      let img = preview.querySelector("img");
-      if (!img) {
-        img = document.createElement("img");
-        img.alt = "";
-        preview.appendChild(img);
-      }
-      img.src = url;
-    } else {
-      preview.innerHTML = "";
+    if (input.dataset.videoSchemaThumbBound !== "1") {
+      input.dataset.videoSchemaThumbBound = "1";
+      const sync = () => syncThumbState(row);
+      input.addEventListener("change", sync);
+      input.addEventListener("input", sync);
     }
+
+    syncThumbState(row);
   }
 
   function reindex() {
     rows().forEach((row, index) => {
-      const indexLabel = row.querySelector("[data-video-schema-index]");
-      if (indexLabel) indexLabel.textContent = String(index + 1);
+      const n = String(index + 1);
+      row.querySelectorAll("[data-video-schema-index]").forEach((el) => {
+        el.textContent = n;
+      });
+      row.querySelectorAll("[data-video-schema-index-label]").forEach((el) => {
+        el.textContent = n;
+      });
 
       row.querySelectorAll("[name]").forEach((el) => {
         const name = el.getAttribute("name");
