@@ -195,6 +195,13 @@
     if (height > 0) {
       document.documentElement.style.setProperty("--header-height", height + "px");
     }
+
+    var adminBar = document.querySelector(".site-admin-bar:not(.is-collapsed)");
+    var adminBarHeight = adminBar ? Math.ceil(adminBar.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty(
+      "--site-admin-bar-height",
+      Math.max(0, adminBarHeight) + "px"
+    );
   }
 
   function onScroll() {
@@ -1607,7 +1614,9 @@
     function getOffset() {
       var headerEl = document.querySelector(".site-header");
       var headerH = headerEl ? headerEl.offsetHeight : 80;
-      return headerH + 20;
+      var adminBar = document.querySelector(".site-admin-bar:not(.is-collapsed)");
+      var adminBarH = adminBar ? adminBar.offsetHeight : 0;
+      return adminBarH + headerH + 20;
     }
 
     function updateActive() {

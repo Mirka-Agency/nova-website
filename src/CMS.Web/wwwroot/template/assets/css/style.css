@@ -70,6 +70,9 @@
   --section-space: clamp(2.75rem, 5vw, 4.25rem);
   --container-max: 1140px;
   --header-height: 96px;
+  /* Cleared space under fixed chrome (admin-bar.css may override --site-admin-bar-height). */
+  --site-admin-bar-height: 0px;
+  --sticky-under-header: calc(var(--site-admin-bar-height) + var(--header-height) + 1.25rem);
 
   --transition: 280ms ease;
 }
@@ -4722,6 +4725,9 @@ button.header-cta {
 .service-article,
 .blog-post {
   position: relative;
+  /* Stack below .site-header (1030) so sticky TOC never paints over the nav. */
+  z-index: 0;
+  isolation: isolate;
   padding-block: 0.5rem var(--section-space);
   background: var(--white);
 }
@@ -4741,6 +4747,7 @@ button.header-cta {
 .service-article .container,
 .blog-post .container {
   position: relative;
+  z-index: 1;
 }
 
 .service-article__layout,
@@ -4765,8 +4772,8 @@ button.header-cta {
 .blog-toc {
   grid-area: toc;
   position: relative;
-  /* Below site-header (1030); above article content. Avoid nesting under a low stacking context. */
-  z-index: 1025;
+  /* Within .blog-post / .service-article only; header stays above the section. */
+  z-index: 2;
   min-width: 0;
   align-self: stretch;
 }
@@ -4774,9 +4781,9 @@ button.header-cta {
 .service-toc__panel,
 .blog-toc__panel {
   position: sticky;
-  top: calc(var(--header-height) + 1.25rem);
+  top: var(--sticky-under-header);
   z-index: 1;
-  max-height: calc(100dvh - var(--header-height) - 2.5rem);
+  max-height: calc(100dvh - var(--site-admin-bar-height) - var(--header-height) - 2.5rem);
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 1.35rem 1.25rem;
@@ -4853,8 +4860,8 @@ button.header-cta {
 
 /* Modern minimal service TOC */
 .service-toc__panel {
-  top: calc(var(--header-height) + 1rem);
-  max-height: calc(100dvh - var(--header-height) - 2rem);
+  top: calc(var(--site-admin-bar-height) + var(--header-height) + 1rem);
+  max-height: calc(100dvh - var(--site-admin-bar-height) - var(--header-height) - 2rem);
   overflow: visible;
   padding: 1rem 0.85rem;
   border: 1px solid rgba(9, 112, 125, 0.08);
@@ -4973,7 +4980,7 @@ button.header-cta {
 .blog-prose {
   padding-block: 1.85rem;
   border-bottom: 1px solid rgba(9, 112, 125, 0.1);
-  scroll-margin-top: calc(var(--header-height) + 1.25rem);
+  scroll-margin-top: var(--sticky-under-header);
 }
 
 .service-prose:first-child,
