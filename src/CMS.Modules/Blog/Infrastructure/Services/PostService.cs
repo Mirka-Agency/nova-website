@@ -220,7 +220,7 @@ public sealed class PostService : IPostService
         return post.Id;
     }
 
-    public async Task UpdateAsync(Guid id, SavePostCommand command, CancellationToken cancellationToken = default)
+    public async Task<string> UpdateAsync(Guid id, SavePostCommand command, CancellationToken cancellationToken = default)
     {
         command = Normalize(command);
         await ValidateAsync(command, cancellationToken);
@@ -259,6 +259,7 @@ public sealed class PostService : IPostService
         ApplyPublishState(post, command);
 
         await _db.SaveChangesAsync(cancellationToken);
+        return slug;
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

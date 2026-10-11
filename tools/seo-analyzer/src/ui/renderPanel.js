@@ -226,8 +226,9 @@ export function renderPanel(root, payload) {
   if (scoreLabel) scoreLabel.textContent = String(overall.score);
   if (scoreCaption) scoreCaption.textContent = overall.label || '';
   if (scoreInput) {
+    // Do not bubble: a bubbling "change" marks the post form dirty and triggers autosave.
     scoreInput.value = String(overall.score);
-    scoreInput.dispatchEvent(new Event('change', { bubbles: true }));
+    scoreInput.dispatchEvent(new Event('change', { bubbles: false }));
   }
   if (scoreWrap) {
     scoreWrap.classList.remove('seo-score--good', 'seo-score--warn', 'seo-score--error');

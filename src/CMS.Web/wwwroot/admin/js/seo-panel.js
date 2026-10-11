@@ -47,6 +47,22 @@
       if (next === "content") {
         window.dispatchEvent(new Event("resize"));
       }
+      if (next === "seo") {
+        // Analyze once when the SEO tab becomes visible — not while typing in content.
+        var seoRoot = root.querySelector("[data-seo-panel]");
+        if (!seoRoot) return;
+        try {
+          var api =
+            seoRoot.__mirkaSeo ||
+            (window.MirkaSeoAnalysis && typeof window.MirkaSeoAnalysis.init === "function"
+              ? window.MirkaSeoAnalysis.init(seoRoot)
+              : null);
+          if (api && typeof api.refresh === "function") api.refresh();
+          else if (api && typeof api.analyze === "function") api.analyze();
+        } catch (err) {
+          console.warn("[seo-panel] refresh on tab open failed", err);
+        }
+      }
     }
 
     tabs.forEach(function (tab) {

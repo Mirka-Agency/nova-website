@@ -102,11 +102,11 @@ public class BlogPostsApiController : ControllerBase
 
         try
         {
-            await _posts.UpdateAsync(id, await ToCommandAsync(request, cancellationToken), cancellationToken);
+            // Return slug from Update — avoid a second full GetAsync (loads Body) on every autosave.
+            var slug = await _posts.UpdateAsync(id, await ToCommandAsync(request, cancellationToken), cancellationToken);
             await UpsertSeoAsync(id, request, cancellationToken);
-            var detail = await _posts.GetAsync(id, cancellationToken);
             _logger.LogInformation("Admin API: updated blog post {PostId}", id);
-            return Ok(new SavePostApiResponse { Id = id, Slug = detail?.Slug ?? string.Empty });
+            return Ok(new SavePostApiResponse { Id = id, Slug = slug });
         }
         catch (NotFoundException)
         {

@@ -198,29 +198,47 @@ async function postJson(url, body, form) {
 }
 
 /**
+ * True when the SEO panel is on-screen (or there is no tab shell).
+ * Content-tab typing must not trigger analysis — that freezes the editor.
+ */
+export function isSeoAnalysisSurfaceActive(root) {
+  const tabPanel = root?.closest?.('[data-post-editor-panel]');
+  if (!tabPanel) return true;
+  if (tabPanel.hasAttribute('hidden')) return false;
+  if (tabPanel.classList.contains('is-hidden')) return false;
+  return true;
+}
+
+/**
  * Bind live analysis + API action buttons.
  * @param {HTMLElement} root
  * @param {(fields: object) => void} onAnalyze
  */
 export function bindEditor(root, onAnalyze) {
   const run = () => {
+    if (!isSeoAnalysisSurfaceActive(root)) return;
     const fields = collectFields(root);
     onAnalyze(fields);
   };
 
-  const debounced = debounce(run, 450);
+  // Keep SEO tab edits responsive, but avoid thrashing the main thread.
+  const debounced = debounce(run, 2000);
   const form = root.closest('form') || document;
 
-  form.addEventListener('input', debounced);
-  form.addEventListener('change', debounced);
+  const schedule = () => {
+    if (!isSeoAnalysisSurfaceActive(root)) return;
+    debounced();
+  };
 
-  // CKEditor change:data (+ ready re-analyze so body is not empty)
+  form.addEventListener('input', schedule);
+  form.addEventListener('change', schedule);
+
+  // CKEditor change:data — only analyze while the SEO tab is visible.
   const bodyEl = form.querySelector('textarea.admin-ckeditor-source');
   const tryBindCk = () => {
     const editor = bodyEl && bodyEl.ckEditorInstance;
     if (editor && editor.model && editor.model.document) {
-      editor.model.document.on('change:data', debounced);
-      debounced.flush();
+      editor.model.document.on('change:data', schedule);
       return true;
     }
     return false;
@@ -228,7 +246,7 @@ export function bindEditor(root, onAnalyze) {
   if (bodyEl) {
     bodyEl.addEventListener('ckeditor:ready', () => {
       tryBindCk();
-      debounced.flush();
+      schedule();
     });
   }
   if (!tryBindCk()) {
@@ -335,16 +353,18 @@ export function bindEditor(root, onAnalyze) {
     }
   });
 
-  // Initial run
-  run();
+  // Initial run only if SEO tab is already visible (rare); otherwise wait for tab open.
+  if (isSeoAnalysisSurfaceActive(root)) {
+    run();
+  }
 
   return {
     refresh: run,
     refreshDebounced: debounced,
     destroy() {
       debounced.cancel();
-      form.removeEventListener('input', debounced);
-      form.removeEventListener('change', debounced);
+      form.removeEventListener('input', schedule);
+      form.removeEventListener('change', schedule);
     },
   };
 }

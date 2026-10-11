@@ -8,7 +8,7 @@
   const url = form.getAttribute("data-autosave-url");
   if (!postId || !url) return;
 
-  const intervalMs = Number(form.getAttribute("data-autosave-interval") || "5000");
+  const intervalMs = Number(form.getAttribute("data-autosave-interval") || "20000");
   const statusEl = form.querySelector("[data-post-autosave-status]");
   const draftTitle = form.getAttribute("data-draft-title") || "پیش‌نویس";
   const msgSaving = form.getAttribute("data-msg-saving") || "";
@@ -290,9 +290,16 @@
       return;
     }
 
+    // Only persist when the editor marked real edits (or force). Do not PUT solely
+    // because a derived SEO score field changed in the payload snapshot.
+    if (!force && !dirty) return;
+
     const payload = buildPayload();
     const serialized = JSON.stringify(payload);
-    if (!force && serialized === lastPayload && !dirty) return;
+    if (!force && serialized === lastPayload) {
+      dirty = false;
+      return;
+    }
 
     saving = true;
     setStatus(msgSaving, false);
@@ -359,7 +366,17 @@
     abortController?.abort();
   });
 
-  function markDirty() {
+  function isAutosaveIgnoredTarget(target) {
+    if (!(target instanceof Element)) return false;
+    // SEO score is derived client-side; must not drive draft PUTs by itself.
+    if (target.closest("[data-seo-score-input], [data-seo-score], [data-seo-summary], [data-seo-tabs]")) {
+      return true;
+    }
+    return false;
+  }
+
+  function markDirty(ev) {
+    if (ev && isAutosaveIgnoredTarget(ev.target)) return;
     dirty = true;
   }
 
@@ -393,10 +410,10 @@
 
   window.setInterval(function () {
     saveIfNeeded(false);
-  }, Math.max(intervalMs, 2000));
+  }, Math.max(intervalMs, 10000));
 
-  // First autosave shortly after load so the draft reflects opened editor state.
+  // First autosave after editor has had time to boot; avoid competing with CKEditor parse.
   window.setTimeout(function () {
     saveIfNeeded(true);
-  }, 1200);
+  }, 4000);
 })();

@@ -18,12 +18,10 @@
 
   border: 1px solid var(--seo-border);
   border-radius: var(--seo-radius);
-  padding: 24px;
+  padding: 20px;
   background: var(--seo-bg);
-  margin-block-start: 0;
+  margin-block-start: 16px;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
-  min-width: 0;
-  max-width: 100%;
 }
 
 .admin-seo-panel__header {

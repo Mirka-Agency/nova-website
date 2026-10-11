@@ -13,6 +13,7 @@ public interface IPostService
     Task<Guid> GetOrCreateUserDraftAsync(string userId, CancellationToken cancellationToken = default);
     Task<Guid> DiscardUserDraftAsync(string userId, Guid draftId, CancellationToken cancellationToken = default);
     Task<Guid> CreateAsync(SavePostCommand command, CancellationToken cancellationToken = default);
-    Task UpdateAsync(Guid id, SavePostCommand command, CancellationToken cancellationToken = default);
+    /// <summary>Updates the post and returns the persisted slug.</summary>
+    Task<string> UpdateAsync(Guid id, SavePostCommand command, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }
