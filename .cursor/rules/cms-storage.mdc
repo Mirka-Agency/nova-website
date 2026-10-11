@@ -25,6 +25,7 @@ alwaysApply: false
 | PublicBaseUrl | `Storage__S3__PublicBaseUrl` | CDN / public URL prefix for `GetPublicUrl` |
 | ForcePathStyle | `Storage__S3__ForcePathStyle` | Path-style addressing (often `true` for MinIO) |
 | UsePublicReadAcl | `Storage__S3__UsePublicReadAcl` | Set object ACL `public-read` (prefer bucket policy when ACLs are off) |
+| BackfillCacheHeadersOnStartup | `Storage__S3__BackfillCacheHeadersOnStartup` | One-shot: apply Cache-Control to existing public objects, then set `false` |
 
 See `.env.example`. Never commit real credentials.
 
@@ -37,14 +38,35 @@ var key = ObjectStorageKeys.Create(ObjectStorageKeys.Modules.Blog, "covers", fil
 // blog/covers/{guid}_{safe-name}.jpg
 ```
 
-Module prefixes: `blog`, `shop`, `forms`, `media`.
+Module prefixes: `blog`, `shop`, `forms`, `media`, …
+
+Keys are **GUID-unique**. Replace/re-optimize always uploads a **new** key and deletes the stale one — never overwrite in place. That makes long browser cache safe.
+
+## Browser cache (Cache-Control)
+
+`S3ObjectStorage` sets object metadata from `ObjectStorageCachePolicy` on every upload:
+
+| Prefix | Cache-Control |
+|--------|---------------|
+| Public modules (`media`, `blog`, `shop`, …) | `public, max-age=31536000, immutable` |
+| `forms/` (submission attachments) | `private, no-store` |
+| Unknown prefixes | unset |
+
+This is object metadata returned by Arvan/S3/CDN — not the CMS HTML/API/`wwwroot` middleware cache.
+
+To fix objects uploaded before this policy existed:
+
+1. Set `Storage__S3__BackfillCacheHeadersOnStartup=true` once (or run `tools/s3-cache-backfill`), or
+2. Call `IObjectStorage.BackfillCacheHeadersAsync()` — CopyObject REPLACE, same key/URL.
+
+Then set the flag back to `false`.
 
 ## Upload flow
 
 1. Web binds `IFormFile`.
 2. Validate type/size (`ImageUploadRules` for images).
 3. Call `IObjectStorage.UploadAsync(stream, key, contentType)`.
-4. Persist **`PublicUrl`** (and optionally the object key later for deletes) on the entity — not the binary.
+4. Persist the **object key** (URLs via `GetPublicUrl`) — not the binary.
 
 ```csharp
 await using var stream = file.OpenReadStream();
@@ -58,3 +80,5 @@ entity.SetCoverImage(result.PublicUrl);
 - Store binaries in PostgreSQL or on the app server disk.
 - Invent ad-hoc local `wwwroot/uploads` folders for CMS media.
 - Hardcode bucket names or credentials in source.
+- Apply long public Cache-Control to form attachments or other private objects.
+- Rely on Arvan CDN default TTL alone for CMS media — set Cache-Control on the object.

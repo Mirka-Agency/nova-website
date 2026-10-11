@@ -42,6 +42,7 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
         EnsureConfigured();
 
         var key = objectKey.Trim().TrimStart('/');
+        var cacheControl = ObjectStorageCachePolicy.ResolveCacheControl(key);
 
         // Prefer the caller's seekable stream (e.g. video temp file). Only buffer when needed.
         Stream uploadStream = content;
@@ -69,11 +70,11 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
 
             if (length >= MultipartThresholdBytes)
             {
-                await UploadMultipartAsync(uploadStream, key, contentType, cancellationToken);
+                await UploadMultipartAsync(uploadStream, key, contentType, cacheControl, cancellationToken);
             }
             else
             {
-                await UploadPutObjectAsync(uploadStream, key, contentType, cancellationToken);
+                await UploadPutObjectAsync(uploadStream, key, contentType, cacheControl, cancellationToken);
             }
         }
         catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
@@ -150,12 +151,131 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
         return $"https://{_options.BucketName}.s3.{_options.Region}.amazonaws.com/{encodedKey}";
     }
 
+    public async Task<ObjectStorageCacheBackfillResult> BackfillCacheHeadersAsync(
+        CancellationToken cancellationToken = default)
+    {
+        EnsureConfigured();
+
+        var examined = 0;
+        var updated = 0;
+        var skipped = 0;
+        var failed = 0;
+        string? continuationToken = null;
+
+        do
+        {
+            var list = await _client.ListObjectsV2Async(new ListObjectsV2Request
+            {
+                BucketName = _options.BucketName,
+                ContinuationToken = continuationToken,
+                MaxKeys = 200
+            }, cancellationToken);
+
+            foreach (var obj in list.S3Objects)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                examined++;
+
+                if (!ObjectStorageCachePolicy.IsPublicImmutableCandidate(obj.Key))
+                {
+                    skipped++;
+                    continue;
+                }
+
+                try
+                {
+                    if (await TryApplyPublicCacheHeaderAsync(obj.Key, cancellationToken))
+                        updated++;
+                    else
+                        skipped++;
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    _logger.LogWarning(ex, "Failed to backfill Cache-Control for {ObjectKey}", obj.Key);
+                }
+            }
+
+            continuationToken = list.IsTruncated == true ? list.NextContinuationToken : null;
+        } while (continuationToken is not null);
+
+        _logger.LogInformation(
+            "S3 Cache-Control backfill finished for bucket {Bucket}: examined={Examined}, updated={Updated}, skipped={Skipped}, failed={Failed}",
+            _options.BucketName, examined, updated, skipped, failed);
+
+        return new ObjectStorageCacheBackfillResult(examined, updated, skipped, failed);
+    }
+
     public void Dispose() => _client.Dispose();
+
+    /// <summary>
+    /// Returns true when metadata was written; false when already correct / not a candidate.
+    /// </summary>
+    private async Task<bool> TryApplyPublicCacheHeaderAsync(string key, CancellationToken cancellationToken)
+    {
+        GetObjectMetadataResponse metadata;
+        try
+        {
+            metadata = await _client.GetObjectMetadataAsync(_options.BucketName, key, cancellationToken);
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return false;
+        }
+
+        if (ObjectStorageCachePolicy.HasDesiredCacheControl(key, metadata.Headers.CacheControl))
+            return false;
+
+        var desired = ObjectStorageCachePolicy.ResolveCacheControl(key);
+        if (desired is null)
+            return false;
+
+        var copy = new CopyObjectRequest
+        {
+            SourceBucket = _options.BucketName,
+            SourceKey = key,
+            DestinationBucket = _options.BucketName,
+            DestinationKey = key,
+            MetadataDirective = S3MetadataDirective.REPLACE,
+            ContentType = string.IsNullOrWhiteSpace(metadata.Headers.ContentType)
+                ? "application/octet-stream"
+                : metadata.Headers.ContentType
+        };
+        copy.Headers.CacheControl = desired;
+
+        if (!string.IsNullOrWhiteSpace(metadata.Headers.ContentDisposition))
+            copy.Headers.ContentDisposition = metadata.Headers.ContentDisposition;
+        if (!string.IsNullOrWhiteSpace(metadata.Headers.ContentEncoding))
+            copy.Headers.ContentEncoding = metadata.Headers.ContentEncoding;
+
+        foreach (var metaKey in metadata.Metadata.Keys)
+            copy.Metadata[metaKey] = metadata.Metadata[metaKey];
+
+        if (_options.UsePublicReadAcl)
+            copy.CannedACL = S3CannedACL.PublicRead;
+
+        try
+        {
+            await _client.CopyObjectAsync(copy, cancellationToken);
+        }
+        catch (AmazonS3Exception ex) when (_options.UsePublicReadAcl
+            && ex.StatusCode is System.Net.HttpStatusCode.BadRequest
+                or System.Net.HttpStatusCode.Forbidden
+                or System.Net.HttpStatusCode.NotImplemented)
+        {
+            _logger.LogWarning(ex, "S3 ACL public-read rejected while backfilling {ObjectKey}; retrying without ACL", key);
+            copy.CannedACL = null;
+            await _client.CopyObjectAsync(copy, cancellationToken);
+        }
+
+        return true;
+    }
 
     private async Task UploadPutObjectAsync(
         Stream content,
         string key,
         string contentType,
+        string? cacheControl,
         CancellationToken cancellationToken)
     {
         content.Position = 0;
@@ -172,6 +292,7 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
             DisablePayloadSigning = true
         };
         request.Headers.ContentLength = content.Length;
+        ApplyCacheControl(request.Headers, cacheControl);
 
         if (_options.UsePublicReadAcl)
             request.CannedACL = S3CannedACL.PublicRead;
@@ -196,6 +317,7 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
         Stream content,
         string key,
         string contentType,
+        string? cacheControl,
         CancellationToken cancellationToken)
     {
         content.Position = 0;
@@ -216,6 +338,7 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
             PartSize = MultipartThresholdBytes,
             DisablePayloadSigning = true
         };
+        ApplyCacheControl(request.Headers, cacheControl);
 
         if (_options.UsePublicReadAcl)
             request.CannedACL = S3CannedACL.PublicRead;
@@ -234,6 +357,12 @@ public sealed class S3ObjectStorage : IObjectStorage, IDisposable
             request.CannedACL = null;
             await transfer.UploadAsync(request, cancellationToken);
         }
+    }
+
+    private static void ApplyCacheControl(HeadersCollection headers, string? cacheControl)
+    {
+        if (!string.IsNullOrWhiteSpace(cacheControl))
+            headers.CacheControl = cacheControl;
     }
 
     private void EnsureConfigured()

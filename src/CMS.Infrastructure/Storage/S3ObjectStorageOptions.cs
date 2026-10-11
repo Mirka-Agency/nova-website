@@ -38,4 +38,10 @@ public sealed class S3ObjectStorageOptions
     /// When true, uploads set ACL <c>public-read</c>. Prefer bucket/CDN policy instead when ACLs are disabled.
     /// </summary>
     public bool UsePublicReadAcl { get; set; }
+
+    /// <summary>
+    /// When true, a one-shot hosted service runs <c>BackfillCacheHeadersAsync</c> after startup
+    /// to set Cache-Control on existing public objects. Disable after a successful run.
+    /// </summary>
+    public bool BackfillCacheHeadersOnStartup { get; set; }
 }

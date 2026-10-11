@@ -65,6 +65,7 @@ public static class DependencyInjection
         services.Configure<WhatsAppOptions>(configuration.GetSection(WhatsAppOptions.SectionName));
 
         services.AddSingleton<IObjectStorage, S3ObjectStorage>();
+        services.AddHostedService<ObjectStorageCacheHeadersBackfillHostedService>();
         services.AddSingleton<IHtmlContentSanitizer, HtmlContentSanitizer>();
         services.Configure<SharedCaptchaOptions>(configuration.GetSection(SharedCaptchaOptions.SectionName));
         services.AddHttpClient(SharedCaptchaVerifier.HttpClientName, client =>

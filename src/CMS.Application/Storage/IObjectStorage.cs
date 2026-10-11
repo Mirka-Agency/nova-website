@@ -9,6 +9,7 @@ public interface IObjectStorage
     /// <summary>
     /// Uploads <paramref name="content"/> to the given object key.
     /// Returns the stored key and a publicly reachable URL.
+    /// Cache-Control is set from <see cref="ObjectStorageCachePolicy"/> based on the key prefix.
     /// </summary>
     Task<ObjectStorageUploadResult> UploadAsync(
         Stream content,
@@ -25,4 +26,11 @@ public interface IObjectStorage
     /// Builds the public URL for an already-stored object key.
     /// </summary>
     string GetPublicUrl(string objectKey);
+
+    /// <summary>
+    /// Idempotently applies <see cref="ObjectStorageCachePolicy"/> Cache-Control metadata
+    /// to existing objects (via S3 CopyObject REPLACE). Does not change object keys or URLs.
+    /// </summary>
+    Task<ObjectStorageCacheBackfillResult> BackfillCacheHeadersAsync(
+        CancellationToken cancellationToken = default);
 }

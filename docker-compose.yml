@@ -80,6 +80,8 @@ services:
       Storage__S3__ServiceUrl: ${STORAGE_S3_SERVICE_URL:-}
       Storage__S3__PublicBaseUrl: ${STORAGE_S3_PUBLIC_BASE_URL:-}
       Storage__S3__ForcePathStyle: ${STORAGE_S3_FORCE_PATH_STYLE:-false}
+      Storage__S3__UsePublicReadAcl: ${STORAGE_S3_USE_PUBLIC_READ_ACL:-true}
+      Storage__S3__BackfillCacheHeadersOnStartup: ${STORAGE_S3_BACKFILL_CACHE_HEADERS_ON_STARTUP:-false}
       OpenTelemetry__OtlpEndpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
       WhatsApp__ServiceBaseUrl: http://whatsapp:3100
       WhatsApp__ApiKey: ${WHATSAPP_API_KEY:-change-me-whatsapp-api-key}
