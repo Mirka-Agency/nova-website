@@ -90,6 +90,12 @@
     '<path d="M3.2 4.2h13.6c.66 0 1.2.54 1.2 1.2v4.2c0 .66-.54 1.2-1.2 1.2H11l-2.2 2.6c-.3.36-.9.14-.9-.3V10.8H3.2c-.66 0-1.2-.54-1.2-1.2V5.4c0-.66.54-1.2 1.2-1.2zm1.1 2.1v1.8h5.4V6.3H4.3zm7.2 0v1.8h4.1V6.3h-4.1zM3.2 12.6h7.4c.66 0 1.2.54 1.2 1.2v2c0 .66-.54 1.2-1.2 1.2H3.2c-.66 0-1.2-.54-1.2-1.2v-2c0-.66.54-1.2 1.2-1.2z"/>' +
     "</svg>";
 
+  const videoPosterIcon =
+    '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M3.2 4.5h8.4c.55 0 1 .45 1 1v2.2l2.7-1.7c.45-.28 1.05.05 1.05.58v7.84c0 .53-.6.86-1.05.58l-2.7-1.7v2.2c0 .55-.45 1-1 1H3.2c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1zm1.3 2.2v6.6h5.8V6.7H4.5zm7.4 1.55v3.5l1.9 1.2V7.05l-1.9 1.2z"/>' +
+    '<path d="M5.2 8.1h2.4v1.3H5.2V8.1zm0 2.2h3.6v1.3H5.2v-1.3z"/>' +
+    "</svg>";
+
   const CTA_HELPER_MESSAGE = "nova-cta-helper-insert";
   const CTA_HELPER_READY = "nova-cta-helper-ready";
   const CTA_HELPER_EDIT_CONTEXT = "nova-cta-helper-edit-context";
@@ -333,6 +339,268 @@
     editor.editing.view.focus();
   }
 
+  function escapeAttr(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function isVideoLikeHtml(html) {
+    return typeof html === "string" && /<(video|iframe)\b/i.test(html);
+  }
+
+  function findSelectedVideoTarget(editor) {
+    const selected = editor.model.document.selection.getSelectedElement();
+    if (!selected) return null;
+
+    if (selected.is("element", "media")) {
+      const url = String(selected.getAttribute("url") || "").trim();
+      if (!url) return null;
+      return { kind: "media", element: selected, url: url };
+    }
+
+    if (selected.is("element", "rawHtml")) {
+      const value = selected.getAttribute("value") || "";
+      if (!isVideoLikeHtml(value)) return null;
+      return { kind: "rawHtml", element: selected, html: value };
+    }
+
+    return null;
+  }
+
+  function buildRawVideoHtml(src, posterUrl) {
+    const safeSrc = escapeAttr(src);
+    const posterAttr = posterUrl
+      ? ' poster="' + escapeAttr(posterUrl) + '"'
+      : "";
+    const posterData = posterUrl
+      ? ' data-nova-video-poster="' + escapeAttr(posterUrl) + '"'
+      : "";
+    return (
+      '<figure class="nova-video"' +
+      posterData +
+      ">" +
+      '<div style="position:relative;padding-bottom:56.25%;height:0;background:#0f1f22;">' +
+      '<video controls playsinline preload="metadata" src="' +
+      safeSrc +
+      '"' +
+      posterAttr +
+      ' style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;"></video>' +
+      "</div></figure>"
+    );
+  }
+
+  function buildAparatHtml(hash, posterUrl) {
+    const src =
+      "https://www.aparat.com/video/video/embed/videohash/" +
+      hash +
+      "/vt/frame";
+    const posterData = posterUrl
+      ? ' data-nova-video-poster="' + escapeAttr(posterUrl) + '"'
+      : "";
+    return (
+      '<figure class="nova-video"' +
+      posterData +
+      ">" +
+      '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+      '<iframe src="' +
+      escapeAttr(src) +
+      '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" ' +
+      'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" ' +
+      'allowfullscreen loading="lazy"></iframe>' +
+      "</div></figure>"
+    );
+  }
+
+  function buildYoutubeHtml(id, posterUrl) {
+    const src = "https://www.youtube.com/embed/" + id;
+    const posterData = posterUrl
+      ? ' data-nova-video-poster="' + escapeAttr(posterUrl) + '"'
+      : "";
+    return (
+      '<figure class="nova-video"' +
+      posterData +
+      ">" +
+      '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+      '<iframe src="' +
+      escapeAttr(src) +
+      '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" ' +
+      'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" ' +
+      'allowfullscreen loading="lazy"></iframe>' +
+      "</div></figure>"
+    );
+  }
+
+  function mediaUrlToCoveredHtml(url, posterUrl) {
+    const raw = String(url || "").trim();
+    if (!raw) return null;
+    const normalized = raw.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+
+    const aparat =
+      normalized.match(/^aparat\.com\/v\/([A-Za-z0-9_-]+)/i) ||
+      normalized.match(
+        /^aparat\.com\/video\/video\/embed(?:_box)?\/videohash\/([A-Za-z0-9_-]+)/i
+      );
+    if (aparat) return buildAparatHtml(aparat[1], posterUrl);
+
+    const yt =
+      normalized.match(/^youtube\.com\/watch\?(?:.*&)?v=([A-Za-z0-9_-]+)/i) ||
+      normalized.match(/^youtu\.be\/([A-Za-z0-9_-]+)/i) ||
+      normalized.match(/^youtube\.com\/embed\/([A-Za-z0-9_-]+)/i);
+    if (yt) return buildYoutubeHtml(yt[1], posterUrl);
+
+    if (/\.(mp4|webm|ogg|ogv|m4v|mov)(?:[?#][^\s]*)?$/i.test(normalized)) {
+      const src = /^https?:\/\//i.test(raw) ? raw : "https://" + raw;
+      return buildRawVideoHtml(src, posterUrl);
+    }
+
+    // Fallback: keep generic responsive iframe when possible.
+    const iframeSrc = /^https?:\/\//i.test(raw) ? raw : "https://" + raw;
+    const posterData = posterUrl
+      ? ' data-nova-video-poster="' + escapeAttr(posterUrl) + '"'
+      : "";
+    return (
+      '<figure class="nova-video"' +
+      posterData +
+      ">" +
+      '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+      '<iframe src="' +
+      escapeAttr(iframeSrc) +
+      '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" ' +
+      'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" ' +
+      'allowfullscreen loading="lazy"></iframe>' +
+      "</div></figure>"
+    );
+  }
+
+  function applyPosterToVideoHtml(html, posterUrl) {
+    const safePoster = escapeAttr(posterUrl);
+    let next = String(html || "");
+
+    if (/<video\b/i.test(next)) {
+      next = next.replace(/<video\b([^>]*)>/i, function (_m, attrs) {
+        const cleaned = String(attrs || "").replace(
+          /\s*poster\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/i,
+          ""
+        );
+        return '<video poster="' + safePoster + '"' + cleaned + ">";
+      });
+    }
+
+    if (/<figure\b/i.test(next)) {
+      next = next.replace(/<figure\b([^>]*)>/i, function (_m, attrs) {
+        let a = String(attrs || "");
+        a = a.replace(/\s*data-nova-video-poster\s*=\s*("[^"]*"|'[^']*')/i, "");
+        if (/\bclass\s*=\s*"/i.test(a)) {
+          a = a.replace(/\bclass\s*=\s*"/i, 'class="nova-video ');
+          a = a.replace(/class="nova-video\s+nova-video\s+/i, 'class="nova-video ');
+        } else {
+          a += ' class="nova-video"';
+        }
+        return (
+          "<figure" + a + ' data-nova-video-poster="' + safePoster + '">'
+        );
+      });
+      return next;
+    }
+
+    return (
+      '<figure class="nova-video" data-nova-video-poster="' +
+      safePoster +
+      '">' +
+      next +
+      "</figure>"
+    );
+  }
+
+  function insertOrReplaceRawHtml(editor, html, replaceElement) {
+    editor.model.change(function (writer) {
+      if (replaceElement && elementStillInDocument(replaceElement)) {
+        if (replaceElement.is("element", "rawHtml")) {
+          writer.setAttribute("value", html, replaceElement);
+          writer.setSelection(replaceElement, "on");
+          return;
+        }
+        const embed = writer.createElement("rawHtml", { value: html });
+        writer.insert(embed, writer.createPositionBefore(replaceElement));
+        writer.remove(replaceElement);
+        writer.setSelection(embed, "on");
+        return;
+      }
+      const embed = writer.createElement("rawHtml", { value: html });
+      editor.model.insertContent(embed);
+    });
+    editor.editing.view.focus();
+  }
+
+  class VideoPoster extends Plugin {
+    static get pluginName() {
+      return "VideoPoster";
+    }
+
+    init() {
+      const editor = this.editor;
+
+      editor.ui.componentFactory.add("videoPoster", (locale) => {
+        const view = new ButtonView(locale);
+
+        view.set({
+          label: "کاور ویدیو",
+          icon: videoPosterIcon,
+          tooltip: true,
+        });
+
+        function refresh() {
+          view.isEnabled = !!findSelectedVideoTarget(editor);
+        }
+
+        refresh();
+        editor.model.document.selection.on("change", refresh);
+
+        view.on("execute", () => {
+          const target = findSelectedVideoTarget(editor);
+          if (!target) {
+            window.alert("ابتدا یک ویدیو داخل محتوا را انتخاب کنید.");
+            return;
+          }
+
+          const picker = window.AdminMediaPicker;
+          if (!picker || typeof picker.open !== "function") {
+            console.error("AdminMediaPicker is not available on this page.");
+            window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
+            return;
+          }
+
+          picker.open({
+            onSelect(item) {
+              if (!item || !item.publicUrl) return;
+              const posterUrl = String(item.publicUrl).trim();
+              if (!posterUrl) return;
+
+              let html = null;
+              if (target.kind === "media") {
+                html = mediaUrlToCoveredHtml(target.url, posterUrl);
+              } else {
+                html = applyPosterToVideoHtml(target.html, posterUrl);
+              }
+
+              if (!html) {
+                window.alert("اعمال کاور برای این ویدیو ممکن نشد.");
+                return;
+              }
+
+              insertOrReplaceRawHtml(editor, html, target.element);
+            },
+          });
+        });
+
+        return view;
+      });
+    }
+  }
+
   class MediaLibraryImage extends Plugin {
     static get pluginName() {
       return "MediaLibraryImage";
@@ -535,6 +803,7 @@
         ImageResize,
         ImageCustomResizeUI,
         MediaLibraryImage,
+        VideoPoster,
         CtaHelperInsert,
         ...(ScrollHighlightPlugin ? [ScrollHighlightPlugin] : []),
         Highlight,
@@ -583,6 +852,7 @@
           "mediaLibraryImage",
           "ctaHelper",
           "mediaEmbed",
+          "videoPoster",
           "insertTable",
           "htmlEmbed",
           "codeBlock",
@@ -677,17 +947,13 @@
             html: function (match) {
               const path = match[0] || "";
               const src = /^https?:\/\//i.test(path) ? path : "https://" + path;
-              const safe = String(src)
-                .replace(/&/g, "&amp;")
-                .replace(/"/g, "&quot;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
+              const safe = escapeAttr(src);
               return (
                 '<div style="position:relative;padding-bottom:56.25%;height:0;background:#0f1f22;">' +
                 '<video controls playsinline preload="metadata" src="' +
                 safe +
                 '" ' +
-                'style="position:absolute;inset:0;width:100%;height:100%;">' +
+                'style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;">' +
                 "</video></div>"
               );
             },
@@ -709,11 +975,11 @@
               return (
                 '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
                 '<iframe src="' +
-                src +
+                escapeAttr(src) +
                 '" ' +
                 'style="position:absolute;inset:0;width:100%;height:100%;border:0;" ' +
                 'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" ' +
-                "allowfullscreen loading=\"lazy\"></iframe></div>"
+                'allowfullscreen loading="lazy"></iframe></div>'
               );
             },
           },
@@ -731,14 +997,23 @@
               href: true,
               src: true,
               alt: true,
+              title: true,
               loading: true,
               target: true,
               rel: true,
+              controls: true,
+              playsinline: true,
+              preload: true,
+              poster: true,
+              allow: true,
+              allowfullscreen: true,
+              "data-oembed-url": true,
               "data-nova-cta": true,
               "data-nova-cta-config": true,
               "data-nova-scroll-highlight": true,
               "data-nova-sh-from": true,
               "data-nova-sh-to": true,
+              "data-nova-video-poster": true,
             },
             classes: true,
             styles: true,

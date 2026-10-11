@@ -34,7 +34,8 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "dir", "lang", "loading", "style", "url",
             "data-oembed-url",
             "data-nova-cta", "data-nova-cta-config",
-            "data-nova-scroll-highlight", "data-nova-sh-from", "data-nova-sh-to"
+            "data-nova-scroll-highlight", "data-nova-sh-from", "data-nova-sh-to",
+            "data-nova-video-poster"
         ]);
 
         _sanitizer.AllowedCssProperties.UnionWith(
