@@ -1561,6 +1561,22 @@
     padding: 0.3rem 0.7rem;
   }
 
+  .blog-single-verified {
+    font-size: 0.76rem;
+    padding: 0.45rem 0.8rem 0.45rem 0.55rem;
+    gap: 0.4rem;
+  }
+
+  .blog-single-verified__icon {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .blog-single-verified__icon svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
   .service-toc__list,
   .blog-toc__list {
     grid-template-columns: 1fr;
