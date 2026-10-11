@@ -3,6 +3,8 @@ namespace CMS.Application.Seo;
 /// <summary>
 /// Registers the single page LCP image for early <c>&lt;link rel="preload" as="image"&gt;</c> in the layout.
 /// Only the first registration wins so below-the-fold images never steal priority.
+/// Call <see cref="TryRegister"/> from the page <c>@{ }</c> block (before the layout head runs);
+/// tag helpers on body markup alone are too late for the head preload.
 /// </summary>
 public static class LcpImageHints
 {

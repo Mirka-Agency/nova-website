@@ -22,9 +22,8 @@
         && !VideoEmbedUrl.IsHostedPage(Model.VideoUrl);
     var hasPlayer = !string.IsNullOrWhiteSpace(embedUrl) || hasFileVideo;
 
-    // Embed iframe is lazy; preload the cover so LCP discovery is not deferred to JS/iframe.
-    if (!string.IsNullOrWhiteSpace(embedUrl))
-        CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
+    // Head preload must register before layout <head>; cover is LCP for file/embed/image heroes.
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
 }
 
 <section class="page-hero page-hero--video-single" aria-labelledby="page-hero-title">

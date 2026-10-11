@@ -17,6 +17,7 @@
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/articles/scientific-reports.jpg")
         : Model.CoverImageUrl;
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
     var related = (ViewBag.Related as IReadOnlyList<PublicArticleSummaryDto>)
         ?? Array.Empty<PublicArticleSummaryDto>();
     var persian = new PersianCalendar();

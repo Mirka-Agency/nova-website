@@ -21,6 +21,7 @@
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
         : Model.CoverImageUrl;
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
     var related = (ViewBag.Related as IReadOnlyList<PublicPostSummaryDto>)
         ?? Array.Empty<PublicPostSummaryDto>();
     var faqItems = PostFaqJson.Parse(Model.FaqJson);

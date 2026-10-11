@@ -38,6 +38,7 @@
     var lcpImageUrl = LcpImageHints.GetUrl(ViewData);
     var lcpImageSrcSet = LcpImageHints.GetSrcSet(ViewData);
     var lcpImageSizes = LcpImageHints.GetSizes(ViewData);
+    var formsEnabled = await FeatureManager.IsEnabledAsync(FeatureNames.Forms);
 
     static string? FirstNonEmpty(params string?[] values)
     {
@@ -116,6 +117,9 @@
     }
     <link rel="icon" href="@favicon" type="image/png" />
     <link rel="apple-touch-icon" href="@favicon" />
+    @* Peyda: preload only above-the-fold weights (body + headings). Medium/SemiBold stay lazy via @font-face. *@
+    <link rel="preload" as="font" type="font/woff2" href="~/template/assets/fonts/PeydaWebFaNum-Regular.woff2" asp-append-version="true" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="~/template/assets/fonts/PeydaWebFaNum-Bold.woff2" asp-append-version="true" crossorigin />
     @if (!string.IsNullOrWhiteSpace(lcpImageUrl))
     {
         @* Early discovery for the page LCP image (single candidate only). *@
@@ -136,11 +140,10 @@
     {
         @await Component.InvokeAsync("SeoJsonLd")
     }
+    @* Critical render CSS only — admin-bar/popup load from their ViewComponents when needed. *@
     <link rel="stylesheet" href="~/template/assets/vendor/bootstrap/bootstrap.rtl.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/template/assets/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/template/assets/css/responsive.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/site/css/admin-bar.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/site/css/nova-bridge.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/site/css/site-modules.css" asp-append-version="true" />
     @if (!string.IsNullOrWhiteSpace(settings.HeadScripts))
@@ -168,10 +171,11 @@
     <partial name="_NovaGalleryLightbox" />
 
     @await Component.InvokeAsync("PopupHost")
-    <script src="~/template/assets/js/main.js" asp-append-version="true"></script>
-    <script src="~/site/js/public-form-ajax.js" asp-append-version="true"></script>
-    <script src="~/site/js/admin-bar.js" asp-append-version="true"></script>
-    <script src="~/site/js/popup.js" asp-append-version="true"></script>
+    <script src="~/template/assets/js/main.js" asp-append-version="true" defer></script>
+    @if (formsEnabled)
+    {
+        <script src="~/site/js/public-form-ajax.js" asp-append-version="true" defer></script>
+    }
     <script src="~/site/vendor/gsap/gsap.min.js" asp-append-version="true" defer></script>
     <script src="~/site/vendor/gsap/ScrollTrigger.min.js" asp-append-version="true" defer></script>
     <script src="~/site/js/scroll-highlight.js" asp-append-version="true" defer></script>

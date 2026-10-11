@@ -15,6 +15,7 @@
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/doctors/dr-hamedani.webp")
         : Model.CoverImageUrl;
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
     var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
         ? $"پروفایل تخصصی {Model.Title} در {brand}."
         : Model.Excerpt;

@@ -8,6 +8,8 @@ namespace CMS.Modules.Seo.Web.TagHelpers;
 /// <summary>
 /// Marks the page LCP <c>&lt;img&gt;</c>: <c>loading="eager"</c>, <c>fetchpriority="high"</c>,
 /// and registers a single head preload via <see cref="LcpImageHints"/>.
+/// Prefer also calling <see cref="LcpImageHints.TryRegister"/> in the page <c>@{ }</c> block
+/// so the layout can emit <c>rel=preload</c> before body markup runs.
 /// Usage: <c>&lt;img lcp src="..." width="..." height="..." alt="..." /&gt;</c>
 /// </summary>
 [HtmlTargetElement("img", Attributes = LcpAttributeName)]

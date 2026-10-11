@@ -23,6 +23,9 @@
         images.Insert(0, (Model.CoverImageUrl!, string.IsNullOrWhiteSpace(Model.CoverImageAlt) ? Model.Title : Model.CoverImageAlt));
     }
 
+    if (images.Count > 0)
+        CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, images[0].Url);
+
     var schema = new Dictionary<string, object?>
     {
         ["@context"] = "https://schema.org",

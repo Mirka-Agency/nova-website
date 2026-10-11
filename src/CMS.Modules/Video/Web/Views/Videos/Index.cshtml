@@ -13,6 +13,11 @@
     var hasCmsVideos = items.Count > 0;
     var categories = (ViewBag.Categories as IReadOnlyList<PublicVideoCategoryDto>)
         ?? Array.Empty<PublicVideoCategoryDto>();
+    var lcpCover = hasCmsVideos
+        ? (VideoThumbnailUrl.PreferCover(items[0].CoverImageUrl, items[0].VideoUrl)
+            ?? Url.Content("~/template/assets/images/videos/endocrine.webp"))
+        : Url.Content("~/template/assets/images/videos/endocrine.webp");
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, lcpCover);
 }
 
 <section class="page-hero page-hero--videos" aria-labelledby="page-hero-title">

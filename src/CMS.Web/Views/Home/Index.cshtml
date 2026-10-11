@@ -36,6 +36,9 @@
     var fa = CultureInfo.GetCultureInfo("fa-IR");
     var fallbackDoctorCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
     var fallbackArticleCover = Url.Content("~/template/assets/images/articles/scientific-reports.jpg");
+    CMS.Application.Seo.LcpImageHints.TryRegister(
+        ViewData,
+        Url.Content("~/template/assets/images/home/cover-hero.png"));
 }
 <!-- Hero -->
     <section class="hero-section" aria-labelledby="hero-title">

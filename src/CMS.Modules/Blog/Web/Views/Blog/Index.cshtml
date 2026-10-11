@@ -12,6 +12,12 @@
     var items = Model ?? Array.Empty<PublicPostSummaryDto>();
     var hasCmsPosts = items.Count > 0;
     var fa = CultureInfo.GetCultureInfo("fa-IR");
+    var lcpCover = hasCmsPosts
+        ? (string.IsNullOrWhiteSpace(items[0].CoverImageUrl)
+            ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
+            : items[0].CoverImageUrl)
+        : Url.Content("~/template/assets/images/blog/thyroid-risks.webp");
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, lcpCover);
 }
 
 <section class="page-hero page-hero--blog" aria-labelledby="page-hero-title">

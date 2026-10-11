@@ -14,6 +14,10 @@
     var items = Model ?? Array.Empty<PublicArticleSummaryDto>();
     var hasCms = items.Count > 0;
     var fallbackCover = Url.Content("~/template/assets/images/events/adrenal-workshop.webp");
+    var lcpCover = hasCms && !string.IsNullOrWhiteSpace(items[0].CoverImageUrl)
+        ? items[0].CoverImageUrl
+        : fallbackCover;
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, lcpCover);
     var persian = new PersianCalendar();
 
     string ToPersianDigits(string value) =>

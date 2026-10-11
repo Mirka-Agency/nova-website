@@ -11,6 +11,12 @@
     var hasCmsArticles = items.Count > 0;
     var categories = (ViewBag.Categories as IReadOnlyList<PublicArticleCategoryDto>)
         ?? Array.Empty<PublicArticleCategoryDto>();
+    var lcpCover = hasCmsArticles
+        ? (string.IsNullOrWhiteSpace(items[0].CoverImageUrl)
+            ? Url.Content("~/template/assets/images/articles/scientific-reports.jpg")
+            : items[0].CoverImageUrl)
+        : Url.Content("~/template/assets/images/articles/scientific-reports.jpg");
+    CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, lcpCover);
 
     string ToPersianDigits(string value) =>
         value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')

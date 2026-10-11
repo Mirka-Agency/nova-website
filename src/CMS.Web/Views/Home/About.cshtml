@@ -40,6 +40,9 @@
     var parathyroidHref = NovaServiceNav.Href(Url, parathyroidService, "parathyroid");
     var adrenalHref = NovaServiceNav.Href(Url, adrenalService, "adrenal");
     var pancreasHref = NovaServiceNav.Href(Url, pancreasService, "pancreas");
+    CMS.Application.Seo.LcpImageHints.TryRegister(
+        ViewData,
+        Url.Content("~/template/assets/images/home/clinic-care.webp"));
 }
 <section class="about-hero" aria-labelledby="page-hero-title">
       <div class="container about-hero__grid">
