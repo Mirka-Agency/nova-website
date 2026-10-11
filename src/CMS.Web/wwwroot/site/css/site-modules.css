@@ -19,11 +19,17 @@ main > .videos-page,
 main > .teams-page,
 main > .shop-page,
 main > .site-hero,
-main > section.privacy,
-main > .error-page {
+main > section.privacy {
   width: min(1140px, calc(100% - 2rem));
   margin-inline: auto;
   padding-block: 2rem 3rem;
+}
+
+/* Full-bleed section: background spans the viewport; content is constrained inside. */
+main > .error-page {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
 }
 
 .site-hero {
