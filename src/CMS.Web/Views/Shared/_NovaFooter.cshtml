@@ -1,13 +1,6 @@
 @* Nova template footer *@
-@using CMS.Application.Common.Features
 @using CMS.Application.Settings
-@using CMS.Modules.Services.Application.Interfaces
-@using CMS.Modules.Services.Application.ServiceItems
-@using CMS.Web.Infrastructure
-@using Microsoft.FeatureManagement
 @inject ISiteSettingsService SiteSettings
-@inject IFeatureManager FeatureManager
-@inject IPublicServiceItemQuery PublicServices
 @{
     var settings = await SiteSettings.GetAsync();
     var contact = SiteContactInfo.From(settings);
@@ -18,15 +11,9 @@
     var email = contact.Email;
     var address = contact.Address;
 
-    IReadOnlyList<PublicServiceItemSummaryDto> navServices = Array.Empty<PublicServiceItemSummaryDto>();
-    if (await FeatureManager.IsEnabledAsync(FeatureNames.Services))
-        navServices = await PublicServices.ListPublishedAsync();
-
-    var pancreasService = NovaServiceNav.Find(navServices, "pancreas", "پانکراس");
     var thyroidHref = Url.Content("~/blog/thyroid-surgery");
     var parathyroidHref = Url.Content("~/parathyroid-surgery-from-0-to-100/");
     var adrenalHref = Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/");
-    var pancreasHref = NovaServiceNav.Href(Url, pancreasService, "pancreas");
 }
 <footer class="site-footer">
     <div class="container">
@@ -58,7 +45,6 @@
               <li><a href="@thyroidHref">جراحی تیروئید</a></li>
               <li><a href="@parathyroidHref">جراحی پاراتیروئید</a></li>
               <li><a href="@adrenalHref">جراحی آدرنال</a></li>
-              <li><a href="@pancreasHref">@(pancreasService?.Title ?? "جراحی پانکراس")</a></li>
             </ul>
           </div>
 
