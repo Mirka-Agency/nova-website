@@ -36,6 +36,8 @@ public class Post : BaseEntity
     public string? FaqJson { get; private set; }
     /// <summary>JSON array of manual VideoObject schema items.</summary>
     public string? VideoSchemaJson { get; private set; }
+    /// <summary>JSON object for optional article content guide: {"enabled":true,"title":"...","items":[{"title":"...","description":"..."}]}.</summary>
+    public string? ContentGuideJson { get; private set; }
 
     public static Post Create(
         string title,
@@ -56,14 +58,15 @@ public class Post : BaseEntity
         string? ogDescription,
         string? ogImageUrl,
         string? faqJson,
-        string? videoSchemaJson = null)
+        string? videoSchemaJson = null,
+        string? contentGuideJson = null)
     {
         var post = new Post();
         post.ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson);
+            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson, contentGuideJson);
         return post;
     }
 
@@ -86,13 +89,14 @@ public class Post : BaseEntity
         string? ogDescription,
         string? ogImageUrl,
         string? faqJson,
-        string? videoSchemaJson = null)
+        string? videoSchemaJson = null,
+        string? contentGuideJson = null)
     {
         ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson);
+            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson, contentGuideJson);
         Touch();
     }
 
@@ -150,7 +154,8 @@ public class Post : BaseEntity
         string? ogDescription,
         string? ogImageUrl,
         string? faqJson,
-        string? videoSchemaJson)
+        string? videoSchemaJson,
+        string? contentGuideJson)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("عنوان مطلب الزامی است.");
@@ -192,6 +197,8 @@ public class Post : BaseEntity
             throw new DomainException("سوالات متداول خیلی طولانی است.");
         if (videoSchemaJson is { Length: > 100_000 })
             throw new DomainException("اسکیمای ویدیو خیلی طولانی است.");
+        if (contentGuideJson is { Length: > 100_000 })
+            throw new DomainException("راهنمای محتوای مقاله خیلی طولانی است.");
 
         Title = title.Trim();
         Slug = slug.Trim().ToLowerInvariant();
@@ -212,6 +219,7 @@ public class Post : BaseEntity
         OgImageUrl = NullIfWhiteSpace(ogImageUrl);
         FaqJson = NullIfWhiteSpace(faqJson);
         VideoSchemaJson = NullIfWhiteSpace(videoSchemaJson);
+        ContentGuideJson = NullIfWhiteSpace(contentGuideJson);
     }
 
     private static string? NullIfWhiteSpace(string? value) =>

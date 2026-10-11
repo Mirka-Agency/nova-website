@@ -100,6 +100,19 @@
   <data name="SortPublished" xml:space="preserve"><value>تاریخ انتشار</value></data>
   <data name="SortTitle" xml:space="preserve"><value>عنوان (الف–ی)</value></data>
   <data name="SortTitleDesc" xml:space="preserve"><value>عنوان (ی–الف)</value></data>
+  <data name="ContentGuideSettings" xml:space="preserve"><value>راهنمای محتوای مقاله</value></data>
+  <data name="ContentGuideSettingsHint" xml:space="preserve"><value>اختیاری؛ جعبه‌ای در ابتدای مطلب که موضوعات صفحه را خلاصه می‌کند.</value></data>
+  <data name="ContentGuideEnabled" xml:space="preserve"><value>نمایش راهنمای محتوای مقاله</value></data>
+  <data name="ContentGuideTitle" xml:space="preserve"><value>عنوان کلی باکس</value></data>
+  <data name="ContentGuideTitlePlaceholder" xml:space="preserve"><value>مثلاً: در این صفحه در مورد … چه می‌خوانید؟</value></data>
+  <data name="ContentGuideItemTitle" xml:space="preserve"><value>عنوان</value></data>
+  <data name="ContentGuideItemTitlePlaceholder" xml:space="preserve"><value>عنوان موضوع را بنویسید…</value></data>
+  <data name="ContentGuideItemDescription" xml:space="preserve"><value>توضیح کوتاه</value></data>
+  <data name="ContentGuideItemDescriptionPlaceholder" xml:space="preserve"><value>یک جمله کوتاه درباره این موضوع…</value></data>
+  <data name="AddContentGuideItem" xml:space="preserve"><value>افزودن آیتم</value></data>
+  <data name="ContentGuideEmpty" xml:space="preserve"><value>هنوز آیتمی ثبت نشده است. با دکمه افزودن، ردیف جدید بسازید.</value></data>
+  <data name="ContentGuideMoveUp" xml:space="preserve"><value>جابه‌جایی به بالا</value></data>
+  <data name="ContentGuideMoveDown" xml:space="preserve"><value>جابه‌جایی به پایین</value></data>
   <data name="FaqSettings" xml:space="preserve"><value>سوالات متداول</value></data>
   <data name="FaqSettingsHint" xml:space="preserve"><value>اختیاری؛ سوال و پاسخ‌هایی که در صفحه مطلب و برای سئو نمایش داده می‌شوند.</value></data>
   <data name="FaqQuestion" xml:space="preserve"><value>سوال</value></data>

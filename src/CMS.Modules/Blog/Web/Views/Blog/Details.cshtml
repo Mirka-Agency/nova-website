@@ -26,6 +26,8 @@
         ?? Array.Empty<PublicPostSummaryDto>();
     var faqItems = PostFaqJson.Parse(Model.FaqJson);
     var videoSchemaItems = PostVideoSchemaJson.Parse(Model.VideoSchemaJson);
+    var contentGuide = PostContentGuideJson.Parse(Model.ContentGuideJson);
+    var showContentGuide = PostContentGuideJson.ShouldRender(contentGuide);
     var fa = CultureInfo.GetCultureInfo("fa-IR");
     var updatedLocal = Model.UpdatedAtUtc.Kind == DateTimeKind.Utc
         ? Model.UpdatedAtUtc.ToLocalTime()
@@ -167,6 +169,31 @@
       }
 
       <div class="blog-post__content">
+        @if (showContentGuide)
+        {
+          <aside class="article-content-guide" aria-labelledby="article-content-guide-heading">
+            @if (!string.IsNullOrWhiteSpace(contentGuide.Title))
+            {
+              <header class="article-content-guide__header">
+                <h2 class="article-content-guide__title" id="article-content-guide-heading">@contentGuide.Title</h2>
+              </header>
+            }
+            else
+            {
+              <h2 class="visually-hidden" id="article-content-guide-heading">راهنمای محتوای مقاله</h2>
+            }
+            <div class="article-content-guide__grid">
+              @foreach (var item in contentGuide.Items)
+              {
+                <div class="article-content-guide__item">
+                  <h3 class="article-content-guide__item-title">@item.Title</h3>
+                  <p class="article-content-guide__item-desc">@item.Description</p>
+                </div>
+              }
+            </div>
+          </aside>
+        }
+
         @if (proseSections.Count > 0)
         {
           foreach (var proseSection in proseSections)

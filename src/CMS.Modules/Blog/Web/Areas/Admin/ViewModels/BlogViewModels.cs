@@ -92,8 +92,24 @@ public class PostFormViewModel
 
     public List<PostVideoSchemaItemViewModel> VideoSchemaItems { get; set; } = [];
 
+    public bool ContentGuideEnabled { get; set; }
+
+    [MaxLength(300, ErrorMessage = "عنوان راهنما حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string? ContentGuideTitle { get; set; }
+
+    public List<PostContentGuideItemViewModel> ContentGuideItems { get; set; } = [];
+
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
+}
+
+public class PostContentGuideItemViewModel
+{
+    [MaxLength(300, ErrorMessage = "عنوان آیتم حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(500, ErrorMessage = "توضیح کوتاه حداکثر ۵۰۰ نویسه می‌تواند باشد.")]
+    public string Description { get; set; } = string.Empty;
 }
 
 public class PostFaqItemViewModel

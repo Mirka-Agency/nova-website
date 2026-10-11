@@ -155,7 +155,8 @@ public sealed class PostService : IPostService
             ogDescription: null,
             ogImageUrl: null,
             faqJson: null,
-            videoSchemaJson: null);
+            videoSchemaJson: null,
+            contentGuideJson: null);
         post.SetOwnedBy(userId);
 
         _db.Posts.Add(post);
@@ -192,6 +193,7 @@ public sealed class PostService : IPostService
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var faqJson = PostFaqJson.NormalizeJson(command.FaqJson);
         var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
+        var contentGuideJson = PostContentGuideJson.NormalizeJson(command.ContentGuideJson);
         var post = Post.Create(
             command.Title,
             slug,
@@ -211,7 +213,8 @@ public sealed class PostService : IPostService
             command.OgDescription,
             command.OgImageUrl,
             faqJson,
-            videoSchemaJson);
+            videoSchemaJson,
+            contentGuideJson);
 
         ApplyPublishState(post, command);
 
@@ -235,6 +238,7 @@ public sealed class PostService : IPostService
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var faqJson = PostFaqJson.NormalizeJson(command.FaqJson);
         var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
+        var contentGuideJson = PostContentGuideJson.NormalizeJson(command.ContentGuideJson);
         post.Update(
             command.Title,
             slug,
@@ -254,7 +258,8 @@ public sealed class PostService : IPostService
             command.OgDescription,
             command.OgImageUrl,
             faqJson,
-            videoSchemaJson);
+            videoSchemaJson,
+            contentGuideJson);
 
         ApplyPublishState(post, command);
 
@@ -295,6 +300,7 @@ public sealed class PostService : IPostService
             post.OgImageUrl,
             post.FaqJson,
             post.VideoSchemaJson,
+            post.ContentGuideJson,
             post.CreatedAtUtc);
 
     private static SavePostCommand Normalize(SavePostCommand command)

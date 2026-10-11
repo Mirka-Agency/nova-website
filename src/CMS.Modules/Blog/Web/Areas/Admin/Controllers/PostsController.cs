@@ -246,6 +246,13 @@ public class PostsController : Controller
                 .ToList()
         };
 
+        var contentGuide = PostContentGuideJson.Parse(post.ContentGuideJson);
+        model.ContentGuideEnabled = contentGuide.Enabled;
+        model.ContentGuideTitle = contentGuide.Title;
+        model.ContentGuideItems = contentGuide.Items
+            .Select(x => new PostContentGuideItemViewModel { Title = x.Title, Description = x.Description })
+            .ToList();
+
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {
             var seoDoc = await _seoDocuments.GetAsync(SeoContentTypeKeys.BlogPost, post.Id, cancellationToken);
@@ -371,7 +378,12 @@ public class PostsController : Controller
                         x.UploadDate,
                         x.DurationMinutes,
                         x.DurationSeconds,
-                        x.Description))));
+                        x.Description))),
+            PostContentGuideJson.Serialize(
+                model.ContentGuideEnabled,
+                model.ContentGuideTitle,
+                (model.ContentGuideItems ?? [])
+                    .Select(x => new PostContentGuideItemDto(x.Title ?? string.Empty, x.Description ?? string.Empty))));
     }
 
     private async Task<PostFormViewModel> BuildFormAsync(PostFormViewModel model, CancellationToken cancellationToken)
@@ -396,6 +408,7 @@ public class PostsController : Controller
 
         model.FaqItems ??= [];
         model.VideoSchemaItems ??= [];
+        model.ContentGuideItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.BlogPost, model.Id);
         model.Seo.ContentType = SeoContentTypeKeys.BlogPost;
         model.Seo.ContentId = model.Id;

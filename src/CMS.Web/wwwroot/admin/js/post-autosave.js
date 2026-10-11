@@ -116,6 +116,26 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function contentGuideJsonValue() {
+    const guideRoot = form.querySelector("[data-post-content-guide]");
+    if (!guideRoot) return null;
+
+    const enabled = !!guideRoot.querySelector("[data-content-guide-toggle]")?.checked;
+    const title = (form.querySelector("[name='ContentGuideTitle']")?.value || "").trim() || null;
+    const rows = Array.from(guideRoot.querySelectorAll("[data-content-guide-row]"));
+    const items = [];
+    for (const row of rows) {
+      const itemTitle = (row.querySelector("[name$='.Title']")?.value || "").trim();
+      const description = (row.querySelector("[name$='.Description']")?.value || "").trim();
+      if (!itemTitle && !description) continue;
+      if (!itemTitle || !description) continue;
+      items.push({ title: itemTitle, description });
+    }
+
+    if (!enabled && !title && items.length === 0) return null;
+    return JSON.stringify({ enabled, title, items });
+  }
+
   function specialtyPathJsonValue() {
     const rows = Array.from(form.querySelectorAll("[data-specialty-path-row]"));
     const items = [];
@@ -239,6 +259,7 @@
       ogImageUrl: (fieldValue("OgImageUrl") || "").trim() || null,
       faqJson: faqJsonValue(),
       videoSchemaJson: videoSchemaJsonValue(),
+      contentGuideJson: contentGuideJsonValue(),
       focusKeyword: seoFieldValue("FocusKeyword"),
       robotsIndex: seoCheckboxValue("RobotsIndex", true),
       robotsFollow: seoCheckboxValue("RobotsFollow", true),

@@ -103,6 +103,16 @@ public sealed class SavePostCommandValidator : AbstractValidator<SavePostCommand
                 PostVideoSchemaJson.TryValidate(x.VideoSchemaJson, out var error);
                 return error ?? "اسکیمای ویدیو نامعتبر است.";
             });
+
+        RuleFor(x => x.ContentGuideJson)
+            .MaximumLength(PostContentGuideJson.MaxJsonLength)
+            .Must(value => PostContentGuideJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.ContentGuideJson))
+            .WithMessage(x =>
+            {
+                PostContentGuideJson.TryValidate(x.ContentGuideJson, out var error);
+                return error ?? "راهنمای محتوای مقاله نامعتبر است.";
+            });
     }
 
     private static bool BeValidUrlOrPath(string? value)

@@ -54,6 +54,7 @@ public sealed record PostDetailDto(
     string? OgImageUrl,
     string? FaqJson,
     string? VideoSchemaJson,
+    string? ContentGuideJson,
     DateTime CreatedAtUtc);
 
 public static class PostDraftDefaults
@@ -82,4 +83,5 @@ public sealed record SavePostCommand(
     string? OgDescription,
     string? OgImageUrl,
     string? FaqJson,
-    string? VideoSchemaJson);
+    string? VideoSchemaJson,
+    string? ContentGuideJson);

@@ -1566,6 +1566,20 @@
     grid-template-columns: 1fr;
   }
 
+  .article-content-guide__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .article-content-guide__header {
+    padding: 0.9rem 1rem;
+  }
+
+  .article-content-guide__item {
+    padding: 1.1rem;
+    border-inline-end: 0;
+    margin-inline-end: 0;
+  }
+
   .blog-toc__panel {
     padding: 1.15rem 1rem;
   }

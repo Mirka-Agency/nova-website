@@ -32,4 +32,5 @@ public sealed record PublicPostDetailDto(
     string? OgDescription,
     string? OgImageUrl,
     string? FaqJson,
-    string? VideoSchemaJson);
+    string? VideoSchemaJson,
+    string? ContentGuideJson);

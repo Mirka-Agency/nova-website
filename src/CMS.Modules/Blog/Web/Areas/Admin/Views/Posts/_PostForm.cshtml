@@ -109,6 +109,115 @@
             </div>
         </fieldset>
 
+        <fieldset class="admin-fieldset" data-post-content-guide>
+            <legend>@Localizer["ContentGuideSettings"]</legend>
+            <p class="admin-hint">@Localizer["ContentGuideSettingsHint"]</p>
+
+            <label class="admin-check">
+                <input asp-for="ContentGuideEnabled" type="checkbox" data-content-guide-toggle />
+                @Localizer["ContentGuideEnabled"]
+            </label>
+
+            <div class="admin-content-guide-fields" data-content-guide-fields @(Model.ContentGuideEnabled ? null : "hidden")>
+                <div class="admin-field">
+                    <label asp-for="ContentGuideTitle">@Localizer["ContentGuideTitle"]</label>
+                    <input asp-for="ContentGuideTitle"
+                           placeholder="@Localizer["ContentGuideTitlePlaceholder"]"
+                           autocomplete="off"
+                           maxlength="300" />
+                    <span asp-validation-for="ContentGuideTitle" class="admin-field-error"></span>
+                </div>
+
+                <div class="admin-content-guide-list">
+                    <div class="admin-content-guide-rows" data-content-guide-list>
+                        @for (var i = 0; i < Model.ContentGuideItems.Count; i++)
+                        {
+                            <div class="admin-content-guide-row" data-content-guide-row>
+                                <div class="admin-content-guide-row-main">
+                                    <div class="admin-field admin-content-guide-field">
+                                        <label asp-for="ContentGuideItems[i].Title">@Localizer["ContentGuideItemTitle"]</label>
+                                        <input asp-for="ContentGuideItems[i].Title"
+                                               placeholder="@Localizer["ContentGuideItemTitlePlaceholder"]"
+                                               autocomplete="off"
+                                               maxlength="300" />
+                                        <span asp-validation-for="ContentGuideItems[i].Title" class="admin-field-error"></span>
+                                    </div>
+                                    <div class="admin-field admin-content-guide-field">
+                                        <label asp-for="ContentGuideItems[i].Description">@Localizer["ContentGuideItemDescription"]</label>
+                                        <input asp-for="ContentGuideItems[i].Description"
+                                               placeholder="@Localizer["ContentGuideItemDescriptionPlaceholder"]"
+                                               autocomplete="off"
+                                               maxlength="500" />
+                                        <span asp-validation-for="ContentGuideItems[i].Description" class="admin-field-error"></span>
+                                    </div>
+                                </div>
+                                <div class="admin-content-guide-row-actions">
+                                    <button type="button" class="btn btn-ghost" data-content-guide-move-up title="@Localizer["ContentGuideMoveUp"]">
+                                        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                                        <span class="sr-only">@Localizer["ContentGuideMoveUp"]</span>
+                                    </button>
+                                    <button type="button" class="btn btn-ghost" data-content-guide-move-down title="@Localizer["ContentGuideMoveDown"]">
+                                        <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                                        <span class="sr-only">@Localizer["ContentGuideMoveDown"]</span>
+                                    </button>
+                                    <button type="button" class="btn btn-text-danger" data-content-guide-remove>
+                                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                        <span>@Localizer["Delete"]</span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <p class="admin-hint" data-content-guide-empty @(Model.ContentGuideItems.Count > 0 ? "hidden" : null)>
+                        @Localizer["ContentGuideEmpty"]
+                    </p>
+
+                    <div class="admin-content-guide-add-row">
+                        <button type="button" class="btn btn-secondary" data-content-guide-add>
+                            <i class="fas fa-plus" aria-hidden="true"></i>
+                            <span>@Localizer["AddContentGuideItem"]</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <template id="post-content-guide-row-template">
+                <div class="admin-content-guide-row" data-content-guide-row>
+                    <div class="admin-content-guide-row-main">
+                        <div class="admin-field admin-content-guide-field">
+                            <label>@Localizer["ContentGuideItemTitle"]</label>
+                            <input name="ContentGuideItems[__INDEX__].Title"
+                                   placeholder="@Localizer["ContentGuideItemTitlePlaceholder"]"
+                                   autocomplete="off"
+                                   maxlength="300" />
+                        </div>
+                        <div class="admin-field admin-content-guide-field">
+                            <label>@Localizer["ContentGuideItemDescription"]</label>
+                            <input name="ContentGuideItems[__INDEX__].Description"
+                                   placeholder="@Localizer["ContentGuideItemDescriptionPlaceholder"]"
+                                   autocomplete="off"
+                                   maxlength="500" />
+                        </div>
+                    </div>
+                    <div class="admin-content-guide-row-actions">
+                        <button type="button" class="btn btn-ghost" data-content-guide-move-up title="@Localizer["ContentGuideMoveUp"]">
+                            <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                            <span class="sr-only">@Localizer["ContentGuideMoveUp"]</span>
+                        </button>
+                        <button type="button" class="btn btn-ghost" data-content-guide-move-down title="@Localizer["ContentGuideMoveDown"]">
+                            <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                            <span class="sr-only">@Localizer["ContentGuideMoveDown"]</span>
+                        </button>
+                        <button type="button" class="btn btn-text-danger" data-content-guide-remove>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </fieldset>
+
         <fieldset class="admin-fieldset" data-post-faq>
             <legend>@Localizer["FaqSettings"]</legend>
             <p class="admin-hint">@Localizer["FaqSettingsHint"]</p>

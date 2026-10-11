@@ -1877,6 +1877,62 @@ fieldset.admin-field legend {
   }
 }
 
+.admin-content-guide-fields {
+  display: grid;
+  gap: calc(var(--admin-space) * 4);
+  margin-block-start: calc(var(--admin-space) * 3);
+}
+
+.admin-content-guide-list {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-content-guide-rows {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-content-guide-row {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+  padding: calc(var(--admin-space) * 4);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface, #fff);
+}
+
+.admin-content-guide-row-main {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-content-guide-field {
+  min-width: 0;
+}
+
+.admin-content-guide-field label {
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
+}
+
+.admin-content-guide-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--admin-space) * 2);
+  justify-content: flex-start;
+}
+
+.admin-content-guide-add-row {
+  display: flex;
+  justify-content: flex-start;
+  padding: calc(var(--admin-space) * 3) calc(var(--admin-space) * 4);
+  border: 1px dashed var(--admin-border);
+  border-radius: 6px;
+  background: transparent;
+}
+
 .admin-faq-list {
   display: grid;
   gap: calc(var(--admin-space) * 3);
