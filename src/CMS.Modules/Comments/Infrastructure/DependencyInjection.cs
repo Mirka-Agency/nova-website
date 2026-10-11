@@ -1,5 +1,6 @@
 using CMS.Modules.Comments.Application;
 using CMS.Modules.Comments.Application.AntiSpam;
+using CMS.Modules.Comments.Application.Import;
 using CMS.Modules.Comments.Application.Interfaces;
 using CMS.Modules.Comments.Infrastructure.Persistence;
 using CMS.Modules.Comments.Infrastructure.Services;
@@ -21,14 +22,18 @@ public static class DependencyInjection
 
         services.AddCommentsApplication();
         services.Configure<CommentsAntiSpamOptions>(configuration.GetSection(CommentsAntiSpamOptions.SectionName));
+        services.Configure<CommentImportOptions>(configuration.GetSection(CommentImportOptions.SectionName));
 
         services.AddDbContext<CommentsDbContext>(options =>
             options.UseNpgsql(connectionString, npgsql =>
                 npgsql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), errorCodesToAdd: null)));
 
+        services.AddMemoryCache();
         services.AddScoped<ICommentCaptchaValidator, CommentCaptchaValidator>();
         services.AddScoped<ICommentSettingsService, CommentSettingsService>();
         services.AddScoped<ICommentService, CommentService>();
+        services.AddScoped<ICommentImportPreviewStore, CommentImportPreviewStore>();
+        services.AddScoped<ICommentImportService, CommentImportService>();
 
         return services;
     }

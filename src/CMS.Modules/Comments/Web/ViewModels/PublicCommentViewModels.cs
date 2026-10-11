@@ -16,6 +16,10 @@ public sealed class CommentsSectionViewModel
     public bool RequiresLogin { get; set; }
     public string? CaptchaSiteKey { get; set; }
     public string? ReturnUrl { get; set; }
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = CommentListQuery.PublicPageSize;
+    public int TotalCount { get; set; }
+    public int TotalPages { get; set; }
 }
 
 public sealed class SubmitCommentFormViewModel

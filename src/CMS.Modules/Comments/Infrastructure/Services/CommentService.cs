@@ -72,9 +72,15 @@ public sealed class CommentService : ICommentService
             q = q.Where(c => c.PublishedAtUtc <= query.ToUtc.Value);
 
         var total = await q.CountAsync(cancellationToken);
+        var pageSize = query.NormalizedPageSize;
+        var page = query.NormalizedPage;
+        var totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
+        if (totalPages > 0 && page > totalPages)
+            page = totalPages;
+
         var items = await ApplySort(q, query.Sort)
-            .Skip(query.Skip)
-            .Take(query.NormalizedPageSize)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(c => new CommentListItemDto(
                 c.Id,
                 c.TargetType,
@@ -92,8 +98,8 @@ public sealed class CommentService : ICommentService
         return new PagedResult<CommentListItemDto>(
             items,
             total,
-            query.NormalizedPage,
-            query.NormalizedPageSize);
+            page,
+            pageSize);
     }
 
     private static IQueryable<Comment> ApplySort(IQueryable<Comment> query, string? sort) =>
@@ -133,14 +139,52 @@ public sealed class CommentService : ICommentService
         Guid targetId,
         CancellationToken cancellationToken = default)
     {
-        return await _db.Comments.AsNoTracking()
+        var page = await ListApprovedForTargetPagedAsync(
+            targetType,
+            targetId,
+            page: 1,
+            pageSize: PagedRequest.MaxPageSize,
+            cancellationToken);
+        return page.Items;
+    }
+
+    public async Task<PagedResult<PublicCommentDto>> ListApprovedForTargetPagedAsync(
+        CommentTargetType targetType,
+        Guid targetId,
+        int page = 1,
+        int pageSize = CommentListQuery.PublicPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedPage = page < 1 ? 1 : page;
+        var normalizedPageSize = pageSize < 1
+            ? CommentListQuery.PublicPageSize
+            : Math.Min(pageSize, PagedRequest.MaxPageSize);
+
+        // Flat paging of all approved comments — every comment is visible; nesting is view-only.
+        var baseQuery = _db.Comments.AsNoTracking()
             .Where(c =>
                 c.TargetType == targetType
                 && c.TargetId == targetId
-                && c.Status == CommentStatus.Approved)
+                && c.Status == CommentStatus.Approved);
+
+        var total = await baseQuery.CountAsync(cancellationToken);
+        var totalPages = normalizedPageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)normalizedPageSize);
+        if (totalPages > 0 && normalizedPage > totalPages)
+            normalizedPage = totalPages;
+
+        var items = await baseQuery
             .OrderByDescending(c => c.PublishedAtUtc)
-            .Select(c => new PublicCommentDto(c.Id, c.AuthorName, c.Body, c.PublishedAtUtc))
+            .ThenByDescending(c => c.CreatedAtUtc)
+            .Skip((normalizedPage - 1) * normalizedPageSize)
+            .Take(normalizedPageSize)
+            .Select(c => new PublicCommentDto(c.Id, c.AuthorName, c.Body, c.PublishedAtUtc, c.ParentId))
             .ToListAsync(cancellationToken);
+
+        return new PagedResult<PublicCommentDto>(
+            items,
+            total,
+            normalizedPage,
+            normalizedPageSize);
     }
 
     public async Task<Guid> SubmitAsync(SubmitCommentCommand command, CancellationToken cancellationToken = default)

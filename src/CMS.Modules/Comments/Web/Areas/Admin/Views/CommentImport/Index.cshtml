@@ -1,0 +1,36 @@
+@model CommentImportUploadViewModel
+@{
+    ViewData["Title"] = Localizer["ImportComments"];
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-secondary" asp-controller="Comments" asp-action="Index">
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <span>@Localizer["BackToComments"]</span>
+    </a>
+    <a class="btn btn-secondary" asp-action="SampleXml">
+        <i class="fas fa-download" aria-hidden="true"></i>
+        <span>@Localizer["DownloadSampleXml"]</span>
+    </a>
+</div>
+
+<p class="admin-hint">@Localizer["ImportCommentsHint"]</p>
+
+<form asp-action="Preview" method="post" enctype="multipart/form-data" class="admin-form" style="max-width:640px">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="admin-validation-summary"></div>
+
+    <div class="admin-field">
+        <label asp-for="File">@Localizer["ImportXmlFile"]</label>
+        <input asp-for="File" type="file" accept=".xml,text/xml,application/xml" />
+        <span asp-validation-for="File" class="admin-field-error"></span>
+        <p class="admin-hint">@Localizer["ImportXmlFileHint"]</p>
+    </div>
+
+    <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <span>@Localizer["ImportPreviewAction"]</span>
+        </button>
+    </div>
+</form>

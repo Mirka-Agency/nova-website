@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comments>
+  <comment>
+    <comment_id>101</comment_id>
+    <comment_author>علی رضایی</comment_author>
+    <comment_author_email>ali@example.com</comment_author_email>
+    <comment_content>مقاله مفیدی بود، ممنون.</comment_content>
+    <comment_date_gmt>2023-05-10 08:30:00</comment_date_gmt>
+    <comment_approved>1</comment_approved>
+    <comment_parent>0</comment_parent>
+    <page_url>https://old.example.com/sample-post/</page_url>
+  </comment>
+  <comment>
+    <comment_id>102</comment_id>
+    <comment_author>سارا محمدی</comment_author>
+    <comment_author_email>sara@example.com</comment_author_email>
+    <comment_content>کاملاً موافقم.</comment_content>
+    <comment_date_gmt>2023-05-11 09:15:00</comment_date_gmt>
+    <comment_approved>1</comment_approved>
+    <comment_parent>101</comment_parent>
+    <page_url>https://old.example.com/sample-post/</page_url>
+  </comment>
+  <comment>
+    <comment_id>201</comment_id>
+    <comment_author>مهمان</comment_author>
+    <comment_author_email></comment_author_email>
+    <comment_content>این URL در CMS وجود ندارد و باید دستی وصل شود.</comment_content>
+    <comment_date_gmt>2023-06-01 12:00:00</comment_date_gmt>
+    <comment_approved>0</comment_approved>
+    <comment_parent>0</comment_parent>
+    <page_url>https://old.example.com/missing-page/</page_url>
+  </comment>
+</comments>

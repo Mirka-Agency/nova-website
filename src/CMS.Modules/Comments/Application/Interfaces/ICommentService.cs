@@ -21,6 +21,13 @@ public interface ICommentService
         Guid targetId,
         CancellationToken cancellationToken = default);
 
+    Task<PagedResult<PublicCommentDto>> ListApprovedForTargetPagedAsync(
+        CommentTargetType targetType,
+        Guid targetId,
+        int page = 1,
+        int pageSize = CommentListQuery.PublicPageSize,
+        CancellationToken cancellationToken = default);
+
     Task<Guid> SubmitAsync(SubmitCommentCommand command, CancellationToken cancellationToken = default);
 
     Task ApproveAsync(Guid id, CancellationToken cancellationToken = default);

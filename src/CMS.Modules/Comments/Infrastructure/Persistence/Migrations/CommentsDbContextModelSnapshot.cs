@@ -50,8 +50,23 @@ namespace CMS.Modules.Comments.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("PublishedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SourceExternalId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SourcePageUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("SourceSystem")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -78,9 +93,15 @@ namespace CMS.Modules.Comments.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CreatedAtUtc");
 
+                    b.HasIndex("ParentId");
+
                     b.HasIndex("PublishedAtUtc");
 
                     b.HasIndex("TargetType", "TargetId", "Status");
+
+                    b.HasIndex("SourceSystem", "SourceExternalId")
+                        .IsUnique()
+                        .HasFilter("\"SourceSystem\" IS NOT NULL AND \"SourceExternalId\" IS NOT NULL");
 
                     b.ToTable("Comments", "comments");
                 });

@@ -1,5 +1,6 @@
 using CMS.Application.Common.Features;
 using CMS.Modules.Comments.Application.AntiSpam;
+using CMS.Modules.Comments.Application.Comments;
 using CMS.Modules.Comments.Application.Interfaces;
 using CMS.Modules.Comments.Domain.Enums;
 using CMS.Modules.Comments.Web.ViewModels;
@@ -45,7 +46,17 @@ public sealed class CommentsViewComponent : ViewComponent
         var isAuthenticated = !string.IsNullOrWhiteSpace(userId);
         var requiresLogin = !settings.AllowAnonymous && !isAuthenticated;
 
-        var comments = await _comments.ListApprovedForTargetAsync(targetType, targetId, cancellationToken);
+        var page = 1;
+        if (int.TryParse(HttpContext.Request.Query["commentPage"], out var requestedPage) && requestedPage > 0)
+            page = requestedPage;
+
+        var paged = await _comments.ListApprovedForTargetPagedAsync(
+            targetType,
+            targetId,
+            page,
+            CommentListQuery.PublicPageSize,
+            cancellationToken);
+
         var returnUrl = $"{HttpContext.Request.Path}{HttpContext.Request.QueryString}";
 
         string? siteKey = null;
@@ -63,7 +74,11 @@ public sealed class CommentsViewComponent : ViewComponent
             TargetId = targetId,
             TargetTitle = targetTitle,
             Settings = settings,
-            Comments = comments,
+            Comments = paged.Items,
+            Page = paged.Page,
+            PageSize = paged.PageSize,
+            TotalCount = paged.TotalCount,
+            TotalPages = paged.TotalPages,
             CanSubmit = !requiresLogin,
             RequiresLogin = requiresLogin,
             CaptchaSiteKey = siteKey,

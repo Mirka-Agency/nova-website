@@ -29,7 +29,7 @@
         "ProductVariations");
     var ordersActive = IsCtrl("Orders");
     var formsActive = IsCtrl("Forms", "FormSubmissions");
-    var commentsActive = IsCtrl("Comments", "CommentSettings");
+    var commentsActive = IsCtrl("Comments", "CommentSettings", "CommentImport");
     var popupActive = IsCtrl("Popups");
     var seoActive = IsCtrl("SeoSettings", "SeoRedirects");
     var mediaActive = IsCtrl("Media");
@@ -539,6 +539,11 @@
                    asp-area="Admin" asp-controller="Comments" asp-action="Index" asp-route-targetType="3">
                     <i class="fas fa-sitemap" aria-hidden="true"></i>
                     <span>@Localizer["ProductCategoryComments"]</span>
+                </a>
+                <a class="admin-nav-sublink @(IsCtrl("CommentImport") ? "is-active" : null)"
+                   asp-area="Admin" asp-controller="CommentImport" asp-action="Index">
+                    <i class="fas fa-file-import" aria-hidden="true"></i>
+                    <span>@Localizer["ImportComments"]</span>
                 </a>
                 <a class="admin-nav-sublink @(IsCtrl("CommentSettings") ? "is-active" : null)"
                    asp-area="Admin" asp-controller="CommentSettings" asp-action="Index">

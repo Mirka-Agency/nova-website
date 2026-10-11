@@ -72,4 +72,52 @@
   <data name="CaptchaHcaptcha" xml:space="preserve"><value>hCaptcha</value></data>
   <data name="ExternalCaptchaHint" xml:space="preserve"><value>کلیدهای Site و Secret با ورود ادمین و فرم‌ها مشترک‌اند (Captcha__Turnstile|Recaptcha|Hcaptcha در env). Google reCAPTCHA نسخهٔ v3 است.</value></data>
   <data name="BackToComments" xml:space="preserve"><value>بازگشت به کامنت‌ها</value></data>
+  <data name="ImportComments" xml:space="preserve"><value>درون‌ریزی نظرات</value></data>
+  <data name="ImportCommentsHint" xml:space="preserve"><value>فایل XML کامنت‌های وردپرس را آپلود کنید. پس از پیش‌نمایش و تأیید، هر کامنت به‌صورت خودکار به مقاله یا صفحه متناظر با URL متصل می‌شود.</value></data>
+  <data name="ImportCommentsPreview" xml:space="preserve"><value>پیش‌نمایش درون‌ریزی نظرات</value></data>
+  <data name="ImportCommentsResult" xml:space="preserve"><value>نتیجه درون‌ریزی نظرات</value></data>
+  <data name="ImportXmlFile" xml:space="preserve"><value>فایل XML</value></data>
+  <data name="ImportXmlFileHint" xml:space="preserve"><value>فقط فایل XML با ساختار کامنت وردپرس (حداکثر ۱۰ مگابایت). نمونه را از دکمه بالا دانلود کنید.</value></data>
+  <data name="ImportFileRequired" xml:space="preserve"><value>انتخاب فایل الزامی است.</value></data>
+  <data name="ImportFileMustBeXml" xml:space="preserve"><value>فقط فایل با پسوند XML مجاز است.</value></data>
+  <data name="ImportFileTooLarge" xml:space="preserve"><value>حجم فایل بیش از حد مجاز است.</value></data>
+  <data name="ImportParseFailed" xml:space="preserve"><value>خواندن فایل XML با خطا مواجه شد.</value></data>
+  <data name="ImportPreviewExpired" xml:space="preserve"><value>پیش‌نمایش منقضی شده است. لطفاً فایل را دوباره آپلود کنید.</value></data>
+  <data name="ImportReportExpired" xml:space="preserve"><value>گزارش درون‌ریزی در دسترس نیست. دوباره Import را انجام دهید.</value></data>
+  <data name="DownloadSampleXml" xml:space="preserve"><value>دانلود نمونه XML</value></data>
+  <data name="ImportPreviewAction" xml:space="preserve"><value>پیش‌نمایش</value></data>
+  <data name="ImportConfirmAction" xml:space="preserve"><value>تأیید و درون‌ریزی</value></data>
+  <data name="ImportUploadAgain" xml:space="preserve"><value>آپلود مجدد</value></data>
+  <data name="ImportAgain" xml:space="preserve"><value>درون‌ریزی جدید</value></data>
+  <data name="ImportOnlyNew" xml:space="preserve"><value>فقط کامنت‌های جدید (تکراری‌ها نادیده گرفته شوند)</value></data>
+  <data name="ImportSelectTarget" xml:space="preserve"><value>— انتخاب صفحه مقصد —</value></data>
+  <data name="ImportDownloadCsv" xml:space="preserve"><value>دانلود گزارش CSV</value></data>
+  <data name="ImportQueued" xml:space="preserve"><value>به‌دلیل حجم بالا، درون‌ریزی در پس‌زمینه صف‌بندی شد. چند لحظه بعد فهرست کامنت‌ها را بررسی کنید.</value></data>
+  <data name="ImportStatTotal" xml:space="preserve"><value>کل: {0}</value></data>
+  <data name="ImportStatReady" xml:space="preserve"><value>قابل انتقال: {0}</value></data>
+  <data name="ImportStatDuplicate" xml:space="preserve"><value>تکراری: {0}</value></data>
+  <data name="ImportStatUnmatched" xml:space="preserve"><value>بدون تطبیق URL: {0}</value></data>
+  <data name="ImportStatAmbiguous" xml:space="preserve"><value>تطبیق مبهم: {0}</value></data>
+  <data name="ImportStatInvalid" xml:space="preserve"><value>خطا: {0}</value></data>
+  <data name="ImportResultTotal" xml:space="preserve"><value>کل: {0}</value></data>
+  <data name="ImportResultImported" xml:space="preserve"><value>موفق: {0}</value></data>
+  <data name="ImportResultDuplicate" xml:space="preserve"><value>تکراری: {0}</value></data>
+  <data name="ImportResultUnmatched" xml:space="preserve"><value>بدون تطبیق: {0}</value></data>
+  <data name="ImportResultFailed" xml:space="preserve"><value>ناموفق: {0}</value></data>
+  <data name="ImportColStatus" xml:space="preserve"><value>وضعیت پیش‌نمایش</value></data>
+  <data name="ImportColPageUrl" xml:space="preserve"><value>URL صفحه</value></data>
+  <data name="ImportColTarget" xml:space="preserve"><value>صفحه مقصد</value></data>
+  <data name="ImportColManualTarget" xml:space="preserve"><value>انتخاب دستی</value></data>
+  <data name="ImportColExternalId" xml:space="preserve"><value>شناسه وردپرس</value></data>
+  <data name="ImportColOutcome" xml:space="preserve"><value>نتیجه</value></data>
+  <data name="ImportErrorMessage" xml:space="preserve"><value>پیام</value></data>
+  <data name="ImportDispositionReady" xml:space="preserve"><value>آماده</value></data>
+  <data name="ImportDispositionDuplicate" xml:space="preserve"><value>تکراری</value></data>
+  <data name="ImportDispositionUnmatched" xml:space="preserve"><value>بدون تطبیق</value></data>
+  <data name="ImportDispositionAmbiguous" xml:space="preserve"><value>مبهم</value></data>
+  <data name="ImportDispositionInvalid" xml:space="preserve"><value>خطا</value></data>
+  <data name="ImportOutcomeImported" xml:space="preserve"><value>وارد شد</value></data>
+  <data name="ImportOutcomeDuplicate" xml:space="preserve"><value>تکراری</value></data>
+  <data name="ImportOutcomeUnmatched" xml:space="preserve"><value>بدون تطبیق</value></data>
+  <data name="ImportOutcomeFailed" xml:space="preserve"><value>ناموفق</value></data>
 </root>

@@ -97,6 +97,7 @@ try
     builder.Services.AddFormsModule(builder.Configuration);
     builder.Services.AddMediaModule(builder.Configuration);
     builder.Services.AddCommentsModule(builder.Configuration);
+    builder.Services.AddScoped<CMS.Modules.Comments.Application.Import.ICommentTargetCatalog, CMS.Web.Services.CommentTargetCatalog>();
     builder.Services.AddPopupModule(builder.Configuration);
     builder.Services.AddSeoModule(builder.Configuration);
     builder.Services.AddCmsRateLimiting();

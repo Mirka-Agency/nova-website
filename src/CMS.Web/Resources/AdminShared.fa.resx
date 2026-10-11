@@ -153,6 +153,7 @@
   <data name="ProductComments" xml:space="preserve"><value>کامنت‌های محصول</value></data>
   <data name="ProductCategoryComments" xml:space="preserve"><value>کامنت‌های دسته محصول</value></data>
   <data name="CommentSettings" xml:space="preserve"><value>تنظیمات کامنت</value></data>
+  <data name="ImportComments" xml:space="preserve"><value>درون‌ریزی نظرات</value></data>
   <data name="Users" xml:space="preserve"><value>کاربران</value></data>
   <data name="Features" xml:space="preserve"><value>امکانات</value></data>
   <data name="Logout" xml:space="preserve"><value>خروج</value></data>

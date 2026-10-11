@@ -1,0 +1,78 @@
+@model CommentImportResultViewModel
+@{
+    ViewData["Title"] = Localizer["ImportCommentsResult"];
+    var fa = System.Globalization.CultureInfo.GetCultureInfo("fa-IR");
+}
+
+<div class="admin-toolbar">
+    <a class="btn btn-secondary" asp-controller="Comments" asp-action="Index">
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <span>@Localizer["BackToComments"]</span>
+    </a>
+    @if (!Model.Queued)
+    {
+        <a class="btn btn-secondary" asp-action="DownloadCsv" asp-route-id="@Model.PreviewId">
+            <i class="fas fa-file-csv" aria-hidden="true"></i>
+            <span>@Localizer["ImportDownloadCsv"]</span>
+        </a>
+    }
+    <a class="btn btn-primary" asp-action="Index">
+        <i class="fas fa-file-import" aria-hidden="true"></i>
+        <span>@Localizer["ImportAgain"]</span>
+    </a>
+</div>
+
+@if (Model.Queued)
+{
+    <p class="admin-lead" role="status">@Localizer["ImportQueued"]</p>
+}
+else
+{
+    <ul class="admin-stats" style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px">
+        <li>@string.Format(Localizer["ImportResultTotal"].Value, Model.TotalCount.ToString("N0", fa))</li>
+        <li>@string.Format(Localizer["ImportResultImported"].Value, Model.ImportedCount.ToString("N0", fa))</li>
+        <li>@string.Format(Localizer["ImportResultDuplicate"].Value, Model.DuplicateCount.ToString("N0", fa))</li>
+        <li>@string.Format(Localizer["ImportResultUnmatched"].Value, Model.UnmatchedCount.ToString("N0", fa))</li>
+        <li>@string.Format(Localizer["ImportResultFailed"].Value, Model.FailedCount.ToString("N0", fa))</li>
+    </ul>
+
+    @if (Model.Rows.Count > 0)
+    {
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["ImportColExternalId"]</th>
+                        <th>@Localizer["ImportColPageUrl"]</th>
+                        <th>@Localizer["ImportColOutcome"]</th>
+                        <th>@Localizer["ImportColTarget"]</th>
+                        <th>@Localizer["ImportErrorMessage"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td dir="ltr">@row.ExternalId</td>
+                        <td dir="ltr" style="text-align:start">@row.PageUrl</td>
+                        <td>@OutcomeLabel(row.Outcome)</td>
+                        <td>@(row.TargetTitle ?? "—")</td>
+                        <td>@(row.Message ?? "—")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@functions {
+    string OutcomeLabel(string outcome) => outcome switch
+    {
+        "imported" => Localizer["ImportOutcomeImported"].Value,
+        "duplicate" => Localizer["ImportOutcomeDuplicate"].Value,
+        "unmatched" => Localizer["ImportOutcomeUnmatched"].Value,
+        "failed" => Localizer["ImportOutcomeFailed"].Value,
+        _ => outcome
+    };
+}

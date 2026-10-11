@@ -1,5 +1,6 @@
 using System.Reflection;
 using CMS.Modules.Comments.Application.AntiSpam;
+using CMS.Modules.Comments.Application.Import;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,8 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddSingleton<ICommentsAntiSpamCredentials, CommentsAntiSpamCredentials>();
+        services.AddSingleton<ICommentUrlMatcher, CommentUrlMatcher>();
+        services.AddSingleton<IWordPressCommentXmlParser, WordPressCommentXmlParser>();
         return services;
     }
 }

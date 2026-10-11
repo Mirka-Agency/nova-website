@@ -598,6 +598,59 @@ body.site > main {
   border: 1px solid rgba(196, 92, 92, 0.22);
 }
 
+.cms-comments-list--replies {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid rgba(9, 112, 125, 0.12);
+}
+
+.cms-comments-item--reply {
+  padding: 0.75rem 0.9rem;
+  background: rgba(247, 250, 250, 0.8);
+}
+
+.cms-comments-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+}
+
+.cms-comments-pager__meta {
+  font-size: 0.88rem;
+  color: var(--text-muted, #6b7c7e);
+}
+
+.cms-comments-pager__links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cms-comments-pager__btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(9, 112, 125, 0.2);
+  border-radius: var(--radius-md, 12px);
+  background: var(--white, #fff);
+  color: var(--secondary, #1a3a3f);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cms-comments-pager__btn:hover {
+  border-color: rgba(9, 112, 125, 0.4);
+  background: rgba(230, 243, 245, 0.7);
+}
+
 .cms-comments-list {
   list-style: none;
   margin: 0;

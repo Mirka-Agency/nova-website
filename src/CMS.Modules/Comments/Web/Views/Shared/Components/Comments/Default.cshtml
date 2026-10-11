@@ -1,4 +1,5 @@
 @using System.Globalization
+@using CMS.Modules.Comments.Application.Comments
 @using CMS.Modules.Comments.Domain.Enums
 @using CMS.Modules.Comments.Web
 @using CMS.Modules.Comments.Web.ViewModels
@@ -9,7 +10,23 @@
         value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
             .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
 
-    var countLabel = ToPersianDigits(Model.Comments.Count.ToString(CultureInfo.InvariantCulture));
+    var countLabel = ToPersianDigits(Model.TotalCount.ToString(CultureInfo.InvariantCulture));
+
+    string BuildCommentPageUrl(int pageNumber)
+    {
+        var dict = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var key in Context.Request.Query.Keys)
+        {
+            if (string.Equals(key, "commentPage", StringComparison.OrdinalIgnoreCase))
+                continue;
+            dict[key] = Context.Request.Query[key].ToString();
+        }
+
+        if (pageNumber > 1)
+            dict["commentPage"] = pageNumber.ToString(CultureInfo.InvariantCulture);
+
+        return Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(Context.Request.Path, dict) + "#comments";
+    }
 }
 
 <section class="cms-comments reveal" id="comments" aria-labelledby="cms-comments-heading">
@@ -33,7 +50,7 @@
         <p class="cms-comments-error" role="alert">@error</p>
     }
 
-    @if (Model.Comments.Count == 0)
+    @if (Model.TotalCount == 0)
     {
         <p class="cms-comments-empty">@Localizer["NoComments"]</p>
     }
@@ -44,7 +61,8 @@
             {
                 var localTime = comment.PublishedAtUtc.ToLocalTime();
                 var dateLabel = ToPersianDigits(localTime.ToString("yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture));
-                <li class="cms-comments-item">
+                var isReply = comment.ParentId.HasValue;
+                <li class="cms-comments-item @(isReply ? "cms-comments-item--reply" : null)">
                     <div class="cms-comments-meta">
                         <strong class="cms-comments__author">@comment.AuthorName</strong>
                         <time class="cms-comments__date" datetime="@localTime.ToString("o", CultureInfo.InvariantCulture)">@dateLabel</time>
@@ -53,6 +71,28 @@
                 </li>
             }
         </ul>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="cms-comments-pager" aria-label="@Localizer["CommentsPager"]">
+                <span class="cms-comments-pager__meta">
+                    @string.Format(
+                        Localizer["CommentsPagerMeta"].Value,
+                        ToPersianDigits(Model.Page.ToString(CultureInfo.InvariantCulture)),
+                        ToPersianDigits(Model.TotalPages.ToString(CultureInfo.InvariantCulture)))
+                </span>
+                <div class="cms-comments-pager__links">
+                    @if (Model.Page > 1)
+                    {
+                        <a class="cms-comments-pager__btn" href="@BuildCommentPageUrl(Model.Page - 1)">@Localizer["CommentsPrevPage"]</a>
+                    }
+                    @if (Model.Page < Model.TotalPages)
+                    {
+                        <a class="cms-comments-pager__btn" href="@BuildCommentPageUrl(Model.Page + 1)">@Localizer["CommentsNextPage"]</a>
+                    }
+                </div>
+            </nav>
+        }
     }
 
     <div class="cms-comments__panel">

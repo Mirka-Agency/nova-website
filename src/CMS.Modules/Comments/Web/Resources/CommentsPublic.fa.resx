@@ -17,4 +17,8 @@
   <data name="CaptchaPlaceholder" xml:space="preserve"><value>پاسخ را وارد کنید</value></data>
   <data name="Submit" xml:space="preserve"><value>ارسال نظر</value></data>
   <data name="CommentSubmitted" xml:space="preserve"><value>نظر شما ثبت شد و پس از تأیید نمایش داده می‌شود.</value></data>
+  <data name="CommentsPager" xml:space="preserve"><value>صفحه‌بندی نظرات</value></data>
+  <data name="CommentsPagerMeta" xml:space="preserve"><value>صفحه {0} از {1}</value></data>
+  <data name="CommentsPrevPage" xml:space="preserve"><value>قبلی</value></data>
+  <data name="CommentsNextPage" xml:space="preserve"><value>بعدی</value></data>
 </root>

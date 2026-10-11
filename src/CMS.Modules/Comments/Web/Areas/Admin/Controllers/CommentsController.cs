@@ -70,7 +70,15 @@ public class CommentsController : Controller
         ViewBag.TargetOptions = BuildTargetOptions(targetType);
 
         var result = await _comments.ListPagedAsync(
-            new CommentListQuery(targetType, status, query, fromUtc, toUtc, sort, page),
+            new CommentListQuery(
+                targetType,
+                status,
+                query,
+                fromUtc,
+                toUtc,
+                sort,
+                page,
+                CommentListQuery.AdminPageSize),
             cancellationToken);
 
         var model = new CommentIndexViewModel
@@ -195,7 +203,8 @@ public class CommentsController : Controller
             TempData["Error"] = ex.Message;
         }
 
-        return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status, q, from, to, sort));
+        // Clear status/date filters so approved comments remain visible in the list.
+        return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status: null, q, from: null, to: null, sort));
     }
 
     [HttpPost]
@@ -226,7 +235,7 @@ public class CommentsController : Controller
             TempData["Error"] = ex.Message;
         }
 
-        return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status, q, from, to, sort));
+        return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status: null, q, from: null, to: null, sort));
     }
 
     [HttpPost]

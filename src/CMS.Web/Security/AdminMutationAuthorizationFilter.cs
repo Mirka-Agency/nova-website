@@ -60,6 +60,7 @@ public sealed class AdminMutationAuthorizationFilter : IAsyncAuthorizationFilter
             ["Media"] = AuthPolicies.ManageMedia,
             ["Comments"] = AuthPolicies.ManageComments,
             ["CommentSettings"] = AuthPolicies.ManageComments,
+            ["CommentImport"] = AuthPolicies.ManageComments,
             ["Popups"] = AuthPolicies.ManagePopup,
             ["SeoSettings"] = AuthPolicies.ManageSeo,
             ["SeoRedirects"] = AuthPolicies.ManageSeo,

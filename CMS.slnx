@@ -132,6 +132,7 @@
     <Project Path="tests/CMS.Modules.Shop.Application.Tests/CMS.Modules.Shop.Application.Tests.csproj" />
     <Project Path="tests/CMS.Modules.Shop.Domain.Tests/CMS.Modules.Shop.Domain.Tests.csproj" />
     <Project Path="tests/CMS.Modules.Seo.Domain.Tests/CMS.Modules.Seo.Domain.Tests.csproj" />
+    <Project Path="tests/CMS.Modules.Comments.Application.Tests/CMS.Modules.Comments.Application.Tests.csproj" />
     <Project Path="tests/CMS.Web.Integration.Tests/CMS.Web.Integration.Tests.csproj" />
   </Folder>
 </Solution>

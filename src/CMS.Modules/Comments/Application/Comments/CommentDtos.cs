@@ -20,7 +20,8 @@ public sealed record PublicCommentDto(
     Guid Id,
     string AuthorName,
     string Body,
-    DateTime PublishedAtUtc);
+    DateTime PublishedAtUtc,
+    Guid? ParentId = null);
 
 public sealed record SubmitCommentCommand(
     CommentTargetType TargetType,
@@ -46,12 +47,15 @@ public sealed record CommentListQuery(
     DateTime? ToUtc = null,
     string? Sort = null,
     int Page = 1,
-    int PageSize = PagedRequest.DefaultPageSize)
+    int PageSize = 30)
 {
+    public const int AdminPageSize = 30;
+    public const int PublicPageSize = 30;
+
     public int NormalizedPage => Page < 1 ? 1 : Page;
 
     public int NormalizedPageSize =>
-        PageSize < 1 ? PagedRequest.DefaultPageSize : Math.Min(PageSize, PagedRequest.MaxPageSize);
+        PageSize < 1 ? AdminPageSize : Math.Min(PageSize, PagedRequest.MaxPageSize);
 
     public int Skip => (NormalizedPage - 1) * NormalizedPageSize;
 }
