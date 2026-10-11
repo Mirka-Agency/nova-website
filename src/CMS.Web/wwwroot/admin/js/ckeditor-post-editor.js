@@ -377,23 +377,97 @@
     return typeof html === "string" && /<(video|iframe)\b/i.test(html);
   }
 
-  function findSelectedVideoTarget(editor) {
-    const selected = editor.model.document.selection.getSelectedElement();
-    if (!selected) return null;
+  function videoTargetFromElement(element) {
+    if (!element || typeof element.is !== "function") return null;
 
-    if (selected.is("element", "media")) {
-      const url = String(selected.getAttribute("url") || "").trim();
+    if (element.is("element", "media")) {
+      const url = String(element.getAttribute("url") || "").trim();
       if (!url) return null;
-      return { kind: "media", element: selected, url: url };
+      return { kind: "media", element: element, url: url };
     }
 
-    if (selected.is("element", "rawHtml")) {
-      const value = selected.getAttribute("value") || "";
+    if (element.is("element", "rawHtml")) {
+      const value = element.getAttribute("value") || "";
       if (!isVideoLikeHtml(value)) return null;
-      return { kind: "rawHtml", element: selected, html: value };
+      return { kind: "rawHtml", element: element, html: value };
     }
 
     return null;
+  }
+
+  function findSelectedVideoTarget(editor) {
+    const selection = editor.model.document.selection;
+    const direct = videoTargetFromElement(selection.getSelectedElement());
+    if (direct) return direct;
+
+    const position = selection.getFirstPosition();
+    if (!position) return null;
+
+    let node = position.parent;
+    while (node) {
+      const fromParent = videoTargetFromElement(node);
+      if (fromParent) return fromParent;
+      node = node.parent;
+    }
+
+    const before = videoTargetFromElement(position.nodeBefore);
+    if (before) return before;
+
+    const after = videoTargetFromElement(position.nodeAfter);
+    if (after) return after;
+
+    return null;
+  }
+
+  function openVideoPosterPicker(editor, preferredTarget) {
+    const target = preferredTarget || findSelectedVideoTarget(editor);
+    if (!target) {
+      window.alert(
+        "ابتدا روی ویدیوی داخل محتوا کلیک کنید، بعد «کاور ویدیو» را بزنید."
+      );
+      return;
+    }
+
+    const picker = window.AdminMediaPicker;
+    if (!picker || typeof picker.open !== "function") {
+      console.error("AdminMediaPicker is not available on this page.");
+      window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
+      return;
+    }
+
+    editor.model.change(function (writer) {
+      writer.setSelection(target.element, "on");
+    });
+
+    picker.open({
+      onSelect(item) {
+        if (!item || !item.publicUrl) return;
+        const posterUrl = String(item.publicUrl).trim();
+        if (!posterUrl) return;
+
+        const current = findSelectedVideoTarget(editor) || target;
+        if (!elementStillInDocument(current.element)) {
+          window.alert("ویدیو دیگر در محتوا نیست. دوباره انتخاب کنید.");
+          return;
+        }
+
+        let html = null;
+        if (current.kind === "media") {
+          html = mediaUrlToCoveredHtml(current.url, posterUrl);
+        } else {
+          const value =
+            current.element.getAttribute("value") || current.html || "";
+          html = applyPosterToVideoHtml(value, posterUrl);
+        }
+
+        if (!html) {
+          window.alert("اعمال کاور برای این ویدیو ممکن نشد.");
+          return;
+        }
+
+        insertOrReplaceRawHtml(editor, html, current.element);
+      },
+    });
   }
 
   function buildRawVideoHtml(src, posterUrl) {
@@ -568,61 +642,86 @@
 
     init() {
       const editor = this.editor;
+      let toolbarButtonView = null;
+
+      const findVideoTargetFromView = function (viewTarget) {
+        let viewElement = viewTarget;
+        while (viewElement) {
+          const modelElement =
+            editor.editing.mapper.toModelElement(viewElement);
+          const target = videoTargetFromElement(modelElement);
+          if (target) return target;
+          viewElement = viewElement.parent;
+        }
+        return null;
+      };
 
       editor.ui.componentFactory.add("videoPoster", (locale) => {
         const view = new ButtonView(locale);
+        toolbarButtonView = view;
 
         view.set({
           label: "کاور ویدیو",
           icon: videoPosterIcon,
-          tooltip: true,
+          tooltip: "ویدیو را انتخاب کنید یا روی آن دابل‌کلیک کنید",
+          isEnabled: true,
         });
 
-        function refresh() {
-          view.isEnabled = !!findSelectedVideoTarget(editor);
-        }
-
-        refresh();
-        editor.model.document.selection.on("change", refresh);
-
         view.on("execute", () => {
-          const target = findSelectedVideoTarget(editor);
-          if (!target) {
-            window.alert("ابتدا یک ویدیو داخل محتوا را انتخاب کنید.");
-            return;
-          }
-
-          const picker = window.AdminMediaPicker;
-          if (!picker || typeof picker.open !== "function") {
-            console.error("AdminMediaPicker is not available on this page.");
-            window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
-            return;
-          }
-
-          picker.open({
-            onSelect(item) {
-              if (!item || !item.publicUrl) return;
-              const posterUrl = String(item.publicUrl).trim();
-              if (!posterUrl) return;
-
-              let html = null;
-              if (target.kind === "media") {
-                html = mediaUrlToCoveredHtml(target.url, posterUrl);
-              } else {
-                html = applyPosterToVideoHtml(target.html, posterUrl);
-              }
-
-              if (!html) {
-                window.alert("اعمال کاور برای این ویدیو ممکن نشد.");
-                return;
-              }
-
-              insertOrReplaceRawHtml(editor, html, target.element);
-            },
-          });
+          openVideoPosterPicker(editor);
         });
 
         return view;
+      });
+
+      const onVideoViewEvent = function (evt, data, openPicker) {
+        const domTarget =
+          data.domTarget || (data.domEvent && data.domEvent.target);
+        if (
+          domTarget &&
+          typeof domTarget.closest === "function" &&
+          domTarget.closest(
+            "textarea, input, select, option, button, .ck-button"
+          )
+        ) {
+          return;
+        }
+
+        const target = findVideoTargetFromView(data.target);
+        if (!target) return;
+
+        // Don't steal CTA clicks — those embeds are handled separately.
+        if (
+          target.kind === "rawHtml" &&
+          isNovaCtaHtml(target.html || target.element.getAttribute("value") || "")
+        ) {
+          return;
+        }
+
+        editor.model.change(function (writer) {
+          writer.setSelection(target.element, "on");
+        });
+
+        if (toolbarButtonView) {
+          toolbarButtonView.isOn = true;
+        }
+
+        if (openPicker) {
+          data.preventDefault();
+          evt.stop();
+          openVideoPosterPicker(editor, target);
+        }
+      };
+
+      if (typeof ClickObserver === "function") {
+        editor.editing.view.addObserver(ClickObserver);
+        editor.editing.view.document.on("click", function (evt, data) {
+          onVideoViewEvent(evt, data, false);
+        });
+      }
+
+      editor.editing.view.document.on("dblclick", function (evt, data) {
+        onVideoViewEvent(evt, data, true);
       });
     }
   }
