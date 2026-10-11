@@ -184,8 +184,10 @@ main > .error-page {
 }
 
 .blog-content img {
+  display: block;
   max-width: 100%;
   height: auto;
+  margin-inline: auto;
 }
 
 .blog-content h2,

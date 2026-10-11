@@ -361,13 +361,20 @@ body.site > main {
 
 .blog-prose img,
 .blog-prose figure {
+  display: block;
   max-width: 100%;
   height: auto;
+  margin-inline: auto;
   border-radius: 0.85rem;
 }
 
 .blog-prose figure {
   margin-block: 0 1rem;
+  text-align: center;
+}
+
+.blog-prose figure img {
+  margin-block: 0;
 }
 
 .blog-prose iframe,
