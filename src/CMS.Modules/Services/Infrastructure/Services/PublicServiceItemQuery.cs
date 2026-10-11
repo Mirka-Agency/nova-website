@@ -68,6 +68,7 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
                 p.CoverImageUrl,
                 p.CoverImageAlt,
                 PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                UpdatedAtUtc = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.Excerpt,
                 p.Body,
                 p.AuthorDisplayName
@@ -82,6 +83,7 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
                 p.CoverImageUrl,
                 p.CoverImageAlt,
                 p.PublishedAtUtc,
+                p.UpdatedAtUtc,
                 ResolveExcerpt(p.Excerpt, p.Body),
                 p.AuthorDisplayName))
             .ToList();
@@ -129,6 +131,7 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
             post.CoverImageUrl,
             post.CoverImageAlt,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
+            post.UpdatedAtUtc ?? post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),
             post.AuthorDisplayName,
             post.MetaTitle,

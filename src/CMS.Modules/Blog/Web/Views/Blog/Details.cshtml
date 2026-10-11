@@ -27,11 +27,11 @@
     var faqItems = PostFaqJson.Parse(Model.FaqJson);
     var videoSchemaItems = PostVideoSchemaJson.Parse(Model.VideoSchemaJson);
     var fa = CultureInfo.GetCultureInfo("fa-IR");
-    var publishedLocal = Model.PublishedAtUtc.Kind == DateTimeKind.Utc
-        ? Model.PublishedAtUtc.ToLocalTime()
-        : Model.PublishedAtUtc;
-    var dateAttr = publishedLocal.ToString("yyyy-MM-dd");
-    var dateLabel = publishedLocal.ToString("d MMMM yyyy", fa);
+    var updatedLocal = Model.UpdatedAtUtc.Kind == DateTimeKind.Utc
+        ? Model.UpdatedAtUtc.ToLocalTime()
+        : Model.UpdatedAtUtc;
+    var dateAttr = updatedLocal.ToString("yyyy-MM-dd");
+    var dateLabel = updatedLocal.ToString("d MMMM yyyy", fa);
 
     var plainBody = Regex.Replace(Model.Body ?? string.Empty, "<[^>]+>", " ");
     plainBody = WebUtility.HtmlDecode(plainBody);
@@ -263,9 +263,9 @@
         @foreach (var item in related)
         {
           var itemCover = string.IsNullOrWhiteSpace(item.CoverImageUrl) ? relatedFallback : item.CoverImageUrl;
-          var itemLocal = item.PublishedAtUtc.Kind == DateTimeKind.Utc
-              ? item.PublishedAtUtc.ToLocalTime()
-              : item.PublishedAtUtc;
+          var itemLocal = item.UpdatedAtUtc.Kind == DateTimeKind.Utc
+              ? item.UpdatedAtUtc.ToLocalTime()
+              : item.UpdatedAtUtc;
           var itemDateAttr = itemLocal.ToString("yyyy-MM-dd");
           var itemDateLabel = itemLocal.ToString("d MMMM yyyy", fa);
           var itemExcerpt = string.IsNullOrWhiteSpace(item.Excerpt)

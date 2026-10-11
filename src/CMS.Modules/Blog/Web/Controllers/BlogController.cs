@@ -114,7 +114,7 @@ public class BlogController : Controller
                         FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl),
                         post.AuthorDisplayName,
                         post.PublishedAtUtc,
-                        null));
+                        post.UpdatedAtUtc));
             }
         }
 

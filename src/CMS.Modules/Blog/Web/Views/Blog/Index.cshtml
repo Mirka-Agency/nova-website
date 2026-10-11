@@ -44,7 +44,7 @@
     var index = 0;
     foreach (var item in items)
     {
-        var local = item.PublishedAtUtc.ToLocalTime();
+        var local = item.UpdatedAtUtc.ToLocalTime();
         var dateAttr = local.ToString("yyyy-MM-dd");
         var dateLabel = local.ToString("d MMMM yyyy", fa);
         var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)

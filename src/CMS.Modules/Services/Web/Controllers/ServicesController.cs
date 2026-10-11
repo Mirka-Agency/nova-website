@@ -94,7 +94,7 @@ public class ServicesController : Controller
                         FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl),
                         item.AuthorDisplayName,
                         item.PublishedAtUtc,
-                        null));
+                        item.UpdatedAtUtc));
             }
         }
 

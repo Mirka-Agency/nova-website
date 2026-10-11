@@ -1,4 +1,5 @@
 @model PublicServiceItemDetailDto
+@using System.Globalization
 @using System.Net
 @using System.Text.RegularExpressions
 @using CMS.Application.Settings
@@ -22,6 +23,12 @@
     CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
     var related = (ViewBag.Related as IReadOnlyList<PublicServiceItemSummaryDto>)
         ?? Array.Empty<PublicServiceItemSummaryDto>();
+    var fa = CultureInfo.GetCultureInfo("fa-IR");
+    var updatedLocal = Model.UpdatedAtUtc.Kind == DateTimeKind.Utc
+        ? Model.UpdatedAtUtc.ToLocalTime()
+        : Model.UpdatedAtUtc;
+    var dateAttr = updatedLocal.ToString("yyyy-MM-dd");
+    var dateLabel = updatedLocal.ToString("d MMMM yyyy", fa);
 
     var toc = new List<(string Id, string Text)>();
     var headingIndex = 0;
@@ -61,6 +68,7 @@
       <h1 class="page-hero__title reveal" id="page-hero-title">@Model.Title</h1>
 
       <ul class="service-article-meta reveal" aria-label="اطلاعات خدمت">
+        <li><time datetime="@dateAttr">@dateLabel</time></li>
         <li>
           تأیید محتوا:
           <a asp-controller="Teams" asp-action="Index">@reviewer</a>

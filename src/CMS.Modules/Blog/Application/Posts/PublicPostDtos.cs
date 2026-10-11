@@ -7,6 +7,7 @@ public sealed record PublicPostSummaryDto(
     string? CoverImageUrl,
     string? CoverImageAlt,
     DateTime PublishedAtUtc,
+    DateTime UpdatedAtUtc,
     string Excerpt,
     string? AuthorDisplayName);
 
@@ -20,6 +21,7 @@ public sealed record PublicPostDetailDto(
     string? CoverImageAlt,
     string? CoverVideoUrl,
     DateTime PublishedAtUtc,
+    DateTime UpdatedAtUtc,
     string Excerpt,
     string? AuthorDisplayName,
     string? MetaTitle,

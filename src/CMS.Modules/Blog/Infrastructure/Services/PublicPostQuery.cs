@@ -70,6 +70,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
                 p.CoverImageUrl,
                 p.CoverImageAlt,
                 PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                UpdatedAtUtc = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc,
                 p.Excerpt,
                 p.Body,
                 p.AuthorDisplayName
@@ -84,6 +85,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
                 p.CoverImageUrl,
                 p.CoverImageAlt,
                 p.PublishedAtUtc,
+                p.UpdatedAtUtc,
                 ResolveExcerpt(p.Excerpt, p.Body),
                 p.AuthorDisplayName))
             .ToList();
@@ -132,6 +134,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
             post.CoverImageAlt,
             post.CoverVideoUrl,
             post.PublishedAtUtc ?? post.CreatedAtUtc,
+            post.UpdatedAtUtc ?? post.PublishedAtUtc ?? post.CreatedAtUtc,
             ResolveExcerpt(post.Excerpt, post.Body),
             post.AuthorDisplayName,
             post.MetaTitle,
