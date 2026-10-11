@@ -410,7 +410,8 @@ body.site > main {
   margin: 0 0 1.15rem;
 }
 
-.blog-prose figure.table {
+.blog-prose figure.table,
+.service-prose figure.table {
   display: block;
   width: 100%;
   max-width: 100%;
@@ -423,12 +424,14 @@ body.site > main {
   text-align: start;
 }
 
-.blog-prose figure.table table {
+.blog-prose figure.table table,
+.service-prose figure.table table {
   margin: 0;
   border: 0;
 }
 
-.blog-prose table {
+.blog-prose table,
+.service-prose table {
   width: 100%;
   min-width: 28rem;
   max-width: 100%;
@@ -437,13 +440,16 @@ body.site > main {
   background: var(--white, #fff);
 }
 
-.blog-prose > table {
+.blog-prose > table,
+.service-prose > table {
   border: 1px solid rgba(9, 112, 125, 0.2);
   border-radius: var(--radius-lg, 1rem);
 }
 
 .blog-prose th,
-.blog-prose td {
+.blog-prose td,
+.service-prose th,
+.service-prose td {
   padding: 0.9rem 1.1rem;
   text-align: start;
   vertical-align: top;
@@ -456,11 +462,14 @@ body.site > main {
 }
 
 .blog-prose th:last-child,
-.blog-prose td:last-child {
+.blog-prose td:last-child,
+.service-prose th:last-child,
+.service-prose td:last-child {
   border-inline-end: 0;
 }
 
-.blog-prose thead th {
+.blog-prose thead th,
+.service-prose thead th {
   background: var(--primary-soft, #e6f3f5);
   color: var(--primary-dark, #065a64);
   font-size: 0.84rem;
@@ -469,22 +478,27 @@ body.site > main {
   border-bottom: 2px solid rgba(9, 112, 125, 0.28);
 }
 
-.blog-prose tbody th {
+.blog-prose tbody th,
+.service-prose tbody th {
   color: var(--secondary, #1a3a3f);
   font-weight: 700;
   background: rgba(230, 243, 245, 0.45);
 }
 
-.blog-prose tbody tr:nth-child(even) td {
+.blog-prose tbody tr:nth-child(even) td,
+.service-prose tbody tr:nth-child(even) td {
   background: rgba(247, 250, 250, 0.85);
 }
 
-.blog-prose tbody tr:nth-child(even) th {
+.blog-prose tbody tr:nth-child(even) th,
+.service-prose tbody tr:nth-child(even) th {
   background: rgba(230, 243, 245, 0.65);
 }
 
 .blog-prose tbody tr:last-child th,
-.blog-prose tbody tr:last-child td {
+.blog-prose tbody tr:last-child td,
+.service-prose tbody tr:last-child th,
+.service-prose tbody tr:last-child td {
   border-bottom: 0;
 }
 
