@@ -74,6 +74,36 @@ public static class CanonicalUrlBuilder
         return Build(value, scheme, host);
     }
 
+    /// <summary>
+    /// Public site path: lowercase, trailing slash (except root), legacy path rewrites.
+    /// </summary>
+    public static string NormalizePublicPath(string? path) =>
+        NormalizePath(path ?? "/", applyLegacyRewrites: true);
+
+    /// <summary>
+    /// Relative public path for sitemaps: prefers configured canonical path, else fallback.
+    /// Absolute canonicals contribute only their path (same-site listing).
+    /// </summary>
+    public static string ContentPath(string? configuredCanonical, string fallbackRelativePath)
+    {
+        if (string.IsNullOrWhiteSpace(configuredCanonical))
+            return NormalizePublicPath(fallbackRelativePath);
+
+        var value = configuredCanonical.Trim();
+        if (Uri.TryCreate(value, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+        {
+            return NormalizePublicPath(uri.AbsolutePath);
+        }
+
+        var relative = value.StartsWith('/') ? value : "/" + value;
+        var q = relative.IndexOf('?', StringComparison.Ordinal);
+        if (q >= 0)
+            relative = relative[..q];
+
+        return NormalizePublicPath(relative);
+    }
+
     private static string NormalizePath(string path, bool applyLegacyRewrites)
     {
         if (string.IsNullOrEmpty(path))

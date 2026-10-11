@@ -28,6 +28,7 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
             {
                 p.Slug,
                 p.Title,
+                p.CanonicalUrl,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -44,7 +45,7 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
         foreach (var post in posts)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/{post.Slug}",
+                CanonicalUrlBuilder.ContentPath(post.CanonicalUrl, $"/{post.Slug}"),
                 post.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7,

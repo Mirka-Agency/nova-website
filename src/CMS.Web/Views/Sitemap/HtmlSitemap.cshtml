@@ -1,7 +1,10 @@
 @model IReadOnlyList<CMS.Application.Seo.HtmlSitemapSection>
+@using CMS.Application.Seo
 @{
     ViewData["Title"] = "نقشه سایت";
     Layout = "_Layout";
+    var scheme = Context.Request.Scheme;
+    var host = Context.Request.Host.Value ?? "localhost";
 }
 <section class="page-hero" aria-labelledby="page-hero-title">
   <div class="container page-hero__inner">
@@ -34,16 +37,11 @@
         <ul class="html-sitemap__pages" id="@panelId">
           @foreach (var entry in group.Entries)
           {
-            var href = entry.RelativePath.StartsWith('/') ? entry.RelativePath : "/" + entry.RelativePath;
-            if (href.Length > 1 && !href.EndsWith('/'))
-              href += "/";
+            var href = CanonicalUrlBuilder.Build(entry.RelativePath, scheme, host);
             var label = string.IsNullOrWhiteSpace(entry.Title) ? href : entry.Title;
             <li>
               <a href="@href">@label</a>
-              @if (!string.IsNullOrWhiteSpace(entry.Title))
-              {
-                <span class="html-sitemap__path" dir="ltr">@href</span>
-              }
+              <span class="html-sitemap__path" dir="ltr">@href</span>
             </li>
           }
         </ul>

@@ -95,4 +95,21 @@ public class CanonicalUrlBuilderTests
         CanonicalUrlBuilder.Build("/", "https", "example.com")
             .Should().Be("https://example.com/");
     }
+
+    [Fact]
+    public void ContentPath_PrefersCanonical_AndNormalizes()
+    {
+        CanonicalUrlBuilder.ContentPath("https://old.example/News/Foo", "/education-articles/fallback")
+            .Should().Be("/education-articles/foo/");
+
+        CanonicalUrlBuilder.ContentPath(null, "/Blog/My-Post")
+            .Should().Be("/blog/my-post/");
+    }
+
+    [Fact]
+    public void NormalizePublicPath_AppliesLegacyRewrites()
+    {
+        CanonicalUrlBuilder.NormalizePublicPath("/Teams/Dr-X")
+            .Should().Be("/doctors/dr-x/");
+    }
 }

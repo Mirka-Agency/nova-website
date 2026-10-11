@@ -85,10 +85,16 @@ public sealed class SitemapService : ISitemapService
         {
             var segment = NormalizeSegment(provider.Segment);
             var entries = await provider.GetEntriesAsync(cancellationToken);
+            var normalized = entries
+                .Where(e => !string.IsNullOrWhiteSpace(e.RelativePath))
+                .Select(e => e with { RelativePath = CanonicalUrlBuilder.NormalizePublicPath(e.RelativePath) })
+                .GroupBy(e => e.RelativePath, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .ToList();
             sections.Add(new HtmlSitemapSection(
                 segment,
                 SectionTitle(segment),
-                entries));
+                normalized));
         }
 
         sections.Sort((a, b) =>

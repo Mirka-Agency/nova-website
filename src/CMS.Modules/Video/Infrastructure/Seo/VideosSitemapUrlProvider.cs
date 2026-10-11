@@ -28,6 +28,7 @@ public sealed class VideosSitemapUrlProvider : ISitemapUrlProvider
             {
                 p.Slug,
                 p.Title,
+                p.CanonicalUrl,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -44,7 +45,7 @@ public sealed class VideosSitemapUrlProvider : ISitemapUrlProvider
         foreach (var item in items)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/videos/{item.Slug}",
+                CanonicalUrlBuilder.ContentPath(item.CanonicalUrl, $"/videos/{item.Slug}"),
                 item.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7,

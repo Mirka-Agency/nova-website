@@ -29,6 +29,7 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
                 a.Slug,
                 a.Title,
                 a.Kind,
+                a.CanonicalUrl,
                 LastMod = a.UpdatedAtUtc ?? a.PublishedAtUtc ?? a.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -55,11 +56,11 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
 
         foreach (var article in articles)
         {
-            var path = article.Kind == ArticleKind.Event
+            var fallback = article.Kind == ArticleKind.Event
                 ? $"/event/{article.Slug}"
                 : $"/education-articles/{article.Slug}";
             entries.Add(new SitemapUrlEntry(
-                path,
+                CanonicalUrlBuilder.ContentPath(article.CanonicalUrl, fallback),
                 article.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7,

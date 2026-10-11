@@ -28,6 +28,7 @@ public sealed class TeamsSitemapUrlProvider : ISitemapUrlProvider
             {
                 p.Slug,
                 p.Title,
+                p.CanonicalUrl,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -44,7 +45,7 @@ public sealed class TeamsSitemapUrlProvider : ISitemapUrlProvider
         foreach (var item in items)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/doctors/{item.Slug}",
+                CanonicalUrlBuilder.ContentPath(item.CanonicalUrl, $"/doctors/{item.Slug}"),
                 item.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7,

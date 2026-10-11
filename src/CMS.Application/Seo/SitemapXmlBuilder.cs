@@ -22,7 +22,7 @@ public static class SitemapXmlBuilder
             if (string.IsNullOrWhiteSpace(entry.RelativePath))
                 continue;
 
-            var path = EnsureTrailingSlashPath(entry.RelativePath.Trim());
+            var path = CanonicalUrlBuilder.NormalizePublicPath(entry.RelativePath.Trim());
             var loc = root + path;
             if (!seen.Add(loc))
                 continue;
@@ -73,23 +73,6 @@ public static class SitemapXmlBuilder
         SitemapChangeFrequency.Never => "never",
         _ => "weekly"
     };
-
-    private static string EnsureTrailingSlashPath(string path)
-    {
-        if (!path.StartsWith('/'))
-            path = "/" + path;
-
-        if (path.Length > 1 && !path.EndsWith('/'))
-        {
-            var query = path.IndexOf('?', StringComparison.Ordinal);
-            if (query < 0)
-                path += "/";
-            else if (query > 0 && path[query - 1] != '/')
-                path = path[..query] + "/" + path[query..];
-        }
-
-        return path;
-    }
 
     private static string XmlEscape(string value) =>
         WebUtility.HtmlEncode(value);

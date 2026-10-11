@@ -39,6 +39,7 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
             {
                 p.Slug,
                 p.Title,
+                p.CanonicalUrl,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -68,7 +69,7 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
         foreach (var product in products)
         {
             entries.Add(new SitemapUrlEntry(
-                $"/shop/{product.Slug}",
+                CanonicalUrlBuilder.ContentPath(product.CanonicalUrl, $"/shop/{product.Slug}"),
                 product.LastMod,
                 SitemapChangeFrequency.Weekly,
                 0.7,
