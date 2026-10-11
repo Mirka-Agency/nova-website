@@ -247,14 +247,6 @@
   </script>
 }
 
-<div class="container blog-comments">
-  @await Component.InvokeAsync("Comments", new {
-      targetType = 0,
-      targetId = Model.Id,
-      targetTitle = Model.Title
-  })
-</div>
-
 @if (related.Count > 0)
 {
   <section class="blog-related" aria-labelledby="blog-related-heading">
@@ -352,3 +344,11 @@
     </div>
   </div>
 </section>
+
+<div class="container blog-comments">
+  @await Component.InvokeAsync("Comments", new {
+      targetType = 0,
+      targetId = Model.Id,
+      targetTitle = Model.Title
+  })
+</div>
