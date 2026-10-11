@@ -49,13 +49,13 @@
           <a class="blog-card__link" asp-area="" asp-route="blog-post" asp-route-slug="@item.Slug">
             <span class="blog-card__media">
               <img
+                lcp="@(index == 0)"
                 src="@cover"
                 width="800"
                 height="500"
                 alt="@(item.CoverImageAlt ?? item.Title)"
                 loading="@(index == 0 ? "eager" : "lazy")"
-                decoding="async"
-              >
+                decoding="async" />
             </span>
             <span class="blog-card__body">
               <span class="blog-card__meta">
@@ -80,13 +80,12 @@ else
             <a class="blog-card__link" asp-controller="Blog" asp-action="Index">
               <span class="blog-card__media">
                 <img
+                  lcp
                   src="~/template/assets/images/blog/thyroid-risks.webp"
                   width="800"
                   height="500"
                   alt=""
-                  loading="eager"
-                  decoding="async"
-                >
+                  decoding="async" />
               </span>
               <span class="blog-card__body">
                 <span class="blog-card__meta">

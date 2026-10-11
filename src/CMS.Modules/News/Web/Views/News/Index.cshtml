@@ -107,13 +107,13 @@ else
         >
           <span class="article-card__media">
             <img
+              lcp="@(index == 0)"
               src="@cover"
               width="480"
               height="640"
               alt="@(item.CoverImageAlt ?? item.Title)"
               loading="@(index == 0 ? "eager" : "lazy")"
-              decoding="async"
-            >
+              decoding="async" />
           </span>
           <span class="article-card__body">
             <span class="article-card__meta">
@@ -151,13 +151,12 @@ else
           >
             <span class="article-card__media">
               <img
+                lcp
                 src="~/template/assets/images/articles/scientific-reports.jpg"
                 width="480"
                 height="640"
                 alt="Scientific Reports"
-                loading="eager"
-                decoding="async"
-              >
+                decoding="async" />
             </span>
             <span class="article-card__body">
               <span class="article-card__meta">

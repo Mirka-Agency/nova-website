@@ -21,6 +21,10 @@
         && !string.IsNullOrWhiteSpace(Model.VideoUrl)
         && !VideoEmbedUrl.IsHostedPage(Model.VideoUrl);
     var hasPlayer = !string.IsNullOrWhiteSpace(embedUrl) || hasFileVideo;
+
+    // Embed iframe is lazy; preload the cover so LCP discovery is not deferred to JS/iframe.
+    if (!string.IsNullOrWhiteSpace(embedUrl))
+        CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
 }
 
 <section class="page-hero page-hero--video-single" aria-labelledby="page-hero-title">
@@ -53,7 +57,7 @@
   <div class="container">
     <div class="video-detail__layout">
       <div class="video-detail__main">
-        <div class="video-player reveal">
+        <div class="video-player">
           @if (!string.IsNullOrWhiteSpace(embedUrl))
           {
             <iframe
@@ -67,12 +71,12 @@
           }
           else if (hasFileVideo)
           {
-            <video controls playsinline preload="metadata" poster="@cover" src="@Model.VideoUrl" title="@Model.Title"></video>
+            <video lcp-poster poster="@cover" controls playsinline preload="metadata" src="@Model.VideoUrl" title="@Model.Title"></video>
           }
           else if (!string.IsNullOrWhiteSpace(Model.VideoUrl) && VideoEmbedUrl.IsHostedPage(Model.VideoUrl))
           {
             <div class="video-player__fallback">
-              <img src="@cover" width="1280" height="720" alt="@coverAlt" loading="eager">
+              <img lcp src="@cover" width="1280" height="720" alt="@coverAlt" />
               <p class="video-player__fallback-text">
                 لینک ویدیو قابل پخش نیست.
                 <a href="@Model.VideoUrl" target="_blank" rel="noopener noreferrer">مشاهده در منبع</a>
@@ -81,7 +85,7 @@
           }
           else
           {
-            <img src="@cover" width="1280" height="720" alt="@coverAlt" loading="eager">
+            <img lcp src="@cover" width="1280" height="720" alt="@coverAlt" />
           }
         </div>
 

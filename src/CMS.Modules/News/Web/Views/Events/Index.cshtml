@@ -69,13 +69,13 @@
           >
             <span class="event-card__media">
               <img
+                lcp="@(index == 0)"
                 src="@cover"
                 width="1024"
                 height="576"
                 alt="@(item.CoverImageAlt ?? item.Title)"
                 loading="@(index == 0 ? "eager" : "lazy")"
-                decoding="async"
-              >
+                decoding="async" />
             </span>
             <span class="event-card__body">
               <span class="event-card__meta">
@@ -98,13 +98,12 @@
         <a class="event-card event-card--featured reveal" asp-controller="Events" asp-action="Index">
           <span class="event-card__media">
             <img
+              lcp
               src="~/template/assets/images/events/adrenal-workshop.webp"
               width="1024"
               height="576"
               alt="کارگاه تخصصی بررسی توده‌های آدرنال"
-              loading="eager"
-              decoding="async"
-            >
+              decoding="async" />
           </span>
           <span class="event-card__body">
             <span class="event-card__meta">

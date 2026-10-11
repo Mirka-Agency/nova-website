@@ -129,21 +129,19 @@
       <p class="page-hero__lead reveal">@lead</p>
     </div>
 
-    <figure class="blog-single-hero__media reveal">
+    <figure class="blog-single-hero__media">
       @if (!string.IsNullOrWhiteSpace(Model.CoverVideoUrl))
       {
-        <video controls playsinline preload="metadata" poster="@cover" src="@Model.CoverVideoUrl" title="@Model.Title"></video>
+        <video lcp-poster poster="@cover" controls playsinline preload="metadata" src="@Model.CoverVideoUrl" title="@Model.Title"></video>
       }
       else
       {
         <img
+          lcp
           src="@cover"
           width="960"
           height="640"
-          alt="@(Model.CoverImageAlt ?? Model.Title)"
-          loading="eager"
-          decoding="async"
-        >
+          alt="@(Model.CoverImageAlt ?? Model.Title)" />
       }
     </figure>
   </div>

@@ -35,6 +35,9 @@
     var favicon = string.IsNullOrWhiteSpace(settings.FaviconUrl)
         ? Url.Content("~/template/assets/images/common/favicon.png")
         : settings.FaviconUrl;
+    var lcpImageUrl = LcpImageHints.GetUrl(ViewData);
+    var lcpImageSrcSet = LcpImageHints.GetSrcSet(ViewData);
+    var lcpImageSizes = LcpImageHints.GetSizes(ViewData);
 
     static string? FirstNonEmpty(params string?[] values)
     {
@@ -113,6 +116,18 @@
     }
     <link rel="icon" href="@favicon" type="image/png" />
     <link rel="apple-touch-icon" href="@favicon" />
+    @if (!string.IsNullOrWhiteSpace(lcpImageUrl))
+    {
+        @* Early discovery for the page LCP image (single candidate only). *@
+        if (!string.IsNullOrWhiteSpace(lcpImageSrcSet))
+        {
+            <link rel="preload" as="image" href="@lcpImageUrl" imagesrcset="@lcpImageSrcSet" imagesizes="@(lcpImageSizes ?? "100vw")" fetchpriority="high" />
+        }
+        else
+        {
+            <link rel="preload" as="image" href="@lcpImageUrl" fetchpriority="high" />
+        }
+    }
     @if (!string.IsNullOrWhiteSpace(schemaJson))
     {
         <script type="application/ld+json">@Html.Raw(schemaJson)</script>

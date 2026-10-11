@@ -75,7 +75,12 @@
             <div class="shop-detail-main-image">
                 @if (images.Count > 0)
                 {
-                    <img id="shop-main-image" src="@images[0].Url" alt="@images[0].Alt" />
+                    <img id="shop-main-image"
+                         lcp
+                         src="@images[0].Url"
+                         width="800"
+                         height="800"
+                         alt="@images[0].Alt" />
                 }
                 else
                 {
@@ -93,7 +98,7 @@
                                 data-full="@img.Url"
                                 data-alt="@img.Alt"
                                 aria-label="@img.Alt">
-                            <img src="@img.Url" alt="" />
+                            <img src="@img.Url" width="68" height="68" alt="" loading="lazy" decoding="async" />
                         </button>
                     }
                 </div>

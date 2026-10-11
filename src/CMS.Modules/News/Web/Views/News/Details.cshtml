@@ -93,15 +93,13 @@
       }
     </div>
 
-    <figure class="article-single-hero__media reveal">
+    <figure class="article-single-hero__media">
       <img
+        lcp
         src="@cover"
         width="800"
         height="500"
-        alt="@(Model.CoverImageAlt ?? Model.Title)"
-        loading="eager"
-        decoding="async"
-      >
+        alt="@(Model.CoverImageAlt ?? Model.Title)" />
     </figure>
   </div>
 </section>
@@ -149,7 +147,7 @@
                       width="960"
                       height="640"
                       alt="@image.Alt"
-                      loading="@(gIndex == 0 ? "eager" : "lazy")"
+                      loading="lazy"
                       decoding="async"
                     >
                     <span class="event-gallery__zoom" aria-hidden="true">
