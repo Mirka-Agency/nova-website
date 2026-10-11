@@ -276,13 +276,14 @@
     var externalProvider = Model.AntiSpamProvider?.Trim().ToLowerInvariant();
     var isExternal = Model.AntiSpamEnabled && externalProvider is "turnstile" or "recaptcha" or "hcaptcha";
     var siteKey = Model.AntiSpamSiteKey?.Trim();
+    var antiSpamTokenId = "AntiSpamToken_" + (Model.Key ?? Model.Slug ?? "form");
 }
 @if (isExternal)
 {
     <div class="public-form-field"
          data-antispam-provider="@externalProvider"
          data-antispam-sitekey="@siteKey">
-        <input type="hidden" name="AntiSpamToken" id="AntiSpamToken" value="" />
+        <input type="hidden" name="AntiSpamToken" id="@antiSpamTokenId" value="" />
         @if (string.IsNullOrWhiteSpace(siteKey))
         {
             <p class="public-form-field-error">@Localizer["AntiSpamMissingSiteKey"]</p>
@@ -302,8 +303,7 @@
                  data-recaptcha-sitekey="@siteKey"
                  data-recaptcha-action="form"
                  data-recaptcha-token="AntiSpamToken"></div>
-            <script src="https://www.google.com/recaptcha/api.js?render=@siteKey" async defer></script>
-            <script src="~/js/recaptcha-v3.js" asp-append-version="true" defer></script>
+            <partial name="_RecaptchaV3Loader" />
         }
         else if (externalProvider == "hcaptcha")
         {
@@ -318,11 +318,11 @@
     </div>
     <script>
         window.formsAntiSpamOnToken = function (token) {
-            var el = document.getElementById('AntiSpamToken');
+            var el = document.getElementById('@antiSpamTokenId');
             if (el) el.value = token || '';
         };
         window.formsAntiSpamOnExpire = function () {
-            var el = document.getElementById('AntiSpamToken');
+            var el = document.getElementById('@antiSpamTokenId');
             if (el) el.value = '';
         };
     </script>

@@ -1,0 +1,12 @@
+@*
+  Shared reCAPTCHA v3 binder/loader. Renders at most once per response.
+  Google api.js is injected lazily by ~/js/recaptcha-v3.js — do not add api.js here.
+*@
+@{
+    const string itemKey = "Nova.RecaptchaV3.Loader";
+    if (Context.Items[itemKey] is null)
+    {
+        Context.Items[itemKey] = true;
+        <script src="~/js/recaptcha-v3.js" asp-append-version="true" defer></script>
+    }
+}

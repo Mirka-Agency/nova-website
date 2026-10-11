@@ -871,6 +871,8 @@
       if (formHost) formHost.hidden = false;
       if (success) success.hidden = true;
 
+      modal.dispatchEvent(new CustomEvent("cms-booking:open", { bubbles: true }));
+
       window.setTimeout(function () {
         var firstInput =
           modal.querySelector("#booking-name") ||
