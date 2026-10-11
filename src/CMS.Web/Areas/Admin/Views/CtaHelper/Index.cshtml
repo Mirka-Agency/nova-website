@@ -43,12 +43,46 @@
 
     <div class="cta-helper__edit-banner" data-cta-edit-banner hidden>
         <strong>در حال ویرایش CTA انتخاب‌شده</strong>
-        <span>می‌توانید همین CTA را ویرایش کنید یا از سلکتور نوع دیگری بگذارید و جایگزین کنید.</span>
+        <span>همهٔ انواع CTA را ببینید، یکی را انتخاب کنید و بعد ویرایش یا جایگزین کنید.</span>
     </div>
 
     <div class="cta-helper__picker" data-cta-picker>
         <label class="cta-helper__picker-label" for="cta-helper-select">@Localizer["CtaHelperJumpNav"]</label>
-        <select id="cta-helper-select" class="cta-helper__select" data-cta-select>
+        <div class="cta-helper__grid" data-cta-grid role="listbox" aria-label="@Localizer["CtaHelperJumpNav"]">
+            <button type="button" class="cta-helper__chip is-active" data-cta-pick="cta-appointment" role="option" aria-selected="true">
+                <span class="cta-helper__chip-num">۱</span>
+                <span class="cta-helper__chip-text">رزرو نوبت</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-consultation" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۲</span>
+                <span class="cta-helper__chip-text">مشاوره</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-doctor" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۳</span>
+                <span class="cta-helper__chip-text">معرفی پزشک</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-surgery" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۴</span>
+                <span class="cta-helper__chip-text">جراحی</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-article-end" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۵</span>
+                <span class="cta-helper__chip-text">انتهای مقاله</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-contact" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۶</span>
+                <span class="cta-helper__chip-text">تماس سریع</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-inline" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۷</span>
+                <span class="cta-helper__chip-text">میانه مقاله</span>
+            </button>
+            <button type="button" class="cta-helper__chip" data-cta-pick="cta-highlight" role="option" aria-selected="false">
+                <span class="cta-helper__chip-num">۸</span>
+                <span class="cta-helper__chip-text">هایلایت</span>
+            </button>
+        </div>
+        <select id="cta-helper-select" class="cta-helper__select cta-helper__select--sr" data-cta-select aria-hidden="true" tabindex="-1">
             <option value="cta-appointment">۱) Appointment CTA — رزرو نوبت</option>
             <option value="cta-consultation">۲) Consultation CTA — مشاوره</option>
             <option value="cta-doctor">۳) Doctor CTA — معرفی پزشک</option>

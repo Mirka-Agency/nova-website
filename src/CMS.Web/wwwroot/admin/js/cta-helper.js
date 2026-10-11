@@ -405,8 +405,6 @@
     }
 
     var data = decodeConfig(el.getAttribute("data-nova-cta-config")) || {};
-    var selectEl = root.querySelector("[data-cta-select]");
-    if (selectEl) selectEl.value = sectionId;
     showModule(sectionId, { skipScroll: true });
 
     var section = document.getElementById(sectionId);
@@ -422,6 +420,11 @@
 
     render(section);
     setEditMode(true);
+
+    var picker = root.querySelector("[data-cta-picker]");
+    if (picker) {
+      picker.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     return true;
   }
 
@@ -471,6 +474,19 @@
     return false;
   }
 
+  function syncPickerUi(moduleId) {
+    var selectEl = root.querySelector("[data-cta-select]");
+    if (selectEl && selectEl.value !== moduleId) {
+      selectEl.value = moduleId;
+    }
+
+    root.querySelectorAll("[data-cta-pick]").forEach(function (chip) {
+      var active = chip.getAttribute("data-cta-pick") === moduleId;
+      chip.classList.toggle("is-active", active);
+      chip.setAttribute("aria-selected", active ? "true" : "false");
+    });
+  }
+
   function showModule(moduleId, options) {
     var opts = options || {};
     var sections = root.querySelectorAll("[data-module]");
@@ -482,6 +498,8 @@
       section.classList.toggle("is-active", isMatch);
       if (isMatch) active = section;
     });
+
+    syncPickerUi(moduleId);
 
     if (active) {
       render(active);
@@ -501,6 +519,14 @@
       showModule(select.value);
     });
   }
+
+  root.querySelectorAll("[data-cta-pick]").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      var moduleId = chip.getAttribute("data-cta-pick");
+      if (!moduleId) return;
+      showModule(moduleId);
+    });
+  });
 
   root.querySelectorAll("[data-module]").forEach(function (section) {
     render(section);

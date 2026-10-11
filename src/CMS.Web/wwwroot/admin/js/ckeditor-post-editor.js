@@ -58,6 +58,7 @@
     PageBreak,
     PasteFromOffice,
     UpcastWriter,
+    ClickObserver,
   } = CKEDITOR;
 
   const ScrollHighlightPlugin =
@@ -285,9 +286,8 @@
         return view;
       });
 
-      // Double-click a CTA HTML embed to edit it.
-      editor.editing.view.document.on("dblclick", function (evt, data) {
-        let viewElement = data.target;
+      const findCtaModelFromViewTarget = function (viewTarget) {
+        let viewElement = viewTarget;
         while (viewElement) {
           const modelElement = editor.editing.mapper.toModelElement(viewElement);
           if (
@@ -295,17 +295,43 @@
             modelElement.is("element", "rawHtml") &&
             isNovaCtaHtml(modelElement.getAttribute("value") || "")
           ) {
-            editor.model.change(function (writer) {
-              writer.setSelection(modelElement, "on");
-            });
-            data.preventDefault();
-            evt.stop();
-            openHelper();
-            return;
+            return modelElement;
           }
           viewElement = viewElement.parent;
         }
-      });
+        return null;
+      };
+
+      const openCtaFromViewEvent = function (evt, data) {
+        const domTarget =
+          data.domTarget || (data.domEvent && data.domEvent.target);
+        if (
+          domTarget &&
+          typeof domTarget.closest === "function" &&
+          domTarget.closest(
+            "textarea, input, select, option, button, .ck-button"
+          )
+        ) {
+          return;
+        }
+
+        const modelElement = findCtaModelFromViewTarget(data.target);
+        if (!modelElement) return;
+
+        editor.model.change(function (writer) {
+          writer.setSelection(modelElement, "on");
+        });
+        data.preventDefault();
+        evt.stop();
+        openHelper();
+      };
+
+      // Click / double-click a CTA HTML embed to reopen the helper for select + edit.
+      if (typeof ClickObserver === "function") {
+        editor.editing.view.addObserver(ClickObserver);
+        editor.editing.view.document.on("click", openCtaFromViewEvent);
+      }
+      editor.editing.view.document.on("dblclick", openCtaFromViewEvent);
     }
   }
 
