@@ -27,6 +27,7 @@ public sealed class ServicesSitemapUrlProvider : ISitemapUrlProvider
             .Select(p => new
             {
                 p.Slug,
+                p.Title,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -37,7 +38,7 @@ public sealed class ServicesSitemapUrlProvider : ISitemapUrlProvider
 
         var entries = new List<SitemapUrlEntry>
         {
-            new("/services", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+            new("/services", listingLastMod, SitemapChangeFrequency.Daily, 0.8, "آرشیو خدمات")
         };
 
         foreach (var item in items)
@@ -46,7 +47,8 @@ public sealed class ServicesSitemapUrlProvider : ISitemapUrlProvider
                 $"/services/{item.Slug}",
                 item.LastMod,
                 SitemapChangeFrequency.Weekly,
-                0.7));
+                0.7,
+                item.Title));
         }
 
         return entries;

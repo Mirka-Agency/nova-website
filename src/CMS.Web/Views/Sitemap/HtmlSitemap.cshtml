@@ -1,0 +1,53 @@
+@model IReadOnlyList<CMS.Application.Seo.HtmlSitemapSection>
+@{
+    ViewData["Title"] = "نقشه سایت";
+    Layout = "_Layout";
+}
+<section class="page-hero" aria-labelledby="page-hero-title">
+  <div class="container page-hero__inner">
+    <nav class="page-breadcrumb reveal" aria-label="مسیر صفحه">
+      <a asp-controller="Home" asp-action="Index">صفحه اصلی</a>
+      <span class="page-breadcrumb__sep" aria-hidden="true">/</span>
+      <span aria-current="page">نقشه سایت</span>
+    </nav>
+    <h1 class="page-hero__title reveal" id="page-hero-title">نقشه سایت</h1>
+    <p class="page-hero__lead reveal">فهرست بخش‌ها و صفحات منتشرشده — هر بخش را باز کنید تا صفحات همان بخش را ببینید.</p>
+  </div>
+</section>
+
+<section class="container html-sitemap" aria-label="نقشه سایت">
+  <div class="html-sitemap__list">
+    @foreach (var group in Model)
+    {
+      var panelId = $"sitemap-{group.Segment}";
+      var count = group.Entries.Count;
+      <details class="html-sitemap__section reveal">
+        <summary class="html-sitemap__toggle">
+          <span class="html-sitemap__section-title">@group.Title</span>
+          <span class="html-sitemap__meta">
+            <span class="html-sitemap__count">@count.ToString("N0") صفحه</span>
+            <span class="html-sitemap__caret" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </span>
+        </summary>
+        <ul class="html-sitemap__pages" id="@panelId">
+          @foreach (var entry in group.Entries)
+          {
+            var href = entry.RelativePath.StartsWith('/') ? entry.RelativePath : "/" + entry.RelativePath;
+            if (href.Length > 1 && !href.EndsWith('/'))
+              href += "/";
+            var label = string.IsNullOrWhiteSpace(entry.Title) ? href : entry.Title;
+            <li>
+              <a href="@href">@label</a>
+              @if (!string.IsNullOrWhiteSpace(entry.Title))
+              {
+                <span class="html-sitemap__path" dir="ltr">@href</span>
+              }
+            </li>
+          }
+        </ul>
+      </details>
+    }
+  </div>
+</section>

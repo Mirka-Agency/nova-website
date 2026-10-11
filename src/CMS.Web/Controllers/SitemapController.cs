@@ -19,6 +19,17 @@ public sealed class SitemapController : Controller
         _robots = robots;
     }
 
+    /// <summary>Human-readable HTML sitemap with collapsible sections.</summary>
+    [HttpGet("/sitemap")]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, NoStore = false)]
+    public async Task<IActionResult> Html(CancellationToken cancellationToken)
+    {
+        ViewData["Title"] = "نقشه سایت";
+        ViewData["MetaDescription"] = "فهرست صفحات و بخش‌های وب‌سایت برای دسترسی سریع.";
+        var sections = await _sitemap.GetHtmlSectionsAsync(cancellationToken);
+        return View("HtmlSitemap", sections);
+    }
+
     [HttpGet("/sitemap.xml")]
     [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, NoStore = false)]
     public async Task<IActionResult> SitemapIndex(CancellationToken cancellationToken)

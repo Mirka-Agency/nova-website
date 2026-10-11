@@ -27,6 +27,7 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
             .Select(a => new
             {
                 a.Slug,
+                a.Title,
                 a.Kind,
                 LastMod = a.UpdatedAtUtc ?? a.PublishedAtUtc ?? a.CreatedAtUtc
             })
@@ -42,12 +43,14 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
                 "/education-articles",
                 educationArticles.Count > 0 ? educationArticles.Max(a => a.LastMod) : today,
                 SitemapChangeFrequency.Daily,
-                0.8),
+                0.8,
+                "مقالات تخصصی"),
             new(
                 "/event",
                 events.Count > 0 ? events.Max(a => a.LastMod) : today,
                 SitemapChangeFrequency.Daily,
-                0.8)
+                0.8,
+                "رویدادها")
         };
 
         foreach (var article in articles)
@@ -59,7 +62,8 @@ public sealed class NewsSitemapUrlProvider : ISitemapUrlProvider
                 path,
                 article.LastMod,
                 SitemapChangeFrequency.Weekly,
-                0.7));
+                0.7,
+                article.Title));
         }
 
         return entries;

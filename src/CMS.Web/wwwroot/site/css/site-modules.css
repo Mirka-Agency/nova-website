@@ -1116,3 +1116,97 @@ main > .error-page {
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* —— HTML sitemap (collapsible sections) —— */
+.html-sitemap {
+  padding-block: 1.5rem 4rem;
+}
+
+.html-sitemap__list {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 48rem;
+}
+
+.html-sitemap__section {
+  border: 1px solid var(--site-border, #d7e0e6);
+  border-radius: var(--site-radius, 0.5rem);
+  background: var(--site-surface, #fff);
+  overflow: hidden;
+}
+
+.html-sitemap__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.15rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  color: var(--site-text, #12202a);
+}
+
+.html-sitemap__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.html-sitemap__section-title {
+  font-size: 1.05rem;
+}
+
+.html-sitemap__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 0 0 auto;
+  color: var(--site-muted, #5a6b76);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.html-sitemap__caret {
+  display: inline-flex;
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.html-sitemap__caret svg {
+  width: 100%;
+  height: 100%;
+}
+
+.html-sitemap__section[open] .html-sitemap__caret {
+  transform: rotate(180deg);
+}
+
+.html-sitemap__pages {
+  margin: 0;
+  padding: 0 1.15rem 1rem;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+  border-block-start: 1px solid var(--site-border, #d7e0e6);
+  padding-block-start: 0.85rem;
+}
+
+.html-sitemap__pages li {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.html-sitemap__pages a {
+  color: var(--site-accent, #0d6b6d);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.html-sitemap__pages a:hover {
+  text-decoration: underline;
+}
+
+.html-sitemap__path {
+  font-size: 0.8rem;
+  color: var(--site-muted, #5a6b76);
+}

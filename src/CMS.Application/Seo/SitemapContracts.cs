@@ -18,7 +18,14 @@ public sealed record SitemapUrlEntry(
     string RelativePath,
     DateTime? LastModifiedUtc = null,
     SitemapChangeFrequency? ChangeFrequency = null,
-    double? Priority = null);
+    double? Priority = null,
+    string? Title = null);
+
+/// <summary>One section (module) for the human-readable HTML sitemap.</summary>
+public sealed record HtmlSitemapSection(
+    string Segment,
+    string Title,
+    IReadOnlyList<SitemapUrlEntry> Entries);
 
 public interface ISitemapUrlProvider
 {
@@ -46,4 +53,9 @@ public interface ISitemapService
         string segment,
         string baseUrl,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sections and URLs for the public HTML sitemap page (collapsible by section).
+    /// </summary>
+    Task<IReadOnlyList<HtmlSitemapSection>> GetHtmlSectionsAsync(CancellationToken cancellationToken = default);
 }

@@ -77,6 +77,42 @@ public sealed class SitemapService : ISitemapService
         return xml;
     }
 
+    public async Task<IReadOnlyList<HtmlSitemapSection>> GetHtmlSectionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var sections = new List<HtmlSitemapSection>();
+        foreach (var provider in await GetActiveProvidersAsync(cancellationToken))
+        {
+            var segment = NormalizeSegment(provider.Segment);
+            var entries = await provider.GetEntriesAsync(cancellationToken);
+            sections.Add(new HtmlSitemapSection(
+                segment,
+                SectionTitle(segment),
+                entries));
+        }
+
+        sections.Sort((a, b) =>
+        {
+            if (a.Segment == "pages") return -1;
+            if (b.Segment == "pages") return 1;
+            return string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase);
+        });
+
+        return sections;
+    }
+
+    private static string SectionTitle(string segment) => segment switch
+    {
+        "pages" => "صفحات اصلی",
+        "blog" => "وبلاگ",
+        "news" => "مقالات و رویدادها",
+        "services" => "خدمات",
+        "videos" => "ویدیوها",
+        "teams" => "متخصصان",
+        "shop" => "فروشگاه",
+        _ => segment
+    };
+
     private async Task<IReadOnlyList<ISitemapUrlProvider>> GetActiveProvidersAsync(CancellationToken cancellationToken)
     {
         var active = new List<ISitemapUrlProvider>();
@@ -127,10 +163,10 @@ public sealed class StaticPagesSitemapUrlProvider : ISitemapUrlProvider
         var today = DateTime.UtcNow.Date;
         IReadOnlyList<SitemapUrlEntry> entries =
         [
-            new("/", today, SitemapChangeFrequency.Daily, 1.0),
-            new("/about-us", today, SitemapChangeFrequency.Monthly, 0.8),
-            new("/contact-us", today, SitemapChangeFrequency.Monthly, 0.8),
-            new("/privacy", today, SitemapChangeFrequency.Yearly, 0.3)
+            new("/", today, SitemapChangeFrequency.Daily, 1.0, "صفحه اصلی"),
+            new("/about-us", today, SitemapChangeFrequency.Monthly, 0.8, "درباره ما"),
+            new("/contact-us", today, SitemapChangeFrequency.Monthly, 0.8, "تماس با ما"),
+            new("/privacy", today, SitemapChangeFrequency.Yearly, 0.3, "حریم خصوصی")
         ];
         return Task.FromResult(entries);
     }

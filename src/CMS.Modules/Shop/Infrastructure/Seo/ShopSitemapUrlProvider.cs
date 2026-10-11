@@ -27,6 +27,7 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
             .Select(c => new
             {
                 c.Slug,
+                c.Name,
                 LastMod = c.UpdatedAtUtc ?? c.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -37,6 +38,7 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
             .Select(p => new
             {
                 p.Slug,
+                p.Title,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -50,7 +52,7 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
 
         var entries = new List<SitemapUrlEntry>
         {
-            new("/shop", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+            new("/shop", listingLastMod, SitemapChangeFrequency.Daily, 0.8, "فروشگاه")
         };
 
         foreach (var category in categories)
@@ -59,7 +61,8 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
                 $"/shop/category/{category.Slug}",
                 category.LastMod,
                 SitemapChangeFrequency.Weekly,
-                0.6));
+                0.6,
+                category.Name));
         }
 
         foreach (var product in products)
@@ -68,7 +71,8 @@ public sealed class ShopSitemapUrlProvider : ISitemapUrlProvider
                 $"/shop/{product.Slug}",
                 product.LastMod,
                 SitemapChangeFrequency.Weekly,
-                0.7));
+                0.7,
+                product.Title));
         }
 
         return entries;

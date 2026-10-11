@@ -27,6 +27,7 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
             .Select(p => new
             {
                 p.Slug,
+                p.Title,
                 LastMod = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc
             })
             .ToListAsync(cancellationToken);
@@ -37,7 +38,7 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
 
         var entries = new List<SitemapUrlEntry>
         {
-            new("/blog", listingLastMod, SitemapChangeFrequency.Daily, 0.8)
+            new("/blog", listingLastMod, SitemapChangeFrequency.Daily, 0.8, "آرشیو وبلاگ")
         };
 
         foreach (var post in posts)
@@ -46,7 +47,8 @@ public sealed class BlogSitemapUrlProvider : ISitemapUrlProvider
                 $"/{post.Slug}",
                 post.LastMod,
                 SitemapChangeFrequency.Weekly,
-                0.7));
+                0.7,
+                post.Title));
         }
 
         return entries;

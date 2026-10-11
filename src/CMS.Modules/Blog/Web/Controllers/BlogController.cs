@@ -69,7 +69,7 @@ public class BlogController : Controller
     }
 
     // Low priority so /admin, /shop, /services, … keep their own routes.
-    [HttpGet("/{slug:regex(^(?!admin$|api$|account$|blog$|shop$|services$|doctors$|teams$|news$|event$|events$|videos$|forms$|contact$|about$|health$|sitemaps$|sitemap\\.xml$|robots\\.txt$).+)}", Name = "blog-post", Order = 1000)]
+    [HttpGet("/{slug:regex(^(?!admin$|api$|account$|blog$|shop$|services$|doctors$|teams$|news$|event$|events$|videos$|forms$|contact$|about$|health$|sitemaps$|sitemap$|sitemap\\.xml$|robots\\.txt$).+)}", Name = "blog-post", Order = 1000)]
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken)
     {
