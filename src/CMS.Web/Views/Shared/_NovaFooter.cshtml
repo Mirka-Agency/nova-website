@@ -22,13 +22,10 @@
     if (await FeatureManager.IsEnabledAsync(FeatureNames.Services))
         navServices = await PublicServices.ListPublishedAsync();
 
-    var thyroidService = NovaServiceNav.Find(navServices, "thyroid", "تیروئید");
-    var parathyroidService = NovaServiceNav.Find(navServices, "parathyroid", "پاراتیروئید");
-    var adrenalService = NovaServiceNav.Find(navServices, "adrenal", "آدرنال", "فوق کلیه");
     var pancreasService = NovaServiceNav.Find(navServices, "pancreas", "پانکراس");
-    var thyroidHref = NovaServiceNav.Href(Url, thyroidService, "thyroid");
-    var parathyroidHref = NovaServiceNav.Href(Url, parathyroidService, "parathyroid");
-    var adrenalHref = NovaServiceNav.Href(Url, adrenalService, "adrenal");
+    var thyroidHref = Url.Content("~/blog/thyroid-surgery");
+    var parathyroidHref = Url.Content("~/parathyroid-surgery-from-0-to-100/");
+    var adrenalHref = Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/");
     var pancreasHref = NovaServiceNav.Href(Url, pancreasService, "pancreas");
 }
 <footer class="site-footer">
@@ -58,9 +55,9 @@
           <div class="footer-col">
             <h3 class="footer-heading">خدمات</h3>
             <ul class="footer-links">
-              <li><a href="@thyroidHref">@(thyroidService?.Title ?? "جراحی تیروئید")</a></li>
-              <li><a href="@parathyroidHref">@(parathyroidService?.Title ?? "جراحی پاراتیروئید")</a></li>
-              <li><a href="@adrenalHref">@(adrenalService?.Title ?? "جراحی فوق کلیه")</a></li>
+              <li><a href="@thyroidHref">جراحی تیروئید</a></li>
+              <li><a href="@parathyroidHref">جراحی پاراتیروئید</a></li>
+              <li><a href="@adrenalHref">جراحی آدرنال</a></li>
               <li><a href="@pancreasHref">@(pancreasService?.Title ?? "جراحی پانکراس")</a></li>
             </ul>
           </div>
