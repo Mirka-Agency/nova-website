@@ -117,9 +117,13 @@
     }
     <link rel="icon" href="@favicon" type="image/png" />
     <link rel="apple-touch-icon" href="@favicon" />
-    @* Peyda: preload only above-the-fold weights (body + headings). Medium/SemiBold stay lazy via @font-face. *@
-    <link rel="preload" as="font" type="font/woff2" href="~/template/assets/fonts/PeydaWebFaNum-Regular.woff2" asp-append-version="true" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="~/template/assets/fonts/PeydaWebFaNum-Bold.woff2" asp-append-version="true" crossorigin />
+    @*
+      Peyda preload MUST match @font-face URLs exactly (no asp-append-version).
+      A ?v= mismatch forces a second download after style.css and extends the critical chain.
+      Only body (400) + headings/CTAs (700) are preloaded; 500/600 stay on-demand.
+    *@
+    <link rel="preload" as="font" type="font/woff2" href="~/template/assets/fonts/PeydaWebFaNum-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="~/template/assets/fonts/PeydaWebFaNum-Bold.woff2" crossorigin />
     @if (!string.IsNullOrWhiteSpace(lcpImageUrl))
     {
         @* Early discovery for the page LCP image (single candidate only). *@
@@ -140,7 +144,8 @@
     {
         @await Component.InvokeAsync("SeoJsonLd")
     }
-    @* Critical render CSS only — admin-bar/popup load from their ViewComponents when needed. *@
+    @* fonts.css first (tiny) so faces bind to preloads before large CSS; then critical render CSS. *@
+    <link rel="stylesheet" href="~/template/assets/css/fonts.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/template/assets/vendor/bootstrap/bootstrap.rtl.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/template/assets/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/template/assets/css/responsive.css" asp-append-version="true" />

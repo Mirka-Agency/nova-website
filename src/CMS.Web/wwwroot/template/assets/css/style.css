@@ -1,39 +1,7 @@
 /* ========================================
    Nova Clinic — Design System & Home
-   Primary: #09707D | Font: Peyda
+   Primary: #09707D | Font: Peyda (faces in fonts.css)
    ======================================== */
-
-@font-face {
-  font-family: "Peyda";
-  src: url("../fonts/PeydaWebFaNum-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Peyda";
-  src: url("../fonts/PeydaWebFaNum-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Peyda";
-  src: url("../fonts/PeydaWebFaNum-SemiBold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Peyda";
-  src: url("../fonts/PeydaWebFaNum-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 :root {
   --primary: #09707d;
@@ -439,7 +407,8 @@ a:hover {
   padding: 0.3rem 0.55rem;
   border-radius: 999px;
   color: var(--text-muted);
-  font-weight: 500;
+  /* 400 keeps first paint on preloaded Regular; 500 would pull Medium into the critical chain */
+  font-weight: 400;
   font-size: 0.84rem;
   white-space: nowrap;
   transition:
@@ -519,7 +488,7 @@ a:hover {
   border-radius: var(--radius-sm, 10px);
   color: var(--secondary);
   font-size: 0.86rem;
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -572,7 +541,7 @@ a:hover {
 
 .header-phone__label {
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 400;
   opacity: 0.7;
 }
 
@@ -887,7 +856,8 @@ body.nav-open {
 .hero-title {
   margin: 0 0 0.9rem;
   font-size: clamp(1.2rem, 2.2vw, 1.55rem);
-  font-weight: 600;
+  /* 700 uses preloaded Bold; avoids SemiBold on the critical font chain */
+  font-weight: 700;
   line-height: 1.6;
   color: var(--secondary);
 }
@@ -914,7 +884,7 @@ body.nav-open {
   gap: 0.45rem;
   margin: 0;
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-muted);
 }
 
@@ -3270,7 +3240,7 @@ button.header-cta {
 
 .page-breadcrumb a {
   color: var(--primary);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .page-breadcrumb a:hover {
@@ -4649,7 +4619,7 @@ button.header-cta {
   border: 1px solid rgba(9, 112, 125, 0.14);
   color: var(--primary-dark);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
 }
 
@@ -7094,7 +7064,7 @@ a.video-single-meta__value:focus-visible {
   background: rgba(9, 112, 125, 0.08);
   border: 1px solid rgba(9, 112, 125, 0.14);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--primary-dark);
 }
 

@@ -14,7 +14,14 @@
     var telHref = contact.TelHref;
 }
 
-<link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" />
+@*
+  Popups start hidden — load CSS without blocking first paint / critical CSS chain.
+  media=print + onload keeps order-safe application once fetched; noscript fallback for no-JS.
+*@
+<link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" media="print" onload="this.media='all'" />
+<noscript>
+  <link rel="stylesheet" href="~/site/css/popup.css" asp-append-version="true" />
+</noscript>
 
 <div id="cms-popup-host" class="cms-popup-host" data-cms-popup-host hidden>
 @foreach (var popup in Model)

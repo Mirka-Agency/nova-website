@@ -41,6 +41,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -104,6 +105,20 @@ try
     builder.Services.AddCmsHealthChecks(builder.Configuration);
     builder.Services.AddCmsOpenTelemetry(builder.Configuration, builder.Environment);
     builder.Services.AddResponseCaching();
+    // Compress text responses when the reverse proxy does not. Skip already-compressed
+    // formats (woff2/images) so fonts are not double-wrapped and grown.
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.EnableForHttps = true;
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        [
+            "application/javascript",
+            "application/json",
+            "application/ld+json",
+            "image/svg+xml",
+            "application/manifest+json",
+        ]);
+    });
     builder.Services.AddHttpClient("MediaContent", client =>
     {
         client.Timeout = TimeSpan.FromSeconds(60);
@@ -225,6 +240,8 @@ try
     }
 
     app.UseForwardedHeaders();
+    // Early so HTML/JSON/CSS from Kestrel benefit when CapRover/nginx skips compression.
+    app.UseResponseCompression();
     app.UseGlobalExceptionHandling();
     // Canonical lowercase + trailing slash so re-execute is not 301'd by LowercaseUrlMiddleware.
     app.UseStatusCodePagesWithReExecute("/home/error/", "?code={0}");
