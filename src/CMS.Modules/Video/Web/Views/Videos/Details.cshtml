@@ -123,13 +123,6 @@
             <span class="video-info-list__label">نوع محتوا</span>
             <span class="video-info-list__value">ویدئو آموزشی</span>
           </li>
-          @if (hasPlayer)
-          {
-            <li>
-              <span class="video-info-list__label">پخش</span>
-              <span class="video-info-list__value">@(string.IsNullOrWhiteSpace(embedUrl) ? "فایل ویدئو" : "پخش آنلاین")</span>
-            </li>
-          }
         </ul>
       </aside>
     </div>

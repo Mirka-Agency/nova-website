@@ -583,8 +583,10 @@
 
   .articles-archive__grid--related .article-card {
     flex: 0 0 100%;
+    flex-basis: 100%;
     width: 100%;
-    max-width: none;
+    min-width: 100%;
+    max-width: 100%;
     height: auto;
     min-height: 100%;
     scroll-snap-align: start;
@@ -1074,9 +1076,14 @@
     padding-top: 5.5rem;
   }
 
-  .articles-archive__grid--related .article-card {
-    flex: 0 0 calc((100% - 1rem) / 2);
-    width: calc((100% - 1rem) / 2);
+  /* Tablet only — phones keep one full-width snap card (see max-width: 767.98px). */
+  @media (min-width: 768px) {
+    .articles-archive__grid--related .article-card {
+      flex: 0 0 calc((100% - 1rem) / 2);
+      width: calc((100% - 1rem) / 2);
+      min-width: 0;
+      max-width: none;
+    }
   }
 
   .video-detail__layout {
@@ -1453,6 +1460,10 @@
     font-size: 0.76rem;
     min-height: 2rem;
     padding: 0.3rem 0.7rem;
+  }
+
+  .event-detail__aside {
+    display: none;
   }
 
   .events-list--related {

@@ -154,12 +154,6 @@
             </div>
           </section>
         }
-
-        @await Component.InvokeAsync("Comments", new {
-            targetType = 1,
-            targetId = Model.Id,
-            targetTitle = Model.Title
-        })
       </div>
 
       <aside class="event-detail__aside reveal" aria-label="اطلاعات رویداد">
@@ -289,3 +283,11 @@
     </div>
   </div>
 </section>
+
+<div class="container">
+  @await Component.InvokeAsync("Comments", new {
+      targetType = 1,
+      targetId = Model.Id,
+      targetTitle = Model.Title
+  })
+</div>

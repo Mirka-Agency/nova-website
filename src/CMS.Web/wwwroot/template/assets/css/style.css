@@ -8791,6 +8791,13 @@ a.contact-channel:focus-visible {
   display: none;
 }
 
+/* Pagination hides off-page cards with display:none; those never get .is-visible
+   from IntersectionObserver. Keep on-page archive cards visible without scroll reveal. */
+.blog-archive .blog-card.reveal:not(.is-hidden) {
+  opacity: 1;
+  transform: none;
+}
+
 .blog-card__link {
   display: flex;
   flex-direction: column;

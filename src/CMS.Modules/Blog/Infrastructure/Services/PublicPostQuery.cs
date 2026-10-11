@@ -35,7 +35,9 @@ public sealed class PublicPostQuery : IPublicPostQuery
         CancellationToken cancellationToken = default)
     {
         var normalizedPage = page < 1 ? 1 : page;
-        var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, 48);
+        var normalizedPageSize = pageSize < 1
+            ? DefaultPageSize
+            : Math.Min(pageSize, IPublicPostQuery.MaxArchivePageSize);
         var key = $"cms:public:blog:list:{normalizedPage}:{normalizedPageSize}";
 
         return PublicContentCache.GetOrCreateAsync(

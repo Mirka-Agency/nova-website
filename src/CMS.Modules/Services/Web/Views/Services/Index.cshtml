@@ -8,7 +8,6 @@
     var contact = SiteContactInfo.From(settings);
     var phoneDisplay = contact.PhoneDisplay;
     var telHref = contact.TelHref;
-    var contactEmail = contact.Email;
     var address = contact.Address;
     var items = Model ?? Array.Empty<PublicServiceItemSummaryDto>();
 
@@ -471,18 +470,6 @@
                   <div class="cta-contact__body">
                     <strong>نشانی کلینیک</strong>
                     @address
-                  </div>
-                </div>
-                <div class="cta-contact__item">
-                  <span class="cta-contact__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="4" width="20" height="16" rx="2"/>
-                      <path d="m22 7-10 7L2 7"/>
-                    </svg>
-                  </span>
-                  <div class="cta-contact__body">
-                    <strong>ایمیل</strong>
-                    <a href="mailto:@(contactEmail)">@contactEmail</a>
                   </div>
                 </div>
               </div>

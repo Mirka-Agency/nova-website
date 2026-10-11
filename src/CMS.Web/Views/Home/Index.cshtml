@@ -14,7 +14,6 @@
     var brand = contact.Brand;
     var phoneDisplay = contact.PhoneDisplay;
     var telHref = contact.TelHref;
-    var contactEmail = contact.Email;
     var address = contact.Address;
     var businessHours = contact.BusinessHours;
     var heroLead = "اولین و تنها فلوشیپ جراحی غدد ایران، با بهره‌گیری از جدیدترین تکنولوژی‌های روز دنیا در سال 2026، آماده ارائه خدمات پیشرفته و تخصصی به بیماران می‌باشد. این مرکز با تکیه بر دانش روز پزشکی، تجهیزات پیشرفته و تیمی مجرب از متخصصان، تلاش می‌کند تا بهترین نتایج درمانی را برای بیماران خود فراهم کند. هدف ما ارائه روش‌های نوین جراحی، کاهش عوارض و بهبود کیفیت زندگی بیماران است.";
@@ -62,14 +61,14 @@
                 </span>
                 <span class="phone-ltr">@phoneDisplay</span>
               </a>
-              <a class="btn-secondary-custom" href="#contact">
+              <button class="btn-secondary-custom" type="button" data-booking-open>
                 <span class="ui-icon btn-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
                 </span>
-                درخواست مشاوره رایگان
-              </a>
+                درخواست مشاوره
+              </button>
             </div>
 
             <p class="hero-note hero-reveal hero-reveal--delay-2">
@@ -1165,18 +1164,6 @@ else
                   <div class="cta-contact__body">
                     <strong>نشانی کلینیک</strong>
                     @address
-                  </div>
-                </div>
-                <div class="cta-contact__item">
-                  <span class="cta-contact__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="4" width="20" height="16" rx="2"/>
-                      <path d="m22 7-10 7L2 7"/>
-                    </svg>
-                  </span>
-                  <div class="cta-contact__body">
-                    <strong>ایمیل</strong>
-                    <a href="mailto:@contactEmail">@contactEmail</a>
                   </div>
                 </div>
               </div>

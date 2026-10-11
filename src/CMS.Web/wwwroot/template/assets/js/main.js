@@ -1530,6 +1530,9 @@
       cards.forEach(function (card, index) {
         if (index >= range.start && index < range.end) {
           card.classList.remove("is-hidden");
+          // Cards start with opacity:0 via .reveal; page-2+ were display:none so
+          // IntersectionObserver never marked them .is-visible — force visible when shown.
+          card.classList.add("is-visible");
         } else {
           card.classList.add("is-hidden");
         }
