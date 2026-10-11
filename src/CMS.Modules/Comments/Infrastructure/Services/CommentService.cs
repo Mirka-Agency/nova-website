@@ -177,11 +177,12 @@ public sealed class CommentService : ICommentService
         if (totalPages > 0 && normalizedPage > totalPages)
             normalizedPage = totalPages;
 
+        // "Show more" accumulates: page 1 = first 32 roots, page 2 = first 64, etc.
+        var take = normalizedPage * normalizedPageSize;
         var roots = await rootQuery
             .OrderByDescending(c => c.PublishedAtUtc)
             .ThenByDescending(c => c.CreatedAtUtc)
-            .Skip((normalizedPage - 1) * normalizedPageSize)
-            .Take(normalizedPageSize)
+            .Take(take)
             .Select(c => new PublicCommentDto(c.Id, c.AuthorName, c.Body, c.PublishedAtUtc, c.ParentId))
             .ToListAsync(cancellationToken);
 

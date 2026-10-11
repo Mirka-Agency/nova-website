@@ -85,24 +85,13 @@
             }
         </ul>
 
-        @if (Model.TotalPages > 1)
+        @if (Model.Page < Model.TotalPages)
         {
             <nav class="cms-comments-pager" aria-label="@Localizer["CommentsPager"]">
-                <span class="cms-comments-pager__meta">
-                    @string.Format(
-                        Localizer["CommentsPagerMeta"].Value,
-                        ToPersianDigits(Model.Page.ToString(CultureInfo.InvariantCulture)),
-                        ToPersianDigits(Model.TotalPages.ToString(CultureInfo.InvariantCulture)))
-                </span>
                 <div class="cms-comments-pager__links">
-                    @if (Model.Page > 1)
-                    {
-                        <a class="cms-comments-pager__btn" href="@BuildCommentPageUrl(Model.Page - 1)">@Localizer["CommentsPrevPage"]</a>
-                    }
-                    @if (Model.Page < Model.TotalPages)
-                    {
-                        <a class="cms-comments-pager__btn" href="@BuildCommentPageUrl(Model.Page + 1)">@Localizer["CommentsNextPage"]</a>
-                    }
+                    <a class="cms-comments-pager__btn cms-comments-pager__btn--more" href="@BuildCommentPageUrl(Model.Page + 1)">
+                        @Localizer["CommentsShowMore"]
+                    </a>
                 </div>
             </nav>
         }

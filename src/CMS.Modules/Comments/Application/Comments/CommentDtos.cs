@@ -61,7 +61,7 @@ public sealed record CommentListQuery(
     int PageSize = 30)
 {
     public const int AdminPageSize = 30;
-    public const int PublicPageSize = 30;
+    public const int PublicPageSize = 32;
 
     public int NormalizedPage => Page < 1 ? 1 : Page;
 
