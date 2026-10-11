@@ -120,4 +120,14 @@
   <data name="ImportOutcomeDuplicate" xml:space="preserve"><value>تکراری</value></data>
   <data name="ImportOutcomeUnmatched" xml:space="preserve"><value>بدون تطبیق</value></data>
   <data name="ImportOutcomeFailed" xml:space="preserve"><value>ناموفق</value></data>
+  <data name="ImportPreviewPager" xml:space="preserve"><value>صفحه‌بندی پیش‌نمایش</value></data>
+  <data name="ImportPreviewPagerMeta" xml:space="preserve"><value>صفحه {0} از {1} (هر صفحه {2} مورد)</value></data>
+  <data name="ImportPrevPage" xml:space="preserve"><value>قبلی</value></data>
+  <data name="ImportNextPage" xml:space="preserve"><value>بعدی</value></data>
+  <data name="ImportConfirmHint" xml:space="preserve"><value>با تأیید، همه ردیف‌های «آماده» ذخیره می‌شوند (نه فقط همین صفحه). برای ردیف‌های بدون تطبیق، مقصد را دستی انتخاب کنید.</value></data>
+  <data name="ImportNothingSaved" xml:space="preserve"><value>هیچ کامنتی ذخیره نشد. احتمالاً همه بدون تطبیق URL یا تکراری بودند.</value></data>
+  <data name="ImportNothingSavedFailed" xml:space="preserve"><value>هیچ کامنتی ذخیره نشد. جزئیات خطا را در جدول زیر ببینید.</value></data>
+  <data name="ImportSavedCount" xml:space="preserve"><value>{0} کامنت با موفقیت در دیتابیس ذخیره شد.</value></data>
+  <data name="ApproveAllComments" xml:space="preserve"><value>تأیید همه</value></data>
+  <data name="AllCommentsApproved" xml:space="preserve"><value>همه کامنت‌ها تأیید شدند.</value></data>
 </root>

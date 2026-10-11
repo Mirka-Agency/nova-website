@@ -14,6 +14,8 @@ public sealed class CommentImportUploadViewModel
 
 public sealed class CommentImportPreviewViewModel
 {
+    public const int PageSize = 30;
+
     public string PreviewId { get; set; } = string.Empty;
     public int TotalCount { get; set; }
     public int ReadyCount { get; set; }
@@ -22,6 +24,8 @@ public sealed class CommentImportPreviewViewModel
     public int AmbiguousCount { get; set; }
     public int InvalidCount { get; set; }
     public bool OnlyNew { get; set; } = true;
+    public int Page { get; set; } = 1;
+    public int TotalPages { get; set; } = 1;
     public IReadOnlyList<CommentImportPreviewRowViewModel> Rows { get; set; } = [];
     public IReadOnlyList<SelectListItem> TargetOptions { get; set; } = [];
 }

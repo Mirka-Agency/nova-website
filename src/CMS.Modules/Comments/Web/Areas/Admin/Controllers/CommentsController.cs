@@ -208,6 +208,17 @@ public class CommentsController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> ApproveAll(CancellationToken cancellationToken)
+    {
+        if (!await _features.IsEnabledAsync(FeatureNames.Comments))
+            return NotFound();
+
+        await _comments.ApproveAllPendingAsync(cancellationToken);
+        TempData["Success"] = _localizer["AllCommentsApproved"].Value;
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
     public async Task<IActionResult> Reject(
         Guid id,
         CommentTargetType? targetType,

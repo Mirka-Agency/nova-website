@@ -256,6 +256,17 @@ public sealed class CommentService : ICommentService
         await _db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task ApproveAllPendingAsync(CancellationToken cancellationToken = default)
+    {
+        await _db.Comments
+            .Where(c => c.Status != CommentStatus.Approved)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(c => c.Status, CommentStatus.Approved)
+                    .SetProperty(c => c.UpdatedAtUtc, DateTime.UtcNow),
+                cancellationToken);
+    }
+
     public async Task RejectAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var comment = await _db.Comments.FirstOrDefaultAsync(c => c.Id == id, cancellationToken)

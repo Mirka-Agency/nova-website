@@ -93,6 +93,31 @@
         </table>
     </div>
 
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="admin-pager" aria-label="@Localizer["ImportPreviewPager"]" style="margin-top:16px">
+            <span class="admin-pager-meta">
+                @string.Format(
+                    Localizer["ImportPreviewPagerMeta"].Value,
+                    Model.Page.ToString("N0", fa),
+                    Model.TotalPages.ToString("N0", fa),
+                    CommentImportPreviewViewModel.PageSize.ToString("N0", fa))
+            </span>
+            <div class="admin-pager-links">
+                @if (Model.Page > 1)
+                {
+                    <a class="btn btn-secondary" asp-action="Preview" asp-route-id="@Model.PreviewId" asp-route-page="@(Model.Page - 1)">@Localizer["ImportPrevPage"]</a>
+                }
+                @if (Model.Page < Model.TotalPages)
+                {
+                    <a class="btn btn-secondary" asp-action="Preview" asp-route-id="@Model.PreviewId" asp-route-page="@(Model.Page + 1)">@Localizer["ImportNextPage"]</a>
+                }
+            </div>
+        </nav>
+    }
+
+    <p class="admin-hint" style="margin-top:16px">@Localizer["ImportConfirmHint"]</p>
+
     <div class="admin-form-actions" style="margin-top:24px">
         <button type="submit" class="btn btn-primary" @(Model.ReadyCount + Model.UnmatchedCount + Model.AmbiguousCount == 0 ? "disabled" : null)>
             <i class="fas fa-file-import" aria-hidden="true"></i>

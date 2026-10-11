@@ -93,7 +93,7 @@ public class CommentImportController : Controller
         {
             await using var stream = model.File.OpenReadStream();
             var preview = await _import.BuildPreviewAsync(stream, cancellationToken);
-            return View("Preview", await ToPreviewViewModelAsync(preview, cancellationToken));
+            return RedirectToAction(nameof(Preview), new { id = preview.PreviewId, page = 1 });
         }
         catch (DomainException ex)
         {
@@ -108,7 +108,7 @@ public class CommentImportController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Preview(string id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Preview(string id, int page = 1, CancellationToken cancellationToken = default)
     {
         if (!await _features.IsEnabledAsync(FeatureNames.Comments))
             return NotFound();
@@ -121,7 +121,7 @@ public class CommentImportController : Controller
         }
 
         ViewData["Title"] = _localizer["ImportCommentsPreview"].Value;
-        return View(await ToPreviewViewModelAsync(preview, cancellationToken));
+        return View(await ToPreviewViewModelAsync(preview, page, cancellationToken));
     }
 
     [HttpPost]
@@ -160,6 +160,19 @@ public class CommentImportController : Controller
 
             _cache.Set(ResultCacheKey(result.PreviewId), result, TimeSpan.FromHours(2));
 
+            if (result.ImportedCount == 0)
+            {
+                TempData["Error"] = result.FailedCount > 0
+                    ? _localizer["ImportNothingSavedFailed"].Value
+                    : _localizer["ImportNothingSaved"].Value;
+            }
+            else
+            {
+                TempData["Success"] = string.Format(
+                    _localizer["ImportSavedCount"].Value,
+                    result.ImportedCount);
+            }
+
             return View("Result", ToResultViewModel(result));
         }
         catch (DomainException ex)
@@ -187,6 +200,7 @@ public class CommentImportController : Controller
 
     private async Task<CommentImportPreviewViewModel> ToPreviewViewModelAsync(
         CommentImportPreview preview,
+        int page,
         CancellationToken cancellationToken)
     {
         var targets = await _catalog.ListAsync(cancellationToken);
@@ -200,18 +214,13 @@ public class CommentImportController : Controller
 
         options.Insert(0, new SelectListItem(_localizer["ImportSelectTarget"].Value, string.Empty));
 
-        return new CommentImportPreviewViewModel
-        {
-            PreviewId = preview.PreviewId,
-            TotalCount = preview.TotalCount,
-            ReadyCount = preview.ReadyCount,
-            DuplicateCount = preview.DuplicateCount,
-            UnmatchedCount = preview.UnmatchedCount,
-            AmbiguousCount = preview.AmbiguousCount,
-            InvalidCount = preview.InvalidCount,
-            OnlyNew = true,
-            TargetOptions = options,
-            Rows = preview.Rows.Select(r => new CommentImportPreviewRowViewModel
+        var pageSize = CommentImportPreviewViewModel.PageSize;
+        var totalPages = Math.Max(1, (int)Math.Ceiling(preview.Rows.Count / (double)pageSize));
+        var currentPage = page < 1 ? 1 : Math.Min(page, totalPages);
+        var pageRows = preview.Rows
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new CommentImportPreviewRowViewModel
             {
                 ExternalId = r.ExternalId,
                 ExternalParentId = r.ExternalParentId,
@@ -229,7 +238,23 @@ public class CommentImportController : Controller
                 ManualTargetKey = r.MatchedTargetType is not null && r.MatchedTargetId is not null
                     ? $"{(int)r.MatchedTargetType}:{(Guid)r.MatchedTargetId}"
                     : null
-            }).ToList()
+            })
+            .ToList();
+
+        return new CommentImportPreviewViewModel
+        {
+            PreviewId = preview.PreviewId,
+            TotalCount = preview.TotalCount,
+            ReadyCount = preview.ReadyCount,
+            DuplicateCount = preview.DuplicateCount,
+            UnmatchedCount = preview.UnmatchedCount,
+            AmbiguousCount = preview.AmbiguousCount,
+            InvalidCount = preview.InvalidCount,
+            OnlyNew = true,
+            Page = currentPage,
+            TotalPages = totalPages,
+            TargetOptions = options,
+            Rows = pageRows
         };
     }
 

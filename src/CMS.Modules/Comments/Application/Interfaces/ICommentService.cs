@@ -32,6 +32,8 @@ public interface ICommentService
 
     Task ApproveAsync(Guid id, CancellationToken cancellationToken = default);
 
+    Task ApproveAllPendingAsync(CancellationToken cancellationToken = default);
+
     Task RejectAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(Guid id, UpdateCommentCommand command, CancellationToken cancellationToken = default);

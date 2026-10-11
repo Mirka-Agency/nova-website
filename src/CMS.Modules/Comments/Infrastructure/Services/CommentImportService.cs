@@ -1,5 +1,4 @@
 using System.Text;
-using CMS.Application.Background;
 using CMS.Application.Security;
 using CMS.Domain.Exceptions;
 using CMS.Modules.Comments.Application.Import;
@@ -7,7 +6,6 @@ using CMS.Modules.Comments.Domain.Entities;
 using CMS.Modules.Comments.Domain.Enums;
 using CMS.Modules.Comments.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -23,7 +21,6 @@ public sealed class CommentImportService : ICommentImportService
     private readonly ICommentTargetCatalog _catalog;
     private readonly ICommentImportPreviewStore _previewStore;
     private readonly IHtmlContentSanitizer _sanitizer;
-    private readonly IBackgroundTaskQueue _backgroundQueue;
     private readonly CommentImportOptions _options;
     private readonly ILogger<CommentImportService> _logger;
 
@@ -34,7 +31,6 @@ public sealed class CommentImportService : ICommentImportService
         ICommentTargetCatalog catalog,
         ICommentImportPreviewStore previewStore,
         IHtmlContentSanitizer sanitizer,
-        IBackgroundTaskQueue backgroundQueue,
         IOptions<CommentImportOptions> options,
         ILogger<CommentImportService> logger)
     {
@@ -44,7 +40,6 @@ public sealed class CommentImportService : ICommentImportService
         _catalog = catalog;
         _previewStore = previewStore;
         _sanitizer = sanitizer;
-        _backgroundQueue = backgroundQueue;
         _options = options.Value;
         _logger = logger;
     }
@@ -94,26 +89,8 @@ public sealed class CommentImportService : ICommentImportService
         var preview = await _previewStore.GetAsync(command.PreviewId, cancellationToken)
             ?? throw new DomainException("پیش‌نمایش منقضی شده یا یافت نشد. لطفاً فایل را دوباره آپلود کنید.");
 
-        var readyCount = CountImportable(preview, command);
-        if (readyCount >= Math.Max(50, _options.BackgroundThreshold))
-        {
-            await _backgroundQueue.QueueAsync(async (sp, ct) =>
-            {
-                var importer = (CommentImportService)sp.GetRequiredService<ICommentImportService>();
-                await importer.ExecuteImportAsync(command, ct);
-            }, cancellationToken);
-
-            return new CommentImportResult(
-                PreviewId: preview.PreviewId,
-                TotalCount: preview.TotalCount,
-                ImportedCount: 0,
-                DuplicateCount: preview.DuplicateCount,
-                UnmatchedCount: preview.UnmatchedCount,
-                FailedCount: 0,
-                Queued: true,
-                Rows: []);
-        }
-
+        // Always import synchronously so the admin result reflects real DB writes.
+        // (Background queue previously reported success while retries/transactions rolled back.)
         return await ExecuteImportAsync(command, cancellationToken);
     }
 
@@ -202,45 +179,112 @@ public sealed class CommentImportService : ICommentImportService
         var ordered = OrderParentsFirst(workItems);
         var batchSize = Math.Clamp(_options.BatchSize, 20, 500);
 
+        // IMPORTANT: do not use user transactions here — CommentsDbContext enables
+        // EnableRetryOnFailure, which rejects BeginTransactionAsync and caused every
+        // import batch to roll back while the UI still reported "imported".
         for (var offset = 0; offset < ordered.Count; offset += batchSize)
         {
             var batch = ordered.Skip(offset).Take(batchSize).ToList();
-            await using var tx = await _db.Database.BeginTransactionAsync(cancellationToken);
+            var pending = new List<(ImportWorkItem Item, Comment Entity)>();
+
+            foreach (var item in batch)
+            {
+                try
+                {
+                    var body = SanitizeBody(item.Row.Body);
+                    if (body.Length > 4000)
+                    {
+                        results.Add(new CommentImportRowResult(
+                            item.Row.ExternalId,
+                            item.Row.PageUrl,
+                            "failed",
+                            "متن کامنت بیش از ۴۰۰۰ نویسه است.",
+                            null,
+                            item.TargetTitle));
+                        continue;
+                    }
+
+                    Guid? parentId = null;
+                    if (!string.IsNullOrWhiteSpace(item.Row.ExternalParentId))
+                    {
+                        if (idMap.TryGetValue(item.Row.ExternalParentId, out var mappedParent))
+                        {
+                            parentId = mappedParent;
+                        }
+                        else
+                        {
+                            parentId = await _db.Comments.AsNoTracking()
+                                .Where(c =>
+                                    c.SourceSystem == Comment.WordPressSourceSystem
+                                    && c.SourceExternalId == item.Row.ExternalParentId)
+                                .Select(c => (Guid?)c.Id)
+                                .FirstOrDefaultAsync(cancellationToken);
+                        }
+                    }
+
+                    var comment = Comment.Import(
+                        item.TargetType,
+                        item.TargetId,
+                        item.TargetTitle,
+                        item.Row.AuthorName,
+                        item.Row.AuthorEmail,
+                        body,
+                        CommentStatus.Approved,
+                        item.Row.PublishedAtUtc,
+                        Comment.WordPressSourceSystem,
+                        item.Row.ExternalId,
+                        item.Row.PageUrl,
+                        parentId);
+
+                    _db.Comments.Add(comment);
+                    pending.Add((item, comment));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed preparing WordPress comment {ExternalId}", item.Row.ExternalId);
+                    results.Add(new CommentImportRowResult(
+                        item.Row.ExternalId,
+                        item.Row.PageUrl,
+                        "failed",
+                        ex.Message,
+                        null,
+                        item.TargetTitle));
+                }
+            }
+
+            if (pending.Count == 0)
+                continue;
+
             try
             {
-                foreach (var item in batch)
+                await _db.SaveChangesAsync(cancellationToken);
+                foreach (var (item, entity) in pending)
+                {
+                    idMap[item.Row.ExternalId] = entity.Id;
+                    results.Add(new CommentImportRowResult(
+                        item.Row.ExternalId,
+                        item.Row.PageUrl,
+                        "imported",
+                        null,
+                        entity.Id,
+                        item.TargetTitle));
+                }
+            }
+            catch (Exception batchEx)
+            {
+                _logger.LogError(batchEx, "Comment import batch SaveChanges failed; retrying one-by-one");
+                _db.ChangeTracker.Clear();
+
+                foreach (var (item, _) in pending)
                 {
                     try
                     {
                         var body = SanitizeBody(item.Row.Body);
-                        if (body.Length > 4000)
-                        {
-                            results.Add(new CommentImportRowResult(
-                                item.Row.ExternalId,
-                                item.Row.PageUrl,
-                                "failed",
-                                "متن کامنت بیش از ۴۰۰۰ نویسه است.",
-                                null,
-                                item.TargetTitle));
-                            continue;
-                        }
-
                         Guid? parentId = null;
-                        if (!string.IsNullOrWhiteSpace(item.Row.ExternalParentId))
+                        if (!string.IsNullOrWhiteSpace(item.Row.ExternalParentId)
+                            && idMap.TryGetValue(item.Row.ExternalParentId, out var mappedParent))
                         {
-                            if (idMap.TryGetValue(item.Row.ExternalParentId, out var mappedParent))
-                            {
-                                parentId = mappedParent;
-                            }
-                            else
-                            {
-                                parentId = await _db.Comments.AsNoTracking()
-                                    .Where(c =>
-                                        c.SourceSystem == Comment.WordPressSourceSystem
-                                        && c.SourceExternalId == item.Row.ExternalParentId)
-                                    .Select(c => (Guid?)c.Id)
-                                    .FirstOrDefaultAsync(cancellationToken);
-                            }
+                            parentId = mappedParent;
                         }
 
                         var comment = Comment.Import(
@@ -250,7 +294,7 @@ public sealed class CommentImportService : ICommentImportService
                             item.Row.AuthorName,
                             item.Row.AuthorEmail,
                             body,
-                            item.Row.Status,
+                            CommentStatus.Approved,
                             item.Row.PublishedAtUtc,
                             Comment.WordPressSourceSystem,
                             item.Row.ExternalId,
@@ -258,8 +302,8 @@ public sealed class CommentImportService : ICommentImportService
                             parentId);
 
                         _db.Comments.Add(comment);
+                        await _db.SaveChangesAsync(cancellationToken);
                         idMap[item.Row.ExternalId] = comment.Id;
-
                         results.Add(new CommentImportRowResult(
                             item.Row.ExternalId,
                             item.Row.PageUrl,
@@ -270,6 +314,7 @@ public sealed class CommentImportService : ICommentImportService
                     }
                     catch (Exception ex)
                     {
+                        _db.ChangeTracker.Clear();
                         _logger.LogWarning(ex, "Failed importing WordPress comment {ExternalId}", item.Row.ExternalId);
                         results.Add(new CommentImportRowResult(
                             item.Row.ExternalId,
@@ -280,32 +325,20 @@ public sealed class CommentImportService : ICommentImportService
                             item.TargetTitle));
                     }
                 }
-
-                await _db.SaveChangesAsync(cancellationToken);
-                await tx.CommitAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                await tx.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Comment import batch failed");
-                foreach (var item in batch)
-                {
-                    if (results.All(r => r.ExternalId != item.Row.ExternalId))
-                    {
-                        results.Add(new CommentImportRowResult(
-                            item.Row.ExternalId,
-                            item.Row.PageUrl,
-                            "failed",
-                            "خطای دسته‌ای در ذخیره: " + ex.Message,
-                            null,
-                            item.TargetTitle));
-                    }
-                }
             }
         }
 
         // Second pass: attach parents that were imported later in another batch.
         await AttachMissingParentsAsync(ordered, idMap, cancellationToken);
+
+        // Import policy: every comment must be publicly visible after import.
+        await _db.Comments
+            .Where(c => c.Status != CommentStatus.Approved)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(c => c.Status, CommentStatus.Approved)
+                    .SetProperty(c => c.UpdatedAtUtc, DateTime.UtcNow),
+                cancellationToken);
 
         var result = new CommentImportResult(
             PreviewId: preview.PreviewId,
@@ -410,7 +443,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    item.Status,
+                    CommentStatus.Approved,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Duplicate,
@@ -430,7 +463,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    item.Status,
+                    CommentStatus.Approved,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Ready,
@@ -445,7 +478,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    item.Status,
+                    CommentStatus.Approved,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Ambiguous,
@@ -460,7 +493,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    item.Status,
+                    CommentStatus.Approved,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Unmatched,
