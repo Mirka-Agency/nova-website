@@ -56,22 +56,35 @@ public sealed class PublicPostQuery : IPublicPostQuery
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var posts = await query
+        var rows = await query
             .OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc)
             .Skip((normalizedPage - 1) * normalizedPageSize)
             .Take(normalizedPageSize)
+            .Select(p => new
+            {
+                p.Title,
+                p.Slug,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                p.CoverImageUrl,
+                p.CoverImageAlt,
+                PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.Excerpt,
+                p.Body,
+                p.AuthorDisplayName
+            })
+            .ToListAsync(cancellationToken);
+
+        var posts = rows
             .Select(p => new PublicPostSummaryDto(
                 p.Title,
                 p.Slug,
-                p.Category != null ? p.Category.Name : null,
+                p.CategoryName,
                 p.CoverImageUrl,
                 p.CoverImageAlt,
-                p.PublishedAtUtc ?? p.CreatedAtUtc,
-                p.Excerpt != null && p.Excerpt != string.Empty
-                    ? p.Excerpt
-                    : (p.Body.Length > ExcerptLength ? p.Body.Substring(0, ExcerptLength) : p.Body),
+                p.PublishedAtUtc,
+                ResolveExcerpt(p.Excerpt, p.Body),
                 p.AuthorDisplayName))
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         return new PagedResult<PublicPostSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
     }
@@ -131,7 +144,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>
-        !string.IsNullOrWhiteSpace(excerpt) ? excerpt.Trim() : MakeExcerpt(body);
+        MakeExcerpt(!string.IsNullOrWhiteSpace(excerpt) ? excerpt : body);
 
     private static string MakeExcerpt(string body)
     {
