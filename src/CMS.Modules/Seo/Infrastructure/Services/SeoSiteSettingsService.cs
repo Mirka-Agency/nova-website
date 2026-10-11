@@ -4,25 +4,39 @@ using CMS.Modules.Seo.Domain.Entities;
 using CMS.Modules.Seo.Infrastructure.Persistence;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using DomainValidationException = CMS.Domain.Exceptions.ValidationException;
 
 namespace CMS.Modules.Seo.Infrastructure.Services;
 
 public sealed class SeoSiteSettingsService : ISeoSiteSettingsService
 {
+    private const string CacheKey = "cms:seo:site-settings";
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(120);
+
     private readonly SeoDbContext _db;
+    private readonly IMemoryCache _cache;
     private readonly IValidator<UpdateSeoSiteSettingsCommand> _validator;
 
-    public SeoSiteSettingsService(SeoDbContext db, IValidator<UpdateSeoSiteSettingsCommand> validator)
+    public SeoSiteSettingsService(
+        SeoDbContext db,
+        IMemoryCache cache,
+        IValidator<UpdateSeoSiteSettingsCommand> validator)
     {
         _db = db;
+        _cache = cache;
         _validator = validator;
     }
 
     public async Task<SeoSiteSettingsDto> GetAsync(CancellationToken cancellationToken = default)
     {
+        if (_cache.TryGetValue(CacheKey, out SeoSiteSettingsDto? cached) && cached is not null)
+            return cached;
+
         var settings = await EnsureAsync(cancellationToken);
-        return Map(settings);
+        var dto = Map(settings);
+        _cache.Set(CacheKey, dto, CacheDuration);
+        return dto;
     }
 
     public async Task UpdateAsync(UpdateSeoSiteSettingsCommand command, CancellationToken cancellationToken = default)
@@ -39,6 +53,7 @@ public sealed class SeoSiteSettingsService : ISeoSiteSettingsService
             command.EnableBrokenLinkChecks,
             command.SitemapEnabled);
         await _db.SaveChangesAsync(cancellationToken);
+        _cache.Remove(CacheKey);
     }
 
     private async Task<SeoSiteSettings> EnsureAsync(CancellationToken cancellationToken)

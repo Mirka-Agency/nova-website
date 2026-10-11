@@ -1,25 +1,39 @@
 using CMS.Application.WhatsApp;
 using CMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace CMS.Infrastructure.WhatsApp;
 
 public sealed class WhatsAppSettingsService : IWhatsAppSettingsService
 {
+    private const string CacheKey = "cms:whatsapp-settings";
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(120);
+
     private readonly ApplicationDbContext _db;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<WhatsAppSettingsService> _logger;
 
-    public WhatsAppSettingsService(ApplicationDbContext db, ILogger<WhatsAppSettingsService> logger)
+    public WhatsAppSettingsService(
+        ApplicationDbContext db,
+        IMemoryCache cache,
+        ILogger<WhatsAppSettingsService> logger)
     {
         _db = db;
+        _cache = cache;
         _logger = logger;
     }
 
     public async Task<WhatsAppSettingsDto> GetAsync(CancellationToken cancellationToken = default)
     {
+        if (_cache.TryGetValue(CacheKey, out WhatsAppSettingsDto? cached) && cached is not null)
+            return cached;
+
         var entity = await GetOrCreateAsync(cancellationToken);
-        return Map(entity);
+        var dto = Map(entity);
+        _cache.Set(CacheKey, dto, CacheDuration);
+        return dto;
     }
 
     public async Task UpdateAsync(UpdateWhatsAppSettingsCommand command, CancellationToken cancellationToken = default)
@@ -31,6 +45,7 @@ public sealed class WhatsAppSettingsService : IWhatsAppSettingsService
             command.DefaultGroupName,
             command.DefaultTemplate);
         await _db.SaveChangesAsync(cancellationToken);
+        _cache.Remove(CacheKey);
     }
 
     public async Task MarkSuccessfulSendAsync(CancellationToken cancellationToken = default)
@@ -40,6 +55,7 @@ public sealed class WhatsAppSettingsService : IWhatsAppSettingsService
             var entity = await GetOrCreateAsync(cancellationToken);
             entity.MarkSuccessfulSend(DateTime.UtcNow);
             await _db.SaveChangesAsync(cancellationToken);
+            _cache.Remove(CacheKey);
         }
         catch (Exception ex)
         {

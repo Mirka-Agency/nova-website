@@ -1,3 +1,4 @@
+using CMS.Application.Caching;
 using CMS.Application.Common.Paging;
 using CMS.Modules.Shop.Application.Categories;
 using CMS.Modules.Shop.Application.Interfaces;
@@ -7,6 +8,7 @@ using CMS.Modules.Shop.Application.Settings;
 using CMS.Modules.Shop.Domain.Enums;
 using CMS.Modules.Shop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CMS.Modules.Shop.Infrastructure.Services;
 
@@ -18,12 +20,18 @@ public sealed class PublicProductQuery : IPublicProductQuery
     private readonly ShopDbContext _db;
     private readonly IPricingEngine _pricing;
     private readonly IShopSettingsService _settings;
+    private readonly IMemoryCache _cache;
 
-    public PublicProductQuery(ShopDbContext db, IPricingEngine pricing, IShopSettingsService settings)
+    public PublicProductQuery(
+        ShopDbContext db,
+        IPricingEngine pricing,
+        IShopSettingsService settings,
+        IMemoryCache cache)
     {
         _db = db;
         _pricing = pricing;
         _settings = settings;
+        _cache = cache;
     }
 
     public async Task<IReadOnlyList<PublicProductListItemDto>> ListPublishedAsync(
@@ -34,7 +42,7 @@ public sealed class PublicProductQuery : IPublicProductQuery
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicProductListItemDto>> ListPublishedPagedAsync(
+    public Task<PagedResult<PublicProductListItemDto>> ListPublishedPagedAsync(
         int page,
         int pageSize,
         string? userId = null,
@@ -46,6 +54,33 @@ public sealed class PublicProductQuery : IPublicProductQuery
             ? DefaultPageSize
             : Math.Min(pageSize, MaxPageSize);
 
+        // Personalized pricing must not be shared across users.
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            return ListPublishedPagedCoreAsync(
+                normalizedPage,
+                normalizedPageSize,
+                userId,
+                categoryId,
+                cancellationToken);
+        }
+
+        var categoryKey = categoryId?.ToString("N") ?? "-";
+        var key = $"cms:public:shop:list:{normalizedPage}:{normalizedPageSize}:{categoryKey}";
+        return PublicContentCache.GetOrCreateAsync(
+            _cache,
+            key,
+            ct => ListPublishedPagedCoreAsync(normalizedPage, normalizedPageSize, null, categoryId, ct),
+            cancellationToken);
+    }
+
+    private async Task<PagedResult<PublicProductListItemDto>> ListPublishedPagedCoreAsync(
+        int normalizedPage,
+        int normalizedPageSize,
+        string? userId,
+        Guid? categoryId,
+        CancellationToken cancellationToken)
+    {
         var settings = await _settings.GetAsync(cancellationToken);
         var customerGroupId = await _pricing.ResolveCustomerGroupIdAsync(userId, cancellationToken);
         var showPrice = userId is not null || settings.ShowPricesToGuests;
@@ -141,11 +176,26 @@ public sealed class PublicProductQuery : IPublicProductQuery
         return new PagedResult<PublicProductListItemDto>(result, totalCount, normalizedPage, normalizedPageSize);
     }
 
-    public async Task<PublicCategoryDetailDto?> GetPublishedCategoryBySlugAsync(
+    public Task<PublicCategoryDetailDto?> GetPublishedCategoryBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(slug))
+            return Task.FromResult<PublicCategoryDetailDto?>(null);
+
         var normalized = slug.Trim().ToLowerInvariant();
+        var key = $"cms:public:shop:category:{normalized}";
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedCategoryBySlugCoreAsync(normalized, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicCategoryDetailDto?> GetPublishedCategoryBySlugCoreAsync(
+        string normalized,
+        CancellationToken cancellationToken)
+    {
         return await _db.Categories
             .AsNoTracking()
             .Where(c => c.Slug == normalized && c.IsActive)
@@ -162,12 +212,32 @@ public sealed class PublicProductQuery : IPublicProductQuery
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PublicProductDetailDto?> GetPublishedBySlugAsync(
+    public Task<PublicProductDetailDto?> GetPublishedBySlugAsync(
         string slug,
         string? userId = null,
         CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(slug))
+            return Task.FromResult<PublicProductDetailDto?>(null);
+
         var normalized = slug.Trim().ToLowerInvariant();
+
+        if (!string.IsNullOrWhiteSpace(userId))
+            return GetPublishedBySlugCoreAsync(normalized, userId, cancellationToken);
+
+        var key = $"cms:public:shop:slug:{normalized}";
+        return PublicContentCache.GetOrCreateNullableAsync(
+            _cache,
+            key,
+            ct => GetPublishedBySlugCoreAsync(normalized, null, ct),
+            cancellationToken);
+    }
+
+    private async Task<PublicProductDetailDto?> GetPublishedBySlugCoreAsync(
+        string normalized,
+        string? userId,
+        CancellationToken cancellationToken)
+    {
         var settings = await _settings.GetAsync(cancellationToken);
         var customerGroupId = await _pricing.ResolveCustomerGroupIdAsync(userId, cancellationToken);
         var showPrice = userId is not null || settings.ShowPricesToGuests;
