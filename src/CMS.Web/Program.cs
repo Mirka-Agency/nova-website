@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO.Compression;
 using CMS.Application;
 using CMS.Infrastructure;
 using CMS.Infrastructure.Features;
