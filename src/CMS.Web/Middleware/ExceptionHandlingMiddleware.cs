@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CMS.Domain.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Web.Middleware;
@@ -85,7 +86,7 @@ public sealed class ExceptionHandlingMiddleware
             return;
         }
 
-        // Keep the original URL for server errors — do not redirect.
+        // Keep the original URL — never browser-redirect to an error path.
         if (statusCode >= 500)
         {
             await WriteHtmlErrorAsync(context, title, detail);
@@ -93,18 +94,41 @@ public sealed class ExceptionHandlingMiddleware
         }
 
         var isAdmin = context.Request.Path.StartsWithSegments("/admin");
-        var basePath = (statusCode, isAdmin) switch
+        var errorPath = (statusCode, isAdmin) switch
         {
             (StatusCodes.Status404NotFound, true) => "/admin/error/notfound",
             (StatusCodes.Status400BadRequest, true) => "/admin/error/badrequest",
             (_, true) => "/admin/error/servererror",
-            (StatusCodes.Status404NotFound, false) => "/home/error",
-            (StatusCodes.Status400BadRequest, false) => "/home/error",
-            _ => "/home/error"
+            _ => "/home/error/"
         };
 
-        var location = $"{basePath}?code={statusCode}&message={Uri.EscapeDataString(detail)}";
-        context.Response.Redirect(location);
+        var originalPath = context.Request.Path;
+        var originalQuery = context.Request.QueryString;
+        context.Features.Set<IStatusCodeReExecuteFeature>(new StatusCodeReExecuteFeature
+        {
+            OriginalPath = originalPath.HasValue ? originalPath.Value! : "/",
+            OriginalQueryString = originalQuery.HasValue ? originalQuery.Value! : string.Empty
+        });
+        context.Request.Path = errorPath;
+        context.Request.QueryString = QueryString.Create(new Dictionary<string, string?>
+        {
+            ["code"] = statusCode.ToString(),
+            ["message"] = detail
+        });
+
+        try
+        {
+            await _next(context);
+        }
+        finally
+        {
+            context.Request.Path = originalPath;
+            context.Request.QueryString = originalQuery;
+            context.Features.Set<IStatusCodeReExecuteFeature>(null!);
+        }
+
+        if (!context.Response.HasStarted)
+            context.Response.StatusCode = statusCode;
     }
 
     private static async Task WriteHtmlErrorAsync(HttpContext context, string title, string detail)

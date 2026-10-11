@@ -50,14 +50,22 @@ public class BlogController : Controller
         return View(result.Items);
     }
 
-    /// <summary>Old /blog/{slug} URLs permanently redirect to root /{slug}.</summary>
+    /// <summary>Old /blog/{slug} URLs permanently redirect to root /{slug} when the post exists.</summary>
     [HttpGet("{slug}")]
-    public IActionResult LegacyDetails(string slug)
+    public async Task<IActionResult> LegacyDetails(string slug, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(slug))
             return NotFound();
 
-        return RedirectPermanent($"/{slug.Trim().Trim('/').ToLowerInvariant()}/");
+        if (!await _features.IsEnabledAsync(FeatureNames.Blog))
+            return NotFound();
+
+        var normalized = slug.Trim().Trim('/').ToLowerInvariant();
+        var post = await _posts.GetPublishedBySlugAsync(normalized, cancellationToken);
+        if (post is null)
+            return NotFound();
+
+        return RedirectPermanent($"/{post.Slug}/");
     }
 
     // Low priority so /admin, /shop, /services, … keep their own routes.

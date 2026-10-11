@@ -225,7 +225,8 @@ try
 
     app.UseForwardedHeaders();
     app.UseGlobalExceptionHandling();
-    app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+    // Canonical lowercase + trailing slash so re-execute is not 301'd by LowercaseUrlMiddleware.
+    app.UseStatusCodePagesWithReExecute("/home/error/", "?code={0}");
     app.UseSecurityHeaders();
 
     if (!app.Environment.IsDevelopment())

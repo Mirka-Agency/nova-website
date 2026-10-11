@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Diagnostics;
+
 namespace CMS.Web.Middleware;
 
 /// <summary>
@@ -15,6 +17,10 @@ public sealed class LowercaseUrlMiddleware
 
     public Task InvokeAsync(HttpContext context)
     {
+        // Status-code re-execute must keep the original browser URL (e.g. show 404 in place).
+        if (context.Features.Get<IStatusCodeReExecuteFeature>() is not null)
+            return _next(context);
+
         if (HttpMethods.IsGet(context.Request.Method) || HttpMethods.IsHead(context.Request.Method))
         {
             var path = context.Request.Path.Value;
