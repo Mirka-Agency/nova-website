@@ -8,20 +8,16 @@
     var phoneDisplay = contact.PhoneDisplay;
     var telHref = contact.TelHref;
     var email = contact.Email;
-    var addressShort = contact.Address;
-    var addressExact = contact.Address;
+    const string clinicAddress = "شریعتی بالاتر از خواجه عبدالله نبش کوچه ذکایی(جنب آرش موتورز) ساختمان کسری طبقه ۴ واحد ۱۵";
+    var addressShort = clinicAddress;
+    var addressExact = clinicAddress;
+    var hasAddress = true;
     const double mapLat = 35.748276;
     const double mapLng = 51.449691;
-    var mapEmbedSrc = contact.HasAddress
-        ? $"https://neshan.org/maps/@{mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)},17.0z,0.0p"
-        : null;
-    var directionsHref = contact.HasAddress
-        ? $"https://nshn.ir/?lat={mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)}&lng={mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)}"
-        : null;
+    var mapEmbedSrc = $"https://neshan.org/maps/@{mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)},17.0z,0.0p";
+    var directionsHref = $"https://nshn.ir/?lat={mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)}&lng={mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
     var hasContactForm = ViewBag.HasContactForm as bool? == true;
-    var asideIntro = contact.HasAddress
-        ? $"{brand} در آدرس زیر آماده پذیرش حضوری است."
-        : $"{brand} آماده پاسخگویی به درخواست‌های شماست.";
+    var asideIntro = $"{brand} در آدرس زیر آماده پذیرش حضوری است.";
     var businessHours = contact.BusinessHours;
 }
 <section class="contact-channels" aria-labelledby="contact-channels-heading">
@@ -83,7 +79,7 @@
             </div>
           </li>
           }
-          @if (contact.HasAddress)
+          @if (hasAddress)
           {
           <li class="reveal">
             <a class="contact-channel" href="#contact-map">
@@ -220,7 +216,7 @@
             </p>
 
             <dl class="contact-aside__meta">
-              @if (contact.HasAddress)
+              @if (hasAddress)
               {
               <div>
                 <dt>آدرس دقیق</dt>
@@ -276,7 +272,7 @@
       </div>
     </section>
 
-@if (contact.HasAddress && mapEmbedSrc is not null)
+@if (hasAddress && mapEmbedSrc is not null)
 {
     <section class="contact-map" id="contact-map" aria-labelledby="contact-map-heading">
       <div class="container">
