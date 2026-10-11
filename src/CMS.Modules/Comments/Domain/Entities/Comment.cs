@@ -111,9 +111,9 @@ public class Comment : BaseEntity
             AuthorEmail = NormalizeOptional(authorEmail, 256),
             Body = body.Trim(),
             Status = status,
-            // Keep original publish date for display; CreatedAtUtc stays "now" so admin newest-first lists show imports.
+            // Preserve the original WordPress date for both publish and create timestamps.
             PublishedAtUtc = utc,
-            CreatedAtUtc = DateTime.UtcNow,
+            CreatedAtUtc = utc,
             ParentId = parentId,
             SourceSystem = sourceSystem.Trim().ToLowerInvariant(),
             SourceExternalId = sourceExternalId.Trim(),

@@ -23,6 +23,17 @@ public sealed record PublicCommentDto(
     DateTime PublishedAtUtc,
     Guid? ParentId = null);
 
+public sealed record PublicCommentPageResult(
+    IReadOnlyList<PublicCommentDto> Items,
+    int TotalCount,
+    int RootTotalCount,
+    int Page,
+    int PageSize)
+{
+    public int TotalPages =>
+        PageSize <= 0 ? 0 : (int)Math.Ceiling(RootTotalCount / (double)PageSize);
+}
+
 public sealed record SubmitCommentCommand(
     CommentTargetType TargetType,
     Guid TargetId,

@@ -3,6 +3,7 @@
 @using CMS.Modules.Comments.Domain.Enums
 @using CMS.Modules.Comments.Web
 @using CMS.Modules.Comments.Web.ViewModels
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
 @model CommentsSectionViewModel
 @inject Microsoft.Extensions.Localization.IStringLocalizer<CommentsPublic> Localizer
 @{
@@ -11,6 +12,19 @@
             .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
 
     var countLabel = ToPersianDigits(Model.TotalCount.ToString(CultureInfo.InvariantCulture));
+
+    var commentsByParent = Model.Comments
+        .Where(c => c.ParentId.HasValue)
+        .GroupBy(c => c.ParentId!.Value)
+        .ToDictionary(
+            g => g.Key,
+            g => g.OrderBy(c => c.PublishedAtUtc).ThenBy(c => c.Id).ToList());
+
+    var rootComments = Model.Comments
+        .Where(c => !c.ParentId.HasValue || !Model.Comments.Any(p => p.Id == c.ParentId.Value))
+        .OrderByDescending(c => c.PublishedAtUtc)
+        .ThenByDescending(c => c.Id)
+        .ToList();
 
     string BuildCommentPageUrl(int pageNumber)
     {
@@ -57,18 +71,17 @@
     else
     {
         <ul class="cms-comments-list">
-            @foreach (var comment in Model.Comments)
+            @foreach (var comment in rootComments)
             {
-                var localTime = comment.PublishedAtUtc.ToLocalTime();
-                var dateLabel = ToPersianDigits(localTime.ToString("yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture));
-                var isReply = comment.ParentId.HasValue;
-                <li class="cms-comments-item @(isReply ? "cms-comments-item--reply" : null)">
-                    <div class="cms-comments-meta">
-                        <strong class="cms-comments__author">@comment.AuthorName</strong>
-                        <time class="cms-comments__date" datetime="@localTime.ToString("o", CultureInfo.InvariantCulture)">@dateLabel</time>
-                    </div>
-                    <p class="cms-comments__body">@comment.Body</p>
-                </li>
+                @await Html.PartialAsync(
+                    "Components/Comments/_CommentItem",
+                    comment,
+                    new ViewDataDictionary(ViewData)
+                    {
+                        ["CommentsByParent"] = commentsByParent,
+                        ["ToPersianDigits"] = (Func<string, string>)ToPersianDigits,
+                        ["IsReply"] = false
+                    })
             }
         </ul>
 

@@ -599,18 +599,36 @@ body.site > main {
 }
 
 .cms-comments-list--replies {
-  margin: 0.85rem 0 0;
+  margin: 0.9rem 0 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 0.75rem;
-  padding-inline-start: 1rem;
-  border-inline-start: 2px solid rgba(9, 112, 125, 0.12);
+  gap: 0.65rem;
+  padding-inline-start: 1.1rem;
+  border-inline-start: 3px solid rgba(9, 112, 125, 0.22);
 }
 
 .cms-comments-item--reply {
-  padding: 0.75rem 0.9rem;
-  background: rgba(247, 250, 250, 0.8);
+  padding: 0.8rem 0.95rem;
+  background: rgba(230, 243, 245, 0.55);
+  border: 1px solid rgba(9, 112, 125, 0.1);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: none;
+}
+
+.cms-comments-item--reply .cms-comments__author {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(26, 58, 63, 0.88);
+}
+
+.cms-comments-item--reply .cms-comments__body {
+  font-size: 0.92rem;
+  color: rgba(44, 62, 64, 0.92);
+}
+
+.cms-comments-item--reply .cms-comments__date {
+  font-size: 0.75rem;
 }
 
 .cms-comments-pager {

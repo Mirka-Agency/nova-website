@@ -148,7 +148,7 @@ public sealed class CommentService : ICommentService
         return page.Items;
     }
 
-    public async Task<PagedResult<PublicCommentDto>> ListApprovedForTargetPagedAsync(
+    public async Task<PublicCommentPageResult> ListApprovedForTargetPagedAsync(
         CommentTargetType targetType,
         Guid targetId,
         int page = 1,
@@ -160,7 +160,7 @@ public sealed class CommentService : ICommentService
             ? CommentListQuery.PublicPageSize
             : Math.Min(pageSize, PagedRequest.MaxPageSize);
 
-        // Flat paging of all approved comments — every comment is visible; nesting is view-only.
+        // Page by root comments; load replies in those threads so the view can nest them.
         var baseQuery = _db.Comments.AsNoTracking()
             .Where(c =>
                 c.TargetType == targetType
@@ -168,11 +168,16 @@ public sealed class CommentService : ICommentService
                 && c.Status == CommentStatus.Approved);
 
         var total = await baseQuery.CountAsync(cancellationToken);
-        var totalPages = normalizedPageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)normalizedPageSize);
+
+        var rootQuery = baseQuery.Where(c => c.ParentId == null);
+        var rootTotal = await rootQuery.CountAsync(cancellationToken);
+        var totalPages = normalizedPageSize <= 0
+            ? 0
+            : (int)Math.Ceiling(rootTotal / (double)normalizedPageSize);
         if (totalPages > 0 && normalizedPage > totalPages)
             normalizedPage = totalPages;
 
-        var items = await baseQuery
+        var roots = await rootQuery
             .OrderByDescending(c => c.PublishedAtUtc)
             .ThenByDescending(c => c.CreatedAtUtc)
             .Skip((normalizedPage - 1) * normalizedPageSize)
@@ -180,9 +185,38 @@ public sealed class CommentService : ICommentService
             .Select(c => new PublicCommentDto(c.Id, c.AuthorName, c.Body, c.PublishedAtUtc, c.ParentId))
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<PublicCommentDto>(
+        if (roots.Count == 0)
+        {
+            return new PublicCommentPageResult(
+                [],
+                total,
+                rootTotal,
+                normalizedPage,
+                normalizedPageSize);
+        }
+
+        var items = new List<PublicCommentDto>(roots);
+        var frontier = roots.Select(r => r.Id).ToList();
+        while (frontier.Count > 0)
+        {
+            var children = await baseQuery
+                .Where(c => c.ParentId != null && frontier.Contains(c.ParentId.Value))
+                .OrderBy(c => c.PublishedAtUtc)
+                .ThenBy(c => c.CreatedAtUtc)
+                .Select(c => new PublicCommentDto(c.Id, c.AuthorName, c.Body, c.PublishedAtUtc, c.ParentId))
+                .ToListAsync(cancellationToken);
+
+            if (children.Count == 0)
+                break;
+
+            items.AddRange(children);
+            frontier = children.Select(c => c.Id).ToList();
+        }
+
+        return new PublicCommentPageResult(
             items,
             total,
+            rootTotal,
             normalizedPage,
             normalizedPageSize);
     }

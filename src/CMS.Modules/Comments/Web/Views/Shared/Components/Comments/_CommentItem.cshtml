@@ -1,0 +1,37 @@
+@using System.Globalization
+@using CMS.Application.Common.Time
+@using CMS.Modules.Comments.Application.Comments
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@model PublicCommentDto
+@{
+    var commentsByParent = ViewData["CommentsByParent"] as IReadOnlyDictionary<Guid, List<PublicCommentDto>>
+        ?? new Dictionary<Guid, List<PublicCommentDto>>();
+    var toPersianDigits = ViewData["ToPersianDigits"] as Func<string, string>
+        ?? (value => value);
+    var isReply = ViewData["IsReply"] as bool? == true;
+
+    var iranLocal = IranTime.FromUtc(Model.PublishedAtUtc);
+    var persian = new PersianCalendar();
+    var dateLabel = toPersianDigits(string.Create(
+        CultureInfo.InvariantCulture,
+        $"{persian.GetYear(iranLocal):0000}/{persian.GetMonth(iranLocal):00}/{persian.GetDayOfMonth(iranLocal):00} {iranLocal.Hour:00}:{iranLocal.Minute:00}"));
+    commentsByParent.TryGetValue(Model.Id, out var replies);
+}
+<li class="cms-comments-item @(isReply ? "cms-comments-item--reply" : null)">
+    <div class="cms-comments-meta">
+        <strong class="cms-comments__author">@Model.AuthorName</strong>
+        <time class="cms-comments__date" datetime="@iranLocal.ToString("o", CultureInfo.InvariantCulture)">@dateLabel</time>
+    </div>
+    <p class="cms-comments__body">@Model.Body</p>
+
+    @if (replies is { Count: > 0 })
+    {
+        <ul class="cms-comments-list--replies">
+            @foreach (var reply in replies)
+            {
+                var replyViewData = new ViewDataDictionary(ViewData) { ["IsReply"] = true };
+                @await Html.PartialAsync("Components/Comments/_CommentItem", reply, replyViewData)
+            }
+        </ul>
+    }
+</li>
