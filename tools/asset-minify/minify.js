@@ -1,4 +1,5 @@
 const esbuild = require('esbuild');
+const { minify: minifyHtml } = require('html-minifier-terser');
 const fs = require('fs');
 const path = require('path');
 
@@ -11,6 +12,8 @@ const wwwroot = path.resolve(
 /** Path segments / name patterns that must not be re-minified. */
 const SKIP_DIR_NAMES = new Set(['vendor', 'lib', 'node_modules']);
 
+const ASSET_EXTS = new Set(['.css', '.js', '.html']);
+
 function shouldSkip(filePath) {
   const relative = path.relative(wwwroot, filePath);
   const parts = relative.split(path.sep);
@@ -19,7 +22,7 @@ function shouldSkip(filePath) {
   }
 
   const base = path.basename(filePath).toLowerCase();
-  if (base.endsWith('.min.js') || base.endsWith('.min.css')) {
+  if (base.endsWith('.min.js') || base.endsWith('.min.css') || base.endsWith('.min.html')) {
     return true;
   }
   // Already produced by a dedicated bundler (e.g. tools/seo-analyzer).
@@ -45,13 +48,17 @@ function collectAssets(dir, out = []) {
       if (SKIP_DIR_NAMES.has(entry.name.toLowerCase())) {
         continue;
       }
+      // Editor / tooling metadata under template — not shipped as site assets.
+      if (entry.name.startsWith('.')) {
+        continue;
+      }
       collectAssets(full, out);
       continue;
     }
     if (!entry.isFile()) continue;
 
     const ext = path.extname(entry.name).toLowerCase();
-    if (ext !== '.css' && ext !== '.js') continue;
+    if (!ASSET_EXTS.has(ext)) continue;
     if (shouldSkip(full)) continue;
     out.push(full);
   }
@@ -59,7 +66,7 @@ function collectAssets(dir, out = []) {
   return out;
 }
 
-async function minifyFile(filePath) {
+async function minifyCssOrJs(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const loader = ext === '.css' ? 'css' : 'js';
   const source = fs.readFileSync(filePath, 'utf8');
@@ -67,17 +74,45 @@ async function minifyFile(filePath) {
     loader,
     minify: true,
     target: ['es2018'],
-    // Keep legal comments out; fail hard on syntax errors.
     logLevel: 'silent',
   });
   fs.writeFileSync(filePath, result.code, 'utf8');
   return { before: source.length, after: result.code.length };
 }
 
+async function minifyHtmlFile(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  const result = await minifyHtml(source, {
+    collapseBooleanAttributes: true,
+    collapseWhitespace: true,
+    conservativeCollapse: true,
+    decodeEntities: true,
+    minifyCSS: true,
+    minifyJS: true,
+    removeComments: true,
+    removeEmptyAttributes: true,
+    removeRedundantAttributes: true,
+    removeScriptTypeAttributes: true,
+    removeStyleLinkTypeAttributes: true,
+    // Keep tags intact for RTL / older browsers; do not sort attributes.
+    useShortDoctype: true,
+  });
+  fs.writeFileSync(filePath, result, 'utf8');
+  return { before: source.length, after: result.length };
+}
+
+async function minifyFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === '.html') {
+    return minifyHtmlFile(filePath);
+  }
+  return minifyCssOrJs(filePath);
+}
+
 async function main() {
   const files = collectAssets(wwwroot);
   if (files.length === 0) {
-    console.error('No CSS/JS assets found to minify under', wwwroot);
+    console.error('No CSS/JS/HTML assets found to minify under', wwwroot);
     process.exit(1);
   }
 

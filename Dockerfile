@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # -----------------------------------------------------------------------------
-# Stage 1: minify first-party CSS/JS in wwwroot (paths/names unchanged).
+# Stage 1: minify first-party CSS/JS/HTML in wwwroot (paths/names unchanged).
 # Node stays out of the final runtime image.
 # -----------------------------------------------------------------------------
 FROM node:22-bookworm-slim AS assets
