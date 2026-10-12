@@ -47,7 +47,7 @@ public class EventsController : Controller
     }
 
     [HttpGet("{slug}")]
-    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["commentPage"])]
     public async Task<IActionResult> Details(string slug, CancellationToken cancellationToken = default)
     {
         if (!await _features.IsEnabledAsync(FeatureNames.News))

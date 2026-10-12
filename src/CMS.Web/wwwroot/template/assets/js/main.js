@@ -1817,4 +1817,68 @@
       if (success) success.hidden = false;
     });
   })();
+
+  // Comments "show more": load next page via AJAX (accumulate) without full-page reload.
+  (function initCommentsLoadMore() {
+    var root = document.querySelector("[data-comments-root]");
+    if (!root) return;
+
+    var feed = root.querySelector("[data-comments-feed]");
+    if (!feed) return;
+
+    var loading = false;
+
+    root.addEventListener("click", function (event) {
+      var moreBtn = event.target.closest("[data-comments-more]");
+      if (!moreBtn || !root.contains(moreBtn)) return;
+
+      var nextPage = Number(moreBtn.getAttribute("data-comments-next-page") || "0");
+      var targetType = root.getAttribute("data-comments-target-type");
+      var targetId = root.getAttribute("data-comments-target-id");
+      var targetTitle = root.getAttribute("data-comments-target-title") || "";
+      if (!nextPage || !targetType || !targetId || loading) return;
+
+      event.preventDefault();
+      loading = true;
+      var fallbackHref = moreBtn.getAttribute("href") || "";
+      moreBtn.setAttribute("aria-busy", "true");
+      moreBtn.classList.add("is-loading");
+
+      var returnPath = window.location.pathname || "/";
+      var url =
+        "/comments/feed?targetType=" +
+        encodeURIComponent(targetType) +
+        "&targetId=" +
+        encodeURIComponent(targetId) +
+        "&targetTitle=" +
+        encodeURIComponent(targetTitle) +
+        "&commentPage=" +
+        encodeURIComponent(String(nextPage)) +
+        "&returnPath=" +
+        encodeURIComponent(returnPath);
+
+      fetch(url, {
+        method: "GET",
+        headers: { Accept: "text/html", "X-Requested-With": "XMLHttpRequest" },
+        credentials: "same-origin"
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error("comments-feed-failed");
+          return response.text();
+        })
+        .then(function (html) {
+          feed.innerHTML = html;
+          if (fallbackHref && window.history && window.history.replaceState) {
+            window.history.replaceState(null, "", fallbackHref);
+          }
+        })
+        .catch(function () {
+          // Fallback: full navigation if fragment load fails.
+          if (fallbackHref) window.location.href = fallbackHref;
+        })
+        .finally(function () {
+          loading = false;
+        });
+    });
+  })();
 })();

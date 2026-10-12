@@ -721,6 +721,16 @@ body.site > main {
   justify-content: center;
 }
 
+.cms-comments-pager__btn--more.is-loading {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.cms-comments__feed {
+  display: grid;
+  gap: 1.25rem;
+}
+
 .cms-comments-list {
   list-style: none;
   margin: 0;

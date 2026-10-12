@@ -1,0 +1,86 @@
+@using System.Globalization
+@using CMS.Modules.Comments.Application.Comments
+@using CMS.Modules.Comments.Web
+@using CMS.Modules.Comments.Web.ViewModels
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@model CommentsSectionViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<CommentsPublic> Localizer
+@{
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
+            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
+
+    var commentsByParent = Model.Comments
+        .Where(c => c.ParentId.HasValue)
+        .GroupBy(c => c.ParentId!.Value)
+        .ToDictionary(
+            g => g.Key,
+            g => g.OrderBy(c => c.PublishedAtUtc).ThenBy(c => c.Id).ToList());
+
+    var rootComments = Model.Comments
+        .Where(c => !c.ParentId.HasValue || !Model.Comments.Any(p => p.Id == c.ParentId.Value))
+        .OrderByDescending(c => c.PublishedAtUtc)
+        .ThenByDescending(c => c.Id)
+        .ToList();
+
+    string BuildCommentPageUrl(int pageNumber)
+    {
+        // Prefer the content page path (passed for AJAX feed); fall back to current request.
+        var path = Context.Request.Query["returnPath"].ToString();
+        if (string.IsNullOrWhiteSpace(path) || !path.StartsWith('/'))
+            path = Context.Request.Path.Value ?? "/";
+
+        var dict = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var key in Context.Request.Query.Keys)
+        {
+            if (string.Equals(key, "commentPage", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "returnPath", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "targetType", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "targetId", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "targetTitle", StringComparison.OrdinalIgnoreCase))
+                continue;
+            dict[key] = Context.Request.Query[key].ToString();
+        }
+
+        if (pageNumber > 1)
+            dict["commentPage"] = pageNumber.ToString(CultureInfo.InvariantCulture);
+
+        return Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(path, dict) + "#comments";
+    }
+}
+
+@if (Model.TotalCount == 0)
+{
+    <p class="cms-comments-empty">@Localizer["NoComments"]</p>
+}
+else
+{
+    <ul class="cms-comments-list">
+        @foreach (var comment in rootComments)
+        {
+            @await Html.PartialAsync(
+                "Components/Comments/_CommentItem",
+                comment,
+                new ViewDataDictionary(ViewData)
+                {
+                    ["CommentsByParent"] = commentsByParent,
+                    ["ToPersianDigits"] = (Func<string, string>)ToPersianDigits,
+                    ["IsReply"] = false
+                })
+        }
+    </ul>
+
+    @if (Model.Page < Model.TotalPages)
+    {
+        <nav class="cms-comments-pager" aria-label="@Localizer["CommentsPager"]">
+            <div class="cms-comments-pager__links">
+                <a class="cms-comments-pager__btn cms-comments-pager__btn--more"
+                   href="@BuildCommentPageUrl(Model.Page + 1)"
+                   data-comments-more
+                   data-comments-next-page="@(Model.Page + 1)">
+                    @Localizer["CommentsShowMore"]
+                </a>
+            </div>
+        </nav>
+    }
+}
