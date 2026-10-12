@@ -360,7 +360,11 @@
     init() {
       const editor = this.editor;
 
-      if (typeof Widget !== "function" || typeof toWidget !== "function" || typeof toWidgetEditable !== "function") {
+      if (
+        typeof Widget !== "function" ||
+        typeof toWidget !== "function" ||
+        typeof toWidgetEditable !== "function"
+      ) {
         console.warn("VideoWarningInsert skipped: Widget APIs unavailable");
         return;
       }
@@ -382,13 +386,27 @@
           editor.model.change(function (writer) {
             const box = writer.createElement("novaVideoWarning");
             const body = writer.createElement("novaVideoWarningText");
-            const paragraph = writer.createElement("paragraph");
-            writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, paragraph);
-            writer.append(paragraph, body);
+            writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, body);
             writer.append(body, box);
 
-            editor.model.insertContent(box);
-            writer.setSelection(body, "in");
+            const selected = editor.model.document.selection.getSelectedElement();
+            const insertBeforeVideo =
+              selected &&
+              (selected.is("element", "media") ||
+                selected.is("element", "rawHtml"));
+
+            if (insertBeforeVideo) {
+              writer.insert(box, writer.createPositionBefore(selected));
+            } else if (typeof editor.model.insertObject === "function") {
+              editor.model.insertObject(box, null, null, {
+                setSelection: "after",
+              });
+            } else {
+              editor.model.insertContent(box);
+            }
+
+            // Keep caret after the warning so the following video does not jump/reselect.
+            writer.setSelection(box, "after");
           });
 
           editor.editing.view.focus();
@@ -406,11 +424,16 @@
         allowChildren: ["novaVideoWarningText"],
       });
 
+      // Compact editable text (inline only) — avoids nested <p> height/gaps.
       schema.register("novaVideoWarningText", {
         isLimit: true,
         allowIn: "novaVideoWarning",
-        allowContentOf: "$block",
       });
+
+      schema.extend("$text", { allowIn: "novaVideoWarningText" });
+      if (schema.isRegistered("softBreak")) {
+        schema.extend("softBreak", { allowIn: "novaVideoWarningText" });
+      }
 
       schema.addChildCheck(function (context, childDefinition) {
         if (
@@ -456,8 +479,38 @@
         converterPriority: "high",
       });
 
-      // Optional legacy icon node from older markup — drop on load.
       conversion.for("upcast").add(function (dispatcher) {
+        // Unwrap <p> inside warning text so model stays inline-only.
+        dispatcher.on(
+          "element:p",
+          function (evt, data, conversionApi) {
+            const parent = data.viewItem && data.viewItem.parent;
+            if (
+              !parent ||
+              !parent.is ||
+              !parent.is("element", "div") ||
+              typeof parent.hasClass !== "function" ||
+              !parent.hasClass("nova-video-warning__text")
+            ) {
+              return;
+            }
+
+            if (!conversionApi.consumable.consume(data.viewItem, { name: true })) {
+              return;
+            }
+
+            const modelCursor = data.modelCursor;
+            const modelRange = conversionApi.convertChildren(
+              data.viewItem,
+              modelCursor
+            );
+            data.modelRange = modelRange;
+            data.modelCursor = modelRange.end;
+            evt.stop();
+          },
+          { priority: "high" }
+        );
+
         dispatcher.on(
           "element:span",
           function (evt, data, conversionApi) {
@@ -502,7 +555,7 @@
           );
           return toWidget(container, writer, {
             label: "هشدار محتوای ویدیو",
-            hasSelectionHandle: true,
+            hasSelectionHandle: false,
           });
         },
       });
@@ -530,6 +583,15 @@
       const editor = this.editor;
       const model = editor.model;
 
+      function isEmptyParagraph(element) {
+        return (
+          element &&
+          element.is &&
+          element.is("element", "paragraph") &&
+          element.childCount === 0
+        );
+      }
+
       model.document.registerPostFixer(function (writer) {
         let changed = false;
 
@@ -547,18 +609,28 @@
           if (!textChild) {
             const body = writer.createElement("novaVideoWarningText");
             const orphans = children.slice();
-
             writer.append(body, item);
 
             orphans.forEach(function (orphan) {
-              writer.move(
-                writer.createRangeOn(orphan),
-                writer.createPositionAt(body, "end")
-              );
+              if (orphan.is("element", "paragraph")) {
+                // Flatten legacy paragraph into inline text.
+                Array.from(orphan.getChildren()).forEach(function (node) {
+                  writer.move(
+                    writer.createRangeOn(node),
+                    writer.createPositionAt(body, "end")
+                  );
+                });
+                writer.remove(orphan);
+              } else {
+                writer.move(
+                  writer.createRangeOn(orphan),
+                  writer.createPositionAt(body, "end")
+                );
+              }
             });
 
             if (!body.childCount) {
-              writer.append(writer.createElement("paragraph"), body);
+              writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, body);
             }
 
             changed = true;
@@ -567,15 +639,55 @@
 
           children.forEach(function (child) {
             if (child === textChild) return;
-            writer.move(
-              writer.createRangeOn(child),
-              writer.createPositionAt(textChild, "end")
-            );
+            if (child.is("element", "paragraph")) {
+              Array.from(child.getChildren()).forEach(function (node) {
+                writer.move(
+                  writer.createRangeOn(node),
+                  writer.createPositionAt(textChild, "end")
+                );
+              });
+              writer.remove(child);
+            } else {
+              writer.move(
+                writer.createRangeOn(child),
+                writer.createPositionAt(textChild, "end")
+              );
+            }
             changed = true;
           });
 
+          // Flatten a single wrapping paragraph inside the text container.
+          const textKids = Array.from(textChild.getChildren());
+          if (
+            textKids.length === 1 &&
+            textKids[0].is &&
+            textKids[0].is("element", "paragraph")
+          ) {
+            const onlyP = textKids[0];
+            Array.from(onlyP.getChildren()).forEach(function (node) {
+              writer.move(
+                writer.createRangeOn(node),
+                writer.createPositionAt(textChild, "end")
+              );
+            });
+            writer.remove(onlyP);
+            changed = true;
+          }
+
           if (!textChild.childCount) {
-            writer.append(writer.createElement("paragraph"), textChild);
+            writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, textChild);
+            changed = true;
+          }
+
+          // Remove empty paragraphs glued before/after the warning (video jump gap).
+          const prev = item.previousSibling;
+          const next = item.nextSibling;
+          if (isEmptyParagraph(prev)) {
+            writer.remove(prev);
+            changed = true;
+          }
+          if (isEmptyParagraph(next)) {
+            writer.remove(next);
             changed = true;
           }
         }
@@ -737,6 +849,36 @@
     return true;
   }
 
+  function closeVideoPosterModal(modal) {
+    if (!modal) return;
+    modal.hidden = true;
+    modal._novaPosterCtx = null;
+    modal._novaPosterOriginal = "";
+    document.body.classList.remove("admin-modal-open");
+    if (modal._novaPosterEsc) {
+      document.removeEventListener("keydown", modal._novaPosterEsc);
+      modal._novaPosterEsc = null;
+    }
+  }
+
+  function openVideoPosterMediaPicker(modal) {
+    const picker = window.AdminMediaPicker;
+    if (!picker || typeof picker.open !== "function") {
+      window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
+      return;
+    }
+
+    picker.open({
+      onSelect: function (item) {
+        if (!item || !item.publicUrl) return;
+        const url = String(item.publicUrl).trim();
+        if (!url) return;
+        modal._novaPosterDraft = url;
+        syncVideoPosterModalPreview(modal, url);
+      },
+    });
+  }
+
   function ensureVideoPosterModal() {
     let modal = document.getElementById("video-poster-modal");
     if (modal) return modal;
@@ -749,19 +891,34 @@
       '<div class="admin-modal-backdrop" data-video-poster-close></div>' +
       '<div class="admin-modal-dialog admin-video-poster-dialog" role="dialog" aria-modal="true" aria-labelledby="video-poster-modal-title">' +
       '<div class="admin-modal-header">' +
-      '<h2 id="video-poster-modal-title">تنظیم کاور ویدیو</h2>' +
+      '<div>' +
+      '<h2 id="video-poster-modal-title">کاور ویدیو</h2>' +
+      '<p class="admin-video-poster-subtitle">این تصویر قبل از پخش روی ویدیوی انتخاب‌شده نمایش داده می‌شود.</p>' +
+      "</div>" +
       '<button type="button" class="btn btn-ghost" data-video-poster-close aria-label="بستن">×</button>' +
       "</div>" +
-      '<p class="admin-hint">تصویر کاور فقط روی ویدیوی انتخاب‌شده اعمال می‌شود و تا قبل از پخش نمایش داده می‌شود.</p>' +
+      '<div class="admin-video-poster-body">' +
       '<div class="admin-video-poster-preview" data-video-poster-preview>' +
       '<img data-video-poster-image alt="پیش‌نمایش کاور" hidden />' +
-      '<p class="admin-lead" data-video-poster-empty>کاور تنظیم نشده است.</p>' +
+      '<div class="admin-video-poster-empty" data-video-poster-empty>' +
+      '<span class="admin-video-poster-empty-icon" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+      '<rect x="3" y="5" width="18" height="14" rx="2"/>' +
+      '<path d="M10 9.5l5 2.5-5 2.5v-5z"/>' +
+      "</svg></span>" +
+      '<p class="admin-video-poster-empty-title">کاور تنظیم نشده</p>' +
+      '<p class="admin-video-poster-empty-text">یک تصویر ۱۶:۹ از کتابخانه رسانه انتخاب کنید یا آپلود کنید.</p>' +
+      '<button type="button" class="btn btn-primary" data-video-poster-pick>انتخاب تصویر</button>' +
       "</div>" +
-      '<div class="admin-actions admin-video-poster-actions">' +
-      '<button type="button" class="btn btn-primary" data-video-poster-pick>انتخاب / آپلود تصویر</button>' +
-      '<button type="button" class="btn btn-secondary" data-video-poster-apply>اعمال کاور</button>' +
-      '<button type="button" class="btn btn-ghost" data-video-poster-clear>حذف کاور</button>' +
+      '<button type="button" class="admin-video-poster-change" data-video-poster-pick data-video-poster-change hidden>تغییر تصویر</button>' +
+      "</div>" +
+      '<div class="admin-video-poster-actions">' +
+      '<button type="button" class="btn btn-danger-ghost" data-video-poster-clear>حذف کاور</button>' +
+      '<div class="admin-video-poster-actions-end">' +
       '<button type="button" class="btn btn-ghost" data-video-poster-close>انصراف</button>' +
+      '<button type="button" class="btn btn-primary" data-video-poster-apply>اعمال کاور</button>' +
+      "</div>" +
+      "</div>" +
       "</div>" +
       "</div>";
 
@@ -769,30 +926,15 @@
 
     modal.querySelectorAll("[data-video-poster-close]").forEach(function (el) {
       el.addEventListener("click", function () {
-        modal.hidden = true;
-        modal._novaPosterCtx = null;
+        closeVideoPosterModal(modal);
       });
     });
 
-    modal
-      .querySelector("[data-video-poster-pick]")
-      .addEventListener("click", function () {
-        const picker = window.AdminMediaPicker;
-        if (!picker || typeof picker.open !== "function") {
-          window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
-          return;
-        }
-
-        picker.open({
-          onSelect: function (item) {
-            if (!item || !item.publicUrl) return;
-            const url = String(item.publicUrl).trim();
-            if (!url) return;
-            modal._novaPosterDraft = url;
-            syncVideoPosterModalPreview(modal, url);
-          },
-        });
+    modal.querySelectorAll("[data-video-poster-pick]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        openVideoPosterMediaPicker(modal);
       });
+    });
 
     modal
       .querySelector("[data-video-poster-clear]")
@@ -806,7 +948,7 @@
       .addEventListener("click", function () {
         const ctx = modal._novaPosterCtx;
         if (!ctx || !ctx.editor || !ctx.target) {
-          modal.hidden = true;
+          closeVideoPosterModal(modal);
           return;
         }
 
@@ -815,18 +957,26 @@
             ? modal._novaPosterDraft
             : "";
         applyPosterToTarget(ctx.editor, ctx.target, draft);
-        modal.hidden = true;
-        modal._novaPosterCtx = null;
+        closeVideoPosterModal(modal);
       });
 
     return modal;
   }
 
   function syncVideoPosterModalPreview(modal, posterUrl) {
+    const preview = modal.querySelector("[data-video-poster-preview]");
     const img = modal.querySelector("[data-video-poster-image]");
     const empty = modal.querySelector("[data-video-poster-empty]");
+    const changeBtn = modal.querySelector("[data-video-poster-change]");
     const clearBtn = modal.querySelector("[data-video-poster-clear]");
+    const applyBtn = modal.querySelector("[data-video-poster-apply]");
     const url = String(posterUrl || "").trim();
+    const original =
+      typeof modal._novaPosterOriginal === "string"
+        ? modal._novaPosterOriginal
+        : "";
+
+    if (preview) preview.classList.toggle("has-image", !!url);
 
     if (img) {
       if (url) {
@@ -839,7 +989,9 @@
     }
 
     if (empty) empty.hidden = !!url;
+    if (changeBtn) changeBtn.hidden = !url;
     if (clearBtn) clearBtn.disabled = !url;
+    if (applyBtn) applyBtn.disabled = url === original;
   }
 
   function openVideoPosterManager(editor, preferredTarget) {
@@ -858,9 +1010,34 @@
     const modal = ensureVideoPosterModal();
     const currentPoster = extractPosterFromTarget(target);
     modal._novaPosterCtx = { editor: editor, target: target };
+    modal._novaPosterOriginal = currentPoster;
     modal._novaPosterDraft = currentPoster;
     syncVideoPosterModalPreview(modal, currentPoster);
+
+    if (modal.parentElement === document.body) {
+      document.body.appendChild(modal);
+    }
+
     modal.hidden = false;
+    document.body.classList.add("admin-modal-open");
+
+    if (modal._novaPosterEsc) {
+      document.removeEventListener("keydown", modal._novaPosterEsc);
+    }
+    modal._novaPosterEsc = function (event) {
+      if (event.key !== "Escape") return;
+      const mediaPicker = document.getElementById("media-library-picker");
+      if (mediaPicker && !mediaPicker.hidden) return;
+      closeVideoPosterModal(modal);
+    };
+    document.addEventListener("keydown", modal._novaPosterEsc);
+
+    const focusTarget =
+      modal.querySelector("[data-video-poster-pick]:not([hidden])") ||
+      modal.querySelector("[data-video-poster-close]");
+    if (focusTarget && typeof focusTarget.focus === "function") {
+      focusTarget.focus();
+    }
   }
 
   function openVideoPosterPicker(editor, preferredTarget) {

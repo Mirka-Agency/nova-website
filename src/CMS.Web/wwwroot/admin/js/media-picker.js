@@ -117,6 +117,7 @@
   function close() {
     if (uploading) return;
     modal.hidden = true;
+    modal.classList.remove("is-nested-over-poster");
     resetState();
   }
 
@@ -495,6 +496,18 @@
     } else if (options && typeof options === "object") {
       if (typeof options.target === "string") targetSelector = options.target;
       if (typeof options.onSelect === "function") onSelectCallback = options.onSelect;
+    }
+
+    // Keep media picker above video-poster (and any other open admin modal).
+    const posterOpen = document.getElementById("video-poster-modal");
+    const nested =
+      !!(posterOpen && !posterOpen.hidden) ||
+      !!document.querySelector(".admin-modal:not([hidden]):not(#media-library-picker)");
+    modal.classList.toggle("is-nested-over-poster", nested);
+
+    // Ensure this modal is the last fixed overlay in DOM for stacking contexts.
+    if (modal.parentElement === document.body) {
+      document.body.appendChild(modal);
     }
 
     modal.hidden = false;
