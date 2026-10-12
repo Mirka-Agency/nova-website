@@ -3388,10 +3388,6 @@ button.header-cta {
   transform: translateX(-3px);
 }
 
-.service-group:last-child {
-  grid-column: 1 / -1;
-}
-
 .service-detail {
   padding-block: var(--section-space);
   background: var(--white);
