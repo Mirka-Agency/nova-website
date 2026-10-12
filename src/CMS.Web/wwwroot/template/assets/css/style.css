@@ -5434,6 +5434,8 @@ button.header-cta {
   font-size: clamp(1.35rem, 2.4vw, 1.75rem);
   font-weight: 700;
   line-height: 1.4;
+  /* Align hash-scroll + TOC spy with sticky header */
+  scroll-margin-top: var(--sticky-under-header);
 }
 
 .service-prose h3,
