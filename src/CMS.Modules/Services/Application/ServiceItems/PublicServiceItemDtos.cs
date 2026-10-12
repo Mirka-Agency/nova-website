@@ -29,4 +29,5 @@ public sealed record PublicServiceItemDetailDto(
     string? CanonicalUrl,
     string? OgTitle,
     string? OgDescription,
-    string? OgImageUrl);
+    string? OgImageUrl,
+    string? SourcesJson);

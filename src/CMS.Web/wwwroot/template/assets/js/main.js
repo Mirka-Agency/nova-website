@@ -363,6 +363,26 @@
     });
   });
 
+  document.querySelectorAll("[data-scientific-sources-accordion]").forEach(function (root) {
+    var toggle = root.querySelector(".scientific-sources__toggle");
+    var panel = root.querySelector(".scientific-sources__panel");
+    if (!toggle || !panel) return;
+
+    var syncInert = function (isOpen) {
+      if ("inert" in panel) {
+        panel.inert = !isOpen;
+      }
+    };
+    syncInert(false);
+
+    toggle.addEventListener("click", function () {
+      var willOpen = !root.classList.contains("is-open");
+      root.classList.toggle("is-open", willOpen);
+      toggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      syncInert(willOpen);
+    });
+  });
+
   testimonialSliders.forEach(function (slider) {
     var viewport = slider.querySelector(".testimonials-slider__viewport");
     var slides = Array.from(slider.querySelectorAll(".testimonial-slide"));
@@ -413,7 +433,7 @@
       });
     }
 
-    var scrollStep = 2;
+    var scrollStep = 1;
 
     prevButton.addEventListener("click", function () {
       goToSlide(activeIndex - scrollStep);

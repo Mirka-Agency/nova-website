@@ -140,7 +140,8 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
             post.CanonicalUrl,
             post.OgTitle,
             post.OgDescription,
-            post.OgImageUrl);
+            post.OgImageUrl,
+            post.SourcesJson);
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>

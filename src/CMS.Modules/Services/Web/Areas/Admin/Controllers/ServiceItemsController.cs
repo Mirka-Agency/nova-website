@@ -229,7 +229,10 @@ public class ServiceItemsController : Controller
             CanonicalUrl = post.CanonicalUrl,
             OgTitle = post.OgTitle,
             OgDescription = post.OgDescription,
-            OgImageUrl = post.OgImageUrl
+            OgImageUrl = post.OgImageUrl,
+            SourcesItems = ServiceItemSourcesJson.Parse(post.SourcesJson)
+                .Select(x => new ServiceItemSourceItemViewModel { Title = x.Title, Url = x.Url })
+                .ToList()
         };
 
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
@@ -343,7 +346,10 @@ public class ServiceItemsController : Controller
             NullIfWhiteSpace(model.CanonicalUrl),
             NullIfWhiteSpace(model.OgTitle),
             NullIfWhiteSpace(model.OgDescription),
-            NullIfWhiteSpace(model.OgImageUrl));
+            NullIfWhiteSpace(model.OgImageUrl),
+            ServiceItemSourcesJson.Serialize(
+                (model.SourcesItems ?? [])
+                    .Select(x => new ServiceItemSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))));
     }
 
     private async Task<ServiceItemFormViewModel> BuildFormAsync(ServiceItemFormViewModel model, CancellationToken cancellationToken)
@@ -366,6 +372,7 @@ public class ServiceItemsController : Controller
                 string.Equals(model.AuthorUserId, a.Id, StringComparison.Ordinal)))
         ];
 
+        model.SourcesItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.ServiceItem, model.Id);
         model.Seo.ContentType = SeoContentTypeKeys.ServiceItem;
         model.Seo.ContentId = model.Id;

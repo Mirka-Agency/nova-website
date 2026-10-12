@@ -49,6 +49,99 @@
             <span asp-validation-for="Body" class="admin-field-error"></span>
         </div>
 
+        <fieldset class="admin-fieldset" data-scientific-sources>
+            <legend>@Localizer["ScientificSources"]</legend>
+            <p class="admin-hint">@Localizer["ScientificSourcesHint"]</p>
+
+            <div class="admin-faq-list">
+                <div class="admin-faq-rows" data-scientific-sources-list>
+                    @for (var i = 0; i < Model.SourcesItems.Count; i++)
+                    {
+                        <div class="admin-faq-row" data-scientific-sources-row>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="SourcesItems[i].Title">@Localizer["SourceTitle"]</label>
+                                <input asp-for="SourcesItems[i].Title"
+                                       placeholder="@Localizer["SourceTitlePlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="500" />
+                                <span asp-validation-for="SourcesItems[i].Title" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-field admin-faq-field">
+                                <label asp-for="SourcesItems[i].Url">@Localizer["SourceUrl"]</label>
+                                <input asp-for="SourcesItems[i].Url"
+                                       type="url"
+                                       dir="ltr"
+                                       placeholder="@Localizer["SourceUrlPlaceholder"]"
+                                       autocomplete="off"
+                                       maxlength="1000" />
+                                <span asp-validation-for="SourcesItems[i].Url" class="admin-field-error"></span>
+                            </div>
+                            <div class="admin-faq-row-actions admin-content-guide-row-actions">
+                                <button type="button" class="btn btn-ghost" data-scientific-sources-move-up title="@Localizer["SourceMoveUp"]">
+                                    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                                    <span class="sr-only">@Localizer["SourceMoveUp"]</span>
+                                </button>
+                                <button type="button" class="btn btn-ghost" data-scientific-sources-move-down title="@Localizer["SourceMoveDown"]">
+                                    <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                                    <span class="sr-only">@Localizer["SourceMoveDown"]</span>
+                                </button>
+                                <button type="button" class="btn btn-text-danger" data-scientific-sources-remove>
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                    <span>@Localizer["Delete"]</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <p class="admin-hint" data-scientific-sources-empty @(Model.SourcesItems.Count > 0 ? "hidden" : null)>
+                    @Localizer["SourcesEmpty"]
+                </p>
+
+                <div class="admin-faq-add-row">
+                    <button type="button" class="btn btn-secondary" data-scientific-sources-add>
+                        <i class="fas fa-plus" aria-hidden="true"></i>
+                        <span>@Localizer["AddSourceItem"]</span>
+                    </button>
+                </div>
+            </div>
+
+            <template id="scientific-sources-row-template" data-scientific-sources-template>
+                <div class="admin-faq-row" data-scientific-sources-row>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["SourceTitle"]</label>
+                        <input name="SourcesItems[__INDEX__].Title"
+                               placeholder="@Localizer["SourceTitlePlaceholder"]"
+                               autocomplete="off"
+                               maxlength="500" />
+                    </div>
+                    <div class="admin-field admin-faq-field">
+                        <label>@Localizer["SourceUrl"]</label>
+                        <input name="SourcesItems[__INDEX__].Url"
+                               type="url"
+                               dir="ltr"
+                               placeholder="@Localizer["SourceUrlPlaceholder"]"
+                               autocomplete="off"
+                               maxlength="1000" />
+                    </div>
+                    <div class="admin-faq-row-actions admin-content-guide-row-actions">
+                        <button type="button" class="btn btn-ghost" data-scientific-sources-move-up title="@Localizer["SourceMoveUp"]">
+                            <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                            <span class="sr-only">@Localizer["SourceMoveUp"]</span>
+                        </button>
+                        <button type="button" class="btn btn-ghost" data-scientific-sources-move-down title="@Localizer["SourceMoveDown"]">
+                            <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                            <span class="sr-only">@Localizer["SourceMoveDown"]</span>
+                        </button>
+                        <button type="button" class="btn btn-text-danger" data-scientific-sources-remove>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                            <span>@Localizer["Delete"]</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </fieldset>
+
         <fieldset class="admin-fieldset">
             <legend>@Localizer["MetaSettings"]</legend>
             <div class="admin-field">

@@ -113,6 +113,16 @@ public sealed class SavePostCommandValidator : AbstractValidator<SavePostCommand
                 PostContentGuideJson.TryValidate(x.ContentGuideJson, out var error);
                 return error ?? "راهنمای محتوای مقاله نامعتبر است.";
             });
+
+        RuleFor(x => x.SourcesJson)
+            .MaximumLength(PostSourcesJson.MaxJsonLength)
+            .Must(value => PostSourcesJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.SourcesJson))
+            .WithMessage(x =>
+            {
+                PostSourcesJson.TryValidate(x.SourcesJson, out var error);
+                return error ?? "منابع علمی نامعتبر است.";
+            });
     }
 
     private static bool BeValidUrlOrPath(string? value)

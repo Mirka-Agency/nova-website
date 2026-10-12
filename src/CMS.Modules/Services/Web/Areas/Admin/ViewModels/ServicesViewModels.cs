@@ -85,8 +85,19 @@ public class ServiceItemFormViewModel
 
     public CMS.Modules.Seo.Web.Areas.Admin.ViewModels.SeoEditorFieldsViewModel Seo { get; set; } = new();
 
+    public List<ServiceItemSourceItemViewModel> SourcesItems { get; set; } = [];
+
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
+}
+
+public class ServiceItemSourceItemViewModel
+{
+    [MaxLength(500, ErrorMessage = "عنوان منبع حداکثر ۵۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1000, ErrorMessage = "لینک منبع حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string Url { get; set; } = string.Empty;
 }
 
 public class CategoryListItemViewModel

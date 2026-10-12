@@ -123,6 +123,9 @@ namespace CMS.Modules.Services.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<string>("SourcesJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("OgTitle")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");

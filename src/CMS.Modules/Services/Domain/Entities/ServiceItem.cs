@@ -32,6 +32,8 @@ public class ServiceItem : BaseEntity
     public string? OgTitle { get; private set; }
     public string? OgDescription { get; private set; }
     public string? OgImageUrl { get; private set; }
+    /// <summary>JSON array of scientific sources: [{"title":"...","url":"..."}].</summary>
+    public string? SourcesJson { get; private set; }
 
     public static ServiceItem Create(
         string title,
@@ -50,14 +52,15 @@ public class ServiceItem : BaseEntity
         string? canonicalUrl,
         string? ogTitle,
         string? ogDescription,
-        string? ogImageUrl)
+        string? ogImageUrl,
+        string? sourcesJson = null)
     {
         var item = new ServiceItem();
         item.ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, iconUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl);
+            ogTitle, ogDescription, ogImageUrl, sourcesJson);
         return item;
     }
 
@@ -78,13 +81,14 @@ public class ServiceItem : BaseEntity
         string? canonicalUrl,
         string? ogTitle,
         string? ogDescription,
-        string? ogImageUrl)
+        string? ogImageUrl,
+        string? sourcesJson = null)
     {
         ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, iconUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl);
+            ogTitle, ogDescription, ogImageUrl, sourcesJson);
         Touch();
     }
 
@@ -140,7 +144,8 @@ public class ServiceItem : BaseEntity
         string? canonicalUrl,
         string? ogTitle,
         string? ogDescription,
-        string? ogImageUrl)
+        string? ogImageUrl,
+        string? sourcesJson)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("عنوان خدمت الزامی است.");
@@ -178,6 +183,8 @@ public class ServiceItem : BaseEntity
             throw new DomainException("توضیحات Open Graph خیلی طولانی است.");
         if (ogImageUrl is { Length: > 1000 })
             throw new DomainException("آدرس تصویر Open Graph خیلی طولانی است.");
+        if (sourcesJson is { Length: > 100_000 })
+            throw new DomainException("منابع علمی خیلی طولانی است.");
 
         Title = title.Trim();
         Slug = slug.Trim().ToLowerInvariant();
@@ -196,6 +203,7 @@ public class ServiceItem : BaseEntity
         OgTitle = NullIfWhiteSpace(ogTitle);
         OgDescription = NullIfWhiteSpace(ogDescription);
         OgImageUrl = NullIfWhiteSpace(ogImageUrl);
+        SourcesJson = NullIfWhiteSpace(sourcesJson);
     }
 
     private static string? NullIfWhiteSpace(string? value) =>

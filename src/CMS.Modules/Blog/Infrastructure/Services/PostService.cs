@@ -194,6 +194,7 @@ public sealed class PostService : IPostService
         var faqJson = PostFaqJson.NormalizeJson(command.FaqJson);
         var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         var contentGuideJson = PostContentGuideJson.NormalizeJson(command.ContentGuideJson);
+        var sourcesJson = PostSourcesJson.NormalizeJson(command.SourcesJson);
         var post = Post.Create(
             command.Title,
             slug,
@@ -214,7 +215,8 @@ public sealed class PostService : IPostService
             command.OgImageUrl,
             faqJson,
             videoSchemaJson,
-            contentGuideJson);
+            contentGuideJson,
+            sourcesJson);
 
         ApplyPublishState(post, command);
 
@@ -239,6 +241,7 @@ public sealed class PostService : IPostService
         var faqJson = PostFaqJson.NormalizeJson(command.FaqJson);
         var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         var contentGuideJson = PostContentGuideJson.NormalizeJson(command.ContentGuideJson);
+        var sourcesJson = PostSourcesJson.NormalizeJson(command.SourcesJson);
         post.Update(
             command.Title,
             slug,
@@ -259,7 +262,8 @@ public sealed class PostService : IPostService
             command.OgImageUrl,
             faqJson,
             videoSchemaJson,
-            contentGuideJson);
+            contentGuideJson,
+            sourcesJson);
 
         ApplyPublishState(post, command);
 
@@ -301,6 +305,7 @@ public sealed class PostService : IPostService
             post.FaqJson,
             post.VideoSchemaJson,
             post.ContentGuideJson,
+            post.SourcesJson,
             post.CreatedAtUtc);
 
     private static SavePostCommand Normalize(SavePostCommand command)

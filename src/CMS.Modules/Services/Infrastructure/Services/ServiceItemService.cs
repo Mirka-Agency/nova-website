@@ -188,6 +188,7 @@ public sealed class ServiceItemService : IServiceItemService
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
+        var sourcesJson = ServiceItemSourcesJson.NormalizeJson(command.SourcesJson);
         var item = ServiceItem.Create(
             command.Title,
             slug,
@@ -205,7 +206,8 @@ public sealed class ServiceItemService : IServiceItemService
             command.CanonicalUrl,
             command.OgTitle,
             command.OgDescription,
-            command.OgImageUrl);
+            command.OgImageUrl,
+            sourcesJson);
 
         ApplyPublishState(item, command);
 
@@ -227,6 +229,7 @@ public sealed class ServiceItemService : IServiceItemService
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
+        var sourcesJson = ServiceItemSourcesJson.NormalizeJson(command.SourcesJson);
         item.Update(
             command.Title,
             slug,
@@ -244,7 +247,8 @@ public sealed class ServiceItemService : IServiceItemService
             command.CanonicalUrl,
             command.OgTitle,
             command.OgDescription,
-            command.OgImageUrl);
+            command.OgImageUrl,
+            sourcesJson);
 
         ApplyPublishState(item, command);
 
@@ -281,6 +285,7 @@ public sealed class ServiceItemService : IServiceItemService
             item.OgTitle,
             item.OgDescription,
             item.OgImageUrl,
+            item.SourcesJson,
             item.CreatedAtUtc);
 
     private static SaveServiceItemCommand Normalize(SaveServiceItemCommand command)

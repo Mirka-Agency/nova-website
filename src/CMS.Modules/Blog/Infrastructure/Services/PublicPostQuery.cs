@@ -146,7 +146,8 @@ public sealed class PublicPostQuery : IPublicPostQuery
             post.OgImageUrl,
             post.FaqJson,
             post.VideoSchemaJson,
-            post.ContentGuideJson);
+            post.ContentGuideJson,
+            post.SourcesJson);
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>

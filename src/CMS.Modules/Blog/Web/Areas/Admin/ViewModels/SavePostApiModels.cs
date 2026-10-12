@@ -63,6 +63,8 @@ public sealed class SavePostApiRequest
 
     public string? ContentGuideJson { get; set; }
 
+    public string? SourcesJson { get; set; }
+
     public string? FocusKeyword { get; set; }
     public bool RobotsIndex { get; set; } = true;
     public bool RobotsFollow { get; set; } = true;

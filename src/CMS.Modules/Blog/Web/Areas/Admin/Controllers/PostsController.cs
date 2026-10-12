@@ -232,6 +232,9 @@ public class PostsController : Controller
             FaqItems = PostFaqJson.Parse(post.FaqJson)
                 .Select(x => new PostFaqItemViewModel { Question = x.Question, Answer = x.Answer })
                 .ToList(),
+            SourcesItems = PostSourcesJson.Parse(post.SourcesJson)
+                .Select(x => new PostSourceItemViewModel { Title = x.Title, Url = x.Url })
+                .ToList(),
             VideoSchemaItems = PostVideoSchemaJson.Parse(post.VideoSchemaJson)
                 .Select(x => new PostVideoSchemaItemViewModel
                 {
@@ -383,7 +386,10 @@ public class PostsController : Controller
                 model.ContentGuideEnabled,
                 model.ContentGuideTitle,
                 (model.ContentGuideItems ?? [])
-                    .Select(x => new PostContentGuideItemDto(x.Title ?? string.Empty, x.Description ?? string.Empty))));
+                    .Select(x => new PostContentGuideItemDto(x.Title ?? string.Empty, x.Description ?? string.Empty))),
+            PostSourcesJson.Serialize(
+                (model.SourcesItems ?? [])
+                    .Select(x => new PostSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))));
     }
 
     private async Task<PostFormViewModel> BuildFormAsync(PostFormViewModel model, CancellationToken cancellationToken)
@@ -407,6 +413,7 @@ public class PostsController : Controller
         ];
 
         model.FaqItems ??= [];
+        model.SourcesItems ??= [];
         model.VideoSchemaItems ??= [];
         model.ContentGuideItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.BlogPost, model.Id);

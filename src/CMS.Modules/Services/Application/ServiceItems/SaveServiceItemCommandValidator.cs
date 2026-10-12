@@ -76,6 +76,16 @@ public sealed class SaveServiceItemCommandValidator : AbstractValidator<SaveServ
             .Must(BeValidUrlOrPath)
             .When(x => !string.IsNullOrWhiteSpace(x.OgImageUrl))
             .WithMessage("تصویر Open Graph باید آدرس مطلق یا مسیر نسبی سایت باشد.");
+
+        RuleFor(x => x.SourcesJson)
+            .MaximumLength(ServiceItemSourcesJson.MaxJsonLength)
+            .Must(value => ServiceItemSourcesJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.SourcesJson))
+            .WithMessage(x =>
+            {
+                ServiceItemSourcesJson.TryValidate(x.SourcesJson, out var error);
+                return error ?? "منابع علمی نامعتبر است.";
+            });
     }
 
     private static bool BeValidUrlOrPath(string? value)

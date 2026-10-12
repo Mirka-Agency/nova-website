@@ -80,6 +80,19 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function sourcesJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-scientific-sources-row]"));
+    const items = [];
+    for (const row of rows) {
+      const title = (row.querySelector("[name$='.Title']")?.value || "").trim();
+      const url = (row.querySelector("[name$='.Url']")?.value || "").trim();
+      if (!title && !url) continue;
+      if (!title || !url) continue;
+      items.push({ title, url });
+    }
+    return items.length > 0 ? JSON.stringify(items) : null;
+  }
+
   function videoSchemaJsonValue() {
     const rows = Array.from(form.querySelectorAll("[data-video-schema-row]"));
     const items = [];
@@ -258,6 +271,7 @@
       ogDescription: (fieldValue("OgDescription") || "").trim() || null,
       ogImageUrl: (fieldValue("OgImageUrl") || "").trim() || null,
       faqJson: faqJsonValue(),
+      sourcesJson: sourcesJsonValue(),
       videoSchemaJson: videoSchemaJsonValue(),
       contentGuideJson: contentGuideJsonValue(),
       focusKeyword: seoFieldValue("FocusKeyword"),

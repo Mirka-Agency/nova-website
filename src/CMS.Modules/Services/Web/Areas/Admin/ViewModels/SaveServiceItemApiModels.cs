@@ -54,6 +54,8 @@ public sealed class SaveServiceItemApiRequest
     [MaxLength(1000)]
     public string? OgImageUrl { get; set; }
 
+    public string? SourcesJson { get; set; }
+
     public string? FocusKeyword { get; set; }
     public bool RobotsIndex { get; set; } = true;
     public bool RobotsFollow { get; set; } = true;

@@ -121,6 +121,16 @@
   <data name="FaqAnswerPlaceholder" xml:space="preserve"><value>پاسخ را بنویسید…</value></data>
   <data name="AddFaqItem" xml:space="preserve"><value>افزودن سوال</value></data>
   <data name="FaqEmpty" xml:space="preserve"><value>هنوز سوالی ثبت نشده است. با دکمه افزودن، ردیف جدید بسازید.</value></data>
+  <data name="ScientificSources" xml:space="preserve"><value>منابع علمی</value></data>
+  <data name="ScientificSourcesHint" xml:space="preserve"><value>اختیاری؛ منابع علمی با عنوان و لینک که در انتهای صفحه مطلب به‌صورت آکاردئون نمایش داده می‌شوند.</value></data>
+  <data name="SourceTitle" xml:space="preserve"><value>عنوان منبع</value></data>
+  <data name="SourceUrl" xml:space="preserve"><value>لینک منبع</value></data>
+  <data name="SourceTitlePlaceholder" xml:space="preserve"><value>مثلاً نام مقاله یا ژورنال…</value></data>
+  <data name="SourceUrlPlaceholder" xml:space="preserve"><value>https://…</value></data>
+  <data name="AddSourceItem" xml:space="preserve"><value>افزودن منبع</value></data>
+  <data name="SourcesEmpty" xml:space="preserve"><value>هنوز منبعی ثبت نشده است. با دکمه افزودن، ردیف جدید بسازید.</value></data>
+  <data name="SourceMoveUp" xml:space="preserve"><value>جابه‌جایی به بالا</value></data>
+  <data name="SourceMoveDown" xml:space="preserve"><value>جابه‌جایی به پایین</value></data>
   <data name="VideoSchemaSettings" xml:space="preserve"><value>اسکیمای ویدیوهای مطلب</value></data>
   <data name="VideoSchemaSettingsHint" xml:space="preserve"><value>اختیاری؛ برای هر ویدیوی داخل مطلب یک VideoObject دستی بسازید تا در سئو منتشر شود.</value></data>
   <data name="VideoSchemaItemLabel" xml:space="preserve"><value>ویدیو شماره</value></data>

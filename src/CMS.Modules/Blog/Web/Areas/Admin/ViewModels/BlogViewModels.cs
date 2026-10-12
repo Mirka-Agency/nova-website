@@ -90,6 +90,8 @@ public class PostFormViewModel
 
     public List<PostFaqItemViewModel> FaqItems { get; set; } = [];
 
+    public List<PostSourceItemViewModel> SourcesItems { get; set; } = [];
+
     public List<PostVideoSchemaItemViewModel> VideoSchemaItems { get; set; } = [];
 
     public bool ContentGuideEnabled { get; set; }
@@ -119,6 +121,15 @@ public class PostFaqItemViewModel
 
     [MaxLength(5000, ErrorMessage = "پاسخ حداکثر ۵۰۰۰ نویسه می‌تواند باشد.")]
     public string Answer { get; set; } = string.Empty;
+}
+
+public class PostSourceItemViewModel
+{
+    [MaxLength(500, ErrorMessage = "عنوان منبع حداکثر ۵۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(1000, ErrorMessage = "لینک منبع حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
+    public string Url { get; set; } = string.Empty;
 }
 
 public class PostVideoSchemaItemViewModel

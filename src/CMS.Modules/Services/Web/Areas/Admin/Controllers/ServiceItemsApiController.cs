@@ -161,7 +161,8 @@ public class ServiceItemsApiController : ControllerBase
             request.CanonicalUrl,
             request.OgTitle,
             request.OgDescription,
-            request.OgImageUrl);
+            request.OgImageUrl,
+            request.SourcesJson);
     }
 
     private ObjectResult DomainProblem(DomainException ex)

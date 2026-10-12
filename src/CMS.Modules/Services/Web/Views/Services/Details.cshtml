@@ -51,7 +51,10 @@
         },
         RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
+    var sourceItems = ServiceItemSourcesJson.Parse(Model.SourcesJson);
     toc.Add(("service-faq-heading", "سوالات متداول"));
+    if (sourceItems.Count > 0)
+        toc.Insert(Math.Max(0, toc.Count - 1), ("service-sources-heading", "منابع علمی"));
 }
 
 <section class="page-hero page-hero--service-article" aria-labelledby="page-hero-title">
@@ -128,6 +131,40 @@
     </div>
   </div>
 </section>
+
+@if (sourceItems.Count > 0)
+{
+  <section class="scientific-sources-section" aria-labelledby="service-sources-heading">
+    <div class="container">
+      <div class="scientific-sources reveal" data-scientific-sources-accordion>
+        <button class="scientific-sources__toggle"
+                type="button"
+                id="service-sources-heading"
+                aria-expanded="false"
+                aria-controls="service-sources-panel">
+          <span class="scientific-sources__title">منابع علمی</span>
+          <span class="scientific-sources__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </span>
+        </button>
+        <div class="scientific-sources__panel" id="service-sources-panel">
+          <div class="scientific-sources__panel-inner">
+            <ol class="scientific-sources__list">
+              @foreach (var source in sourceItems)
+              {
+                <li>
+                  <a href="@source.Url" target="_blank" rel="noopener noreferrer">@source.Title</a>
+                </li>
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+}
 
 <section class="faq-section service-faq" aria-labelledby="service-faq-heading">
   <div class="container">

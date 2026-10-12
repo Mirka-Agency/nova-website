@@ -96,4 +96,14 @@
   <data name="SortPublished" xml:space="preserve"><value>تاریخ انتشار</value></data>
   <data name="SortTitle" xml:space="preserve"><value>عنوان (الف–ی)</value></data>
   <data name="SortTitleDesc" xml:space="preserve"><value>عنوان (ی–الف)</value></data>
+  <data name="ScientificSources" xml:space="preserve"><value>منابع علمی</value></data>
+  <data name="ScientificSourcesHint" xml:space="preserve"><value>اختیاری؛ منابع علمی با عنوان و لینک که در انتهای صفحه خدمت به‌صورت آکاردئون نمایش داده می‌شوند.</value></data>
+  <data name="SourceTitle" xml:space="preserve"><value>عنوان منبع</value></data>
+  <data name="SourceUrl" xml:space="preserve"><value>لینک منبع</value></data>
+  <data name="SourceTitlePlaceholder" xml:space="preserve"><value>مثلاً نام مقاله یا ژورنال…</value></data>
+  <data name="SourceUrlPlaceholder" xml:space="preserve"><value>https://…</value></data>
+  <data name="AddSourceItem" xml:space="preserve"><value>افزودن منبع</value></data>
+  <data name="SourcesEmpty" xml:space="preserve"><value>هنوز منبعی ثبت نشده است. با دکمه افزودن، ردیف جدید بسازید.</value></data>
+  <data name="SourceMoveUp" xml:space="preserve"><value>جابه‌جایی به بالا</value></data>
+  <data name="SourceMoveDown" xml:space="preserve"><value>جابه‌جایی به پایین</value></data>
 </root>
