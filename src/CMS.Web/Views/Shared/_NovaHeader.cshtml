@@ -1,12 +1,8 @@
 @using CMS.Application.Common.Features
 @using CMS.Application.Settings
-@using CMS.Modules.Services.Application.Interfaces
-@using CMS.Modules.Services.Application.ServiceItems
-@using CMS.Web.Infrastructure
 @using Microsoft.FeatureManagement
 @inject IFeatureManager FeatureManager
 @inject ISiteSettingsService SiteSettings
-@inject IPublicServiceItemQuery PublicServices
 @{
     var settings = await SiteSettings.GetAsync();
     var contact = SiteContactInfo.From(settings);
@@ -42,18 +38,10 @@
     var teamOn = await FeatureManager.IsEnabledAsync(FeatureNames.Team);
     var aboutGroupActive = IsActive("about") || IsActive("contact") || IsActive("doctors") || IsActive("events");
 
-    IReadOnlyList<PublicServiceItemSummaryDto> navServices = Array.Empty<PublicServiceItemSummaryDto>();
-    if (servicesOn)
-        navServices = await PublicServices.ListPublishedAsync();
-
-    var thyroidService = NovaServiceNav.Find(navServices, "thyroid", "تیروئید");
-    var parathyroidService = NovaServiceNav.Find(navServices, "parathyroid", "پاراتیروئید");
-    var adrenalService = NovaServiceNav.Find(navServices, "adrenal", "آدرنال", "فوق کلیه");
-    var pancreasService = NovaServiceNav.Find(navServices, "pancreas", "پانکراس");
-    var thyroidHref = NovaServiceNav.Href(Url, thyroidService, "thyroid");
-    var parathyroidHref = NovaServiceNav.Href(Url, parathyroidService, "parathyroid");
-    var adrenalHref = NovaServiceNav.Href(Url, adrenalService, "adrenal");
-    var pancreasHref = NovaServiceNav.Href(Url, pancreasService, "pancreas");
+    var thyroidHref = Url.Content("~/thyroid-surgery/");
+    var parathyroidHref = Url.Content("~/parathyroid-surgery-from-0-to-100/");
+    var adrenalHref = Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/");
+    var pancreasHref = Url.Content("~/services/pancreatic/");
 }
 <header class="site-header">
   <div class="container">
@@ -77,10 +65,10 @@
                 </span>
               </a>
               <ul class="nav-dropdown" aria-label="زیرمنوی خدمات">
-                <li><a href="@thyroidHref">@(thyroidService?.Title ?? "جراحی تیروئید")</a></li>
-                <li><a href="@parathyroidHref">@(parathyroidService?.Title ?? "جراحی پاراتیروئید")</a></li>
-                <li><a href="@adrenalHref">@(adrenalService?.Title ?? "جراحی فوق کلیه")</a></li>
-                <li><a href="@pancreasHref">@(pancreasService?.Title ?? "جراحی پانکراس")</a></li>
+                <li><a href="@thyroidHref">جراحی تیروئید</a></li>
+                <li><a href="@parathyroidHref">جراحی پاراتیروئید</a></li>
+                <li><a href="@adrenalHref">جراحی فوق کلیه</a></li>
+                <li><a href="@pancreasHref">جراحی پانکراس</a></li>
               </ul>
             </li>
           }
@@ -174,10 +162,10 @@
                 </button>
               </div>
               <ul class="mobile-nav__submenu">
-                <li><a href="@thyroidHref">@(thyroidService?.Title ?? "جراحی تیروئید")</a></li>
-                <li><a href="@parathyroidHref">@(parathyroidService?.Title ?? "جراحی پاراتیروئید")</a></li>
-                <li><a href="@adrenalHref">@(adrenalService?.Title ?? "جراحی فوق کلیه")</a></li>
-                <li><a href="@pancreasHref">@(pancreasService?.Title ?? "جراحی پانکراس")</a></li>
+                <li><a href="@thyroidHref">جراحی تیروئید</a></li>
+                <li><a href="@parathyroidHref">جراحی پاراتیروئید</a></li>
+                <li><a href="@adrenalHref">جراحی فوق کلیه</a></li>
+                <li><a href="@pancreasHref">جراحی پانکراس</a></li>
               </ul>
             </li>
           }
