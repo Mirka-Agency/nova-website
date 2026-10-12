@@ -38,7 +38,7 @@
 
     string UniqueHeadingId(string preferred)
     {
-        var baseId = string.IsNullOrWhiteSpace(preferred) ? $"section-{++headingIndex}" : preferred;
+        var baseId = string.IsNullOrWhiteSpace(preferred) ? $"h-section-{++headingIndex}" : preferred;
         var candidate = baseId;
         var n = 2;
         while (!usedIds.Add(candidate))
@@ -54,16 +54,21 @@
             var text = WebUtility.HtmlDecode(Regex.Replace(match.Groups[2].Value, "<.*?>", string.Empty)).Trim();
             var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
             var existingId = idAttrRegex.Match(attrs);
+            // Prefer Yoast-style h-{slug} from heading text (matches nova-clinic.org).
+            // Keep an existing id only when it already uses the h- prefix.
             string rawId;
             if (existingId.Success)
             {
-                rawId = existingId.Groups[1].Success ? existingId.Groups[1].Value
+                var currentId = existingId.Groups[1].Success ? existingId.Groups[1].Value
                     : existingId.Groups[2].Success ? existingId.Groups[2].Value
                     : existingId.Groups[3].Value;
+                rawId = currentId.StartsWith("h-", StringComparison.OrdinalIgnoreCase)
+                    ? currentId
+                    : SlugGenerator.HeadingIdFromTitle(text);
             }
             else
             {
-                rawId = SlugGenerator.FromTitle(text);
+                rawId = SlugGenerator.HeadingIdFromTitle(text);
             }
 
             var id = UniqueHeadingId(rawId);
@@ -73,7 +78,10 @@
 
             if (existingId.Success)
             {
-                if (string.Equals(rawId, id, StringComparison.Ordinal))
+                var currentId = existingId.Groups[1].Success ? existingId.Groups[1].Value
+                    : existingId.Groups[2].Success ? existingId.Groups[2].Value
+                    : existingId.Groups[3].Value;
+                if (string.Equals(currentId, id, StringComparison.Ordinal))
                     return match.Value;
 
                 attrs = idAttrRegex.Replace(attrs, $" id=\"{id}\"", 1);
@@ -126,12 +134,22 @@
       {
         <aside class="service-toc" aria-label="فهرست مطالب" data-service-toc>
           <div class="service-toc__panel">
-            <p class="service-toc__title">فهرست مطالب</p>
+            <div class="service-toc__header">
+              <span class="service-toc__badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+                </svg>
+              </span>
+              <div class="service-toc__heading">
+                <p class="service-toc__kicker">ناوبری مطلب</p>
+                <h2 class="service-toc__title">فهرست مطالب</h2>
+              </div>
+            </div>
             <nav class="service-toc__nav" aria-label="بخش‌های مطلب">
               <ol class="service-toc__list">
                 @foreach (var item in toc)
                 {
-                  <li><a href="#@item.Id">@item.Text</a></li>
+                  <li><a href="#@item.Id"><span class="service-toc__label">@item.Text</span></a></li>
                 }
               </ol>
             </nav>

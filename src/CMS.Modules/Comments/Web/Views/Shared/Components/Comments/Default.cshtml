@@ -37,7 +37,7 @@
     }
 
     <div class="cms-comments__feed" data-comments-feed>
-        <partial name="Components/Comments/_CommentsFeed" model="Model" />
+        @await Html.PartialAsync("Components/Comments/_CommentsFeed", Model)
     </div>
 
     <div class="cms-comments__panel">
@@ -116,7 +116,7 @@
                              data-recaptcha-sitekey="@Model.CaptchaSiteKey"
                              data-recaptcha-action="comment"
                              data-recaptcha-token="CaptchaToken"></div>
-                        <partial name="_RecaptchaV3Loader" />
+                        @await Html.PartialAsync("_RecaptchaV3Loader")
                     }
                     else if (Model.Settings.CaptchaProvider == CommentCaptchaProvider.Hcaptcha && !string.IsNullOrWhiteSpace(Model.CaptchaSiteKey))
                     {

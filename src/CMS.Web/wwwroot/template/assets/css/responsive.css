@@ -980,8 +980,13 @@
     padding-block: 5.75rem 2.25rem;
   }
 
-  .service-groups {
+  .service-groups:not(.service-groups--cards) {
     grid-template-columns: 1fr;
+  }
+
+  .service-group--card {
+    flex-basis: min(16.5rem, 82vw);
+    min-height: 14.5rem;
   }
 
   .events-list {
