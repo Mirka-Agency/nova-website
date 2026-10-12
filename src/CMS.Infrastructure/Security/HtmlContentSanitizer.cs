@@ -35,7 +35,10 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "data-oembed-url",
             "data-nova-cta", "data-nova-cta-config",
             "data-nova-scroll-highlight", "data-nova-sh-from", "data-nova-sh-to",
-            "data-nova-video-poster"
+            "data-nova-video-poster",
+            // CTA Helper → popup openers (must survive sanitize or links become href="#" only)
+            "data-popup-open", "data-booking-open",
+            "role"
         ]);
 
         _sanitizer.AllowedCssProperties.UnionWith(

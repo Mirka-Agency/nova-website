@@ -12,6 +12,14 @@
     var address = contact.Address;
     var role = string.IsNullOrWhiteSpace(Model.CategoryName) ? "متخصص کلینیک" : Model.CategoryName;
     var specialty = string.IsNullOrWhiteSpace(Model.Subtitle) ? role : Model.Subtitle;
+    // Match doctor-single.html quick-info: omit «متخصص جراحی عمومی» from the تخصص row.
+    var quickSpecialtyParts = specialty
+        .Split(new[] { '|', '·' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Where(x => !string.Equals(x, "متخصص جراحی عمومی", StringComparison.Ordinal))
+        .ToList();
+    var quickSpecialty = specialty.Contains("متخصص جراحی عمومی", StringComparison.Ordinal) && quickSpecialtyParts.Count > 0
+        ? string.Join(" | ", quickSpecialtyParts)
+        : specialty;
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/doctors/dr-hamedani.webp")
         : Model.CoverImageUrl;
@@ -118,7 +126,7 @@
         <ul class="doctor-quick-list">
           <li>
             <span class="doctor-quick-list__label">تخصص</span>
-            <span class="doctor-quick-list__value">@specialty</span>
+            <span class="doctor-quick-list__value">@quickSpecialty</span>
           </li>
           <li>
             <span class="doctor-quick-list__label">ساعات پاسخگویی</span>

@@ -10,6 +10,64 @@
   var testimonialSliders = document.querySelectorAll("[data-testimonials-slider]");
   var voiceCards = document.querySelectorAll("[data-voice-card]");
 
+  // CTA Helper links used to lose data-popup-open / data-booking-open in HTML sanitize,
+  // leaving href="#" which only scrolls to the top. Restore openers from config.
+  (function rehydrateNovaCtaPopupLinks() {
+    function parsePopupHref(href) {
+      var raw = String(href == null ? "" : href).trim();
+      if (!raw) return null;
+      var lower = raw.toLowerCase();
+      if (lower.indexOf("popup:") === 0) {
+        var slug = raw.slice(6).trim();
+        return slug || "booking";
+      }
+      if (lower === "#booking" || lower === "booking") return "booking";
+      return null;
+    }
+
+    function decodeCtaConfig(value) {
+      if (!value) return null;
+      try {
+        return JSON.parse(decodeURIComponent(escape(atob(value))));
+      } catch (err) {
+        try {
+          return JSON.parse(atob(value));
+        } catch (err2) {
+          return null;
+        }
+      }
+    }
+
+    document.querySelectorAll("[data-nova-cta][data-nova-cta-config]").forEach(function (root) {
+      var data = decodeCtaConfig(root.getAttribute("data-nova-cta-config"));
+      if (!data) return;
+
+      var popupSlug = null;
+      Object.keys(data).forEach(function (key) {
+        var slug = parsePopupHref(data[key]);
+        if (slug) popupSlug = slug;
+      });
+      if (!popupSlug) return;
+
+      root.querySelectorAll("a").forEach(function (anchor) {
+        if (anchor.hasAttribute("data-popup-open") || anchor.hasAttribute("data-booking-open")) {
+          return;
+        }
+        var href = String(anchor.getAttribute("href") || "").trim();
+        var lower = href.toLowerCase();
+        if (href && lower !== "#" && lower !== "#booking" && lower !== "booking") {
+          return;
+        }
+        anchor.setAttribute("href", "#");
+        anchor.setAttribute("data-popup-open", popupSlug);
+        anchor.setAttribute("role", "button");
+        if (popupSlug.toLowerCase() === "booking") {
+          anchor.setAttribute("data-booking-open", "");
+        }
+      });
+    });
+  })();
+
   function toPersianDigits(value) {
     return String(value).replace(/\d/g, function (digit) {
       return "۰۱۲۳۴۵۶۷۸۹"[digit];
@@ -827,7 +885,6 @@
     if (!modal) return;
 
     var dialog = modal.querySelector("[data-booking-dialog]");
-    var openButtons = document.querySelectorAll("[data-booking-open]");
     var closeButtons = modal.querySelectorAll("[data-booking-close]");
     var form = modal.querySelector("[data-booking-form]");
     var formHost = modal.querySelector("[data-booking-form-host]");
@@ -915,10 +972,13 @@
       return digits.length >= 10 && digits.length <= 12;
     }
 
-    openButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        openModal();
-      });
+    // Delegate so CTA Helper links (and late-inserted content) open the modal
+    // instead of following href="#" and scrolling to the top of the page.
+    document.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-booking-open]");
+      if (!button) return;
+      event.preventDefault();
+      openModal();
     });
 
     closeButtons.forEach(function (button) {

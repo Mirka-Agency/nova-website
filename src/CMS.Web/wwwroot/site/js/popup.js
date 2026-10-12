@@ -183,14 +183,16 @@
       onScroll();
     }
 
-    var selector = popup.getAttribute('data-trigger-selector');
+    var selector = (popup.getAttribute('data-trigger-selector') || '').trim();
     if (selector) {
+      // Event delegation so CTA Helper / sanitized-then-rehydrated links work too.
       try {
-        document.querySelectorAll(selector).forEach(function (el) {
-          el.addEventListener('click', function (ev) {
-            ev.preventDefault();
-            openPopup(popup, { force: true });
-          });
+        document.querySelector(selector); // validate once
+        document.addEventListener('click', function (ev) {
+          var el = ev.target.closest(selector);
+          if (!el) return;
+          ev.preventDefault();
+          openPopup(popup, { force: true });
         });
       } catch (e) { /* invalid selector */ }
     }
@@ -213,8 +215,9 @@
     if (!opener) return;
     var key = opener.getAttribute('data-popup-open');
     var popup = findByKey(key);
-    if (!popup) return;
+    // Always stop href="#" navigation — even when the popup slug is missing.
     ev.preventDefault();
+    if (!popup) return;
     if (opener.getAttribute('data-popup-close-current') === 'true') {
       var current = opener.closest('[data-cms-popup]');
       if (current) closePopup(current);
