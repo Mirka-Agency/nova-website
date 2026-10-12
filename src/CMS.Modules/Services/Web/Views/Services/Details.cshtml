@@ -32,19 +32,26 @@
 
     var toc = new List<(string Id, string Text)>();
     var headingIndex = 0;
+    var idAttrRegex = new Regex(@"\bid\s*=\s*(?:""([^""]*)""|'([^']*)'|([^\s>]+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     var processedBody = Regex.Replace(
         Model.Body ?? string.Empty,
         @"<h2(\s[^>]*)?>(.*?)</h2>",
         match =>
         {
             headingIndex++;
-            var id = $"section-{headingIndex}";
             var text = WebUtility.HtmlDecode(Regex.Replace(match.Groups[2].Value, "<.*?>", string.Empty)).Trim();
-            if (!string.IsNullOrWhiteSpace(text))
+            var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
+            var existingId = idAttrRegex.Match(attrs);
+            var id = existingId.Success
+                ? (existingId.Groups[1].Success ? existingId.Groups[1].Value
+                    : existingId.Groups[2].Success ? existingId.Groups[2].Value
+                    : existingId.Groups[3].Value)
+                : $"section-{headingIndex}";
+
+            if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(id))
                 toc.Add((id, text));
 
-            var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
-            if (attrs.Contains("id=", StringComparison.OrdinalIgnoreCase))
+            if (existingId.Success)
                 return match.Value;
 
             return $"<h2 id=\"{id}\"{attrs}>{match.Groups[2].Value}</h2>";
@@ -52,9 +59,6 @@
         RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
     var sourceItems = ServiceItemSourcesJson.Parse(Model.SourcesJson);
-    toc.Add(("service-faq-heading", "سوالات متداول"));
-    if (sourceItems.Count > 0)
-        toc.Insert(Math.Max(0, toc.Count - 1), ("service-sources-heading", "منابع علمی"));
 }
 
 <section class="page-hero page-hero--service-article" aria-labelledby="page-hero-title">
@@ -91,8 +95,8 @@
 
 <section class="service-article" aria-label="محتوای @Model.Title">
   <div class="container">
-    <div class="service-article__layout@(toc.Count <= 1 ? " service-article__layout--no-toc" : null)">
-      @if (toc.Count > 1)
+    <div class="service-article__layout@(toc.Count == 0 ? " service-article__layout--no-toc" : null)">
+      @if (toc.Count > 0)
       {
         <aside class="service-toc" aria-label="فهرست مطالب" data-service-toc>
           <div class="service-toc__panel">

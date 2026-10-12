@@ -194,7 +194,7 @@ public class ShopCategoriesController : Controller
             var imageUrl = await ResolveImageAsync(model, cancellationToken);
             await _categories.UpdateAsync(id, ToCommand(model, imageUrl), cancellationToken);
             TempData["Success"] = _localizer["CategoryUpdated"].Value;
-            return RedirectToAction(nameof(Index), new { tab = "categories" });
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

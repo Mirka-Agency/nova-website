@@ -153,7 +153,7 @@ public class VoiceItemsController : Controller
             await _voices.UpdateAsync(id, ToCommand(model), cancellationToken);
             _logger.LogInformation("Admin action: updated voice item {VoiceId}", id);
             TempData["Success"] = _localizer["VoiceUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

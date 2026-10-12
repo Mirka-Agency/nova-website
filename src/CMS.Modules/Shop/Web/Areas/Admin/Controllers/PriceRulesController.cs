@@ -129,7 +129,7 @@ public class PriceRulesController : Controller
         {
             await _rules.UpdateAsync(id, ToCommand(model), cancellationToken);
             TempData["Success"] = _localizer["PriceRuleUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

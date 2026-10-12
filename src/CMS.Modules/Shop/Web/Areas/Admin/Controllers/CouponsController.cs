@@ -144,7 +144,7 @@ public class CouponsController : Controller
         {
             await _coupons.UpdateAsync(id, ToCommand(model, allowedUserId), cancellationToken);
             TempData["Success"] = _localizer["CouponUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

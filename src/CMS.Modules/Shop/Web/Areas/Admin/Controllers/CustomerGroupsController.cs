@@ -117,7 +117,7 @@ public class CustomerGroupsController : Controller
         {
             await _groups.UpdateAsync(id, ToCommand(model), cancellationToken);
             TempData["Success"] = _localizer["CustomerGroupUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

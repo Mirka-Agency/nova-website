@@ -77,7 +77,7 @@ public class PaymentProvidersController : Controller
         {
             await _payments.UpdateAsync(id, ToCommand(model), cancellationToken);
             TempData["Success"] = _localizer["PaymentProviderUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

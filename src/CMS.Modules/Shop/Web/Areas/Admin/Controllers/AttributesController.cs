@@ -118,7 +118,7 @@ public class AttributesController : Controller
         {
             await _attributes.UpdateAsync(id, ToCommand(model), cancellationToken);
             TempData["Success"] = _localizer["AttributeUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

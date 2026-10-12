@@ -107,7 +107,7 @@ public class ShippingMethodsController : Controller
         {
             await _shipping.UpdateAsync(id, ToCommand(model), cancellationToken);
             TempData["Success"] = _localizer["ShippingMethodUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

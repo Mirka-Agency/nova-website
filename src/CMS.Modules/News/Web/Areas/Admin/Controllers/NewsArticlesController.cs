@@ -304,7 +304,7 @@ public class NewsArticlesController : Controller
             await UpsertSeoAsync(id, model, cancellationToken);
             _logger.LogInformation("Admin action: updated news article {PostId}", id);
             TempData["Success"] = _localizer["PostUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

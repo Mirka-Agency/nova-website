@@ -150,7 +150,7 @@ public class SeoRedirectsController : Controller
             await _redirects.UpdateAsync(id, ToCommand(model), cancellationToken);
             _logger.LogInformation("Admin action: updated SEO redirect {RedirectId}", id);
             TempData["Success"] = _localizer["RedirectUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

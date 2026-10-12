@@ -299,7 +299,7 @@ public class PostsController : Controller
             await UpsertSeoAsync(id, model, cancellationToken);
             _logger.LogInformation("Admin action: updated blog post {PostId}", id);
             TempData["Success"] = _localizer["PostUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

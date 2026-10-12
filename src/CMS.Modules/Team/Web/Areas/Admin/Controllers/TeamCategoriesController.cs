@@ -134,7 +134,7 @@ public class TeamCategoriesController : Controller
                 cancellationToken);
             _logger.LogInformation("Admin action: updated service category {CategoryId}", id);
             TempData["Success"] = _localizer["CategoryUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

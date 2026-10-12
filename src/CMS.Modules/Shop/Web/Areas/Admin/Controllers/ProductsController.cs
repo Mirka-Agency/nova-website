@@ -265,7 +265,7 @@ public class ProductsController : Controller
             var cover = await ResolveCoverAsync(model, cancellationToken);
             await _products.UpdateAsync(id, ToCommand(model, cover), cancellationToken);
             TempData["Success"] = _localizer["ProductUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (NotFoundException)
         {

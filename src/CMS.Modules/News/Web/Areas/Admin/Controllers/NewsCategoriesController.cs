@@ -134,7 +134,7 @@ public class NewsCategoriesController : Controller
                 cancellationToken);
             _logger.LogInformation("Admin action: updated news category {CategoryId}", id);
             TempData["Success"] = _localizer["CategoryUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

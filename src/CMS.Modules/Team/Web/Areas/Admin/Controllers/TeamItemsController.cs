@@ -276,7 +276,7 @@ public class TeamItemsController : Controller
             await _posts.UpdateAsync(id, await ToCommandAsync(model, cancellationToken), cancellationToken);
             _logger.LogInformation("Admin action: updated service post {PostId}", id);
             TempData["Success"] = _localizer["PostUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

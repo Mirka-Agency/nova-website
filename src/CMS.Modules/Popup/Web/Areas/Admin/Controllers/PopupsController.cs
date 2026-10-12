@@ -184,7 +184,7 @@ public class PopupsController : Controller
             await _popups.UpdateAsync(id, ToCommand(model), cancellationToken);
             _logger.LogInformation("Admin action: updated popup {PopupId}", id);
             TempData["Success"] = _localizer["PopupUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {

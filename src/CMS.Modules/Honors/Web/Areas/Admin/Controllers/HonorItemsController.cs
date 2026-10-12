@@ -152,7 +152,7 @@ public class HonorItemsController : Controller
             await _honors.UpdateAsync(id, ToCommand(model), cancellationToken);
             _logger.LogInformation("Admin action: updated honor item {HonorId}", id);
             TempData["Success"] = _localizer["HonorUpdated"].Value;
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Edit), new { id });
         }
         catch (ValidationException ex)
         {
