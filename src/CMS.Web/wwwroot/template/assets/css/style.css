@@ -3469,8 +3469,17 @@ button.header-cta {
 }
 
 .service-groups--cards {
-  display: flex;
-  gap: 1rem;
+  --service-groups-gap: 1rem;
+  --service-groups-visible: 4;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc(
+    (100% - (var(--service-groups-visible) - 1) * var(--service-groups-gap)) /
+      var(--service-groups-visible)
+  );
+  gap: var(--service-groups-gap);
+  width: 100%;
+  box-sizing: border-box;
   grid-template-columns: none;
 }
 
@@ -3539,7 +3548,8 @@ button.header-cta {
 }
 
 .service-group--card {
-  flex: 0 0 min(18.5rem, 78vw);
+  min-width: 0;
+  width: 100%;
   grid-template-columns: none;
   grid-template-rows: auto minmax(0, 1fr) auto;
   align-items: stretch;

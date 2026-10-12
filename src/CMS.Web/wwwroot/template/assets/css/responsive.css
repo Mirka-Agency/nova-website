@@ -221,6 +221,10 @@
     --section-space: 2.5rem;
   }
 
+  .service-groups--cards {
+    --service-groups-visible: 2;
+  }
+
   body {
     font-size: 1rem;
   }
@@ -818,6 +822,10 @@
     --section-space: 2.15rem;
   }
 
+  .service-groups--cards {
+    --service-groups-visible: 1;
+  }
+
   .container {
     padding-inline: 0.85rem;
   }
@@ -984,8 +992,11 @@
     grid-template-columns: 1fr;
   }
 
+  .service-groups--cards {
+    --service-groups-visible: 3;
+  }
+
   .service-group--card {
-    flex-basis: min(16.5rem, 82vw);
     min-height: 14.5rem;
   }
 
