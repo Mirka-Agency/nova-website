@@ -46,6 +46,7 @@
     TableProperties,
     TableCellProperties,
     MediaEmbed,
+    MediaEmbedToolbar,
     HtmlEmbed,
     SourceEditing,
     GeneralHtmlSupport,
@@ -59,6 +60,7 @@
     PasteFromOffice,
     UpcastWriter,
     ClickObserver,
+    WidgetToolbarRepository,
   } = CKEDITOR;
 
   const ScrollHighlightPlugin =
@@ -419,19 +421,185 @@
     return null;
   }
 
-  function openVideoPosterPicker(editor, preferredTarget) {
+  function extractAttrValue(html, attrName) {
+    const re = new RegExp(
+      "\\b" + attrName + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s>]+))",
+      "i"
+    );
+    const match = String(html || "").match(re);
+    if (!match) return "";
+    return String(match[1] || match[2] || match[3] || "").trim();
+  }
+
+  function extractPosterFromHtml(html) {
+    return (
+      extractAttrValue(html, "data-nova-video-poster") ||
+      extractAttrValue(html, "poster") ||
+      ""
+    );
+  }
+
+  function extractPosterFromTarget(target) {
+    if (!target) return "";
+    if (target.kind === "rawHtml") {
+      return extractPosterFromHtml(
+        target.element.getAttribute("value") || target.html || ""
+      );
+    }
+    return "";
+  }
+
+  function removePosterFromHtml(html) {
+    let next = String(html || "");
+    next = next.replace(
+      /\s*poster\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi,
+      ""
+    );
+    next = next.replace(
+      /\s*data-nova-video-poster\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi,
+      ""
+    );
+    return next;
+  }
+
+  function applyPosterToTarget(editor, target, posterUrl) {
+    if (!target || !elementStillInDocument(target.element)) {
+      window.alert("ویدیو دیگر در محتوا نیست. دوباره انتخاب کنید.");
+      return false;
+    }
+
+    let html = null;
+    const safePoster = posterUrl ? String(posterUrl).trim() : "";
+
+    if (target.kind === "media") {
+      html = mediaUrlToCoveredHtml(target.url, safePoster || null);
+    } else {
+      const value = target.element.getAttribute("value") || target.html || "";
+      html = safePoster
+        ? applyPosterToVideoHtml(value, safePoster)
+        : removePosterFromHtml(value);
+    }
+
+    if (!html) {
+      window.alert("اعمال کاور برای این ویدیو ممکن نشد.");
+      return false;
+    }
+
+    insertOrReplaceRawHtml(editor, html, target.element);
+    return true;
+  }
+
+  function ensureVideoPosterModal() {
+    let modal = document.getElementById("video-poster-modal");
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "video-poster-modal";
+    modal.className = "admin-modal";
+    modal.hidden = true;
+    modal.innerHTML =
+      '<div class="admin-modal-backdrop" data-video-poster-close></div>' +
+      '<div class="admin-modal-dialog admin-video-poster-dialog" role="dialog" aria-modal="true" aria-labelledby="video-poster-modal-title">' +
+      '<div class="admin-modal-header">' +
+      '<h2 id="video-poster-modal-title">تنظیم کاور ویدیو</h2>' +
+      '<button type="button" class="btn btn-ghost" data-video-poster-close aria-label="بستن">×</button>' +
+      "</div>" +
+      '<p class="admin-hint">تصویر کاور فقط روی ویدیوی انتخاب‌شده اعمال می‌شود و تا قبل از پخش نمایش داده می‌شود.</p>' +
+      '<div class="admin-video-poster-preview" data-video-poster-preview>' +
+      '<img data-video-poster-image alt="پیش‌نمایش کاور" hidden />' +
+      '<p class="admin-lead" data-video-poster-empty>کاور تنظیم نشده است.</p>' +
+      "</div>" +
+      '<div class="admin-actions admin-video-poster-actions">' +
+      '<button type="button" class="btn btn-primary" data-video-poster-pick>انتخاب / آپلود تصویر</button>' +
+      '<button type="button" class="btn btn-secondary" data-video-poster-apply>اعمال کاور</button>' +
+      '<button type="button" class="btn btn-ghost" data-video-poster-clear>حذف کاور</button>' +
+      '<button type="button" class="btn btn-ghost" data-video-poster-close>انصراف</button>' +
+      "</div>" +
+      "</div>";
+
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll("[data-video-poster-close]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        modal.hidden = true;
+        modal._novaPosterCtx = null;
+      });
+    });
+
+    modal
+      .querySelector("[data-video-poster-pick]")
+      .addEventListener("click", function () {
+        const picker = window.AdminMediaPicker;
+        if (!picker || typeof picker.open !== "function") {
+          window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
+          return;
+        }
+
+        picker.open({
+          onSelect: function (item) {
+            if (!item || !item.publicUrl) return;
+            const url = String(item.publicUrl).trim();
+            if (!url) return;
+            modal._novaPosterDraft = url;
+            syncVideoPosterModalPreview(modal, url);
+          },
+        });
+      });
+
+    modal
+      .querySelector("[data-video-poster-clear]")
+      .addEventListener("click", function () {
+        modal._novaPosterDraft = "";
+        syncVideoPosterModalPreview(modal, "");
+      });
+
+    modal
+      .querySelector("[data-video-poster-apply]")
+      .addEventListener("click", function () {
+        const ctx = modal._novaPosterCtx;
+        if (!ctx || !ctx.editor || !ctx.target) {
+          modal.hidden = true;
+          return;
+        }
+
+        const draft =
+          typeof modal._novaPosterDraft === "string"
+            ? modal._novaPosterDraft
+            : "";
+        applyPosterToTarget(ctx.editor, ctx.target, draft);
+        modal.hidden = true;
+        modal._novaPosterCtx = null;
+      });
+
+    return modal;
+  }
+
+  function syncVideoPosterModalPreview(modal, posterUrl) {
+    const img = modal.querySelector("[data-video-poster-image]");
+    const empty = modal.querySelector("[data-video-poster-empty]");
+    const clearBtn = modal.querySelector("[data-video-poster-clear]");
+    const url = String(posterUrl || "").trim();
+
+    if (img) {
+      if (url) {
+        img.hidden = false;
+        img.src = url;
+      } else {
+        img.hidden = true;
+        img.removeAttribute("src");
+      }
+    }
+
+    if (empty) empty.hidden = !!url;
+    if (clearBtn) clearBtn.disabled = !url;
+  }
+
+  function openVideoPosterManager(editor, preferredTarget) {
     const target = preferredTarget || findSelectedVideoTarget(editor);
     if (!target) {
       window.alert(
-        "ابتدا روی ویدیوی داخل محتوا کلیک کنید، بعد «کاور ویدیو» را بزنید."
+        "ابتدا روی ویدیوی داخل محتوا کلیک کنید، بعد «تنظیم کاور ویدیو» را بزنید."
       );
-      return;
-    }
-
-    const picker = window.AdminMediaPicker;
-    if (!picker || typeof picker.open !== "function") {
-      console.error("AdminMediaPicker is not available on this page.");
-      window.alert("کتابخانه رسانه در این صفحه در دسترس نیست.");
       return;
     }
 
@@ -439,35 +607,16 @@
       writer.setSelection(target.element, "on");
     });
 
-    picker.open({
-      onSelect(item) {
-        if (!item || !item.publicUrl) return;
-        const posterUrl = String(item.publicUrl).trim();
-        if (!posterUrl) return;
+    const modal = ensureVideoPosterModal();
+    const currentPoster = extractPosterFromTarget(target);
+    modal._novaPosterCtx = { editor: editor, target: target };
+    modal._novaPosterDraft = currentPoster;
+    syncVideoPosterModalPreview(modal, currentPoster);
+    modal.hidden = false;
+  }
 
-        const current = findSelectedVideoTarget(editor) || target;
-        if (!elementStillInDocument(current.element)) {
-          window.alert("ویدیو دیگر در محتوا نیست. دوباره انتخاب کنید.");
-          return;
-        }
-
-        let html = null;
-        if (current.kind === "media") {
-          html = mediaUrlToCoveredHtml(current.url, posterUrl);
-        } else {
-          const value =
-            current.element.getAttribute("value") || current.html || "";
-          html = applyPosterToVideoHtml(value, posterUrl);
-        }
-
-        if (!html) {
-          window.alert("اعمال کاور برای این ویدیو ممکن نشد.");
-          return;
-        }
-
-        insertOrReplaceRawHtml(editor, html, current.element);
-      },
-    });
+  function openVideoPosterPicker(editor, preferredTarget) {
+    openVideoPosterManager(editor, preferredTarget);
   }
 
   function buildRawVideoHtml(src, posterUrl) {
@@ -640,9 +789,21 @@
       return "VideoPoster";
     }
 
+    static get requires() {
+      const deps = [];
+      if (typeof WidgetToolbarRepository === "function") {
+        deps.push(WidgetToolbarRepository);
+      }
+      if (typeof MediaEmbedToolbar === "function") {
+        deps.push(MediaEmbedToolbar);
+      }
+      return deps;
+    }
+
     init() {
       const editor = this.editor;
       let toolbarButtonView = null;
+      let removeButtonView = null;
 
       const findVideoTargetFromView = function (viewTarget) {
         let viewElement = viewTarget;
@@ -656,22 +817,101 @@
         return null;
       };
 
+      const syncToolbarState = function () {
+        const selected = findSelectedVideoTarget(editor);
+        const enabled = !!selected;
+        if (toolbarButtonView) {
+          toolbarButtonView.isEnabled = enabled;
+          toolbarButtonView.isOn = enabled;
+          toolbarButtonView.label = selected
+            ? "تنظیم کاور ویدیو"
+            : "کاور ویدیو";
+        }
+        if (removeButtonView) {
+          const hasPoster = !!extractPosterFromTarget(selected);
+          removeButtonView.isEnabled = enabled && hasPoster;
+        }
+      };
+
       editor.ui.componentFactory.add("videoPoster", (locale) => {
         const view = new ButtonView(locale);
         toolbarButtonView = view;
 
         view.set({
-          label: "کاور ویدیو",
+          label: "تنظیم کاور ویدیو",
           icon: videoPosterIcon,
-          tooltip: "ویدیو را انتخاب کنید یا روی آن دابل‌کلیک کنید",
-          isEnabled: true,
+          tooltip: "کاور (پوستر) برای ویدیوی انتخاب‌شده",
+          isEnabled: false,
         });
 
         view.on("execute", () => {
-          openVideoPosterPicker(editor);
+          openVideoPosterManager(editor);
         });
 
         return view;
+      });
+
+      editor.ui.componentFactory.add("videoPosterRemove", (locale) => {
+        const view = new ButtonView(locale);
+        removeButtonView = view;
+
+        view.set({
+          label: "حذف کاور ویدیو",
+          icon: deleteImageIcon,
+          tooltip: true,
+          isEnabled: false,
+        });
+
+        view.on("execute", () => {
+          const target = findSelectedVideoTarget(editor);
+          if (!target) return;
+          applyPosterToTarget(editor, target, "");
+          syncToolbarState();
+        });
+
+        return view;
+      });
+
+      editor.model.document.selection.on("change:range", syncToolbarState);
+      editor.model.document.on("change:data", syncToolbarState);
+      syncToolbarState();
+
+      editor.on("ready", function () {
+        try {
+          const repo = editor.plugins.get("WidgetToolbarRepository");
+          if (!repo || typeof repo.register !== "function") return;
+
+          // MediaEmbed widgets use mediaEmbed.toolbar; this covers HtmlEmbed/rawHtml videos.
+          repo.register("novaVideoPosterToolbar", {
+            ariaLabel: "نوار ابزار کاور ویدیو",
+            items: ["videoPoster", "videoPosterRemove"],
+            getRelatedElement: function (selection) {
+              const viewElement = selection.getSelectedElement();
+              if (!viewElement) return null;
+
+              const modelElement =
+                editor.editing.mapper.toModelElement(viewElement);
+              if (!modelElement || !modelElement.is("element", "rawHtml")) {
+                return null;
+              }
+
+              const target = videoTargetFromElement(modelElement);
+              if (!target) return null;
+
+              if (
+                isNovaCtaHtml(
+                  target.html || target.element.getAttribute("value") || ""
+                )
+              ) {
+                return null;
+              }
+
+              return viewElement;
+            },
+          });
+        } catch (err) {
+          console.warn("Video poster contextual toolbar unavailable", err);
+        }
       });
 
       const onVideoViewEvent = function (evt, data, openPicker) {
@@ -701,15 +941,12 @@
         editor.model.change(function (writer) {
           writer.setSelection(target.element, "on");
         });
-
-        if (toolbarButtonView) {
-          toolbarButtonView.isOn = true;
-        }
+        syncToolbarState();
 
         if (openPicker) {
           data.preventDefault();
           evt.stop();
-          openVideoPosterPicker(editor, target);
+          openVideoPosterManager(editor, target);
         }
       };
 
@@ -941,6 +1178,7 @@
         TableProperties,
         TableCellProperties,
         MediaEmbed,
+        ...(typeof MediaEmbedToolbar === "function" ? [MediaEmbedToolbar] : []),
         HtmlEmbed,
         SourceEditing,
         GeneralHtmlSupport,
@@ -978,6 +1216,7 @@
           "ctaHelper",
           "mediaEmbed",
           "videoPoster",
+          "videoPosterRemove",
           "insertTable",
           "htmlEmbed",
           "codeBlock",
@@ -1057,6 +1296,7 @@
       },
       mediaEmbed: {
         previewsInData: true,
+        toolbar: ["videoPoster", "videoPosterRemove"],
         extraProviders: [
           {
             // Direct video files (S3 / CDN / Arvan / etc.) — protocol+www stripped before match.

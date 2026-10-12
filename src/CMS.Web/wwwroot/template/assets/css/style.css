@@ -2997,6 +2997,8 @@ body.booking-open .float-call {
   .testimonials-slider__button:hover,
   .service-groups-slider__button:hover,
   .service-group--card:hover,
+  .service-toc__list a:hover,
+  .service-toc__list a:focus-visible,
   .testimonial-card:hover,
   .testimonial-voice__play:hover,
   .hero-media__play:hover .hero-media__play-icon,

@@ -11,16 +11,12 @@
       if (!poster) return;
 
       const video = wrap.querySelector("video");
-      if (video) {
-        if (!video.getAttribute("poster")) {
-          video.setAttribute("poster", poster);
-        }
-        wrap.setAttribute("data-nova-video-cover-ready", "1");
-        return;
-      }
-
       const iframe = wrap.querySelector("iframe");
-      if (!iframe) return;
+      if (!video && !iframe) return;
+
+      if (video && !video.getAttribute("poster")) {
+        video.setAttribute("poster", poster);
+      }
 
       wrap.classList.add("nova-video", "nova-video--covered");
       wrap.setAttribute("data-nova-video-cover-ready", "1");
@@ -41,6 +37,21 @@
       cover.addEventListener("click", function () {
         wrap.classList.add("is-playing");
         cover.remove();
+
+        if (video) {
+          try {
+            const playPromise = video.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+              playPromise.catch(function () {
+                /* autoplay may be blocked; native controls remain */
+              });
+            }
+          } catch (_) {
+            /* ignore */
+          }
+          return;
+        }
+
         try {
           const src = iframe.getAttribute("src") || "";
           if (src && !/[?&]autoplay=1/i.test(src)) {
@@ -54,7 +65,8 @@
         }
       });
 
-      wrap.appendChild(cover);
+      const host = wrap.querySelector(":scope > div") || wrap;
+      host.appendChild(cover);
     });
   }
 
