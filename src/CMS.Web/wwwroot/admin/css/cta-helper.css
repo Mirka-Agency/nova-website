@@ -397,6 +397,29 @@
   box-shadow: 0 0 0 3px rgba(9, 112, 125, 0.14);
 }
 
+.cta-mod__media-field .admin-hint {
+  margin: 0 0 0.65rem;
+}
+
+.cta-mod__media-preview {
+  max-width: 9rem;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e6f3f5;
+  border: 1px solid rgba(9, 112, 125, 0.12);
+}
+
+.cta-mod__media-preview:empty {
+  display: none;
+}
+
+.cta-mod__media-preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
 .cta-mod__actions {
   display: flex;
   flex-wrap: wrap;

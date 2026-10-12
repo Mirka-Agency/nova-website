@@ -418,6 +418,13 @@
       if (input) input.value = data[key] == null ? "" : String(data[key]);
     });
 
+    section.querySelectorAll("[data-media-preview-for]").forEach(function (preview) {
+      var selector = preview.getAttribute("data-media-preview-for");
+      var input = selector ? section.querySelector(selector) : null;
+      var url = input ? String(input.value || "").trim() : "";
+      preview.innerHTML = url ? '<img src="' + esc(url) + '" alt="" />' : "";
+    });
+
     render(section);
     setEditMode(true);
 
