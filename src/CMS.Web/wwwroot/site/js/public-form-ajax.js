@@ -58,6 +58,19 @@
     }
   }
 
+  function showSuccess(form, message) {
+    var embed = form.closest('.public-form-embed') || form.parentElement;
+    if (!embed) return;
+    var existing = embed.querySelector('.public-form-success');
+    if (existing) existing.remove();
+    var el = document.createElement('p');
+    el.className = 'public-form-success';
+    el.setAttribute('role', 'status');
+    el.textContent = message;
+    embed.insertBefore(el, form);
+    form.hidden = true;
+  }
+
   function submitAjax(form) {
     if (form.getAttribute('data-submitting') === '1') return;
     form.setAttribute('data-submitting', '1');
@@ -95,7 +108,7 @@
         if (result.ok && data.ok) {
           var msg = data.message || 'ارسال با موفقیت انجام شد.';
           try { form.reset(); } catch (e) { /* ignore */ }
-          window.alert(msg);
+          showSuccess(form, msg);
           return;
         }
 

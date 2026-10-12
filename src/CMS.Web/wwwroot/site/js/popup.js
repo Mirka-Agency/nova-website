@@ -92,7 +92,6 @@
       var closeBtn = success.querySelector('[data-popup-close]');
       if (closeBtn) focusNoScroll(closeBtn);
     }
-    window.alert(msg);
   }
 
   function focusNoScroll(el) {
