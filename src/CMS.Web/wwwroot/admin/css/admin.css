@@ -2517,13 +2517,21 @@ fieldset.admin-field legend {
 }
 
 .ck-content .nova-video-warning.ck-widget {
-  /* Keep type-around from inflating vertical space */
+  /* Keep type-around / selection handle from inflating vertical space */
   --ck-widget-type-around-button-size: 18px;
 }
 
 .ck-content .nova-video-warning .ck-widget__type-around__button {
   width: 18px;
   height: 18px;
+}
+
+.ck-content .nova-video-warning > .ck-widget__selection-handle {
+  width: 18px;
+  height: 18px;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  top: -10px;
 }
 
 .ck-content .nova-video-warning__text,

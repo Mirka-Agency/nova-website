@@ -389,24 +389,52 @@
             writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, body);
             writer.append(body, box);
 
-            const selected = editor.model.document.selection.getSelectedElement();
-            const insertBeforeVideo =
+            const selection = editor.model.document.selection;
+            const selected = selection.getSelectedElement();
+            const root = editor.model.document.getRoot();
+
+            // writer.insert only (no insertObject/insertContent): those can
+            // replace the selection or detach nodes inside an open change,
+            // and autosave then stores an empty body for the next edit.
+            if (
               selected &&
               (selected.is("element", "media") ||
-                selected.is("element", "rawHtml"));
-
-            if (insertBeforeVideo) {
+                selected.is("element", "rawHtml"))
+            ) {
               writer.insert(box, writer.createPositionBefore(selected));
-            } else if (typeof editor.model.insertObject === "function") {
-              editor.model.insertObject(box, null, null, {
-                setSelection: "after",
-              });
             } else {
-              editor.model.insertContent(box);
+              const anchor = selection.getFirstPosition();
+              let insertPos = writer.createPositionAt(root, "end");
+
+              if (anchor) {
+                const allowedParent = editor.model.schema.findAllowedParent(
+                  anchor,
+                  "novaVideoWarning"
+                );
+
+                if (allowedParent === anchor.parent) {
+                  insertPos = anchor;
+                } else if (allowedParent) {
+                  let node = anchor.parent;
+                  while (node && node.parent && node.parent !== allowedParent) {
+                    node = node.parent;
+                  }
+                  if (node && node.parent === allowedParent) {
+                    insertPos = anchor.isAtStart
+                      ? writer.createPositionBefore(node)
+                      : writer.createPositionAfter(node);
+                  } else {
+                    insertPos = writer.createPositionAt(allowedParent, "end");
+                  }
+                }
+              }
+
+              writer.insert(box, insertPos);
             }
 
-            // Keep caret after the warning so the following video does not jump/reselect.
-            writer.setSelection(box, "after");
+            if (box.root && box.root.document) {
+              writer.setSelection(body, "in");
+            }
           });
 
           editor.editing.view.focus();
@@ -457,6 +485,8 @@
 
       function isVideoWarningView(viewElement) {
         return (
+          viewElement &&
+          viewElement.is &&
           viewElement.is("element", "div") &&
           (viewElement.hasClass("nova-video-warning") ||
             viewElement.getAttribute("data-nova-video-warning") === "1" ||
@@ -464,51 +494,76 @@
         );
       }
 
-      conversion.for("upcast").elementToElement({
-        view: isVideoWarningView,
-        model: "novaVideoWarning",
-        converterPriority: "high",
-      });
+      function isVideoWarningTextView(viewElement) {
+        return (
+          viewElement &&
+          viewElement.is &&
+          viewElement.is("element", "div") &&
+          typeof viewElement.hasClass === "function" &&
+          viewElement.hasClass("nova-video-warning__text")
+        );
+      }
 
-      conversion.for("upcast").elementToElement({
-        view: {
-          name: "div",
-          classes: "nova-video-warning__text",
-        },
-        model: "novaVideoWarningText",
-        converterPriority: "high",
-      });
+      function extractPlainText(viewNode) {
+        if (!viewNode) return "";
+        if (viewNode.is && viewNode.is("$text")) {
+          return viewNode.data || "";
+        }
+        if (typeof viewNode.getChildren !== "function") return "";
+        let out = "";
+        for (const child of viewNode.getChildren()) {
+          if (child.is && child.is("element", "br")) {
+            out += "\n";
+            continue;
+          }
+          out += extractPlainText(child);
+        }
+        return out;
+      }
 
+      // Highest priority: build the full model subtree so GHS/HtmlEmbed cannot
+      // steal the markup on reload (that left the editor blank after save).
       conversion.for("upcast").add(function (dispatcher) {
-        // Unwrap <p> inside warning text so model stays inline-only.
         dispatcher.on(
-          "element:p",
+          "element:div",
           function (evt, data, conversionApi) {
-            const parent = data.viewItem && data.viewItem.parent;
-            if (
-              !parent ||
-              !parent.is ||
-              !parent.is("element", "div") ||
-              typeof parent.hasClass !== "function" ||
-              !parent.hasClass("nova-video-warning__text")
-            ) {
+            const viewItem = data.viewItem;
+            if (!isVideoWarningView(viewItem)) return;
+            if (!conversionApi.consumable.consume(viewItem, { name: true })) {
               return;
             }
 
-            if (!conversionApi.consumable.consume(data.viewItem, { name: true })) {
+            const box = conversionApi.writer.createElement("novaVideoWarning");
+            if (!conversionApi.safeInsert(box, data.modelCursor)) {
               return;
             }
 
-            const modelCursor = data.modelCursor;
-            const modelRange = conversionApi.convertChildren(
-              data.viewItem,
-              modelCursor
+            const body = conversionApi.writer.createElement(
+              "novaVideoWarningText"
             );
-            data.modelRange = modelRange;
-            data.modelCursor = modelRange.end;
+            conversionApi.writer.append(body, box);
+
+            let textContainer = null;
+            for (const child of viewItem.getChildren()) {
+              if (isVideoWarningTextView(child)) {
+                textContainer = child;
+                conversionApi.consumable.consume(child, { name: true });
+                break;
+              }
+            }
+
+            const rawText = (
+              extractPlainText(textContainer || viewItem) || ""
+            ).trim();
+            conversionApi.writer.insertText(
+              rawText || VIDEO_WARNING_DEFAULT_TEXT,
+              body
+            );
+
+            conversionApi.updateConversionResult(box, data);
             evt.stop();
           },
-          { priority: "high" }
+          { priority: "highest" }
         );
 
         dispatcher.on(
@@ -528,8 +583,9 @@
             }
 
             data.modelRange = conversionApi.writer.createRange(data.modelCursor);
+            evt.stop();
           },
-          { priority: "high" }
+          { priority: "highest" }
         );
       });
 
@@ -555,7 +611,7 @@
           );
           return toWidget(container, writer, {
             label: "هشدار محتوای ویدیو",
-            hasSelectionHandle: false,
+            hasSelectionHandle: true,
           });
         },
       });
@@ -583,24 +639,17 @@
       const editor = this.editor;
       const model = editor.model;
 
-      function isEmptyParagraph(element) {
-        return (
-          element &&
-          element.is &&
-          element.is("element", "paragraph") &&
-          element.childCount === 0
-        );
-      }
-
       model.document.registerPostFixer(function (writer) {
         let changed = false;
+        const warnings = [];
 
         for (const value of model.createRangeIn(model.document.getRoot())) {
-          const item = value.item;
-          if (!item.is || !item.is("element", "novaVideoWarning")) {
-            continue;
+          if (value.item.is && value.item.is("element", "novaVideoWarning")) {
+            warnings.push(value.item);
           }
+        }
 
+        warnings.forEach(function (item) {
           const children = Array.from(item.getChildren());
           const textChild = children.find(function (child) {
             return child.is("element", "novaVideoWarningText");
@@ -613,7 +662,6 @@
 
             orphans.forEach(function (orphan) {
               if (orphan.is("element", "paragraph")) {
-                // Flatten legacy paragraph into inline text.
                 Array.from(orphan.getChildren()).forEach(function (node) {
                   writer.move(
                     writer.createRangeOn(node),
@@ -634,7 +682,7 @@
             }
 
             changed = true;
-            continue;
+            return;
           }
 
           children.forEach(function (child) {
@@ -674,23 +722,13 @@
             changed = true;
           }
 
+          // Keep empty text container valid — do not auto-restore default text
+          // while the user is clearing/editing (that felt like "delete on select").
           if (!textChild.childCount) {
-            writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, textChild);
+            writer.insertText("\u00A0", textChild);
             changed = true;
           }
-
-          // Remove empty paragraphs glued before/after the warning (video jump gap).
-          const prev = item.previousSibling;
-          const next = item.nextSibling;
-          if (isEmptyParagraph(prev)) {
-            writer.remove(prev);
-            changed = true;
-          }
-          if (isEmptyParagraph(next)) {
-            writer.remove(next);
-            changed = true;
-          }
-        }
+        });
 
         return changed;
       });
@@ -1813,6 +1851,13 @@
             },
             classes: true,
             styles: true,
+          },
+        ],
+        // Let VideoWarningInsert own these nodes on reload (avoid GHS clash).
+        disallow: [
+          {
+            name: "div",
+            classes: ["nova-video-warning", "nova-video-warning__text"],
           },
         ],
       },
