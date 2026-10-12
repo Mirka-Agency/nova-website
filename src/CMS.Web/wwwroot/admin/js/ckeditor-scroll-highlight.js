@@ -67,6 +67,21 @@
     return null;
   }
 
+  function selectionCoversWholeBlock(selection, block) {
+    if (!selection || !block) return false;
+    if (selection.getSelectedElement() === block) return true;
+    const range = selection.getFirstRange();
+    if (!range || typeof range.containsItem !== "function") return false;
+    try {
+      if (!range.containsItem(block)) return false;
+      return Array.from(block.getChildren()).every(function (child) {
+        return range.containsItem(child);
+      });
+    } catch (_) {
+      return false;
+    }
+  }
+
   function getActiveState(editor) {
     const selection = editor.model.document.selection;
     const selected = selection.getSelectedElement();
@@ -93,10 +108,17 @@
       }
     }
 
-    const attr = selection.getAttribute(INLINE_ATTR);
-    if (attr) {
-      const colors = decodeColors(attr);
+    const inlineValue = selection.getAttribute(INLINE_ATTR);
+    if (inlineValue) {
+      const colors = decodeColors(inlineValue);
       return { mode: "inline", element: null, from: colors.from, to: colors.to };
+    }
+
+    if (pos && pos.textNode && typeof pos.textNode.hasAttribute === "function") {
+      if (pos.textNode.hasAttribute(INLINE_ATTR)) {
+        const colors = decodeColors(pos.textNode.getAttribute(INLINE_ATTR));
+        return { mode: "inline", element: null, from: colors.from, to: colors.to };
+      }
     }
 
     return null;
@@ -104,24 +126,67 @@
 
   function getInlineAttributeRange(editor, position) {
     if (!position) return null;
-    const selection = editor.model.document.selection;
-    const attrValue = selection.getAttribute(INLINE_ATTR);
+    const model = editor.model;
+
+    let attrValue = null;
+    if (position.textNode && position.textNode.hasAttribute(INLINE_ATTR)) {
+      attrValue = position.textNode.getAttribute(INLINE_ATTR);
+    } else {
+      attrValue = editor.model.document.selection.getAttribute(INLINE_ATTR);
+    }
     if (!attrValue) return null;
 
     if (typeof findAttributeRange === "function") {
       try {
-        return findAttributeRange(
-          position,
-          INLINE_ATTR,
-          attrValue,
-          editor.model
-        );
+        return findAttributeRange(position, INLINE_ATTR, attrValue, model);
       } catch (_) {
-        /* fall through */
+        /* fall through to manual expand */
       }
     }
 
-    return selection.getFirstRange();
+    // Expand left/right across adjacent text with the same attribute.
+    const root = position.root;
+    const range = model.createRange(
+      model.createPositionAt(root, 0),
+      model.createPositionAt(root, "end")
+    );
+    // Safer: walk siblings from text node.
+    const textNode = position.textNode;
+    if (!textNode || !textNode.parent) {
+      return model.document.selection.getFirstRange();
+    }
+
+    let startOffset = textNode.startOffset;
+    let endOffset = textNode.endOffset;
+    const parent = textNode.parent;
+
+    for (let i = textNode.index - 1; i >= 0; i--) {
+      const prev = parent.getChild(i);
+      if (
+        prev &&
+        prev.is &&
+        prev.is("$text") &&
+        prev.getAttribute(INLINE_ATTR) === attrValue
+      ) {
+        startOffset = prev.startOffset;
+      } else break;
+    }
+    for (let i = textNode.index + 1; i < parent.childCount; i++) {
+      const next = parent.getChild(i);
+      if (
+        next &&
+        next.is &&
+        next.is("$text") &&
+        next.getAttribute(INLINE_ATTR) === attrValue
+      ) {
+        endOffset = next.endOffset;
+      } else break;
+    }
+
+    return model.createRange(
+      model.createPositionAt(parent, startOffset),
+      model.createPositionAt(parent, endOffset)
+    );
   }
 
   function blockViewAttributes(modelElement, forEditing) {
@@ -139,10 +204,28 @@
       [DATA_FROM]: from,
       [DATA_TO]: to,
       style: forEditing
-        ? `--nova-sh-preview-from:${from};--nova-sh-preview-to:${to};color:${from}`
+        ? `--nova-sh-from:${from};--nova-sh-to:${to};color:${from}`
         : `color:${from}`,
     };
     return attrs;
+  }
+
+  function applyInlineToSelection(writer, model, selection, encoded) {
+    for (const range of model.schema.getValidRanges(
+      selection.getRanges(),
+      INLINE_ATTR
+    )) {
+      writer.setAttribute(INLINE_ATTR, encoded, range);
+    }
+  }
+
+  function removeInlineFromSelection(writer, model, selection) {
+    for (const range of model.schema.getValidRanges(
+      selection.getRanges(),
+      INLINE_ATTR
+    )) {
+      writer.removeAttribute(INLINE_ATTR, range);
+    }
   }
 
   class ScrollHighlightCommand extends Command {
@@ -157,8 +240,11 @@
       const blocked =
         selected &&
         (selected.is("element", "imageBlock") ||
+          selected.is("element", "imageInline") ||
           selected.is("element", "rawHtml") ||
-          selected.is("element", "media"));
+          selected.is("element", "media") ||
+          selected.is("element", "table") ||
+          selected.is("element", "novaVideoWarning"));
 
       this.isEnabled = !!active || (!selection.isCollapsed && !blocked);
     }
@@ -183,7 +269,15 @@
       const active = getActiveState(editor);
 
       model.change((writer) => {
-        if (active && active.mode === "block" && active.element) {
+        // Updating an existing block only when the whole block is targeted.
+        if (
+          active &&
+          active.mode === "block" &&
+          active.element &&
+          (selection.isCollapsed ||
+            selection.getSelectedElement() === active.element ||
+            selectionCoversWholeBlock(selection, active.element))
+        ) {
           writer.setAttribute("scrollHighlightFrom", from, active.element);
           writer.setAttribute("scrollHighlightTo", to, active.element);
           return;
@@ -191,33 +285,18 @@
 
         if (selection.isCollapsed) {
           if (active && active.mode === "inline") {
-            const range = getInlineAttributeRange(editor, selection.getFirstPosition());
+            const range = getInlineAttributeRange(
+              editor,
+              selection.getFirstPosition()
+            );
             if (range) writer.setAttribute(INLINE_ATTR, encoded, range);
           }
           return;
         }
 
-        const blocks = Array.from(selection.getSelectedBlocks());
-        if (blocks.length > 1) {
-          for (const range of model.schema.getValidRanges(selection.getRanges(), INLINE_ATTR)) {
-            writer.removeAttribute(INLINE_ATTR, range);
-          }
-
-          const content = model.getSelectedContent(selection);
-          if (!content.childCount) return;
-
-          const wrapper = writer.createElement(BLOCK_NAME, {
-            scrollHighlightFrom: from,
-            scrollHighlightTo: to,
-          });
-          writer.append(content, wrapper);
-          model.insertContent(wrapper);
-          return;
-        }
-
-        for (const range of model.schema.getValidRanges(selection.getRanges(), INLINE_ATTR)) {
-          writer.setAttribute(INLINE_ATTR, encoded, range);
-        }
+        // Always apply as inline formatting across valid ranges.
+        // Avoid wrapping multi-block selections in a div (breaks lists/tables).
+        applyInlineToSelection(writer, model, selection, encoded);
       });
     }
 
@@ -229,31 +308,43 @@
 
       model.change((writer) => {
         if (active && active.mode === "block" && active.element) {
-          if (typeof writer.unwrap === "function") {
-            writer.unwrap(active.element);
-          } else {
-            const parent = active.element.parent;
-            const index = parent.getChildIndex(active.element);
-            const children = Array.from(active.element.getChildren());
-            writer.remove(active.element);
-            let at = index;
-            for (const child of children) {
-              writer.insert(child, parent, at);
-              at += 1;
+          const whole =
+            selection.isCollapsed ||
+            selection.getSelectedElement() === active.element ||
+            selectionCoversWholeBlock(selection, active.element);
+
+          if (whole) {
+            if (typeof writer.unwrap === "function") {
+              writer.unwrap(active.element);
+            } else {
+              const parent = active.element.parent;
+              const index = parent.getChildIndex(active.element);
+              const children = Array.from(active.element.getChildren());
+              writer.remove(active.element);
+              let at = index;
+              for (const child of children) {
+                writer.insert(child, parent, at);
+                at += 1;
+              }
             }
+            return;
           }
+
+          // Partial selection inside a legacy block: strip inline attrs only.
+          removeInlineFromSelection(writer, model, selection);
           return;
         }
 
         if (!selection.isCollapsed) {
-          for (const range of model.schema.getValidRanges(selection.getRanges(), INLINE_ATTR)) {
-            writer.removeAttribute(INLINE_ATTR, range);
-          }
+          removeInlineFromSelection(writer, model, selection);
           return;
         }
 
         if (active && active.mode === "inline") {
-          const range = getInlineAttributeRange(editor, selection.getFirstPosition());
+          const range = getInlineAttributeRange(
+            editor,
+            selection.getFirstPosition()
+          );
           if (range) writer.removeAttribute(INLINE_ATTR, range);
         }
       });
@@ -269,8 +360,6 @@
         toColor: DEFAULT_TO,
         canRemove: false,
       });
-
-      const bind = this.bindTemplate;
 
       this.applyButton = this._button("اعمال", "ck-button-action");
       this.removeButton = this._button("حذف افکت", "ck-button-flat");
@@ -290,19 +379,21 @@
           {
             tag: "p",
             attributes: { class: ["ck-scroll-highlight-form__hint"] },
-            children: ["رنگ اولیه و نهایی هایلایت اسکرولی را انتخاب کنید."],
+            children: [
+              "متن را انتخاب کنید، رنگ اولیه و نهایی را تنظیم کنید، سپس «اعمال» را بزنید.",
+            ],
           },
           {
             tag: "label",
             attributes: { class: ["ck-scroll-highlight-form__label"] },
             children: [
-              "رنگ اولیه متن",
+              "رنگ اولیه",
               {
                 tag: "input",
                 attributes: {
                   type: "color",
                   class: ["ck-scroll-highlight-form__color"],
-                  value: bind.to("fromColor"),
+                  value: DEFAULT_FROM,
                   "data-role": "from",
                 },
               },
@@ -312,14 +403,44 @@
             tag: "label",
             attributes: { class: ["ck-scroll-highlight-form__label"] },
             children: [
-              "رنگ نهایی هایلایت",
+              "رنگ نهایی",
               {
                 tag: "input",
                 attributes: {
                   type: "color",
                   class: ["ck-scroll-highlight-form__color"],
-                  value: bind.to("toColor"),
+                  value: DEFAULT_TO,
                   "data-role": "to",
+                },
+              },
+            ],
+          },
+          {
+            tag: "div",
+            attributes: { class: ["ck-scroll-highlight-form__hex-row"] },
+            children: [
+              {
+                tag: "input",
+                attributes: {
+                  type: "text",
+                  class: ["ck-scroll-highlight-form__hex"],
+                  maxlength: "7",
+                  spellcheck: "false",
+                  "data-role": "from-hex",
+                  "aria-label": "کد رنگ اولیه",
+                  value: DEFAULT_FROM,
+                },
+              },
+              {
+                tag: "input",
+                attributes: {
+                  type: "text",
+                  class: ["ck-scroll-highlight-form__hex"],
+                  maxlength: "7",
+                  spellcheck: "false",
+                  "data-role": "to-hex",
+                  "aria-label": "کد رنگ نهایی",
+                  value: DEFAULT_TO,
                 },
               },
             ],
@@ -340,12 +461,34 @@
         event.preventDefault();
       });
 
+      // Keep CKEditor dropdown open while interacting with native color UI.
+      this.element.addEventListener(
+        "mousedown",
+        (event) => {
+          event.stopPropagation();
+        },
+        true
+      );
+      this.element.addEventListener(
+        "pointerdown",
+        (event) => {
+          event.stopPropagation();
+        },
+        true
+      );
+
       this.element.addEventListener("input", (event) => {
         const target = event.target;
-        if (!target || target.getAttribute("type") !== "color") return;
+        if (!target) return;
         const role = target.getAttribute("data-role");
-        if (role === "from") this.fromColor = target.value;
-        if (role === "to") this.toColor = target.value;
+        if (role === "from" || role === "from-hex") {
+          this.fromColor = normalizeHex(target.value, this.fromColor);
+          this._syncInputs();
+        }
+        if (role === "to" || role === "to-hex") {
+          this.toColor = normalizeHex(target.value, this.toColor);
+          this._syncInputs();
+        }
       });
     }
 
@@ -381,16 +524,24 @@
       if (!this.element) return;
       const from = this.element.querySelector('input[data-role="from"]');
       const to = this.element.querySelector('input[data-role="to"]');
+      const fromHex = this.element.querySelector('input[data-role="from-hex"]');
+      const toHex = this.element.querySelector('input[data-role="to-hex"]');
       if (from) from.value = this.fromColor;
       if (to) to.value = this.toColor;
+      if (fromHex) fromHex.value = this.fromColor;
+      if (toHex) toHex.value = this.toColor;
     }
 
     _readInputs() {
       if (!this.element) return;
+      const fromHex = this.element.querySelector('input[data-role="from-hex"]');
+      const toHex = this.element.querySelector('input[data-role="to-hex"]');
       const from = this.element.querySelector('input[data-role="from"]');
       const to = this.element.querySelector('input[data-role="to"]');
-      if (from) this.fromColor = from.value;
-      if (to) this.toColor = to.value;
+      if (fromHex && fromHex.value) this.fromColor = fromHex.value;
+      else if (from) this.fromColor = from.value;
+      if (toHex && toHex.value) this.toColor = toHex.value;
+      else if (to) this.toColor = to.value;
     }
   }
 
@@ -402,8 +553,12 @@
     init() {
       this._defineSchema();
       this._defineConverters();
-      this.editor.commands.add("scrollHighlight", new ScrollHighlightCommand(this.editor));
+      this.editor.commands.add(
+        "scrollHighlight",
+        new ScrollHighlightCommand(this.editor)
+      );
       this._createUi();
+      this._hookRemoveFormat();
     }
 
     _defineSchema() {
@@ -415,52 +570,52 @@
         copyOnEnter: false,
       });
 
-      schema.register(BLOCK_NAME, {
-        inheritAllFrom: "$container",
-        allowAttributes: ["scrollHighlightFrom", "scrollHighlightTo"],
-      });
+      if (!schema.isRegistered(BLOCK_NAME)) {
+        // Legacy block wrappers from older content — keep for upcast/remove.
+        if (schema.isRegistered("$container")) {
+          schema.register(BLOCK_NAME, {
+            inheritAllFrom: "$container",
+            allowAttributes: ["scrollHighlightFrom", "scrollHighlightTo"],
+          });
+        } else {
+          schema.register(BLOCK_NAME, {
+            allowWhere: "$block",
+            allowContentOf: "$root",
+            allowAttributes: ["scrollHighlightFrom", "scrollHighlightTo"],
+          });
+        }
+      }
     }
 
     _defineConverters() {
       const conversion = this.editor.conversion;
 
+      function inlineViewFactory(value, writer, forEditing) {
+        if (!value) return;
+        const colors = decodeColors(value);
+        return writer.createAttributeElement(
+          "span",
+          {
+            class: CLASS_NAME,
+            [DATA_MARKER]: "1",
+            [DATA_FROM]: colors.from,
+            [DATA_TO]: colors.to,
+            style: forEditing
+              ? `--nova-sh-from:${colors.from};--nova-sh-to:${colors.to};color:${colors.from}`
+              : `color:${colors.from}`,
+          },
+          { priority: 5 }
+        );
+      }
+
       conversion.for("editingDowncast").attributeToElement({
         model: INLINE_ATTR,
-        view: (value, { writer }) => {
-          if (!value) return;
-          const colors = decodeColors(value);
-          return writer.createAttributeElement(
-            "span",
-            {
-              class: CLASS_NAME,
-              [DATA_MARKER]: "1",
-              [DATA_FROM]: colors.from,
-              [DATA_TO]: colors.to,
-              style: `--nova-sh-preview-from:${colors.from};--nova-sh-preview-to:${colors.to};color:${colors.from}`,
-            },
-            { priority: 5 }
-          );
-        },
+        view: (value, { writer }) => inlineViewFactory(value, writer, true),
       });
 
       conversion.for("dataDowncast").attributeToElement({
         model: INLINE_ATTR,
-        view: (value, { writer }) => {
-          if (!value) return;
-          const colors = decodeColors(value);
-          return writer.createAttributeElement(
-            "span",
-            {
-              class: CLASS_NAME,
-              [DATA_MARKER]: "1",
-              [DATA_FROM]: colors.from,
-              [DATA_TO]: colors.to,
-              // Readable before JS / with reduced-motion fallback via CSS.
-              style: `color:${colors.from}`,
-            },
-            { priority: 5 }
-          );
-        },
+        view: (value, { writer }) => inlineViewFactory(value, writer, false),
       });
 
       conversion.for("upcast").elementToAttribute({
@@ -472,15 +627,15 @@
           key: INLINE_ATTR,
           value: (viewElement) => {
             if (viewElement.hasClass("nova-sh-char")) return null;
-            if (!viewElement.getAttribute(DATA_FROM) && !viewElement.getAttribute(DATA_TO)) {
-              return null;
-            }
-            return encodeColors(
-              viewElement.getAttribute(DATA_FROM),
-              viewElement.getAttribute(DATA_TO)
-            );
+            const from =
+              viewElement.getAttribute(DATA_FROM) ||
+              viewElement.getStyle("color") ||
+              DEFAULT_FROM;
+            const to = viewElement.getAttribute(DATA_TO) || DEFAULT_TO;
+            return encodeColors(from, to);
           },
         },
+        converterPriority: "high",
       });
 
       conversion.for("editingDowncast").elementToElement({
@@ -512,7 +667,8 @@
         model: (viewElement, { writer }) =>
           writer.createElement(BLOCK_NAME, {
             scrollHighlightFrom: normalizeHex(
-              viewElement.getAttribute(DATA_FROM),
+              viewElement.getAttribute(DATA_FROM) ||
+                viewElement.getStyle("color"),
               DEFAULT_FROM
             ),
             scrollHighlightTo: normalizeHex(
@@ -520,6 +676,33 @@
               DEFAULT_TO
             ),
           }),
+        converterPriority: "high",
+      });
+    }
+
+    _hookRemoveFormat() {
+      const editor = this.editor;
+      const removeFormat = editor.commands.get("removeFormat");
+      if (!removeFormat) return;
+
+      // After removeFormat runs, also clear our formatting attribute.
+      this.listenTo(removeFormat, "execute", () => {
+        const model = editor.model;
+        const selection = model.document.selection;
+        model.change((writer) => {
+          if (!selection.isCollapsed) {
+            removeInlineFromSelection(writer, model, selection);
+          } else {
+            const active = getActiveState(editor);
+            if (active && active.mode === "inline") {
+              const range = getInlineAttributeRange(
+                editor,
+                selection.getFirstPosition()
+              );
+              if (range) writer.removeAttribute(INLINE_ATTR, range);
+            }
+          }
+        });
       });
     }
 
@@ -530,6 +713,7 @@
       editor.ui.componentFactory.add(COMPONENT, (locale) => {
         const dropdown = createDropdown(locale);
         const form = new ScrollHighlightFormView(locale);
+        let forceKeepOpen = false;
 
         dropdown.buttonView.set({
           label: "هایلایت اسکرولی متن",
@@ -540,8 +724,43 @@
         dropdown.bind("isEnabled").to(command, "isEnabled");
         dropdown.panelView.children.add(form);
 
-        dropdown.on("change:isOpen", () => {
-          if (!dropdown.isOpen) return;
+        dropdown.panelView.once("render", () => {
+          const panelEl = dropdown.panelView.element;
+          if (!panelEl) return;
+          panelEl.addEventListener(
+            "mousedown",
+            (event) => {
+              event.stopPropagation();
+            },
+            true
+          );
+          panelEl.addEventListener(
+            "pointerdown",
+            (event) => {
+              event.stopPropagation();
+            },
+            true
+          );
+        });
+
+        dropdown.on("change:isOpen", (_evt, _name, isOpen) => {
+          if (!isOpen) {
+            const activeEl = document.activeElement;
+            const stillInForm =
+              forceKeepOpen ||
+              (activeEl &&
+                form.element &&
+                (form.element.contains(activeEl) ||
+                  activeEl.getAttribute("type") === "color"));
+            if (stillInForm) {
+              dropdown.isOpen = true;
+              return;
+            }
+            forceKeepOpen = false;
+            return;
+          }
+
+          forceKeepOpen = false;
           const active = getActiveState(editor);
           if (active) {
             form.setColors(active.from, active.to);
@@ -550,10 +769,31 @@
             form.setColors(DEFAULT_FROM, DEFAULT_TO);
             form.setRemoveVisible(false);
           }
+
+          // Defer sync so DOM inputs exist; wire color-picker keep-open hooks once.
+          setTimeout(function () {
+            form._syncInputs();
+            if (form.element && !form.element.getAttribute("data-sh-hooks")) {
+              form.element.setAttribute("data-sh-hooks", "1");
+              form.element
+                .querySelectorAll('input[type="color"]')
+                .forEach(function (input) {
+                  input.addEventListener("focus", function () {
+                    forceKeepOpen = true;
+                  });
+                  input.addEventListener("blur", function () {
+                    window.setTimeout(function () {
+                      forceKeepOpen = false;
+                    }, 250);
+                  });
+                });
+            }
+          }, 0);
         });
 
         form.applyButton.on("execute", () => {
           const colors = form.getColors();
+          forceKeepOpen = false;
           editor.execute("scrollHighlight", {
             action: "apply",
             from: colors.from,
@@ -564,12 +804,14 @@
         });
 
         form.removeButton.on("execute", () => {
+          forceKeepOpen = false;
           editor.execute("scrollHighlight", { action: "remove" });
           dropdown.isOpen = false;
           editor.editing.view.focus();
         });
 
         form.cancelButton.on("execute", () => {
+          forceKeepOpen = false;
           dropdown.isOpen = false;
           editor.editing.view.focus();
         });

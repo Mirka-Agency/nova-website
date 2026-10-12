@@ -221,15 +221,28 @@ main > .error-page {
   color: var(--site-muted);
 }
 
-.blog-content .marker-yellow { background-color: #fdfd77; }
-.blog-content .marker-green { background-color: #62f962; }
-.blog-content .marker-pink { background-color: #fc7899; }
-.blog-content .marker-blue { background-color: #72cdfd; }
+.blog-content .marker-yellow,
+.blog-prose .marker-yellow,
+.service-prose .marker-yellow { background-color: #fdfd77; }
+.blog-content .marker-green,
+.blog-prose .marker-green,
+.service-prose .marker-green { background-color: #62f962; }
+.blog-content .marker-pink,
+.blog-prose .marker-pink,
+.service-prose .marker-pink { background-color: #fc7899; }
+.blog-content .marker-blue,
+.blog-prose .marker-blue,
+.service-prose .marker-blue { background-color: #72cdfd; }
 
 /* Scroll-scrubbed text highlight (public runtime) */
 .nova-scroll-highlight {
   --nova-sh-from: #6b7280;
   --nova-sh-to: #0f172a;
+  color: var(--nova-sh-from);
+}
+
+:is(.blog-prose, .service-prose) .nova-scroll-highlight {
+  color: var(--nova-sh-from);
 }
 
 .nova-scroll-highlight .nova-sh-char {

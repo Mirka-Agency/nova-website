@@ -2479,7 +2479,7 @@ fieldset.admin-field legend {
 
 /* Scroll-scrubbed text highlight (editor chrome) */
 .ck-content .nova-scroll-highlight {
-  color: var(--nova-sh-preview-from, #6b7280);
+  color: var(--nova-sh-from, #6b7280);
   background-color: rgba(15, 23, 42, 0.06);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -2575,6 +2575,24 @@ fieldset.admin-field legend {
   border-radius: 4px;
   background: #fff;
   cursor: pointer;
+}
+
+.ck-scroll-highlight-form__hex-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ck-scroll-highlight-form__hex {
+  min-width: 0;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 12px;
+  direction: ltr;
+  text-align: left;
 }
 
 .ck-scroll-highlight-form__actions {

@@ -491,6 +491,20 @@ body.site > main {
   margin: 0 0 1.15rem;
 }
 
+/* CKEditor highlight markers on published prose */
+:is(.blog-prose, .service-prose) .marker-yellow { background-color: #fdfd77; }
+:is(.blog-prose, .service-prose) .marker-green { background-color: #62f962; }
+:is(.blog-prose, .service-prose) .marker-pink { background-color: #fc7899; }
+:is(.blog-prose, .service-prose) .marker-blue { background-color: #72cdfd; }
+
+:is(.blog-prose, .service-prose) mark.marker-yellow,
+:is(.blog-prose, .service-prose) mark.marker-green,
+:is(.blog-prose, .service-prose) mark.marker-pink,
+:is(.blog-prose, .service-prose) mark.marker-blue {
+  padding: 0.05em 0.15em;
+  border-radius: 0.15em;
+}
+
 /* Unified content tables (blog + services) — CKEditor / future inserts */
 .blog-prose figure.table,
 .service-prose figure.table {

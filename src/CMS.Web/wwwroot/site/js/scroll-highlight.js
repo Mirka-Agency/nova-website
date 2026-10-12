@@ -98,14 +98,19 @@
   function applyProgress(chars, progress, from, to) {
     var n = chars.length;
     if (!n) return;
-    var soft = Math.max(3 / n, 0.015);
+
+    // Soft edge must fit inside [0,1] so the last characters can reach `to`.
+    var soft = Math.min(Math.max(2 / n, 0.02), 0.35);
+    var p = progress <= 0 ? 0 : progress >= 1 ? 1 : progress;
 
     for (var i = 0; i < n; i++) {
       var edge = (i + 0.5) / n;
+      var start = Math.max(0, edge - soft / 2);
+      var end = Math.min(1, edge + soft / 2);
       var t;
-      if (progress >= edge + soft / 2) t = 1;
-      else if (progress <= edge - soft / 2) t = 0;
-      else t = (progress - (edge - soft / 2)) / soft;
+      if (p >= 1 || p >= end) t = 1;
+      else if (p <= start) t = 0;
+      else t = (p - start) / Math.max(end - start, 0.0001);
       chars[i].style.color = lerpColor(from, to, t);
     }
   }
