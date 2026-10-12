@@ -2438,6 +2438,43 @@ body.nav-open {
 
 /* ---------- CTA ---------- */
 
+/* Nova CTA Helper embeds — keep action buttons side-by-side on phones */
+.nova-cta__actions {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.nova-cta__actions > .nova-cta__btn,
+.nova-cta__actions > a {
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: normal;
+}
+
+@media (max-width: 575.98px) {
+  .nova-cta__actions {
+    gap: 0.4rem;
+  }
+
+  .nova-cta__actions > .nova-cta__btn,
+  .nova-cta__actions > a {
+    min-height: 42px;
+    padding-inline: 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .nova-cta--inline {
+    flex-wrap: nowrap !important;
+  }
+
+  .nova-cta--inline > .nova-cta__btn {
+    flex: 0 0 auto;
+  }
+}
+
 .cta-section {
   padding-block: clamp(2.25rem, 4vw, 3.5rem);
   background: var(--surface);

@@ -313,6 +313,31 @@
   box-shadow: 0 0 0 3px rgba(9, 112, 125, 0.14);
 }
 
+.cta-mod__preview .nova-cta__actions {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.cta-mod__preview .nova-cta__actions > a {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 575.98px) {
+  .cta-mod__preview .nova-cta__actions {
+    gap: 0.4rem;
+  }
+
+  .cta-mod__preview .nova-cta__actions > a {
+    min-height: 42px;
+    padding-inline: 0.7rem;
+    font-size: 0.82rem;
+  }
+}
+
 .cta-mod__preview {
   margin: 0 1.4rem 0.35rem;
   padding: 1.35rem;

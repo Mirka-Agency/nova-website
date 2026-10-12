@@ -85,11 +85,24 @@
     return ' href="' + esc(href) + '"';
   }
 
+  function actionsRow(innerHtml, extraStyle) {
+    var style =
+      "display:flex;flex-wrap:nowrap;align-items:stretch;gap:.55rem;" +
+      (extraStyle || "");
+    return (
+      '<div class="nova-cta__actions" style="' +
+      style +
+      '">' +
+      innerHtml +
+      "</div>"
+    );
+  }
+
   function btnPrimary(href, text) {
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;box-shadow:0 8px 18px rgba(9,112,125,.22);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(9,112,125,.22);">' +
       esc(text) +
       "</a>"
     );
@@ -99,7 +112,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;text-align:center;">' +
       esc(text) +
       "</a>"
     );
@@ -109,7 +122,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;box-shadow:0 8px 18px rgba(0,0,0,.12);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(0,0,0,.12);">' +
       esc(text) +
       "</a>"
     );
@@ -119,7 +132,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.75rem 1.4rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.94rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;backdrop-filter:blur(4px);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;text-align:center;backdrop-filter:blur(4px);">' +
       esc(text) +
       "</a>"
     );
@@ -129,7 +142,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' style="display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:.55rem 1.15rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;white-space:nowrap;box-shadow:0 6px 14px rgba(9,112,125,.2);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;min-width:0;min-height:42px;padding:.5rem .9rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;text-align:center;box-shadow:0 6px 14px rgba(9,112,125,.2);">' +
       esc(text) +
       "</a>"
     );
@@ -150,12 +163,13 @@
         '<p style="margin:0 0 1.25rem;max-width:36rem;color:rgba(255,255,255,.9);line-height:1.8;font-size:1.02rem;">' +
         esc(d.description) +
         "</p>" +
-        '<div style="display:flex;flex-wrap:wrap;gap:.7rem;">' +
-        btnLight(d.primaryUrl, d.primaryText) +
-        (d.secondaryText && String(d.secondaryText).trim()
-          ? btnOutlineOnDark(d.secondaryUrl, d.secondaryText)
-          : "") +
-        "</div></div></div>"
+        actionsRow(
+          btnLight(d.primaryUrl, d.primaryText) +
+            (d.secondaryText && String(d.secondaryText).trim()
+              ? btnOutlineOnDark(d.secondaryUrl, d.secondaryText)
+              : "")
+        ) +
+        "</div></div>"
       );
     },
 
@@ -168,17 +182,19 @@
         '<p style="margin:0 0 1.1rem;color:#2c3e40;line-height:1.8;">' +
         esc(d.description) +
         "</p>" +
-        '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:.85rem 1.1rem;">' +
-        btnPrimary(d.buttonUrl, d.buttonText) +
-        '<a href="tel:' +
-        esc(telDigits(d.phoneNumber)) +
-        '" dir="ltr" style="display:inline-flex;align-items:center;gap:.55rem;padding:.45rem .75rem .45rem .45rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;">' +
-        '<span style="display:inline-grid;place-items:center;width:2.15rem;height:2.15rem;border-radius:999px;background:#09707d;color:#fff;font-size:.9rem;">☎</span>' +
-        '<span><span style="display:block;font-size:.72rem;color:#6b7c7e;font-weight:700;">' +
-        esc(d.phoneLabel) +
-        '</span><span style="font-size:1rem;">' +
-        esc(d.phoneNumber) +
-        "</span></span></a></div></div>"
+        actionsRow(
+          btnPrimary(d.buttonUrl, d.buttonText) +
+            '<a href="tel:' +
+            esc(telDigits(d.phoneNumber)) +
+            '" dir="ltr" class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.45rem;min-width:0;min-height:44px;padding:.45rem .65rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;">' +
+            '<span style="display:inline-grid;place-items:center;flex:0 0 auto;width:2rem;height:2rem;border-radius:999px;background:#09707d;color:#fff;font-size:.85rem;">☎</span>' +
+            '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;"><span style="display:block;font-size:.68rem;color:#6b7c7e;font-weight:700;">' +
+            esc(d.phoneLabel) +
+            '</span><span style="font-size:.9rem;">' +
+            esc(d.phoneNumber) +
+            "</span></span></a>"
+        ) +
+        "</div>"
       );
     },
 
@@ -202,10 +218,11 @@
         '<p style="margin:0 0 1rem;color:#2c3e40;line-height:1.75;font-size:.95rem;">' +
         esc(d.description) +
         "</p>" +
-        '<div style="display:flex;flex-wrap:wrap;gap:.6rem;">' +
-        btnPrimary(d.profileUrl, d.profileText) +
-        btnSecondary(d.appointmentUrl, d.appointmentText) +
-        "</div></div></div>"
+        actionsRow(
+          btnPrimary(d.profileUrl, d.profileText) +
+            btnSecondary(d.appointmentUrl, d.appointmentText)
+        ) +
+        "</div></div>"
       );
     },
 
@@ -223,16 +240,18 @@
         esc(d.description) +
         "</p></div>" +
         '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.9rem;padding:1.15rem 1.5rem;background:#fff;">' +
-        '<div><strong style="display:block;color:#09707d;font-size:.8rem;margin-bottom:.2rem;letter-spacing:.02em;">خدمت مرتبط</strong>' +
+        '<div style="min-width:0;"><strong style="display:block;color:#09707d;font-size:.8rem;margin-bottom:.2rem;letter-spacing:.02em;">خدمت مرتبط</strong>' +
         '<span style="color:#1a3a3f;font-weight:800;">' +
         esc(d.serviceName) +
         "</span></div>" +
-        '<div style="display:flex;flex-wrap:wrap;gap:.6rem;">' +
-        btnPrimary(d.buttonUrl, d.buttonText) +
-        (d.secondaryText && String(d.secondaryText).trim()
-          ? btnSecondary(d.secondaryUrl, d.secondaryText)
-          : "") +
-        "</div></div></div>"
+        actionsRow(
+          btnPrimary(d.buttonUrl, d.buttonText) +
+            (d.secondaryText && String(d.secondaryText).trim()
+              ? btnSecondary(d.secondaryUrl, d.secondaryText)
+              : ""),
+          "flex:1 1 14rem;"
+        ) +
+        "</div></div>"
       );
     },
 
@@ -245,10 +264,12 @@
         '<p style="margin:0 auto 1.25rem;max-width:34rem;color:#2c3e40;line-height:1.8;">' +
         esc(d.description) +
         "</p>" +
-        '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem;">' +
-        btnPrimary(d.appointmentUrl, d.appointmentText) +
-        btnSecondary(d.consultationUrl, d.consultationText) +
-        "</div></div>"
+        actionsRow(
+          btnPrimary(d.appointmentUrl, d.appointmentText) +
+            btnSecondary(d.consultationUrl, d.consultationText),
+          "justify-content:center;max-width:28rem;margin-inline:auto;"
+        ) +
+        "</div>"
       );
     },
 
@@ -262,33 +283,38 @@
         '<span style="color:#2c3e40;line-height:1.7;">' +
         esc(d.description) +
         "</span></div>" +
-        '<div style="display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;">' +
-        '<a href="tel:' +
-        esc(telDigits(d.phone)) +
-        '" dir="ltr" style="display:inline-flex;align-items:center;min-height:42px;padding:.5rem 1.05rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;">☎ ' +
-        esc(d.phone) +
-        "</a>" +
-        '<a href="' +
-        esc(d.whatsappUrl) +
-        '" style="display:inline-flex;align-items:center;min-height:42px;padding:.5rem 1.05rem;border-radius:999px;border:1px solid rgba(9,112,125,.18);color:#065a64;font-weight:700;text-decoration:none;background:#fff;">' +
-        esc(d.whatsappText || "واتساپ / تماس") +
-        "</a>" +
-        btnCompact(d.appointmentUrl, d.appointmentText) +
-        "</div></div>"
+        actionsRow(
+          '<a href="tel:' +
+            esc(telDigits(d.phone)) +
+            '" dir="ltr" class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;min-width:0;min-height:42px;padding:.5rem .75rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;font-size:.85rem;">☎ ' +
+            esc(d.phone) +
+            "</a>" +
+            '<a href="' +
+            esc(d.whatsappUrl) +
+            '" class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;min-width:0;min-height:42px;padding:.5rem .75rem;border-radius:999px;border:1px solid rgba(9,112,125,.18);color:#065a64;font-weight:700;text-decoration:none;background:#fff;font-size:.85rem;text-align:center;">' +
+            esc(d.whatsappText || "واتساپ / تماس") +
+            "</a>" +
+            btnCompact(d.appointmentUrl, d.appointmentText),
+          "flex:1 1 16rem;"
+        ) +
+        "</div>"
       );
     },
 
     inline: function (d) {
       return (
-        '<div class="nova-cta nova-cta--inline" style="margin:1.35rem 0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.9rem;padding:1rem 1.1rem;border-radius:16px;background:linear-gradient(120deg,#e6f3f5 0%,#f3fafb 100%);border:1px solid rgba(9,112,125,.16);box-shadow:0 6px 16px rgba(9,112,125,.06);font-family:Peyda,Tahoma,sans-serif;">' +
-        '<div style="min-width:0;flex:1 1 14rem;">' +
+        '<div class="nova-cta nova-cta--inline" style="margin:1.35rem 0;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:.75rem;padding:1rem 1.1rem;border-radius:16px;background:linear-gradient(120deg,#e6f3f5 0%,#f3fafb 100%);border:1px solid rgba(9,112,125,.16);box-shadow:0 6px 16px rgba(9,112,125,.06);font-family:Peyda,Tahoma,sans-serif;">' +
+        '<div style="min-width:0;flex:1 1 auto;">' +
         '<strong style="display:block;color:#065a64;font-size:.98rem;margin-bottom:.2rem;">' +
         esc(d.title) +
         "</strong>" +
         '<span style="color:#2c3e40;font-size:.9rem;line-height:1.65;">' +
         esc(d.description) +
         "</span></div>" +
-        btnCompact(d.buttonUrl, d.buttonText) +
+        btnCompact(d.buttonUrl, d.buttonText).replace(
+          "flex:1 1 0;",
+          "flex:0 0 auto;"
+        ) +
         "</div>"
       );
     },
@@ -305,12 +331,13 @@
         '<p style="margin:0 0 1.1rem;color:#2c3e40;line-height:1.8;">' +
         esc(d.description) +
         "</p>" +
-        '<div style="display:flex;flex-wrap:wrap;gap:.6rem;">' +
-        btnPrimary(d.primaryUrl, d.primaryText) +
-        (d.secondaryText && String(d.secondaryText).trim()
-          ? btnSecondary(d.secondaryUrl, d.secondaryText)
-          : "") +
-        "</div></div>"
+        actionsRow(
+          btnPrimary(d.primaryUrl, d.primaryText) +
+            (d.secondaryText && String(d.secondaryText).trim()
+              ? btnSecondary(d.secondaryUrl, d.secondaryText)
+              : "")
+        ) +
+        "</div>"
       );
     }
   };
