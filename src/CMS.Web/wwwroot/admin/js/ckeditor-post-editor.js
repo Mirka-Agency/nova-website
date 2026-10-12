@@ -61,6 +61,9 @@
     UpcastWriter,
     ClickObserver,
     WidgetToolbarRepository,
+    Widget,
+    toWidget,
+    toWidgetEditable,
   } = CKEDITOR;
 
   const ScrollHighlightPlugin =
@@ -98,6 +101,14 @@
     '<path d="M3.2 4.5h8.4c.55 0 1 .45 1 1v2.2l2.7-1.7c.45-.28 1.05.05 1.05.58v7.84c0 .53-.6.86-1.05.58l-2.7-1.7v2.2c0 .55-.45 1-1 1H3.2c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1zm1.3 2.2v6.6h5.8V6.7H4.5zm7.4 1.55v3.5l1.9 1.2V7.05l-1.9 1.2z"/>' +
     '<path d="M5.2 8.1h2.4v1.3H5.2V8.1zm0 2.2h3.6v1.3H5.2v-1.3z"/>' +
     "</svg>";
+
+  const videoWarningIcon =
+    '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M10 2.2c.4 0 .75.22.94.57l7.2 13.2c.38.7-.12 1.53-.94 1.53H2.8c-.82 0-1.32-.83-.94-1.53l7.2-13.2c.19-.35.54-.57.94-.57zm0 4.1c-.5 0-.9.4-.9.9v4.2c0 .5.4.9.9.9s.9-.4.9-.9V7.2c0-.5-.4-.9-.9-.9zm0 7.4a1.05 1.05 0 1 0 0 2.1 1.05 1.05 0 0 0 0-2.1z"/>' +
+    "</svg>";
+
+  const VIDEO_WARNING_DEFAULT_TEXT =
+    "⚠️ توجه: ویدئو شامل تصاویر واقعی جراحی است.";
 
   const CTA_HELPER_MESSAGE = "nova-cta-helper-insert";
   const CTA_HELPER_READY = "nova-cta-helper-ready";
@@ -334,6 +345,243 @@
         editor.editing.view.document.on("click", openCtaFromViewEvent);
       }
       editor.editing.view.document.on("dblclick", openCtaFromViewEvent);
+    }
+  }
+
+  class VideoWarningInsert extends Plugin {
+    static get pluginName() {
+      return "VideoWarningInsert";
+    }
+
+    static get requires() {
+      return typeof Widget === "function" ? [Widget] : [];
+    }
+
+    init() {
+      const editor = this.editor;
+
+      if (typeof Widget !== "function" || typeof toWidget !== "function" || typeof toWidgetEditable !== "function") {
+        console.warn("VideoWarningInsert skipped: Widget APIs unavailable");
+        return;
+      }
+
+      this._defineSchema();
+      this._defineConverters();
+      this._definePostFixer();
+
+      editor.ui.componentFactory.add("videoWarning", function (locale) {
+        const view = new ButtonView(locale);
+
+        view.set({
+          label: "هشدار محتوای ویدیو",
+          icon: videoWarningIcon,
+          tooltip: true,
+        });
+
+        view.on("execute", function () {
+          editor.model.change(function (writer) {
+            const box = writer.createElement("novaVideoWarning");
+            const body = writer.createElement("novaVideoWarningText");
+            const paragraph = writer.createElement("paragraph");
+            writer.insertText(VIDEO_WARNING_DEFAULT_TEXT, paragraph);
+            writer.append(paragraph, body);
+            writer.append(body, box);
+
+            editor.model.insertContent(box);
+            writer.setSelection(body, "in");
+          });
+
+          editor.editing.view.focus();
+        });
+
+        return view;
+      });
+    }
+
+    _defineSchema() {
+      const schema = this.editor.model.schema;
+
+      schema.register("novaVideoWarning", {
+        inheritAllFrom: "$blockObject",
+        allowChildren: ["novaVideoWarningText"],
+      });
+
+      schema.register("novaVideoWarningText", {
+        isLimit: true,
+        allowIn: "novaVideoWarning",
+        allowContentOf: "$block",
+      });
+
+      schema.addChildCheck(function (context, childDefinition) {
+        if (
+          childDefinition.name === "novaVideoWarning" &&
+          typeof context.endsWith === "function" &&
+          context.endsWith("novaVideoWarningText")
+        ) {
+          return false;
+        }
+      });
+    }
+
+    _defineConverters() {
+      const conversion = this.editor.conversion;
+      const warningViewAttrs = {
+        class: "nova-video-warning",
+        "data-nova-video-warning": "1",
+        dir: "rtl",
+        role: "note",
+      };
+
+      function isVideoWarningView(viewElement) {
+        return (
+          viewElement.is("element", "div") &&
+          (viewElement.hasClass("nova-video-warning") ||
+            viewElement.getAttribute("data-nova-video-warning") === "1" ||
+            viewElement.getAttribute("data-nova-video-warning") === "true")
+        );
+      }
+
+      conversion.for("upcast").elementToElement({
+        view: isVideoWarningView,
+        model: "novaVideoWarning",
+        converterPriority: "high",
+      });
+
+      conversion.for("upcast").elementToElement({
+        view: {
+          name: "div",
+          classes: "nova-video-warning__text",
+        },
+        model: "novaVideoWarningText",
+        converterPriority: "high",
+      });
+
+      // Optional legacy icon node from older markup — drop on load.
+      conversion.for("upcast").add(function (dispatcher) {
+        dispatcher.on(
+          "element:span",
+          function (evt, data, conversionApi) {
+            const viewItem = data.viewItem;
+            if (
+              !viewItem ||
+              typeof viewItem.hasClass !== "function" ||
+              !viewItem.hasClass("nova-video-warning__icon")
+            ) {
+              return;
+            }
+
+            if (!conversionApi.consumable.consume(viewItem, { name: true })) {
+              return;
+            }
+
+            data.modelRange = conversionApi.writer.createRange(data.modelCursor);
+          },
+          { priority: "high" }
+        );
+      });
+
+      conversion.for("dataDowncast").elementToElement({
+        model: "novaVideoWarning",
+        view: {
+          name: "div",
+          classes: "nova-video-warning",
+          attributes: {
+            "data-nova-video-warning": "1",
+            dir: "rtl",
+            role: "note",
+          },
+        },
+      });
+
+      conversion.for("editingDowncast").elementToElement({
+        model: "novaVideoWarning",
+        view: function (modelElement, { writer }) {
+          const container = writer.createContainerElement(
+            "div",
+            warningViewAttrs
+          );
+          return toWidget(container, writer, {
+            label: "هشدار محتوای ویدیو",
+            hasSelectionHandle: true,
+          });
+        },
+      });
+
+      conversion.for("dataDowncast").elementToElement({
+        model: "novaVideoWarningText",
+        view: {
+          name: "div",
+          classes: "nova-video-warning__text",
+        },
+      });
+
+      conversion.for("editingDowncast").elementToElement({
+        model: "novaVideoWarningText",
+        view: function (modelElement, { writer }) {
+          const editable = writer.createEditableElement("div", {
+            class: "nova-video-warning__text",
+          });
+          return toWidgetEditable(editable, writer);
+        },
+      });
+    }
+
+    _definePostFixer() {
+      const editor = this.editor;
+      const model = editor.model;
+
+      model.document.registerPostFixer(function (writer) {
+        let changed = false;
+
+        for (const value of model.createRangeIn(model.document.getRoot())) {
+          const item = value.item;
+          if (!item.is || !item.is("element", "novaVideoWarning")) {
+            continue;
+          }
+
+          const children = Array.from(item.getChildren());
+          const textChild = children.find(function (child) {
+            return child.is("element", "novaVideoWarningText");
+          });
+
+          if (!textChild) {
+            const body = writer.createElement("novaVideoWarningText");
+            const orphans = children.slice();
+
+            writer.append(body, item);
+
+            orphans.forEach(function (orphan) {
+              writer.move(
+                writer.createRangeOn(orphan),
+                writer.createPositionAt(body, "end")
+              );
+            });
+
+            if (!body.childCount) {
+              writer.append(writer.createElement("paragraph"), body);
+            }
+
+            changed = true;
+            continue;
+          }
+
+          children.forEach(function (child) {
+            if (child === textChild) return;
+            writer.move(
+              writer.createRangeOn(child),
+              writer.createPositionAt(textChild, "end")
+            );
+            changed = true;
+          });
+
+          if (!textChild.childCount) {
+            writer.append(writer.createElement("paragraph"), textChild);
+            changed = true;
+          }
+        }
+
+        return changed;
+      });
     }
   }
 
@@ -1167,6 +1415,7 @@
         MediaLibraryImage,
         VideoPoster,
         CtaHelperInsert,
+        VideoWarningInsert,
         ...(ScrollHighlightPlugin ? [ScrollHighlightPlugin] : []),
         Highlight,
         Font,
@@ -1214,6 +1463,7 @@
           "link",
           "mediaLibraryImage",
           "ctaHelper",
+          "videoWarning",
           "mediaEmbed",
           "videoPoster",
           "videoPosterRemove",
@@ -1379,6 +1629,7 @@
               "data-nova-sh-from": true,
               "data-nova-sh-to": true,
               "data-nova-video-poster": true,
+              "data-nova-video-warning": true,
               "data-popup-open": true,
               "data-booking-open": true,
               role: true,
