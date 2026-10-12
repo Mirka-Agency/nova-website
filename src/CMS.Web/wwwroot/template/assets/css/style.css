@@ -4905,17 +4905,15 @@ button.header-cta {
   padding: 0.35rem 0 0;
 }
 
-.service-toc,
 .blog-toc {
   grid-area: toc;
   position: relative;
-  /* Within .blog-post / .service-article only; header stays above the section. */
+  /* Within .blog-post only; header stays above the section. */
   z-index: 2;
   min-width: 0;
   align-self: stretch;
 }
 
-.service-toc__panel,
 .blog-toc__panel {
   position: sticky;
   top: var(--sticky-under-header);
@@ -4931,7 +4929,6 @@ button.header-cta {
   box-shadow: var(--shadow-sm);
 }
 
-.service-toc__title,
 .blog-toc__title {
   margin: 0 0 0.85rem;
   color: var(--secondary);
@@ -4939,7 +4936,6 @@ button.header-cta {
   font-weight: 700;
 }
 
-.service-toc__list,
 .blog-toc__list {
   display: grid;
   gap: 0.35rem;
@@ -4949,12 +4945,10 @@ button.header-cta {
   counter-reset: toc;
 }
 
-.service-toc__list li,
 .blog-toc__list li {
   counter-increment: toc;
 }
 
-.service-toc__list a,
 .blog-toc__list a {
   display: block;
   position: relative;
@@ -4970,7 +4964,6 @@ button.header-cta {
     color var(--transition);
 }
 
-.service-toc__list a::before,
 .blog-toc__list a::before {
   content: counter(toc);
   position: absolute;
@@ -4982,8 +4975,6 @@ button.header-cta {
   font-weight: 700;
 }
 
-.service-toc__list a:hover,
-.service-toc__list a:focus-visible,
 .blog-toc__list a:hover,
 .blog-toc__list a:focus-visible {
   background: var(--primary-soft);
@@ -4995,11 +4986,22 @@ button.header-cta {
   justify-content: center;
 }
 
-/* Modern minimal service TOC */
+/* Service TOC — matches service-single.html template */
+.service-toc {
+  grid-area: toc;
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  align-self: stretch;
+}
+
 .service-toc__panel {
-  top: calc(var(--site-admin-bar-height) + var(--header-height) + 1rem);
-  max-height: calc(100dvh - var(--site-admin-bar-height) - var(--header-height) - 2rem);
+  position: sticky;
+  top: calc(var(--site-admin-bar-height, 0px) + var(--header-height) + 1rem);
+  z-index: 1;
+  max-height: calc(100dvh - var(--site-admin-bar-height, 0px) - var(--header-height) - 2rem);
   overflow: visible;
+  overscroll-behavior: contain;
   padding: 1rem 0.85rem;
   border: 1px solid rgba(9, 112, 125, 0.08);
   border-radius: 1rem;
@@ -5013,11 +5015,10 @@ button.header-cta {
   margin: 0 0 0.85rem;
   padding: 0 0.35rem;
   color: rgba(26, 58, 63, 0.55);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   line-height: 1.3;
-  text-transform: uppercase;
 }
 
 .service-toc__nav {
@@ -5026,10 +5027,20 @@ button.header-cta {
 
 .service-toc__list {
   position: relative;
+  display: grid;
   gap: 0.15rem;
   margin: 0;
   padding: 0;
+  list-style: none;
   border-inline-start: 0;
+  counter-reset: toc;
+}
+
+.service-toc__list li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-increment: toc;
 }
 
 .service-toc__list a {
@@ -5046,6 +5057,7 @@ button.header-cta {
   font-size: 0.8rem;
   font-weight: 500;
   line-height: 1.4;
+  text-decoration: none;
   box-shadow: none;
   transition:
     color 200ms ease,
@@ -5089,6 +5101,7 @@ button.header-cta {
 .service-toc__list a:focus-visible {
   background: rgba(9, 112, 125, 0.05);
   color: var(--secondary);
+  outline: none;
 }
 
 .service-toc__list a:hover::before,

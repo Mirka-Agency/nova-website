@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using System.Text.RegularExpressions
 @using CMS.Application.Settings
+@using CMS.Modules.Blog.Application.Common
 @using CMS.Modules.Blog.Application.Posts
 @inject ISiteSettingsService SiteSettings
 @{
@@ -44,9 +45,22 @@
 
     var toc = new List<(string Id, string Text)>();
     var proseSections = new List<(string? Id, string Html)>();
+    var usedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    var headingFallback = 0;
     var bodyHtml = Model.Body ?? string.Empty;
     var h2Regex = new Regex(@"<h2(\s[^>]*)?>(.*?)</h2>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+    var idAttrRegex = new Regex(@"\bid\s*=\s*(?:""([^""]*)""|'([^']*)'|([^\s>]+))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     var headingMatches = h2Regex.Matches(bodyHtml);
+
+    string UniqueHeadingId(string preferred)
+    {
+        var baseId = string.IsNullOrWhiteSpace(preferred) ? $"section-{++headingFallback}" : preferred;
+        var candidate = baseId;
+        var n = 2;
+        while (!usedIds.Add(candidate))
+            candidate = $"{baseId}-{n++}";
+        return candidate;
+    }
 
     if (headingMatches.Count == 0)
     {
@@ -65,18 +79,37 @@
         for (var i = 0; i < headingMatches.Count; i++)
         {
             var match = headingMatches[i];
-            var id = $"section-{i + 1}";
             var text = WebUtility.HtmlDecode(Regex.Replace(match.Groups[2].Value, "<.*?>", string.Empty)).Trim();
+            var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
+            var existingId = idAttrRegex.Match(attrs);
+            string rawId;
+            if (existingId.Success)
+            {
+                rawId = existingId.Groups[1].Success ? existingId.Groups[1].Value
+                    : existingId.Groups[2].Success ? existingId.Groups[2].Value
+                    : existingId.Groups[3].Value;
+            }
+            else
+            {
+                rawId = SlugGenerator.FromTitle(text);
+            }
+
+            var id = UniqueHeadingId(rawId);
             if (!string.IsNullOrWhiteSpace(text))
                 toc.Add((id, text));
 
             var start = match.Index;
             var end = i + 1 < headingMatches.Count ? headingMatches[i + 1].Index : bodyHtml.Length;
             var sectionHtml = bodyHtml[start..end];
-            var attrs = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
-            if (!attrs.Contains("id=", StringComparison.OrdinalIgnoreCase))
+            if (!existingId.Success)
             {
                 sectionHtml = $"<h2 id=\"{id}\"{attrs}>{match.Groups[2].Value}</h2>" +
+                              sectionHtml[match.Length..];
+            }
+            else if (!string.Equals(rawId, id, StringComparison.Ordinal))
+            {
+                var rewrittenAttrs = idAttrRegex.Replace(attrs, $" id=\"{id}\"", 1);
+                sectionHtml = $"<h2{rewrittenAttrs}>{match.Groups[2].Value}</h2>" +
                               sectionHtml[match.Length..];
             }
 
