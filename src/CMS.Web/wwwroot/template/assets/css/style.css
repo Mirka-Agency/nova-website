@@ -2316,14 +2316,16 @@ body.nav-open {
 /* ---------- Scientific sources ---------- */
 
 .scientific-sources-section {
-  padding-block: clamp(1.5rem, 3vw, 2.5rem);
-  background: var(--white);
+  margin-block-start: clamp(1.75rem, 3vw, 2.5rem);
+  padding-block: 0;
+  background: transparent;
   scroll-margin-top: calc(var(--header-height) + 1rem);
 }
 
 .scientific-sources {
-  max-width: 760px;
-  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
   border: 1px solid rgba(9, 112, 125, 0.12);
   border-radius: var(--radius-md);
   background: var(--surface);
