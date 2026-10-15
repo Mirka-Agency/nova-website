@@ -58,6 +58,16 @@
     }
   }
 
+  function isContactPageForm(form) {
+    return !!(form.closest('#contact-form') || form.closest('.contact-form-panel') || form.closest('.contact-form-section'));
+  }
+
+  function pinToElement(el) {
+    if (!el) return;
+    var top = el.getBoundingClientRect().top + (window.pageYOffset || window.scrollY || 0) - 96;
+    window.scrollTo(0, Math.max(0, top));
+  }
+
   function showSuccess(form, message) {
     var embed = form.closest('.public-form-embed') || form.parentElement;
     if (!embed) return;
@@ -67,6 +77,24 @@
     el.className = 'public-form-success';
     el.setAttribute('role', 'status');
     el.textContent = message;
+
+    if (isContactPageForm(form)) {
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+      embed.insertBefore(el, form);
+      form.hidden = true;
+      // After the form collapses, restoring the old scrollY clamps to the page
+      // bottom (map). Keep the success message in view instead.
+      pinToElement(el);
+      requestAnimationFrame(function () {
+        pinToElement(el);
+      });
+      setTimeout(function () { pinToElement(el); }, 120);
+      setTimeout(function () { pinToElement(el); }, 320);
+      return;
+    }
+
     embed.insertBefore(el, form);
     form.hidden = true;
   }
@@ -109,6 +137,9 @@
           var msg = data.message || 'ارسال با موفقیت انجام شد.';
           try { form.reset(); } catch (e) { /* ignore */ }
           showSuccess(form, msg);
+          if (isContactPageForm(form)) {
+            window.alert(msg);
+          }
           return;
         }
 

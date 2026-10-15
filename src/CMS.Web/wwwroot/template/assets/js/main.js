@@ -2084,8 +2084,25 @@
         return;
       }
 
+      if (document.activeElement && typeof document.activeElement.blur === "function") {
+        document.activeElement.blur();
+      }
       form.classList.add("is-sent");
-      if (success) success.hidden = false;
+      if (success) {
+        success.hidden = false;
+        var pinSuccess = function () {
+          var top =
+            success.getBoundingClientRect().top +
+            (window.pageYOffset || window.scrollY || 0) -
+            96;
+          window.scrollTo(0, Math.max(0, top));
+        };
+        pinSuccess();
+        requestAnimationFrame(pinSuccess);
+        setTimeout(pinSuccess, 120);
+        setTimeout(pinSuccess, 320);
+      }
+      window.alert("پیام شما با موفقیت ارسال شد.");
     });
   })();
 
