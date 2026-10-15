@@ -142,7 +142,9 @@ public sealed class PublicServiceItemQuery : IPublicServiceItemQuery
             post.OgDescription,
             post.OgImageUrl,
             post.SourcesJson,
-            post.FaqJson);
+            post.FaqJson,
+            post.ContentGuideJson,
+            post.VideoSchemaJson);
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>

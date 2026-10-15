@@ -238,6 +238,25 @@ public class ServiceItemsController : Controller
                 .ToList()
         };
 
+        var contentGuide = ServiceItemContentGuideJson.Parse(post.ContentGuideJson);
+        model.ContentGuideEnabled = contentGuide.Enabled;
+        model.ContentGuideTitle = contentGuide.Title;
+        model.ContentGuideItems = contentGuide.Items
+            .Select(x => new ServiceItemContentGuideItemViewModel { Title = x.Title, Description = x.Description })
+            .ToList();
+        model.VideoSchemaItems = ServiceItemVideoSchemaJson.Parse(post.VideoSchemaJson)
+            .Select(x => new ServiceItemVideoSchemaItemViewModel
+            {
+                Title = x.Title,
+                ContentUrl = x.ContentUrl,
+                ThumbnailUrl = x.ThumbnailUrl,
+                UploadDate = x.UploadDate,
+                DurationMinutes = x.DurationMinutes,
+                DurationSeconds = x.DurationSeconds,
+                Description = x.Description
+            })
+            .ToList();
+
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {
             var seoDoc = await _seoDocuments.GetAsync(SeoContentTypeKeys.ServiceItem, post.Id, cancellationToken);
@@ -355,7 +374,22 @@ public class ServiceItemsController : Controller
                     .Select(x => new ServiceItemSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))),
             ServiceItemFaqJson.Serialize(
                 (model.FaqItems ?? [])
-                    .Select(x => new ServiceItemFaqItemDto(x.Question ?? string.Empty, x.Answer ?? string.Empty))));
+                    .Select(x => new ServiceItemFaqItemDto(x.Question ?? string.Empty, x.Answer ?? string.Empty))),
+            ServiceItemContentGuideJson.Serialize(
+                model.ContentGuideEnabled,
+                model.ContentGuideTitle,
+                (model.ContentGuideItems ?? [])
+                    .Select(x => new ServiceItemContentGuideItemDto(x.Title ?? string.Empty, x.Description ?? string.Empty))),
+            ServiceItemVideoSchemaJson.Serialize(
+                (model.VideoSchemaItems ?? [])
+                    .Select(x => new ServiceItemVideoSchemaItemDto(
+                        x.Title ?? string.Empty,
+                        x.ContentUrl ?? string.Empty,
+                        x.ThumbnailUrl,
+                        x.UploadDate,
+                        x.DurationMinutes,
+                        x.DurationSeconds,
+                        x.Description))));
     }
 
     private async Task<ServiceItemFormViewModel> BuildFormAsync(ServiceItemFormViewModel model, CancellationToken cancellationToken)
@@ -380,6 +414,8 @@ public class ServiceItemsController : Controller
 
         model.SourcesItems ??= [];
         model.FaqItems ??= [];
+        model.ContentGuideItems ??= [];
+        model.VideoSchemaItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.ServiceItem, model.Id);
         model.Seo.ContentType = SeoContentTypeKeys.ServiceItem;
         model.Seo.ContentId = model.Id;

@@ -1,7 +1,7 @@
 @model IReadOnlyList<PublicArticleSummaryDto>
+@using CMS.Application.Formatting
 @using CMS.Modules.News.Application.Articles
 @using CMS.Modules.News.Domain.Enums
-@using System.Globalization
 @{
     ViewData["Title"] = "مقالات تخصصی";
     ViewData["NavActive"] = "articles";
@@ -18,42 +18,7 @@
         : Url.Content("~/template/assets/images/articles/scientific-reports.jpg");
     CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, lcpCover);
 
-    string ToPersianDigits(string value) =>
-        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
-            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
-
-    string FormatRelativeDate(DateTime utc)
-    {
-        var local = utc.Kind == DateTimeKind.Utc ? utc.ToLocalTime() : utc;
-        var span = DateTime.Now - local;
-        if (span.TotalDays < 0) span = TimeSpan.Zero;
-
-        if (span.TotalDays >= 365)
-        {
-            var years = Math.Max(1, (int)(span.TotalDays / 365));
-            return years == 1
-                ? "۱ سال قبل"
-                : $"{ToPersianDigits(years.ToString(CultureInfo.InvariantCulture))} سال قبل";
-        }
-
-        if (span.TotalDays >= 30)
-        {
-            var months = Math.Max(1, (int)(span.TotalDays / 30));
-            return months == 1
-                ? "۱ ماه قبل"
-                : $"{ToPersianDigits(months.ToString(CultureInfo.InvariantCulture))} ماه قبل";
-        }
-
-        if (span.TotalDays >= 1)
-        {
-            var days = Math.Max(1, (int)span.TotalDays);
-            return days == 1
-                ? "۱ روز قبل"
-                : $"{ToPersianDigits(days.ToString(CultureInfo.InvariantCulture))} روز قبل";
-        }
-
-        return "امروز";
-    }
+    string FormatRelativeDate(DateTime utc) => PersianRelativeDate.Format(utc);
 }
 
 <section class="page-hero page-hero--articles" aria-labelledby="page-hero-title">

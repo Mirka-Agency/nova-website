@@ -9239,8 +9239,17 @@ a.contact-channel:focus-visible {
   margin-bottom: 1rem;
 }
 
+.contact-map__head > div {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
 .contact-map__head .section-kicker {
   margin-bottom: 0.55rem;
+}
+
+.contact-map__head .section-lead {
+  max-width: none;
 }
 
 .contact-map__frame {
@@ -9251,6 +9260,28 @@ a.contact-channel:focus-visible {
   border-radius: var(--radius-lg);
   background: var(--surface);
   border: 1px solid rgba(9, 112, 125, 0.1);
+}
+
+a.contact-map__frame--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+a.contact-map__frame--link:hover,
+a.contact-map__frame--link:focus-visible {
+  border-color: rgba(9, 112, 125, 0.28);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+a.contact-map__frame--link iframe {
+  pointer-events: none;
 }
 
 .contact-map__frame iframe {

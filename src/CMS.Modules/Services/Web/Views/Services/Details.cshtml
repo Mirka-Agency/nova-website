@@ -1,7 +1,7 @@
 @model PublicServiceItemDetailDto
-@using System.Globalization
 @using System.Net
 @using System.Text.RegularExpressions
+@using CMS.Application.Formatting
 @using CMS.Application.Settings
 @using CMS.Modules.Services.Application.Common
 @using CMS.Modules.Services.Application.ServiceItems
@@ -19,18 +19,24 @@
         ? $"راهنمای تخصصی «{Model.Title}» در {brand}."
         : Model.Excerpt;
     var faqItems = ServiceItemFaqJson.Parse(Model.FaqJson);
+    var contentGuide = ServiceItemContentGuideJson.Parse(Model.ContentGuideJson);
+    var showContentGuide = ServiceItemContentGuideJson.ShouldRender(contentGuide);
+    var videoSchemaItems = ServiceItemVideoSchemaJson.Parse(Model.VideoSchemaJson);
+    var pageUrl = string.IsNullOrWhiteSpace(Model.CanonicalUrl)
+        ? null
+        : Model.CanonicalUrl.Trim();
+    var videoSchemaJsonLd = ServiceItemVideoSchemaJson.BuildJsonLd(videoSchemaItems, pageUrl);
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
         : Model.CoverImageUrl;
     CMS.Application.Seo.LcpImageHints.TryRegister(ViewData, cover);
     var related = (ViewBag.Related as IReadOnlyList<PublicServiceItemSummaryDto>)
         ?? Array.Empty<PublicServiceItemSummaryDto>();
-    var fa = CultureInfo.GetCultureInfo("fa-IR");
     var updatedLocal = Model.UpdatedAtUtc.Kind == DateTimeKind.Utc
         ? Model.UpdatedAtUtc.ToLocalTime()
         : Model.UpdatedAtUtc;
     var dateAttr = updatedLocal.ToString("yyyy-MM-dd");
-    var dateLabel = updatedLocal.ToString("d MMMM yyyy", fa);
+    var dateLabel = PersianRelativeDate.Format(Model.UpdatedAtUtc);
 
     var toc = new List<(string Id, string Text)>();
     var usedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -158,6 +164,31 @@
       }
 
       <div class="service-article__content">
+        @if (showContentGuide)
+        {
+          <aside class="article-content-guide" aria-labelledby="service-content-guide-heading">
+            @if (!string.IsNullOrWhiteSpace(contentGuide.Title))
+            {
+              <header class="article-content-guide__header">
+                <h2 class="article-content-guide__title" id="service-content-guide-heading">@contentGuide.Title</h2>
+              </header>
+            }
+            else
+            {
+              <h2 class="visually-hidden" id="service-content-guide-heading">راهنمای محتوای خدمت</h2>
+            }
+            <div class="article-content-guide__grid">
+              @foreach (var item in contentGuide.Items)
+              {
+                <div class="article-content-guide__item">
+                  <h3 class="article-content-guide__item-title">@item.Title</h3>
+                  <p class="article-content-guide__item-desc">@item.Description</p>
+                </div>
+              }
+            </div>
+          </aside>
+        }
+
         <article class="service-prose">
           @if (!string.IsNullOrWhiteSpace(processedBody))
           {
@@ -311,3 +342,10 @@
     </div>
   </div>
 </section>
+
+@if (!string.IsNullOrWhiteSpace(videoSchemaJsonLd))
+{
+  <script type="application/ld+json">
+@Html.Raw(videoSchemaJsonLd)
+  </script>
+}

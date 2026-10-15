@@ -96,6 +96,26 @@ public sealed class SaveServiceItemCommandValidator : AbstractValidator<SaveServ
                 ServiceItemFaqJson.TryValidate(x.FaqJson, out var error);
                 return error ?? "سوالات متداول نامعتبر است.";
             });
+
+        RuleFor(x => x.ContentGuideJson)
+            .MaximumLength(ServiceItemContentGuideJson.MaxJsonLength)
+            .Must(value => ServiceItemContentGuideJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.ContentGuideJson))
+            .WithMessage(x =>
+            {
+                ServiceItemContentGuideJson.TryValidate(x.ContentGuideJson, out var error);
+                return error ?? "راهنمای محتوای خدمت نامعتبر است.";
+            });
+
+        RuleFor(x => x.VideoSchemaJson)
+            .MaximumLength(ServiceItemVideoSchemaJson.MaxJsonLength)
+            .Must(value => ServiceItemVideoSchemaJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.VideoSchemaJson))
+            .WithMessage(x =>
+            {
+                ServiceItemVideoSchemaJson.TryValidate(x.VideoSchemaJson, out var error);
+                return error ?? "اسکیمای ویدیو نامعتبر است.";
+            });
     }
 
     private static bool BeValidUrlOrPath(string? value)

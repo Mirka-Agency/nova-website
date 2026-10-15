@@ -190,6 +190,8 @@ public sealed class ServiceItemService : IServiceItemService
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var sourcesJson = ServiceItemSourcesJson.NormalizeJson(command.SourcesJson);
         var faqJson = ServiceItemFaqJson.NormalizeJson(command.FaqJson);
+        var contentGuideJson = ServiceItemContentGuideJson.NormalizeJson(command.ContentGuideJson);
+        var videoSchemaJson = ServiceItemVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         var item = ServiceItem.Create(
             command.Title,
             slug,
@@ -209,7 +211,9 @@ public sealed class ServiceItemService : IServiceItemService
             command.OgDescription,
             command.OgImageUrl,
             sourcesJson,
-            faqJson);
+            faqJson,
+            contentGuideJson,
+            videoSchemaJson);
 
         ApplyPublishState(item, command);
 
@@ -233,6 +237,8 @@ public sealed class ServiceItemService : IServiceItemService
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var sourcesJson = ServiceItemSourcesJson.NormalizeJson(command.SourcesJson);
         var faqJson = ServiceItemFaqJson.NormalizeJson(command.FaqJson);
+        var contentGuideJson = ServiceItemContentGuideJson.NormalizeJson(command.ContentGuideJson);
+        var videoSchemaJson = ServiceItemVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         item.Update(
             command.Title,
             slug,
@@ -252,7 +258,9 @@ public sealed class ServiceItemService : IServiceItemService
             command.OgDescription,
             command.OgImageUrl,
             sourcesJson,
-            faqJson);
+            faqJson,
+            contentGuideJson,
+            videoSchemaJson);
 
         ApplyPublishState(item, command);
 
@@ -291,6 +299,8 @@ public sealed class ServiceItemService : IServiceItemService
             item.OgImageUrl,
             item.SourcesJson,
             item.FaqJson,
+            item.ContentGuideJson,
+            item.VideoSchemaJson,
             item.CreatedAtUtc);
 
     private static SaveServiceItemCommand Normalize(SaveServiceItemCommand command)

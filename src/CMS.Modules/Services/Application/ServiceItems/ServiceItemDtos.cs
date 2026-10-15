@@ -53,6 +53,8 @@ public sealed record ServiceItemDetailDto(
     string? OgImageUrl,
     string? SourcesJson,
     string? FaqJson,
+    string? ContentGuideJson,
+    string? VideoSchemaJson,
     DateTime CreatedAtUtc);
 
 public static class ServiceItemDraftDefaults
@@ -80,4 +82,6 @@ public sealed record SaveServiceItemCommand(
     string? OgDescription,
     string? OgImageUrl,
     string? SourcesJson,
-    string? FaqJson);
+    string? FaqJson,
+    string? ContentGuideJson,
+    string? VideoSchemaJson);

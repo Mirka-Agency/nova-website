@@ -31,4 +31,6 @@ public sealed record PublicServiceItemDetailDto(
     string? OgDescription,
     string? OgImageUrl,
     string? SourcesJson,
-    string? FaqJson);
+    string? FaqJson,
+    string? ContentGuideJson,
+    string? VideoSchemaJson);
