@@ -529,7 +529,8 @@
           function (evt, data, conversionApi) {
             const viewItem = data.viewItem;
             if (!isVideoWarningView(viewItem)) return;
-            if (!conversionApi.consumable.consume(viewItem, { name: true })) {
+            // Test before consume+insert so a failed safeInsert does not drop the node.
+            if (!conversionApi.consumable.test(viewItem, { name: true })) {
               return;
             }
 
@@ -537,6 +538,8 @@
             if (!conversionApi.safeInsert(box, data.modelCursor)) {
               return;
             }
+
+            conversionApi.consumable.consume(viewItem, { name: true });
 
             const body = conversionApi.writer.createElement(
               "novaVideoWarningText"
@@ -1969,10 +1972,38 @@
     );
   }
 
+  function isEffectivelyEmptyHtml(html) {
+    return !String(html || "")
+      .replace(/<p>(&nbsp;|\u00a0|\s)*<\/p>/gi, "")
+      .replace(/&nbsp;|\u00a0/gi, "")
+      .replace(/<br\s*\/?>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+  }
+
   textareas.forEach(function (textarea) {
-    ClassicEditor.create(textarea, editorConfig())
+    // Capture before create() — the editor may replace/hide the source element.
+    const initialHtml = String(textarea.value || "");
+    textarea.setAttribute("data-ck-initial-html", initialHtml);
+
+    const config = editorConfig();
+    if (initialHtml) {
+      config.initialData = initialHtml;
+    }
+
+    ClassicEditor.create(textarea, config)
       .then(function (editor) {
         textarea.ckEditorInstance = editor;
+
+        // If upcast/plugins wiped loaded HTML, restore once from the snapshot.
+        if (initialHtml && isEffectivelyEmptyHtml(editor.getData())) {
+          try {
+            editor.setData(initialHtml);
+          } catch (restoreError) {
+            console.error("CKEditor restore initial HTML failed", restoreError);
+          }
+        }
+
         bindPasteSanitizer(editor);
         textarea.dispatchEvent(new CustomEvent("ckeditor:ready", { bubbles: true }));
         const form = textarea.closest("form");

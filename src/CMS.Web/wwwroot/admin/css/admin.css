@@ -2434,6 +2434,9 @@ fieldset.admin-field legend {
 .ck-editor__editable {
   min-height: 320px;
   font-family: var(--admin-font);
+  /* Keep body text visible even if inherited/theme colors go wrong. */
+  color: #000000;
+  background-color: #ffffff;
 }
 
 .ck-content ul,

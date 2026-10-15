@@ -17,11 +17,30 @@
   const msgPaused = form.getAttribute("data-msg-paused") || "";
 
   const tokenInput = form.querySelector('input[name="__RequestVerificationToken"]');
+  const bodyTextareaEarly = form.querySelector("textarea.admin-ckeditor-source");
+  // Snapshot server-rendered Body before CKEditor replaces the textarea.
+  const loadedBodyHtml = bodyTextareaEarly
+    ? String(
+        bodyTextareaEarly.getAttribute("data-ck-initial-html") ||
+          bodyTextareaEarly.value ||
+          ""
+      )
+    : "";
+  let userEditedBody = false;
   let lastPayload = "";
   let saving = false;
   let dirty = true;
   let hold = form.getAttribute("data-autosave-hold") === "true";
   let abortController = null;
+
+  function isEffectivelyEmptyHtml(html) {
+    return !String(html || "")
+      .replace(/<p>(&nbsp;|\u00a0|\s)*<\/p>/gi, "")
+      .replace(/&nbsp;|\u00a0/gi, "")
+      .replace(/<br\s*\/?>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+  }
 
   function token() {
     return (
@@ -62,9 +81,26 @@
   function bodyValue() {
     const textarea = form.querySelector("textarea.admin-ckeditor-source");
     if (textarea?.ckEditorInstance) {
-      return textarea.ckEditorInstance.getData();
+      const data = textarea.ckEditorInstance.getData();
+      // Avoid persisting a blank body when the editor failed to hydrate loaded HTML.
+      if (
+        isEffectivelyEmptyHtml(data) &&
+        !isEffectivelyEmptyHtml(loadedBodyHtml) &&
+        !userEditedBody
+      ) {
+        return loadedBodyHtml;
+      }
+      return data;
     }
-    return fieldValue("Body") || "";
+    const raw = fieldValue("Body") || "";
+    if (
+      isEffectivelyEmptyHtml(raw) &&
+      !isEffectivelyEmptyHtml(loadedBodyHtml) &&
+      !userEditedBody
+    ) {
+      return loadedBodyHtml;
+    }
+    return raw;
   }
 
   function faqJsonValue() {
@@ -425,14 +461,31 @@
 
   const bodyTextarea = form.querySelector("textarea.admin-ckeditor-source");
   if (bodyTextarea) {
-    bodyTextarea.addEventListener("ckeditor:ready", function () {
-      const editor = bodyTextarea.ckEditorInstance;
+    function bindBodyEditor(editor) {
       if (!editor) return;
-      editor.model.document.on("change:data", markDirty);
+      // Re-hydrate if create() left the editable empty despite server HTML.
+      if (
+        !isEffectivelyEmptyHtml(loadedBodyHtml) &&
+        isEffectivelyEmptyHtml(editor.getData())
+      ) {
+        try {
+          editor.setData(loadedBodyHtml);
+        } catch (err) {
+          console.warn("[post-autosave] restore body failed", err);
+        }
+      }
+      editor.model.document.on("change:data", function () {
+        userEditedBody = true;
+        markDirty();
+      });
       dirty = true;
+    }
+
+    bodyTextarea.addEventListener("ckeditor:ready", function () {
+      bindBodyEditor(bodyTextarea.ckEditorInstance);
     });
     if (bodyTextarea.ckEditorInstance) {
-      bodyTextarea.ckEditorInstance.model.document.on("change:data", markDirty);
+      bindBodyEditor(bodyTextarea.ckEditorInstance);
     }
   }
 
