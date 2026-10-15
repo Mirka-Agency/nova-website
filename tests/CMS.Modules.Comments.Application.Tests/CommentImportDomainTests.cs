@@ -28,7 +28,7 @@ public class CommentImportDomainTests
             parentId);
 
         comment.PublishedAtUtc.Should().Be(published);
-        comment.CreatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+        comment.CreatedAtUtc.Should().Be(published);
         comment.Status.Should().Be(CommentStatus.Approved);
         comment.ParentId.Should().Be(parentId);
         comment.SourceSystem.Should().Be("wordpress");

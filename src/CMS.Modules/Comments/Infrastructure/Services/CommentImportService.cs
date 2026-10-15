@@ -229,7 +229,7 @@ public sealed class CommentImportService : ICommentImportService
                         item.Row.AuthorName,
                         item.Row.AuthorEmail,
                         body,
-                        CommentStatus.Approved,
+                        item.Row.Status,
                         item.Row.PublishedAtUtc,
                         Comment.WordPressSourceSystem,
                         item.Row.ExternalId,
@@ -294,7 +294,7 @@ public sealed class CommentImportService : ICommentImportService
                             item.Row.AuthorName,
                             item.Row.AuthorEmail,
                             body,
-                            CommentStatus.Approved,
+                            item.Row.Status,
                             item.Row.PublishedAtUtc,
                             Comment.WordPressSourceSystem,
                             item.Row.ExternalId,
@@ -330,15 +330,6 @@ public sealed class CommentImportService : ICommentImportService
 
         // Second pass: attach parents that were imported later in another batch.
         await AttachMissingParentsAsync(ordered, idMap, cancellationToken);
-
-        // Import policy: every comment must be publicly visible after import.
-        await _db.Comments
-            .Where(c => c.Status != CommentStatus.Approved)
-            .ExecuteUpdateAsync(
-                setters => setters
-                    .SetProperty(c => c.Status, CommentStatus.Approved)
-                    .SetProperty(c => c.UpdatedAtUtc, DateTime.UtcNow),
-                cancellationToken);
 
         var result = new CommentImportResult(
             PreviewId: preview.PreviewId,
@@ -443,7 +434,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    CommentStatus.Approved,
+                    item.Status,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Duplicate,
@@ -463,7 +454,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    CommentStatus.Approved,
+                    item.Status,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Ready,
@@ -478,7 +469,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    CommentStatus.Approved,
+                    item.Status,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Ambiguous,
@@ -493,7 +484,7 @@ public sealed class CommentImportService : ICommentImportService
                     item.AuthorEmail,
                     body,
                     item.PublishedAtUtc,
-                    CommentStatus.Approved,
+                    item.Status,
                     item.PageUrl,
                     path,
                     CommentImportRowDisposition.Unmatched,

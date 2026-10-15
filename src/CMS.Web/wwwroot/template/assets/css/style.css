@@ -4949,6 +4949,15 @@ button.header-cta {
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.45;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+a.blog-single-verified:hover,
+a.blog-single-verified:focus-visible {
+  background: rgba(9, 112, 125, 0.12);
+  border-color: rgba(9, 112, 125, 0.28);
+  color: var(--primary-dark);
 }
 
 .blog-single-verified__icon {

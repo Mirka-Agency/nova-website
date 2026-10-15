@@ -37,13 +37,22 @@ public class WordPressCommentXmlParserTests
                 <comment_parent>10</comment_parent>
                 <page_url>https://old.example.com/sample-post/</page_url>
               </comment>
+              <comment>
+                <comment_id>12</comment_id>
+                <comment_author>Guest</comment_author>
+                <comment_content>Waiting for moderation</comment_content>
+                <comment_date_gmt>2023-01-04 03:04:05</comment_date_gmt>
+                <comment_approved>0</comment_approved>
+                <comment_parent>0</comment_parent>
+                <page_url>https://old.example.com/sample-post/</page_url>
+              </comment>
             </comments>
             """;
 
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml));
         var items = _parser.Parse(stream);
 
-        items.Should().HaveCount(2);
+        items.Should().HaveCount(3);
         items[0].ExternalId.Should().Be("10");
         items[0].ExternalParentId.Should().BeNull();
         items[0].Status.Should().Be(CommentStatus.Approved);
@@ -53,6 +62,9 @@ public class WordPressCommentXmlParserTests
 
         items[1].ExternalParentId.Should().Be("10");
         items[1].Status.Should().Be(CommentStatus.Rejected);
+
+        items[2].ExternalId.Should().Be("12");
+        items[2].Status.Should().Be(CommentStatus.Pending);
     }
 
     [Fact]

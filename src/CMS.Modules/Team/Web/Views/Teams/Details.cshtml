@@ -35,17 +35,12 @@
     var educationPathItems = TeamEducationPathJson.Parse(Model.EducationPathJson);
     var scientificActivityItems = TeamScientificActivityJson.Parse(Model.ScientificActivityJson);
     var faqItems = TeamFaqJson.Parse(Model.FaqJson);
-    var metaChips = TeamHighlights.Parse(Model.Highlights).ToList();
-    if (metaChips.Count == 0)
-    {
-        metaChips = specialty
-            .Split(new[] { '|', '·', '،', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Take(4)
-            .ToList();
-    }
-    if (metaChips.Count == 0)
-        metaChips.Add(role);
+    // Takyar profile: do not show credential chips in the hero.
+    var hideCredentialMeta = Model.Slug.Contains("takyar", StringComparison.OrdinalIgnoreCase)
+        || Model.Title.Contains("تکیار", StringComparison.Ordinal);
+    var metaChips = hideCredentialMeta
+        ? new List<string>()
+        : TeamHighlights.Parse(Model.Highlights).ToList();
 }
 
 <section class="page-hero page-hero--doctor-single" aria-labelledby="page-hero-title">
@@ -64,12 +59,15 @@
       <p class="doctor-single-hero__specialty reveal">@specialty</p>
       <p class="page-hero__lead reveal">@lead</p>
 
+      @if (metaChips.Count > 0)
+      {
       <ul class="doctor-single-meta reveal" aria-label="اعتبار حرفه‌ای">
         @foreach (var chip in metaChips)
         {
           <li>@chip</li>
         }
       </ul>
+      }
 
       <div class="doctor-single-hero__actions reveal">
         <button class="btn-primary-custom" type="button" data-booking-open>
