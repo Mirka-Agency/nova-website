@@ -209,8 +209,12 @@
     {
         foreach (var item in services)
         {
-            if (item.Slug.Contains(slugKey, StringComparison.OrdinalIgnoreCase))
-                return item;
+            if (!item.Slug.Contains(slugKey, StringComparison.OrdinalIgnoreCase))
+                continue;
+            // «parathyroid» شامل «thyroid» است؛ از تطبیق اشتباه جلوگیری کن.
+            if (slugKey == "thyroid" && item.Slug.Contains("para", StringComparison.OrdinalIgnoreCase))
+                continue;
+            return item;
         }
 
         foreach (var item in services)
@@ -233,6 +237,7 @@
     var thyroidService = FindHomeService("thyroid", "تیروئید");
     var parathyroidService = FindHomeService("parathyroid", "پاراتیروئید");
     var adrenalService = FindHomeService("adrenal", "آدرنال", "فوق کلیه");
+    var pancreasService = FindHomeService("pancreas", "پانکراس");
 
     string ServiceHref(PublicServiceItemSummaryDto? match, string fragment) =>
         match is null
@@ -243,55 +248,77 @@
     {
         (thyroidService, "جراحی تیروئید", "ارزیابی و درمان جراحی ندول، گواتر، پرکاری و سرطان‌های تیروئید با روش‌های باز یا کم‌تهاجمی.", "thyroid", 0),
         (parathyroidService, "جراحی پاراتیروئید", "درمان اختلالات پاراتیروئید از جمله هیپرپاراتیروئیدیسم با تمرکز بر دقت تشخیص و کاهش عوارض.", "parathyroid", 1),
-        (adrenalService, "جراحی فوق کلیه", "جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.", "adrenal", 2)
+        (adrenalService, "جراحی فوق کلیه", "جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.", "adrenal", 2),
+        (pancreasService, "جراحی پانکراس", "ارزیابی و درمان تومورهای پانکراس و نورواندوکرین با رویکرد تخصصی و چندرشته‌ای.", "pancreas", 3)
     };
 }
-        <div class="row g-3 g-lg-4">
+        <div class="services-cards" data-services-cards-slider>
+          <div class="services-cards__viewport" tabindex="0" aria-label="خدمات تخصصی؛ با دکمه‌ها یا کشیدن افقی جابه‌جا شوید">
+            <div class="row g-3 g-lg-4 services-cards__track">
 @foreach (var card in homeServices)
 {
     var title = string.IsNullOrWhiteSpace(card.Match?.Title) ? card.Title : card.Match!.Title;
     var excerpt = string.IsNullOrWhiteSpace(card.Match?.Excerpt) ? card.Excerpt : card.Match!.Excerpt;
     var href = ServiceHref(card.Match, card.Fragment);
-          <div class="col-12 col-md-4 reveal">
-            <article class="service-card">
-              <span class="service-card__icon" aria-hidden="true">
-                @if (card.Icon == 0)
-                {
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path fill="currentColor" fill-opacity=".12" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
-                    <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
-                    <path d="M14.1 11.6c.5 1.6 3.3 1.6 3.8 0M14.5 15.3h3"/>
-                  </svg>
-                }
-                else if (card.Icon == 1)
-                {
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path fill="currentColor" fill-opacity=".1" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
-                    <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
-                    <g fill="currentColor" stroke="none">
-                      <circle cx="9.3" cy="10.8" r="1.45"/>
-                      <circle cx="10.1" cy="17.6" r="1.45"/>
-                      <circle cx="22.7" cy="10.8" r="1.45"/>
-                      <circle cx="21.9" cy="17.6" r="1.45"/>
-                    </g>
-                  </svg>
-                }
-                else
-                {
-                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path fill="currentColor" fill-opacity=".12" d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
-                    <path d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
-                    <path fill="currentColor" fill-opacity=".3" d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1-2-1.6-4.4-1.9-7.1-.4zM26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1 2-1.6 4.4-1.9 7.1-.4z"/>
-                    <path d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1M26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1"/>
-                  </svg>
-                }
-              </span>
-              <h3 class="service-card__title">@title</h3>
-              <p class="service-card__text">@excerpt</p>
-              <a class="service-card__link" href="@href">جزئیات خدمت</a>
-            </article>
-          </div>
+              <div class="col-12 col-md-6 col-xl-3 reveal">
+                <article class="service-card">
+                  <span class="service-card__icon" aria-hidden="true">
+                    @if (card.Icon == 0)
+                    {
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" fill-opacity=".12" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
+                        <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+                        <path d="M14.1 11.6c.5 1.6 3.3 1.6 3.8 0M14.5 15.3h3"/>
+                      </svg>
+                    }
+                    else if (card.Icon == 1)
+                    {
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" fill-opacity=".1" d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3z"/>
+                        <path d="M14.1 11.6C11.8 7.4 8.6 5 6.1 6.3c-2.8 1.5-2 7-.4 11.1 1.5 3.9 4.4 7.3 7 5.7 2-1.2.7-5 3.3-5s1.3 3.8 3.3 5c2.6 1.6 5.5-1.8 7-5.7 1.6-4.1 2.4-9.6-.4-11.1-2.5-1.3-5.7 1.1-8 5.3"/>
+                        <g fill="currentColor" stroke="none">
+                          <circle cx="9.3" cy="10.8" r="1.45"/>
+                          <circle cx="10.1" cy="17.6" r="1.45"/>
+                          <circle cx="22.7" cy="10.8" r="1.45"/>
+                          <circle cx="21.9" cy="17.6" r="1.45"/>
+                        </g>
+                      </svg>
+                    }
+                    else if (card.Icon == 2)
+                    {
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" fill-opacity=".12" d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+                        <path d="M12.8 10.8c-1.1-2-3-3.1-5-2.4-3.4 1.2-4.5 6.9-3.1 11.2 1 3.2 3.3 5.2 5.5 4.5 2.3-.7 2.9-3.2 2.6-5.9-.2-2.3-1.6-4.5 0-7.4zM19.2 10.8c1.1-2 3-3.1 5-2.4 3.4 1.2 4.5 6.9 3.1 11.2-1 3.2-3.3 5.2-5.5 4.5-2.3-.7-2.9-3.2-2.6-5.9.2-2.3 1.6-4.5 0-7.4z"/>
+                        <path fill="currentColor" fill-opacity=".3" d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1-2-1.6-4.4-1.9-7.1-.4zM26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1 2-1.6 4.4-1.9 7.1-.4z"/>
+                        <path d="M5.7 7.9C6.9 4.4 9.1 3 11.2 4.2c1.2.7 1.8 2.2 1.6 4.1M26.3 7.9C25.1 4.4 22.9 3 20.8 4.2c-1.2.7-1.8 2.2-1.6 4.1"/>
+                      </svg>
+                    }
+                    else
+                    {
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" fill-opacity=".12" d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4z"/>
+                        <path d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4"/>
+                        <path d="M7.9 17.8c2.3-2.2 5.2-2.8 8.4-2.1 2.7.6 5.3.2 7.5-1.4"/>
+                        <circle cx="24.5" cy="13.3" r=".8" fill="currentColor" stroke="none"/>
+                      </svg>
+                    }
+                  </span>
+                  <h3 class="service-card__title">@title</h3>
+                  <p class="service-card__text">@excerpt</p>
+                  <a class="service-card__link" href="@href">جزئیات خدمت</a>
+                </article>
+              </div>
 }
+            </div>
+          </div>
+          <div class="services-cards__controls">
+            <button class="services-cards__button" type="button" data-services-cards-prev aria-label="خدمت قبلی">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <button class="services-cards__button" type="button" data-services-cards-next aria-label="خدمت بعدی">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+          </div>
         </div>
 
         <div class="articles-footer reveal">

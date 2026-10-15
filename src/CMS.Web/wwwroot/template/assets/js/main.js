@@ -550,6 +550,86 @@
     });
   })();
 
+  (function initServicesCardsSlider() {
+    var sliders = document.querySelectorAll("[data-services-cards-slider]");
+    if (!sliders.length) return;
+
+    sliders.forEach(function (slider) {
+      var viewport = slider.querySelector(".services-cards__viewport");
+      var slides = Array.from(slider.querySelectorAll(".services-cards__track > [class*='col-']"));
+      var prevButton = slider.querySelector("[data-services-cards-prev]");
+      var nextButton = slider.querySelector("[data-services-cards-next]");
+      var activeIndex = 0;
+      var ticking = false;
+
+      if (!viewport || !slides.length || !prevButton || !nextButton) return;
+
+      function isFullyVisible(slide, viewportRect) {
+        var rect = slide.getBoundingClientRect();
+        return rect.left >= viewportRect.left - 1 && rect.right <= viewportRect.right + 1;
+      }
+
+      function updateSliderState() {
+        var viewportRect = viewport.getBoundingClientRect();
+        var nearestDistance = Infinity;
+
+        slides.forEach(function (slide, index) {
+          var distance = Math.abs(slide.getBoundingClientRect().right - viewportRect.right);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            activeIndex = index;
+          }
+        });
+
+        prevButton.disabled = isFullyVisible(slides[0], viewportRect);
+        nextButton.disabled = isFullyVisible(slides[slides.length - 1], viewportRect);
+      }
+
+      function goToSlide(index) {
+        activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+        slides[activeIndex].scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "nearest",
+          inline: "start"
+        });
+      }
+
+      prevButton.addEventListener("click", function () {
+        goToSlide(activeIndex - 1);
+      });
+
+      nextButton.addEventListener("click", function () {
+        goToSlide(activeIndex + 1);
+      });
+
+      viewport.addEventListener(
+        "scroll",
+        function () {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function () {
+            updateSliderState();
+            ticking = false;
+          });
+        },
+        { passive: true }
+      );
+
+      viewport.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          goToSlide(activeIndex + 1);
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          goToSlide(activeIndex - 1);
+        }
+      });
+
+      window.addEventListener("resize", updateSliderState);
+      updateSliderState();
+    });
+  })();
+
   (function initHonorsSlider() {
     var sliders = document.querySelectorAll("[data-honors-slider]");
     if (!sliders.length) return;

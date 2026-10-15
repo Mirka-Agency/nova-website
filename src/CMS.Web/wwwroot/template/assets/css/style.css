@@ -2970,7 +2970,8 @@ body.booking-open .float-call {
   }
 
   .testimonials-slider__viewport,
-  .service-groups-slider__viewport {
+  .service-groups-slider__viewport,
+  .services-cards__viewport {
     scroll-behavior: auto;
   }
 
@@ -2996,6 +2997,7 @@ body.booking-open .float-call {
   .doctor-picker__btn.is-active .doctor-picker__avatar,
   .testimonials-slider__button:hover,
   .service-groups-slider__button:hover,
+  .services-cards__button:hover,
   .service-group--card:hover,
   .service-toc__list a:hover,
   .service-toc__list a:focus-visible,
@@ -3439,12 +3441,62 @@ button.header-cta {
   background: var(--surface);
 }
 
-.services-overview-cards {
+.services-overview-cards,
+.services-cards {
   width: 100%;
 }
 
-.services-overview-cards__track {
+.services-overview-cards__track,
+.services-cards__track {
   --bs-gutter-x: 1rem;
+}
+
+.services-cards__viewport {
+  width: 100%;
+}
+
+.services-cards__controls {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.services-cards__button {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(9, 112, 125, 0.18);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--primary-dark);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    transform var(--transition);
+}
+
+.services-cards__button svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.services-cards__button:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.services-cards__button:disabled {
+  opacity: 0.38;
+  cursor: default;
 }
 
 .service-groups-slider {
