@@ -123,6 +123,16 @@ public sealed class SavePostCommandValidator : AbstractValidator<SavePostCommand
                 PostSourcesJson.TryValidate(x.SourcesJson, out var error);
                 return error ?? "منابع علمی نامعتبر است.";
             });
+
+        RuleFor(x => x.RelatedPostsJson)
+            .MaximumLength(PostRelatedPostsJson.MaxJsonLength)
+            .Must(value => PostRelatedPostsJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.RelatedPostsJson))
+            .WithMessage(x =>
+            {
+                PostRelatedPostsJson.TryValidate(x.RelatedPostsJson, out var error);
+                return error ?? "مطالب مرتبط نامعتبر است.";
+            });
     }
 
     private static bool BeValidUrlOrPath(string? value)

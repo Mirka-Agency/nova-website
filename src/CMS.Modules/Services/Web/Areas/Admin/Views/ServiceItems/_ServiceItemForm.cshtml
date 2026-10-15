@@ -158,6 +158,57 @@
             </template>
         </fieldset>
 
+        <fieldset class="admin-fieldset"
+                  data-related-picker
+                  data-related-search-url="/api/v1/admin/services/items/search"
+                  data-related-exclude-id="@(Model.Id?.ToString("D") ?? "")"
+                  data-related-max="@CMS.Modules.Services.Application.ServiceItems.ServiceItemRelatedItemsJson.MaxItems"
+                  data-related-name-prefix="RelatedItems">
+            <legend>خدمات مرتبط</legend>
+            <p class="admin-hint">جستجو کنید و خدماتی را که در بخش «خدمات مرتبط» صفحه نمایش داده می‌شوند انتخاب کنید. اگر خالی بماند، آخرین خدمات به‌صورت خودکار نشان داده می‌شوند.</p>
+
+            <div class="admin-related-search">
+                <label class="admin-field-label" for="related-services-search">جستجوی خدمت</label>
+                <input id="related-services-search"
+                       type="search"
+                       class="admin-related-search__input"
+                       placeholder="عنوان خدمت را بنویسید…"
+                       autocomplete="off"
+                       data-related-search-input />
+                <ul class="admin-related-search__results" data-related-search-results hidden></ul>
+            </div>
+
+            <div class="admin-faq-list" style="margin-top: 0.85rem;">
+                <div class="admin-faq-rows" data-related-list>
+                    @for (var i = 0; i < Model.RelatedItems.Count; i++)
+                    {
+                        <div class="admin-faq-row admin-related-row" data-related-row data-related-id="@Model.RelatedItems[i].Id">
+                            <input type="hidden" name="RelatedItems[@i].Id" value="@Model.RelatedItems[i].Id" data-related-id-input />
+                            <input type="hidden" name="RelatedItems[@i].Title" value="@Model.RelatedItems[i].Title" data-related-title-input />
+                            <div class="admin-field admin-faq-field" style="flex: 1;">
+                                <span class="admin-related-row__title">@Model.RelatedItems[i].Title</span>
+                            </div>
+                            <div class="admin-faq-actions">
+                                <button type="button" class="btn btn-ghost" data-related-move-up title="بالا">
+                                    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-ghost" data-related-move-down title="پایین">
+                                    <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-text-danger" data-related-remove>
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                    <span>حذف</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <p class="admin-hint" data-related-empty @(Model.RelatedItems.Count > 0 ? "hidden" : null)>
+                    هنوز خدمت مرتبطی انتخاب نشده است.
+                </p>
+            </div>
+        </fieldset>
+
         <fieldset class="admin-fieldset" data-scientific-sources>
             <legend>@Localizer["ScientificSources"]</legend>
             <p class="admin-hint">@Localizer["ScientificSourcesHint"]</p>

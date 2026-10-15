@@ -165,7 +165,38 @@ public class ServiceItemsApiController : ControllerBase
             request.SourcesJson,
             request.FaqJson,
             request.ContentGuideJson,
-            request.VideoSchemaJson);
+            request.VideoSchemaJson,
+            request.RelatedItemsJson);
+    }
+
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Search(
+        [FromQuery] string? q,
+        [FromQuery] Guid? excludeId,
+        [FromQuery] int take = 20,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await _features.IsEnabledAsync(FeatureNames.Services))
+            return NotFound();
+
+        var pageSize = Math.Clamp(take, 1, 50);
+        var page = await _posts.ListPagedAsync(
+            new ServiceItemListRequest
+            {
+                Page = 1,
+                PageSize = pageSize,
+                Search = string.IsNullOrWhiteSpace(q) ? null : q.Trim()
+            },
+            cancellationToken);
+
+        var items = page.Items
+            .Where(x => excludeId is null || x.Id != excludeId.Value)
+            .Select(x => new { id = x.Id, title = x.Title, slug = x.Slug, status = x.Status.ToString() })
+            .Take(pageSize)
+            .ToList();
+
+        return Ok(new { items });
     }
 
     private ObjectResult DomainProblem(DomainException ex)

@@ -116,6 +116,9 @@ namespace CMS.Modules.Blog.Infrastructure.Persistence.Migrations
                     b.Property<string>("SourcesJson")
                         .HasColumnType("text");
 
+                    b.Property<string>("RelatedPostsJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("MetaDescription")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");

@@ -11,4 +11,7 @@ public interface IPublicServiceItemQuery
         int pageSize,
         CancellationToken cancellationToken = default);
     Task<PublicServiceItemDetailDto?> GetPublishedBySlugAsync(string slug, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PublicServiceItemSummaryDto>> ListPublishedByIdsPreserveOrderAsync(
+        IReadOnlyList<Guid> ids,
+        CancellationToken cancellationToken = default);
 }

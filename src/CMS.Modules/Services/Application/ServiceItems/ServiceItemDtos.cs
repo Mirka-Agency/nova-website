@@ -55,6 +55,7 @@ public sealed record ServiceItemDetailDto(
     string? FaqJson,
     string? ContentGuideJson,
     string? VideoSchemaJson,
+    string? RelatedItemsJson,
     DateTime CreatedAtUtc);
 
 public static class ServiceItemDraftDefaults
@@ -84,4 +85,5 @@ public sealed record SaveServiceItemCommand(
     string? SourcesJson,
     string? FaqJson,
     string? ContentGuideJson,
-    string? VideoSchemaJson);
+    string? VideoSchemaJson,
+    string? RelatedItemsJson);

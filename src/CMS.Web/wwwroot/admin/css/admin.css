@@ -2123,6 +2123,75 @@ fieldset.admin-field legend {
   gap: calc(var(--admin-space) * 3);
 }
 
+.admin-related-search {
+  position: relative;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.admin-related-search__input {
+  width: 100%;
+}
+
+.admin-related-search__results {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 20;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  max-height: 16rem;
+  overflow: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: var(--admin-surface, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.admin-related-search__item {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  font: inherit;
+}
+
+.admin-related-search__item:hover,
+.admin-related-search__item:focus-visible {
+  background: rgba(9, 112, 125, 0.08);
+  outline: none;
+}
+
+.admin-related-search__empty {
+  padding: 0.65rem 0.7rem;
+  color: var(--admin-text-secondary);
+  font-size: 0.9rem;
+}
+
+.admin-related-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-related-row__title {
+  font-weight: 600;
+  color: var(--admin-text, #1a1a1a);
+}
+
+.admin-faq-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
 .admin-faq-row {
   display: grid;
   gap: calc(var(--admin-space) * 3);

@@ -233,6 +233,7 @@ public class ServiceItemsController : Controller
             SourcesItems = ServiceItemSourcesJson.Parse(post.SourcesJson)
                 .Select(x => new ServiceItemSourceItemViewModel { Title = x.Title, Url = x.Url })
                 .ToList(),
+            RelatedItems = await LoadRelatedItemsAsync(post.RelatedItemsJson, cancellationToken),
             FaqItems = ServiceItemFaqJson.Parse(post.FaqJson)
                 .Select(x => new ServiceItemFaqItemViewModel { Question = x.Question, Answer = x.Answer })
                 .ToList()
@@ -389,7 +390,31 @@ public class ServiceItemsController : Controller
                         x.UploadDate,
                         x.DurationMinutes,
                         x.DurationSeconds,
-                        x.Description))));
+                        x.Description))),
+            ServiceItemRelatedItemsJson.Serialize(
+                (model.RelatedItems ?? [])
+                    .Where(x => x.Id != Guid.Empty)
+                    .Select(x => x.Id)));
+    }
+
+    private async Task<List<ServiceItemRelatedItemViewModel>> LoadRelatedItemsAsync(
+        string? relatedItemsJson,
+        CancellationToken cancellationToken)
+    {
+        var ids = ServiceItemRelatedItemsJson.Parse(relatedItemsJson);
+        if (ids.Count == 0)
+            return [];
+
+        var byId = await _posts.GetTitlesByIdsAsync(ids, cancellationToken);
+        var result = new List<ServiceItemRelatedItemViewModel>();
+        foreach (var id in ids)
+        {
+            if (!byId.TryGetValue(id, out var title))
+                continue;
+            result.Add(new ServiceItemRelatedItemViewModel { Id = id, Title = title });
+        }
+
+        return result;
     }
 
     private async Task<ServiceItemFormViewModel> BuildFormAsync(ServiceItemFormViewModel model, CancellationToken cancellationToken)
@@ -413,6 +438,7 @@ public class ServiceItemsController : Controller
         ];
 
         model.SourcesItems ??= [];
+        model.RelatedItems ??= [];
         model.FaqItems ??= [];
         model.ContentGuideItems ??= [];
         model.VideoSchemaItems ??= [];

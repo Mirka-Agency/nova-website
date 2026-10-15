@@ -129,6 +129,17 @@
     return items.length > 0 ? JSON.stringify(items) : null;
   }
 
+  function relatedPostsJsonValue() {
+    const rows = Array.from(form.querySelectorAll("[data-related-picker] [data-related-row]"));
+    const ids = [];
+    for (const row of rows) {
+      const id = (row.querySelector("[data-related-id-input]")?.value || row.getAttribute("data-related-id") || "").trim();
+      if (!id) continue;
+      ids.push(id);
+    }
+    return ids.length > 0 ? JSON.stringify(ids) : null;
+  }
+
   function videoSchemaJsonValue() {
     const rows = Array.from(form.querySelectorAll("[data-video-schema-row]"));
     const items = [];
@@ -308,6 +319,8 @@
       ogImageUrl: (fieldValue("OgImageUrl") || "").trim() || null,
       faqJson: faqJsonValue(),
       sourcesJson: sourcesJsonValue(),
+      relatedPostsJson: relatedPostsJsonValue(),
+      relatedItemsJson: relatedPostsJsonValue(),
       videoSchemaJson: videoSchemaJsonValue(),
       contentGuideJson: contentGuideJsonValue(),
       focusKeyword: seoFieldValue("FocusKeyword"),

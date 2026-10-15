@@ -132,6 +132,9 @@ namespace CMS.Modules.Services.Infrastructure.Persistence.Migrations
                     b.Property<string>("ContentGuideJson")
                         .HasColumnType("text");
 
+                    b.Property<string>("RelatedItemsJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("VideoSchemaJson")
                         .HasColumnType("text");
 

@@ -2,6 +2,7 @@ using CMS.Application.Admin;
 using CMS.Application.Common.Features;
 using CMS.Application.Seo;
 using CMS.Modules.Blog.Application.Interfaces;
+using CMS.Modules.Blog.Application.Posts;
 using CMS.Modules.Blog.Web;
 using CMS.Modules.Seo.Application.Interfaces;
 using CMS.Modules.Seo.Web;
@@ -97,11 +98,27 @@ public class BlogController : Controller
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("Posts", post.Id, "ویرایش نوشته", "ManageBlog");
 
-        var related = await _posts.ListPublishedPagedAsync(1, 8, cancellationToken);
-        ViewBag.Related = related.Items
-            .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
-            .Take(3)
-            .ToList();
+        var relatedIds = PostRelatedPostsJson.Parse(post.RelatedPostsJson);
+        IReadOnlyList<PublicPostSummaryDto> relatedItems = [];
+        if (relatedIds.Count > 0)
+        {
+            relatedItems = await _posts.ListPublishedByIdsPreserveOrderAsync(relatedIds, cancellationToken);
+            relatedItems = relatedItems
+                .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
+                .Take(PostRelatedPostsJson.MaxItems)
+                .ToList();
+        }
+
+        if (relatedItems.Count == 0)
+        {
+            var related = await _posts.ListPublishedPagedAsync(1, 8, cancellationToken);
+            relatedItems = related.Items
+                .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
+                .Take(3)
+                .ToList();
+        }
+
+        ViewBag.Related = relatedItems;
 
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {

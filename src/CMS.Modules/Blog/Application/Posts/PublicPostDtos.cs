@@ -34,4 +34,5 @@ public sealed record PublicPostDetailDto(
     string? FaqJson,
     string? VideoSchemaJson,
     string? ContentGuideJson,
-    string? SourcesJson);
+    string? SourcesJson,
+    string? RelatedPostsJson);

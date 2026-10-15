@@ -147,7 +147,59 @@ public sealed class PublicPostQuery : IPublicPostQuery
             post.FaqJson,
             post.VideoSchemaJson,
             post.ContentGuideJson,
-            post.SourcesJson);
+            post.SourcesJson,
+            post.RelatedPostsJson);
+    }
+
+    public async Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedByIdsPreserveOrderAsync(
+        IReadOnlyList<Guid> ids,
+        CancellationToken cancellationToken = default)
+    {
+        if (ids is null || ids.Count == 0)
+            return [];
+
+        var unique = ids.Where(x => x != Guid.Empty).Distinct().Take(IPublicPostQuery.MaxArchivePageSize).ToList();
+        if (unique.Count == 0)
+            return [];
+
+        var rows = await _db.Posts
+            .AsNoTracking()
+            .Where(p => p.Status == PostStatus.Published && unique.Contains(p.Id))
+            .Select(p => new
+            {
+                p.Id,
+                p.Title,
+                p.Slug,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                p.CoverImageUrl,
+                p.CoverImageAlt,
+                PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                UpdatedAtUtc = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.Excerpt,
+                p.Body,
+                p.AuthorDisplayName
+            })
+            .ToListAsync(cancellationToken);
+
+        var byId = rows.ToDictionary(x => x.Id);
+        var result = new List<PublicPostSummaryDto>();
+        foreach (var id in ids)
+        {
+            if (!byId.TryGetValue(id, out var p))
+                continue;
+            result.Add(new PublicPostSummaryDto(
+                p.Title,
+                p.Slug,
+                p.CategoryName,
+                p.CoverImageUrl,
+                p.CoverImageAlt,
+                p.PublishedAtUtc,
+                p.UpdatedAtUtc,
+                ResolveExcerpt(p.Excerpt, p.Body),
+                p.AuthorDisplayName));
+        }
+
+        return result;
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>

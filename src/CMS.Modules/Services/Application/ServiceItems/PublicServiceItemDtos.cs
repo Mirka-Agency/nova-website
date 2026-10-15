@@ -33,4 +33,5 @@ public sealed record PublicServiceItemDetailDto(
     string? SourcesJson,
     string? FaqJson,
     string? ContentGuideJson,
-    string? VideoSchemaJson);
+    string? VideoSchemaJson,
+    string? RelatedItemsJson);

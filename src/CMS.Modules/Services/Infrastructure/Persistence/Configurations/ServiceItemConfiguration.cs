@@ -31,6 +31,7 @@ public sealed class ServiceItemConfiguration : IEntityTypeConfiguration<ServiceI
         builder.Property(x => x.FaqJson);
         builder.Property(x => x.ContentGuideJson);
         builder.Property(x => x.VideoSchemaJson);
+        builder.Property(x => x.RelatedItemsJson);
         builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(32);
         builder.HasIndex(x => x.Slug).IsUnique();
         builder.HasIndex(x => new { x.OwnedByUserId, x.Status });

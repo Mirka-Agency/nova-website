@@ -92,6 +92,8 @@ public class PostFormViewModel
 
     public List<PostSourceItemViewModel> SourcesItems { get; set; } = [];
 
+    public List<PostRelatedItemViewModel> RelatedItems { get; set; } = [];
+
     public List<PostVideoSchemaItemViewModel> VideoSchemaItems { get; set; } = [];
 
     public bool ContentGuideEnabled { get; set; }
@@ -130,6 +132,14 @@ public class PostSourceItemViewModel
 
     [MaxLength(1000, ErrorMessage = "لینک منبع حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string Url { get; set; } = string.Empty;
+}
+
+public class PostRelatedItemViewModel
+{
+    public Guid Id { get; set; }
+
+    [MaxLength(300, ErrorMessage = "عنوان حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
 }
 
 public class PostVideoSchemaItemViewModel

@@ -87,6 +87,8 @@ public class ServiceItemFormViewModel
 
     public List<ServiceItemSourceItemViewModel> SourcesItems { get; set; } = [];
 
+    public List<ServiceItemRelatedItemViewModel> RelatedItems { get; set; } = [];
+
     public List<ServiceItemFaqItemViewModel> FaqItems { get; set; } = [];
 
     public bool ContentGuideEnabled { get; set; }
@@ -142,6 +144,14 @@ public class ServiceItemSourceItemViewModel
 
     [MaxLength(1000, ErrorMessage = "لینک منبع حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string Url { get; set; } = string.Empty;
+}
+
+public class ServiceItemRelatedItemViewModel
+{
+    public Guid Id { get; set; }
+
+    [MaxLength(300, ErrorMessage = "عنوان حداکثر ۳۰۰ نویسه می‌تواند باشد.")]
+    public string Title { get; set; } = string.Empty;
 }
 
 public class ServiceItemFaqItemViewModel

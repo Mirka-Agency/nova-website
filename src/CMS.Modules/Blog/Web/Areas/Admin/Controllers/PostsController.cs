@@ -235,6 +235,7 @@ public class PostsController : Controller
             SourcesItems = PostSourcesJson.Parse(post.SourcesJson)
                 .Select(x => new PostSourceItemViewModel { Title = x.Title, Url = x.Url })
                 .ToList(),
+            RelatedItems = await LoadRelatedItemsAsync(post.RelatedPostsJson, cancellationToken),
             VideoSchemaItems = PostVideoSchemaJson.Parse(post.VideoSchemaJson)
                 .Select(x => new PostVideoSchemaItemViewModel
                 {
@@ -389,7 +390,31 @@ public class PostsController : Controller
                     .Select(x => new PostContentGuideItemDto(x.Title ?? string.Empty, x.Description ?? string.Empty))),
             PostSourcesJson.Serialize(
                 (model.SourcesItems ?? [])
-                    .Select(x => new PostSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))));
+                    .Select(x => new PostSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))),
+            PostRelatedPostsJson.Serialize(
+                (model.RelatedItems ?? [])
+                    .Where(x => x.Id != Guid.Empty)
+                    .Select(x => x.Id)));
+    }
+
+    private async Task<List<PostRelatedItemViewModel>> LoadRelatedItemsAsync(
+        string? relatedPostsJson,
+        CancellationToken cancellationToken)
+    {
+        var ids = PostRelatedPostsJson.Parse(relatedPostsJson);
+        if (ids.Count == 0)
+            return [];
+
+        var byId = await _posts.GetTitlesByIdsAsync(ids, cancellationToken);
+        var result = new List<PostRelatedItemViewModel>();
+        foreach (var id in ids)
+        {
+            if (!byId.TryGetValue(id, out var title))
+                continue;
+            result.Add(new PostRelatedItemViewModel { Id = id, Title = title });
+        }
+
+        return result;
     }
 
     private async Task<PostFormViewModel> BuildFormAsync(PostFormViewModel model, CancellationToken cancellationToken)
@@ -414,6 +439,7 @@ public class PostsController : Controller
 
         model.FaqItems ??= [];
         model.SourcesItems ??= [];
+        model.RelatedItems ??= [];
         model.VideoSchemaItems ??= [];
         model.ContentGuideItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.BlogPost, model.Id);

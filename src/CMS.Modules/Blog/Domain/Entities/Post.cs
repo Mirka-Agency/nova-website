@@ -40,6 +40,8 @@ public class Post : BaseEntity
     public string? ContentGuideJson { get; private set; }
     /// <summary>JSON array of scientific sources: [{"title":"...","url":"..."}].</summary>
     public string? SourcesJson { get; private set; }
+    /// <summary>JSON array of related post ids (GUID strings), ordered.</summary>
+    public string? RelatedPostsJson { get; private set; }
 
     public static Post Create(
         string title,
@@ -62,14 +64,16 @@ public class Post : BaseEntity
         string? faqJson,
         string? videoSchemaJson = null,
         string? contentGuideJson = null,
-        string? sourcesJson = null)
+        string? sourcesJson = null,
+        string? relatedPostsJson = null)
     {
         var post = new Post();
         post.ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson, contentGuideJson, sourcesJson);
+            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson, contentGuideJson, sourcesJson,
+            relatedPostsJson);
         return post;
     }
 
@@ -94,13 +98,15 @@ public class Post : BaseEntity
         string? faqJson,
         string? videoSchemaJson = null,
         string? contentGuideJson = null,
-        string? sourcesJson = null)
+        string? sourcesJson = null,
+        string? relatedPostsJson = null)
     {
         ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, coverVideoUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson, contentGuideJson, sourcesJson);
+            ogTitle, ogDescription, ogImageUrl, faqJson, videoSchemaJson, contentGuideJson, sourcesJson,
+            relatedPostsJson);
         Touch();
     }
 
@@ -160,7 +166,8 @@ public class Post : BaseEntity
         string? faqJson,
         string? videoSchemaJson,
         string? contentGuideJson,
-        string? sourcesJson)
+        string? sourcesJson,
+        string? relatedPostsJson)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("عنوان مطلب الزامی است.");
@@ -206,6 +213,8 @@ public class Post : BaseEntity
             throw new DomainException("راهنمای محتوای مقاله خیلی طولانی است.");
         if (sourcesJson is { Length: > 100_000 })
             throw new DomainException("منابع علمی خیلی طولانی است.");
+        if (relatedPostsJson is { Length: > 4_000 })
+            throw new DomainException("لیست مطالب مرتبط خیلی طولانی است.");
 
         Title = title.Trim();
         Slug = slug.Trim().ToLowerInvariant();
@@ -228,6 +237,7 @@ public class Post : BaseEntity
         VideoSchemaJson = NullIfWhiteSpace(videoSchemaJson);
         ContentGuideJson = NullIfWhiteSpace(contentGuideJson);
         SourcesJson = NullIfWhiteSpace(sourcesJson);
+        RelatedPostsJson = NullIfWhiteSpace(relatedPostsJson);
     }
 
     private static string? NullIfWhiteSpace(string? value) =>

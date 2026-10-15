@@ -112,6 +112,26 @@ public sealed class PostService : IPostService
         return MapDetail(post);
     }
 
+    public async Task<IReadOnlyDictionary<Guid, string>> GetTitlesByIdsAsync(
+        IReadOnlyList<Guid> ids,
+        CancellationToken cancellationToken = default)
+    {
+        if (ids is null || ids.Count == 0)
+            return new Dictionary<Guid, string>();
+
+        var unique = ids.Where(x => x != Guid.Empty).Distinct().Take(100).ToList();
+        if (unique.Count == 0)
+            return new Dictionary<Guid, string>();
+
+        var rows = await _db.Posts
+            .AsNoTracking()
+            .Where(p => unique.Contains(p.Id))
+            .Select(p => new { p.Id, p.Title })
+            .ToListAsync(cancellationToken);
+
+        return rows.ToDictionary(x => x.Id, x => x.Title);
+    }
+
     public async Task<Guid?> FindUserDraftIdAsync(string userId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
@@ -195,6 +215,7 @@ public sealed class PostService : IPostService
         var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         var contentGuideJson = PostContentGuideJson.NormalizeJson(command.ContentGuideJson);
         var sourcesJson = PostSourcesJson.NormalizeJson(command.SourcesJson);
+        var relatedPostsJson = PostRelatedPostsJson.NormalizeJson(command.RelatedPostsJson);
         var post = Post.Create(
             command.Title,
             slug,
@@ -216,7 +237,8 @@ public sealed class PostService : IPostService
             faqJson,
             videoSchemaJson,
             contentGuideJson,
-            sourcesJson);
+            sourcesJson,
+            relatedPostsJson);
 
         ApplyPublishState(post, command);
 
@@ -242,6 +264,7 @@ public sealed class PostService : IPostService
         var videoSchemaJson = PostVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
         var contentGuideJson = PostContentGuideJson.NormalizeJson(command.ContentGuideJson);
         var sourcesJson = PostSourcesJson.NormalizeJson(command.SourcesJson);
+        var relatedPostsJson = PostRelatedPostsJson.NormalizeJson(command.RelatedPostsJson);
         post.Update(
             command.Title,
             slug,
@@ -263,7 +286,8 @@ public sealed class PostService : IPostService
             faqJson,
             videoSchemaJson,
             contentGuideJson,
-            sourcesJson);
+            sourcesJson,
+            relatedPostsJson);
 
         ApplyPublishState(post, command);
 
@@ -306,6 +330,7 @@ public sealed class PostService : IPostService
             post.VideoSchemaJson,
             post.ContentGuideJson,
             post.SourcesJson,
+            post.RelatedPostsJson,
             post.CreatedAtUtc);
 
     private static SavePostCommand Normalize(SavePostCommand command)

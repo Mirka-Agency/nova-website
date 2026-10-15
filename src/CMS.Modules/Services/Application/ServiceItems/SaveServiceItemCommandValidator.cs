@@ -107,6 +107,16 @@ public sealed class SaveServiceItemCommandValidator : AbstractValidator<SaveServ
                 return error ?? "راهنمای محتوای خدمت نامعتبر است.";
             });
 
+        RuleFor(x => x.RelatedItemsJson)
+            .MaximumLength(ServiceItemRelatedItemsJson.MaxJsonLength)
+            .Must(value => ServiceItemRelatedItemsJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.RelatedItemsJson))
+            .WithMessage(x =>
+            {
+                ServiceItemRelatedItemsJson.TryValidate(x.RelatedItemsJson, out var error);
+                return error ?? "خدمات مرتبط نامعتبر است.";
+            });
+
         RuleFor(x => x.VideoSchemaJson)
             .MaximumLength(ServiceItemVideoSchemaJson.MaxJsonLength)
             .Must(value => ServiceItemVideoSchemaJson.TryValidate(value, out _))

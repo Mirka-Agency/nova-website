@@ -9,6 +9,9 @@ public interface IServiceItemService
     Task<PagedResult<ServiceItemListItemDto>> ListPagedAsync(ServiceItemListRequest request, CancellationToken cancellationToken = default);
     Task<int> CountAsync(CancellationToken cancellationToken = default);
     Task<ServiceItemDetailDto?> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyDictionary<Guid, string>> GetTitlesByIdsAsync(
+        IReadOnlyList<Guid> ids,
+        CancellationToken cancellationToken = default);
     Task<Guid?> FindUserDraftIdAsync(string userId, CancellationToken cancellationToken = default);
     Task<Guid> GetOrCreateUserDraftAsync(string userId, CancellationToken cancellationToken = default);
     Task<Guid> DiscardUserDraftAsync(string userId, Guid draftId, CancellationToken cancellationToken = default);

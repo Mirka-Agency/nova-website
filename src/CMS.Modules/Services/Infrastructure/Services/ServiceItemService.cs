@@ -192,6 +192,7 @@ public sealed class ServiceItemService : IServiceItemService
         var faqJson = ServiceItemFaqJson.NormalizeJson(command.FaqJson);
         var contentGuideJson = ServiceItemContentGuideJson.NormalizeJson(command.ContentGuideJson);
         var videoSchemaJson = ServiceItemVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
+        var relatedItemsJson = ServiceItemRelatedItemsJson.NormalizeJson(command.RelatedItemsJson);
         var item = ServiceItem.Create(
             command.Title,
             slug,
@@ -213,7 +214,8 @@ public sealed class ServiceItemService : IServiceItemService
             sourcesJson,
             faqJson,
             contentGuideJson,
-            videoSchemaJson);
+            videoSchemaJson,
+            relatedItemsJson);
 
         ApplyPublishState(item, command);
 
@@ -239,6 +241,7 @@ public sealed class ServiceItemService : IServiceItemService
         var faqJson = ServiceItemFaqJson.NormalizeJson(command.FaqJson);
         var contentGuideJson = ServiceItemContentGuideJson.NormalizeJson(command.ContentGuideJson);
         var videoSchemaJson = ServiceItemVideoSchemaJson.NormalizeJson(command.VideoSchemaJson);
+        var relatedItemsJson = ServiceItemRelatedItemsJson.NormalizeJson(command.RelatedItemsJson);
         item.Update(
             command.Title,
             slug,
@@ -260,7 +263,8 @@ public sealed class ServiceItemService : IServiceItemService
             sourcesJson,
             faqJson,
             contentGuideJson,
-            videoSchemaJson);
+            videoSchemaJson,
+            relatedItemsJson);
 
         ApplyPublishState(item, command);
 
@@ -301,7 +305,28 @@ public sealed class ServiceItemService : IServiceItemService
             item.FaqJson,
             item.ContentGuideJson,
             item.VideoSchemaJson,
+            item.RelatedItemsJson,
             item.CreatedAtUtc);
+
+    public async Task<IReadOnlyDictionary<Guid, string>> GetTitlesByIdsAsync(
+        IReadOnlyList<Guid> ids,
+        CancellationToken cancellationToken = default)
+    {
+        if (ids is null || ids.Count == 0)
+            return new Dictionary<Guid, string>();
+
+        var unique = ids.Where(x => x != Guid.Empty).Distinct().Take(100).ToList();
+        if (unique.Count == 0)
+            return new Dictionary<Guid, string>();
+
+        var rows = await _db.ServiceItems
+            .AsNoTracking()
+            .Where(p => unique.Contains(p.Id))
+            .Select(p => new { p.Id, p.Title })
+            .ToListAsync(cancellationToken);
+
+        return rows.ToDictionary(x => x.Id, x => x.Title);
+    }
 
     private static SaveServiceItemCommand Normalize(SaveServiceItemCommand command)
     {

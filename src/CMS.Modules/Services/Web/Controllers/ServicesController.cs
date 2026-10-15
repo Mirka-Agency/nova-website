@@ -2,6 +2,7 @@ using CMS.Application.Admin;
 using CMS.Application.Common.Features;
 using CMS.Application.Seo;
 using CMS.Modules.Services.Application.Interfaces;
+using CMS.Modules.Services.Application.ServiceItems;
 using CMS.Modules.Services.Web;
 using CMS.Modules.Seo.Application.Interfaces;
 using CMS.Modules.Seo.Web;
@@ -72,11 +73,27 @@ public class ServicesController : Controller
         ViewData["OgImage"] = FirstNonEmpty(item.OgImageUrl, item.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("ServiceItems", item.Id, "ویرایش خدمت", "ManageServices");
 
-        var related = await _items.ListPublishedPagedAsync(1, 8, cancellationToken);
-        ViewBag.Related = related.Items
-            .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
-            .Take(4)
-            .ToList();
+        var relatedIds = ServiceItemRelatedItemsJson.Parse(item.RelatedItemsJson);
+        IReadOnlyList<PublicServiceItemSummaryDto> relatedItems = [];
+        if (relatedIds.Count > 0)
+        {
+            relatedItems = await _items.ListPublishedByIdsPreserveOrderAsync(relatedIds, cancellationToken);
+            relatedItems = relatedItems
+                .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
+                .Take(ServiceItemRelatedItemsJson.MaxItems)
+                .ToList();
+        }
+
+        if (relatedItems.Count == 0)
+        {
+            var related = await _items.ListPublishedPagedAsync(1, 8, cancellationToken);
+            relatedItems = related.Items
+                .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
+                .Take(4)
+                .ToList();
+        }
+
+        ViewBag.Related = relatedItems;
 
         if (await _features.IsEnabledAsync(FeatureNames.Seo))
         {

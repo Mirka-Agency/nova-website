@@ -40,6 +40,8 @@ public class ServiceItem : BaseEntity
     public string? ContentGuideJson { get; private set; }
     /// <summary>JSON array of VideoObject schema entries for SEO.</summary>
     public string? VideoSchemaJson { get; private set; }
+    /// <summary>JSON array of related service ids (GUID strings), ordered.</summary>
+    public string? RelatedItemsJson { get; private set; }
 
     public static ServiceItem Create(
         string title,
@@ -62,14 +64,16 @@ public class ServiceItem : BaseEntity
         string? sourcesJson = null,
         string? faqJson = null,
         string? contentGuideJson = null,
-        string? videoSchemaJson = null)
+        string? videoSchemaJson = null,
+        string? relatedItemsJson = null)
     {
         var item = new ServiceItem();
         item.ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, iconUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, sourcesJson, faqJson, contentGuideJson, videoSchemaJson);
+            ogTitle, ogDescription, ogImageUrl, sourcesJson, faqJson, contentGuideJson, videoSchemaJson,
+            relatedItemsJson);
         return item;
     }
 
@@ -94,13 +98,15 @@ public class ServiceItem : BaseEntity
         string? sourcesJson = null,
         string? faqJson = null,
         string? contentGuideJson = null,
-        string? videoSchemaJson = null)
+        string? videoSchemaJson = null,
+        string? relatedItemsJson = null)
     {
         ApplyContent(
             title, slug, body, excerpt, categoryId, coverImageUrl, coverImageAlt, iconUrl,
             authorUserId, authorDisplayName,
             metaTitle, metaDescription, seoKeywords, canonicalUrl,
-            ogTitle, ogDescription, ogImageUrl, sourcesJson, faqJson, contentGuideJson, videoSchemaJson);
+            ogTitle, ogDescription, ogImageUrl, sourcesJson, faqJson, contentGuideJson, videoSchemaJson,
+            relatedItemsJson);
         Touch();
     }
 
@@ -160,7 +166,8 @@ public class ServiceItem : BaseEntity
         string? sourcesJson,
         string? faqJson,
         string? contentGuideJson,
-        string? videoSchemaJson)
+        string? videoSchemaJson,
+        string? relatedItemsJson)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("عنوان خدمت الزامی است.");
@@ -206,6 +213,8 @@ public class ServiceItem : BaseEntity
             throw new DomainException("راهنمای محتوای خدمت خیلی طولانی است.");
         if (videoSchemaJson is { Length: > 100_000 })
             throw new DomainException("اسکیمای ویدیو خیلی طولانی است.");
+        if (relatedItemsJson is { Length: > 4_000 })
+            throw new DomainException("لیست خدمات مرتبط خیلی طولانی است.");
 
         Title = title.Trim();
         Slug = slug.Trim().ToLowerInvariant();
@@ -228,6 +237,7 @@ public class ServiceItem : BaseEntity
         FaqJson = NullIfWhiteSpace(faqJson);
         ContentGuideJson = NullIfWhiteSpace(contentGuideJson);
         VideoSchemaJson = NullIfWhiteSpace(videoSchemaJson);
+        RelatedItemsJson = NullIfWhiteSpace(relatedItemsJson);
     }
 
     private static string? NullIfWhiteSpace(string? value) =>

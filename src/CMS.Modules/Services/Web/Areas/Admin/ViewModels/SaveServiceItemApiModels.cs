@@ -62,6 +62,8 @@ public sealed class SaveServiceItemApiRequest
 
     public string? VideoSchemaJson { get; set; }
 
+    public string? RelatedItemsJson { get; set; }
+
     public string? FocusKeyword { get; set; }
     public bool RobotsIndex { get; set; } = true;
     public bool RobotsFollow { get; set; } = true;
