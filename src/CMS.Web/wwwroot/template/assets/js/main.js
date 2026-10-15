@@ -639,18 +639,17 @@
       var slides = Array.from(slider.querySelectorAll(".about-honors__item"));
       var prevButton = slider.querySelector("[data-honors-prev]");
       var nextButton = slider.querySelector("[data-honors-next]");
-      var counter = slider.querySelector("[data-honors-counter]");
       var activeIndex = 0;
       var ticking = false;
 
       if (!viewport || !slides.length || !prevButton || !nextButton) return;
 
-      function isFullyVisible(slide, viewportRect) {
-        var rect = slide.getBoundingClientRect();
-        return rect.left >= viewportRect.left - 1 && rect.right <= viewportRect.right + 1;
+      function wrapIndex(index) {
+        var total = slides.length;
+        return ((index % total) + total) % total;
       }
 
-      function updateSliderState() {
+      function updateActiveIndex() {
         var viewportRect = viewport.getBoundingClientRect();
         var nearestDistance = Infinity;
 
@@ -661,18 +660,10 @@
             activeIndex = index;
           }
         });
-
-        prevButton.disabled = isFullyVisible(slides[0], viewportRect);
-        nextButton.disabled = isFullyVisible(slides[slides.length - 1], viewportRect);
-
-        if (counter) {
-          counter.textContent =
-            toPersianDigits(activeIndex + 1) + " از " + toPersianDigits(slides.length);
-        }
       }
 
       function goToSlide(index) {
-        activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+        activeIndex = wrapIndex(index);
         slides[activeIndex].scrollIntoView({
           behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
           block: "nearest",
@@ -694,7 +685,7 @@
           if (ticking) return;
           ticking = true;
           window.requestAnimationFrame(function () {
-            updateSliderState();
+            updateActiveIndex();
             ticking = false;
           });
         },
@@ -711,8 +702,8 @@
         }
       });
 
-      window.addEventListener("resize", updateSliderState);
-      updateSliderState();
+      window.addEventListener("resize", updateActiveIndex);
+      updateActiveIndex();
     });
   })();
 

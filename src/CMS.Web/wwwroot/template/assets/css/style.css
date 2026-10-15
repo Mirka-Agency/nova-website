@@ -8565,14 +8565,6 @@ a.video-single-meta__value:focus-visible {
   cursor: default;
 }
 
-.about-honors__counter {
-  min-width: 3.75rem;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-align: center;
-}
-
 .about-honors__viewport {
   overflow-x: auto;
   padding: 0.25rem 0.1rem 0.85rem;

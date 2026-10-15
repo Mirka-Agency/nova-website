@@ -1,15 +1,8 @@
 @model CMS.Web.ViewModels.AboutPageViewModel
-@using CMS.Application.Common.Features
 @using CMS.Application.Settings
 @using CMS.Modules.Honors.Application.HonorItems
-@using CMS.Modules.Services.Application.Interfaces
-@using CMS.Modules.Services.Application.ServiceItems
 @using CMS.Modules.Team.Application.TeamItems
-@using CMS.Web.Infrastructure
-@using Microsoft.FeatureManagement
 @inject ISiteSettingsService SiteSettings
-@inject IFeatureManager FeatureManager
-@inject IPublicServiceItemQuery PublicServices
 @{
     ViewData["Title"] = "درباره ما";
     ViewData["NavActive"] = "about";
@@ -30,23 +23,12 @@
     var teamItems = Model?.Team ?? Array.Empty<PublicTeamItemSummaryDto>();
     var honorItems = Model?.Honors ?? Array.Empty<PublicHonorItemDto>();
     var hasCmsHonors = honorItems.Count > 0;
-    var honorsCount = hasCmsHonors ? honorItems.Count : 5;
-    var faDigits = System.Globalization.CultureInfo.GetCultureInfo("fa-IR");
-    var honorsCounter = $"۱ از {honorsCount.ToString(faDigits)}";
     var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
 
-    IReadOnlyList<PublicServiceItemSummaryDto> navServices = Array.Empty<PublicServiceItemSummaryDto>();
-    if (await FeatureManager.IsEnabledAsync(FeatureNames.Services))
-        navServices = await PublicServices.ListPublishedAsync();
-
-    var thyroidService = NovaServiceNav.Find(navServices, "thyroid", "تیروئید");
-    var parathyroidService = NovaServiceNav.Find(navServices, "parathyroid", "پاراتیروئید");
-    var adrenalService = NovaServiceNav.Find(navServices, "adrenal", "آدرنال", "فوق کلیه");
-    var pancreasService = NovaServiceNav.Find(navServices, "pancreas", "پانکراس");
-    var thyroidHref = NovaServiceNav.Href(Url, thyroidService, "thyroid");
-    var parathyroidHref = NovaServiceNav.Href(Url, parathyroidService, "parathyroid");
-    var adrenalHref = NovaServiceNav.Href(Url, adrenalService, "adrenal");
-    var pancreasHref = NovaServiceNav.Href(Url, pancreasService, "pancreas");
+    var thyroidHref = Url.Content("~/thyroid-surgery/");
+    var parathyroidHref = Url.Content("~/parathyroid-surgery-from-0-to-100/");
+    var adrenalHref = Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/");
+    var pancreasHref = Url.Content("~/services/pancreatic/");
     CMS.Application.Seo.LcpImageHints.TryRegister(
         ViewData,
         Url.Content("~/template/assets/images/home/clinic-care.webp"));
@@ -327,7 +309,6 @@
               <button class="about-honors__button" type="button" data-honors-prev aria-label="گواهینامه قبلی">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
               </button>
-              <span class="about-honors__counter" data-honors-counter aria-live="polite">@honorsCounter</span>
               <button class="about-honors__button" type="button" data-honors-next aria-label="گواهینامه بعدی">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
               </button>
