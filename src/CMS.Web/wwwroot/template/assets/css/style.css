@@ -2634,11 +2634,13 @@ body.nav-open {
   --btn-shadow: none;
   --btn-shadow-hover: none;
   min-height: 42px;
+  max-width: 100%;
   padding: 0.55rem 1.15rem;
   background: var(--white);
   color: var(--primary-dark);
   border-color: var(--white);
   font-size: 0.84rem;
+  box-sizing: border-box;
 }
 
 .footer-nav {
@@ -2748,6 +2750,8 @@ body.nav-open {
 
 .footer-contact__body {
   min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .footer-contact__label {
@@ -4693,6 +4697,13 @@ button.header-cta {
     border-color var(--transition),
     box-shadow var(--transition),
     background-color var(--transition);
+}
+
+a.doctor-focus__item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .doctor-focus__item:hover {

@@ -204,11 +204,17 @@
     padding-bottom: 1.15rem;
     border-inline-end: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    min-width: 0;
   }
 
   .footer-nav {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.15rem 1rem;
+    min-width: 0;
+  }
+
+  .footer-col {
+    min-width: 0;
   }
 
   .footer-col--contact {
@@ -849,6 +855,38 @@
 
   .site-footer {
     padding-block: 2rem 1rem;
+    overflow-x: clip;
+  }
+
+  .site-footer .container {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .footer-top {
+    gap: 1.15rem;
+  }
+
+  .footer-brand__text {
+    max-width: none;
+  }
+
+  .footer-nav {
+    grid-template-columns: 1fr;
+    margin-top: 0.25rem;
+    gap: 1.25rem;
+  }
+
+  .footer-col,
+  .footer-col--contact {
+    grid-column: auto;
+    min-width: 0;
+  }
+
+  .footer-contact a,
+  .footer-contact span:not(.footer-contact__label) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .footer-bottom {
@@ -864,6 +902,14 @@
 
   .footer-cta {
     width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 42px;
+    flex-wrap: wrap;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+    box-sizing: border-box;
   }
 
   .testimonials-slider__controls {
@@ -2103,14 +2149,6 @@
   .hero-panel > .hero-actions .btn-secondary-custom {
     padding: 0.6rem 0.5rem;
     font-size: 0.74rem;
-  }
-
-  .footer-nav {
-    grid-template-columns: 1fr;
-  }
-
-  .footer-col--contact {
-    grid-column: auto;
   }
 
   .float-call {

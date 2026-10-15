@@ -3,7 +3,11 @@ using System.Text.Json.Serialization;
 
 namespace CMS.Modules.Team.Application.TeamItems;
 
-public sealed record TeamSpecialtyPathItemDto(string Title, string Text, string? IconUrl = null);
+public sealed record TeamSpecialtyPathItemDto(
+    string Title,
+    string Text,
+    string? IconUrl = null,
+    string? Url = null);
 
 public static class TeamSpecialtyPathJson
 {
@@ -11,6 +15,7 @@ public static class TeamSpecialtyPathJson
     public const int MaxTitleLength = 200;
     public const int MaxTextLength = 1000;
     public const int MaxIconUrlLength = 1000;
+    public const int MaxUrlLength = 1000;
     public const int MaxJsonLength = 50_000;
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -41,7 +46,8 @@ public static class TeamSpecialtyPathJson
             return Normalize(items.Select(x => new TeamSpecialtyPathItemDto(
                 x.Title ?? string.Empty,
                 x.Text ?? string.Empty,
-                x.IconUrl)));
+                x.IconUrl,
+                x.Url)));
         }
         catch (JsonException)
         {
@@ -60,7 +66,8 @@ public static class TeamSpecialtyPathJson
             {
                 Title = x.Title,
                 Text = x.Text,
-                IconUrl = x.IconUrl
+                IconUrl = x.IconUrl,
+                Url = x.Url
             }),
             SerializerOptions);
     }
@@ -110,7 +117,8 @@ public static class TeamSpecialtyPathJson
             var title = (item.Title ?? string.Empty).Trim();
             var text = (item.Text ?? string.Empty).Trim();
             var iconUrl = (item.IconUrl ?? string.Empty).Trim();
-            if (title.Length == 0 && text.Length == 0 && iconUrl.Length == 0)
+            var url = (item.Url ?? string.Empty).Trim();
+            if (title.Length == 0 && text.Length == 0 && iconUrl.Length == 0 && url.Length == 0)
                 continue;
             if (title.Length == 0)
             {
@@ -141,6 +149,18 @@ public static class TeamSpecialtyPathJson
                 error = "آیکون حوزه فعالیت باید آدرس مطلق یا مسیر نسبی سایت باشد.";
                 return false;
             }
+
+            if (url.Length > MaxUrlLength)
+            {
+                error = $"لینک حوزه فعالیت حداکثر {MaxUrlLength} نویسه می‌تواند باشد.";
+                return false;
+            }
+
+            if (url.Length > 0 && !IsValidUrlOrPath(url))
+            {
+                error = "لینک حوزه فعالیت باید آدرس مطلق یا مسیر نسبی سایت باشد.";
+                return false;
+            }
         }
 
         return true;
@@ -154,6 +174,7 @@ public static class TeamSpecialtyPathJson
             var title = (item.Title ?? string.Empty).Trim();
             var text = (item.Text ?? string.Empty).Trim();
             var iconUrl = string.IsNullOrWhiteSpace(item.IconUrl) ? null : item.IconUrl.Trim();
+            var url = string.IsNullOrWhiteSpace(item.Url) ? null : item.Url.Trim();
             if (title.Length == 0)
                 continue;
 
@@ -165,8 +186,12 @@ public static class TeamSpecialtyPathJson
                 iconUrl = iconUrl[..MaxIconUrlLength];
             if (iconUrl is not null && !IsValidUrlOrPath(iconUrl))
                 iconUrl = null;
+            if (url is { Length: > MaxUrlLength })
+                url = url[..MaxUrlLength];
+            if (url is not null && !IsValidUrlOrPath(url))
+                url = null;
 
-            result.Add(new TeamSpecialtyPathItemDto(title, text, iconUrl));
+            result.Add(new TeamSpecialtyPathItemDto(title, text, iconUrl, url));
             if (result.Count >= MaxItems)
                 break;
         }
@@ -188,5 +213,6 @@ public static class TeamSpecialtyPathJson
         public string? Title { get; set; }
         public string? Text { get; set; }
         public string? IconUrl { get; set; }
+        public string? Url { get; set; }
     }
 }

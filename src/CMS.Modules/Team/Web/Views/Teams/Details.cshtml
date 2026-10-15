@@ -32,6 +32,78 @@
         ?? Array.Empty<PublicTeamItemSummaryDto>();
     var fallbackCover = Url.Content("~/template/assets/images/doctors/dr-hamedani-portrait.webp");
     var specialtyPathItems = TeamSpecialtyPathJson.Parse(Model.SpecialtyPathJson);
+    var isHamedani = Model.Slug.Contains("hamedani", StringComparison.OrdinalIgnoreCase)
+        || Model.Title.Contains("همدانی", StringComparison.Ordinal);
+    if (isHamedani)
+    {
+        bool MatchesTitle(string title, string needle)
+        {
+            if (!title.Contains(needle, StringComparison.OrdinalIgnoreCase))
+                return false;
+            // Avoid matching «پاراتیروئید» when looking for «تیروئید».
+            if (needle == "تیروئید" && title.Contains("پارا", StringComparison.OrdinalIgnoreCase))
+                return false;
+            return true;
+        }
+
+        string? PickText(params string[] needles)
+        {
+            foreach (var item in specialtyPathItems)
+            {
+                foreach (var needle in needles)
+                {
+                    if (MatchesTitle(item.Title, needle))
+                        return item.Text;
+                }
+            }
+
+            return null;
+        }
+
+        string? PickIcon(params string[] needles)
+        {
+            foreach (var item in specialtyPathItems)
+            {
+                foreach (var needle in needles)
+                {
+                    if (MatchesTitle(item.Title, needle) && !string.IsNullOrWhiteSpace(item.IconUrl))
+                        return item.IconUrl;
+                }
+            }
+
+            return null;
+        }
+
+        specialtyPathItems =
+        [
+            new TeamSpecialtyPathItemDto(
+                "جراحی تیروئید",
+                PickText("تیروئید") ?? "بیماری‌ها و توده‌های تیروئید که نیاز به ارزیابی یا درمان جراحی دارند.",
+                PickIcon("تیروئید"),
+                Url.Content("~/thyroid-surgery/")),
+            new TeamSpecialtyPathItemDto(
+                "جراحی پاراتیروئید",
+                PickText("پاراتیروئید") ?? "اختلالات پاراتیروئید و مواردی که درمان جراحی برای آن‌ها مطرح است.",
+                PickIcon("پاراتیروئید"),
+                Url.Content("~/parathyroid-surgery-from-0-to-100/")),
+            new TeamSpecialtyPathItemDto(
+                "جراحی آدرنال",
+                PickText("آدرنال", "فوق") ?? "بررسی و درمان جراحی برخی توده‌ها و بیماری‌های غدد فوق‌کلیوی.",
+                PickIcon("آدرنال", "فوق"),
+                Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/")),
+            new TeamSpecialtyPathItemDto(
+                "جراحی پانکراس",
+                PickText("پانکراس", "نورواندوکرین") ?? "ارزیابی و درمان جراحی بیماری‌های پانکراس در موارد منتخب.",
+                PickIcon("پانکراس", "نورواندوکرین"),
+                Url.Content("~/services/pancreatic/")),
+            new TeamSpecialtyPathItemDto(
+                "روش‌های کم‌تهاجمی جراحی غدد",
+                PickText("کم‌تهاجمی", "کم تهاجمی") ?? "انتخاب روش مناسب بر اساس شرایط و تشخیص هر بیمار.",
+                PickIcon("کم‌تهاجمی", "کم تهاجمی"),
+                Url.Content("~/endoscopic-thyroid-surgery/"))
+        ];
+    }
+
     var educationPathItems = TeamEducationPathJson.Parse(Model.EducationPathJson);
     var scientificActivityItems = TeamScientificActivityJson.Parse(Model.ScientificActivityJson);
     var faqItems = TeamFaqJson.Parse(Model.FaqJson);
@@ -184,7 +256,15 @@
       {
         var item = specialtyPathItems[i];
         var hasIcon = !string.IsNullOrWhiteSpace(item.IconUrl);
-      <article class="doctor-focus__item reveal">
+        var hasLink = !string.IsNullOrWhiteSpace(item.Url);
+        if (hasLink)
+        {
+          @:<a class="doctor-focus__item reveal" href="@item.Url">
+        }
+        else
+        {
+          @:<article class="doctor-focus__item reveal">
+        }
         <span class="doctor-focus__icon" aria-hidden="true">
           @if (hasIcon)
           {
@@ -218,19 +298,19 @@
                 </svg>
                 break;
               case 3:
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 3v18"/>
-                  <path d="M7 8c2.5-2 7.5-2 10 0"/>
-                  <path d="M6 13c3-2.5 9-2.5 12 0"/>
-                  <path d="M7 18c2.5-2 7.5-2 10 0"/>
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path fill="currentColor" fill-opacity=".12" d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4z"/>
+                  <path d="M3.8 19.7c2.4-5.4 6.4-7.9 11.2-7.4 3.2.3 4.1-2.7 7.7-2.5 3.2.2 5.8 2.5 5.5 5.5-.4 3.3-4.2 5.1-7.4 5.4-3.9.4-6.6-1.4-10.2-1.1-2.4.2-4.5 1.2-6.2 2.4"/>
+                  <path d="M7.9 17.8c2.3-2.2 5.2-2.8 8.4-2.1 2.7.6 5.3.2 7.5-1.4"/>
+                  <circle cx="24.5" cy="13.3" r=".8" fill="currentColor" stroke="none"/>
                 </svg>
                 break;
               case 4:
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M7 20V10"/>
-                  <path d="M12 20V4"/>
-                  <path d="M17 20v-8"/>
-                  <path d="M5 20h14"/>
+                  <rect x="3" y="3" width="7" height="4" rx="1"/>
+                  <path d="M6.5 7v5a6 6 0 0 0 6 6H15"/>
+                  <circle cx="18" cy="18" r="3"/>
+                  <path d="M18 15v-4M16 11h4"/>
                 </svg>
                 break;
               default:
@@ -248,7 +328,14 @@
         {
           <p class="doctor-focus__text">@item.Text</p>
         }
-      </article>
+        if (hasLink)
+        {
+          @:</a>
+        }
+        else
+        {
+          @:</article>
+        }
       }
     </div>
   </div>

@@ -417,15 +417,22 @@ else
             مسیریابی در نشان
           </a>
         </div>
-        <div class="contact-map__frame reveal">
+        <a
+          class="contact-map__frame contact-map__frame--link reveal"
+          href="@directionsHref"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="باز کردن موقعیت @brand در نقشه نشان"
+        >
           <iframe
             title="نقشه موقعیت @brand روی نشان — @address"
             src="@mapEmbedSrc"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
+            tabindex="-1"
+            aria-hidden="true"
           ></iframe>
-        </div>
+        </a>
       </div>
     </section>
 

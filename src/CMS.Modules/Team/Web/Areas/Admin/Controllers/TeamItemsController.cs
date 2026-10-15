@@ -217,7 +217,8 @@ public class TeamItemsController : Controller
                 {
                     Title = x.Title,
                     Text = x.Text,
-                    IconUrl = x.IconUrl
+                    IconUrl = x.IconUrl,
+                    Url = x.Url
                 })
                 .ToList(),
             EducationPathItems = TeamEducationPathJson.Parse(post.EducationPathJson)
@@ -328,7 +329,7 @@ public class TeamItemsController : Controller
 
         var specialtyPathJson = TeamSpecialtyPathJson.Serialize(
             (model.SpecialtyPathItems ?? [])
-                .Select(x => new TeamSpecialtyPathItemDto(x.Title, x.Text, x.IconUrl)));
+                .Select(x => new TeamSpecialtyPathItemDto(x.Title, x.Text, x.IconUrl, x.Url)));
         var educationPathJson = TeamEducationPathJson.Serialize(
             (model.EducationPathItems ?? [])
                 .Select(x => new TeamEducationPathItemDto(x.Year, x.Title, x.Place)));
