@@ -189,6 +189,7 @@ public sealed class ServiceItemService : IServiceItemService
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var sourcesJson = ServiceItemSourcesJson.NormalizeJson(command.SourcesJson);
+        var faqJson = ServiceItemFaqJson.NormalizeJson(command.FaqJson);
         var item = ServiceItem.Create(
             command.Title,
             slug,
@@ -207,7 +208,8 @@ public sealed class ServiceItemService : IServiceItemService
             command.OgTitle,
             command.OgDescription,
             command.OgImageUrl,
-            sourcesJson);
+            sourcesJson,
+            faqJson);
 
         ApplyPublishState(item, command);
 
@@ -230,6 +232,7 @@ public sealed class ServiceItemService : IServiceItemService
 
         var sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
         var sourcesJson = ServiceItemSourcesJson.NormalizeJson(command.SourcesJson);
+        var faqJson = ServiceItemFaqJson.NormalizeJson(command.FaqJson);
         item.Update(
             command.Title,
             slug,
@@ -248,7 +251,8 @@ public sealed class ServiceItemService : IServiceItemService
             command.OgTitle,
             command.OgDescription,
             command.OgImageUrl,
-            sourcesJson);
+            sourcesJson,
+            faqJson);
 
         ApplyPublishState(item, command);
 
@@ -286,6 +290,7 @@ public sealed class ServiceItemService : IServiceItemService
             item.OgDescription,
             item.OgImageUrl,
             item.SourcesJson,
+            item.FaqJson,
             item.CreatedAtUtc);
 
     private static SaveServiceItemCommand Normalize(SaveServiceItemCommand command)

@@ -108,7 +108,13 @@
     "</svg>";
 
   const VIDEO_WARNING_DEFAULT_TEXT =
-    "⚠️ توجه: ویدئو شامل تصاویر واقعی جراحی است.";
+    "توجه: ویدئو شامل تصاویر واقعی جراحی است.";
+
+  function stripLeadingWarningEmoji(text) {
+    return String(text || "")
+      .replace(/^[\s\uFE0F\u200D]*(?:\u26A0\uFE0F?|\u26A0)\s*/u, "")
+      .trim();
+  }
 
   const CTA_HELPER_MESSAGE = "nova-cta-helper-insert";
   const CTA_HELPER_READY = "nova-cta-helper-ready";
@@ -555,9 +561,9 @@
               }
             }
 
-            const rawText = (
+            const rawText = stripLeadingWarningEmoji(
               extractPlainText(textContainer || viewItem) || ""
-            ).trim();
+            );
             conversionApi.writer.insertText(
               rawText || VIDEO_WARNING_DEFAULT_TEXT,
               body
@@ -723,6 +729,23 @@
             });
             writer.remove(onlyP);
             changed = true;
+          }
+
+          // Drop leading ⚠️ so CSS triangle is the only warning icon.
+          const firstNode = textChild.getChild(0);
+          if (firstNode && firstNode.is && firstNode.is("$text")) {
+            const original = firstNode.data || "";
+            const stripped = original.replace(
+              /^[\s\uFE0F\u200D]*(?:\u26A0\uFE0F?|\u26A0)\s*/u,
+              ""
+            );
+            if (stripped !== original) {
+              writer.remove(firstNode);
+              if (stripped.length > 0) {
+                writer.insertText(stripped, textChild, 0);
+              }
+              changed = true;
+            }
           }
 
           // Keep empty text container valid — do not auto-restore default text

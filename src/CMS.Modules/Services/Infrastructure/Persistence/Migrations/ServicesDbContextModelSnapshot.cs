@@ -126,6 +126,9 @@ namespace CMS.Modules.Services.Infrastructure.Persistence.Migrations
                     b.Property<string>("SourcesJson")
                         .HasColumnType("text");
 
+                    b.Property<string>("FaqJson")
+                        .HasColumnType("text");
+
                     b.Property<string>("OgTitle")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");

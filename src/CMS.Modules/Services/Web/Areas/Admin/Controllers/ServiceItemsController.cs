@@ -232,6 +232,9 @@ public class ServiceItemsController : Controller
             OgImageUrl = post.OgImageUrl,
             SourcesItems = ServiceItemSourcesJson.Parse(post.SourcesJson)
                 .Select(x => new ServiceItemSourceItemViewModel { Title = x.Title, Url = x.Url })
+                .ToList(),
+            FaqItems = ServiceItemFaqJson.Parse(post.FaqJson)
+                .Select(x => new ServiceItemFaqItemViewModel { Question = x.Question, Answer = x.Answer })
                 .ToList()
         };
 
@@ -349,7 +352,10 @@ public class ServiceItemsController : Controller
             NullIfWhiteSpace(model.OgImageUrl),
             ServiceItemSourcesJson.Serialize(
                 (model.SourcesItems ?? [])
-                    .Select(x => new ServiceItemSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))));
+                    .Select(x => new ServiceItemSourceItemDto(x.Title ?? string.Empty, x.Url ?? string.Empty))),
+            ServiceItemFaqJson.Serialize(
+                (model.FaqItems ?? [])
+                    .Select(x => new ServiceItemFaqItemDto(x.Question ?? string.Empty, x.Answer ?? string.Empty))));
     }
 
     private async Task<ServiceItemFormViewModel> BuildFormAsync(ServiceItemFormViewModel model, CancellationToken cancellationToken)
@@ -373,6 +379,7 @@ public class ServiceItemsController : Controller
         ];
 
         model.SourcesItems ??= [];
+        model.FaqItems ??= [];
         model.Seo ??= SeoEditorHelper.CreateFields(SeoContentTypeKeys.ServiceItem, model.Id);
         model.Seo.ContentType = SeoContentTypeKeys.ServiceItem;
         model.Seo.ContentId = model.Id;

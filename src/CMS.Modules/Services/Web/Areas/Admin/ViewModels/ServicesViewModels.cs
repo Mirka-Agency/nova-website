@@ -87,6 +87,8 @@ public class ServiceItemFormViewModel
 
     public List<ServiceItemSourceItemViewModel> SourcesItems { get; set; } = [];
 
+    public List<ServiceItemFaqItemViewModel> FaqItems { get; set; } = [];
+
     public IReadOnlyList<SelectListItem> Categories { get; set; } = [];
     public IReadOnlyList<SelectListItem> Authors { get; set; } = [];
 }
@@ -98,6 +100,15 @@ public class ServiceItemSourceItemViewModel
 
     [MaxLength(1000, ErrorMessage = "لینک منبع حداکثر ۱۰۰۰ نویسه می‌تواند باشد.")]
     public string Url { get; set; } = string.Empty;
+}
+
+public class ServiceItemFaqItemViewModel
+{
+    [MaxLength(500, ErrorMessage = "سوال حداکثر ۵۰۰ نویسه می‌تواند باشد.")]
+    public string Question { get; set; } = string.Empty;
+
+    [MaxLength(5000, ErrorMessage = "پاسخ حداکثر ۵۰۰۰ نویسه می‌تواند باشد.")]
+    public string Answer { get; set; } = string.Empty;
 }
 
 public class CategoryListItemViewModel

@@ -86,6 +86,16 @@ public sealed class SaveServiceItemCommandValidator : AbstractValidator<SaveServ
                 ServiceItemSourcesJson.TryValidate(x.SourcesJson, out var error);
                 return error ?? "منابع علمی نامعتبر است.";
             });
+
+        RuleFor(x => x.FaqJson)
+            .MaximumLength(ServiceItemFaqJson.MaxJsonLength)
+            .Must(value => ServiceItemFaqJson.TryValidate(value, out _))
+            .When(x => !string.IsNullOrWhiteSpace(x.FaqJson))
+            .WithMessage(x =>
+            {
+                ServiceItemFaqJson.TryValidate(x.FaqJson, out var error);
+                return error ?? "سوالات متداول نامعتبر است.";
+            });
     }
 
     private static bool BeValidUrlOrPath(string? value)

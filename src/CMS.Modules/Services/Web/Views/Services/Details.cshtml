@@ -4,6 +4,7 @@
 @using System.Text.RegularExpressions
 @using CMS.Application.Settings
 @using CMS.Modules.Services.Application.Common
+@using CMS.Modules.Services.Application.ServiceItems
 @inject ISiteSettingsService SiteSettings
 @{
     ViewData["Title"] = Model.Title;
@@ -14,10 +15,10 @@
     var phoneDisplay = contact.PhoneDisplay;
     var telHref = contact.TelHref;
     var category = string.IsNullOrWhiteSpace(Model.CategoryName) ? "خدمت تخصصی" : Model.CategoryName;
-    var reviewer = string.IsNullOrWhiteSpace(Model.AuthorDisplayName) ? brand : Model.AuthorDisplayName;
     var lead = string.IsNullOrWhiteSpace(Model.Excerpt)
         ? $"راهنمای تخصصی «{Model.Title}» در {brand}."
         : Model.Excerpt;
+    var faqItems = ServiceItemFaqJson.Parse(Model.FaqJson);
     var cover = string.IsNullOrWhiteSpace(Model.CoverImageUrl)
         ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
         : Model.CoverImageUrl;
@@ -141,7 +142,6 @@
                 </svg>
               </span>
               <div class="service-toc__heading">
-                <p class="service-toc__kicker">ناوبری مطلب</p>
                 <h2 class="service-toc__title">فهرست مطالب</h2>
               </div>
             </div>
@@ -212,6 +212,8 @@
   </div>
 </section>
 
+@if (faqItems.Count > 0)
+{
 <section class="faq-section service-faq" aria-labelledby="service-faq-heading">
   <div class="container">
     <div class="section-header section-header--center reveal">
@@ -221,51 +223,24 @@
     </div>
 
     <div class="faq-list reveal">
-      <div class="faq-item is-open">
-        <button class="faq-item__question" type="button" aria-expanded="true">
-          این خدمت شامل چه مواردی است؟
+      @for (var i = 0; i < faqItems.Count; i++)
+      {
+        var faq = faqItems[i];
+        var isOpen = i == 0;
+      <div class="faq-item@(isOpen ? " is-open" : null)">
+        <button class="faq-item__question" type="button" aria-expanded="@(isOpen ? "true" : "false")">
+          @faq.Question
           <span class="faq-item__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
           </span>
         </button>
-        <div class="faq-item__answer">@lead</div>
+        <div class="faq-item__answer">@faq.Answer</div>
       </div>
-      <div class="faq-item">
-        <button class="faq-item__question" type="button" aria-expanded="false">
-          چه زمانی باید مراجعه کنم؟
-          <span class="faq-item__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-item__answer">
-          اگر علائم مرتبط دارید، یافته غیرطبیعی در تصویربرداری/آزمایش‌ها گزارش شده، یا پزشک معالج جراحی را مطرح کرده، ارزیابی تخصصی توصیه می‌شود.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-item__question" type="button" aria-expanded="false">
-          چگونه نوبت مشاوره بگیریم؟
-          <span class="faq-item__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-item__answer">
-          از طریق رزرو نوبت آنلاین در همین صفحه یا تماس با شماره
-          <a class="phone-ltr" href="@telHref">@phoneDisplay</a>
-          می‌توانید اقدام کنید.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-item__question" type="button" aria-expanded="false">
-          چه کسی محتوای این خدمت را تأیید می‌کند؟
-          <span class="faq-item__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-item__answer">محتوای این صفحه با نظارت تخصصی @reviewer در @brand ارائه می‌شود.</div>
-      </div>
+      }
     </div>
   </div>
 </section>
+}
 
 @if (related.Count > 0)
 {
