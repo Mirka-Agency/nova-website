@@ -9376,8 +9376,8 @@ a.contact-map__frame--link iframe {
 .blog-card__media {
   position: relative;
   display: block;
+  width: 100%;
   aspect-ratio: 16 / 10;
-  max-height: 11.5rem;
   overflow: hidden;
   background:
     linear-gradient(145deg, var(--primary-soft), #dceef1 55%, rgba(196, 163, 90, 0.18));
@@ -9390,7 +9390,7 @@ a.contact-map__frame--link iframe {
   height: 100%;
   max-width: none;
   object-fit: cover;
-  object-position: center top;
+  object-position: center;
   display: block;
   transition: transform 420ms ease;
 }

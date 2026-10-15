@@ -137,9 +137,6 @@
           var msg = data.message || 'ارسال با موفقیت انجام شد.';
           try { form.reset(); } catch (e) { /* ignore */ }
           showSuccess(form, msg);
-          if (isContactPageForm(form)) {
-            window.alert(msg);
-          }
           return;
         }
 

@@ -2122,7 +2122,6 @@
         setTimeout(pinSuccess, 120);
         setTimeout(pinSuccess, 320);
       }
-      window.alert("پیام شما با موفقیت ارسال شد.");
     });
   })();
 
