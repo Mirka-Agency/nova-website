@@ -561,20 +561,34 @@
       var nextButton = slider.querySelector("[data-services-cards-next]");
       var activeIndex = 0;
       var ticking = false;
+      var isRtl = (document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
 
       if (!viewport || !slides.length || !prevButton || !nextButton) return;
 
+      function isMobileCarousel() {
+        return window.matchMedia("(max-width: 767.98px)").matches;
+      }
+
       function isFullyVisible(slide, viewportRect) {
         var rect = slide.getBoundingClientRect();
-        return rect.left >= viewportRect.left - 1 && rect.right <= viewportRect.right + 1;
+        return rect.left >= viewportRect.left - 2 && rect.right <= viewportRect.right + 2;
       }
 
       function updateSliderState() {
+        if (!isMobileCarousel()) {
+          prevButton.disabled = true;
+          nextButton.disabled = true;
+          return;
+        }
+
         var viewportRect = viewport.getBoundingClientRect();
         var nearestDistance = Infinity;
+        var viewportCenter = (viewportRect.left + viewportRect.right) / 2;
 
         slides.forEach(function (slide, index) {
-          var distance = Math.abs(slide.getBoundingClientRect().right - viewportRect.right);
+          var rect = slide.getBoundingClientRect();
+          var slideCenter = (rect.left + rect.right) / 2;
+          var distance = Math.abs(slideCenter - viewportCenter);
           if (distance < nearestDistance) {
             nearestDistance = distance;
             activeIndex = index;
@@ -586,11 +600,16 @@
       }
 
       function goToSlide(index) {
+        if (!isMobileCarousel()) return;
         activeIndex = Math.max(0, Math.min(index, slides.length - 1));
-        slides[activeIndex].scrollIntoView({
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-          block: "nearest",
-          inline: "start"
+        var slide = slides[activeIndex];
+        var delta =
+          slide.getBoundingClientRect().left - viewport.getBoundingClientRect().left;
+        viewport.scrollBy({
+          left: delta,
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth"
         });
       }
 
@@ -616,12 +635,13 @@
       );
 
       viewport.addEventListener("keydown", function (event) {
+        if (!isMobileCarousel()) return;
         if (event.key === "ArrowLeft") {
           event.preventDefault();
-          goToSlide(activeIndex + 1);
+          goToSlide(activeIndex + (isRtl ? 1 : -1));
         } else if (event.key === "ArrowRight") {
           event.preventDefault();
-          goToSlide(activeIndex - 1);
+          goToSlide(activeIndex + (isRtl ? -1 : 1));
         }
       });
 
