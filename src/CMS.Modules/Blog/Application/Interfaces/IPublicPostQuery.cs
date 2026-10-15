@@ -5,7 +5,10 @@ namespace CMS.Modules.Blog.Application.Interfaces;
 
 public interface IPublicPostQuery
 {
-    /// <summary>Archive uses client-side paging; allow a large single fetch.</summary>
+    /// <summary>Public archive page size (server-side <c>?page=</c> pagination).</summary>
+    const int DefaultArchivePageSize = 12;
+
+    /// <summary>Hard cap for a single list fetch (related posts, bulk lookups).</summary>
     const int MaxArchivePageSize = 500;
 
     Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedAsync(CancellationToken cancellationToken = default);

@@ -225,6 +225,45 @@
     --service-groups-visible: 2;
   }
 
+  .services-overview .container {
+    padding-inline: 0;
+  }
+
+  .services-overview-cards {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-inline: 1rem;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+  }
+
+  .services-overview-cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .services-overview-cards__track {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-inline: 0;
+    --bs-gutter-x: 0.75rem;
+  }
+
+  .services-overview-cards__track > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .services-overview-cards__track .service-card {
+    height: 100%;
+    min-height: 0;
+  }
+
   body {
     font-size: 1rem;
   }

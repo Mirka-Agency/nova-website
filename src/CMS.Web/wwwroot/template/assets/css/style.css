@@ -3439,6 +3439,14 @@ button.header-cta {
   background: var(--surface);
 }
 
+.services-overview-cards {
+  width: 100%;
+}
+
+.services-overview-cards__track {
+  --bs-gutter-x: 1rem;
+}
+
 .service-groups-slider {
   position: relative;
 }
@@ -6713,10 +6721,22 @@ body.gallery-open {
 
 .videos-pagination__btn:disabled,
 .articles-pagination__btn:disabled,
-.blog-pagination__btn:disabled {
+.blog-pagination__btn:disabled,
+.videos-pagination__btn.is-disabled,
+.articles-pagination__btn.is-disabled,
+.blog-pagination__btn.is-disabled {
   opacity: 0.38;
   cursor: default;
   pointer-events: none;
+}
+
+a.videos-pagination__btn,
+a.videos-pagination__page,
+a.articles-pagination__btn,
+a.articles-pagination__page,
+a.blog-pagination__btn,
+a.blog-pagination__page {
+  text-decoration: none;
 }
 
 .video-lightbox {

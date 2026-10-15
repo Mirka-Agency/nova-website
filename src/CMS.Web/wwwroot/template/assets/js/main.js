@@ -1347,13 +1347,27 @@
     var pagesEl = archive.querySelector("[data-videos-pages]");
     var prevBtn = archive.querySelector("[data-videos-prev]");
     var nextBtn = archive.querySelector("[data-videos-next]");
-    var currentCategory = "all";
-    var currentPage = 1;
+    var params = new URLSearchParams(window.location.search);
+    var currentCategory = params.get("category") || "all";
+    var currentPage = Math.max(1, Number(params.get("page")) || 1);
+    var syncingUrl = false;
 
     function getMatchedCards() {
       return cards.filter(function (card) {
         return currentCategory === "all" || card.getAttribute("data-video-category") === currentCategory;
       });
+    }
+
+    function syncUrl() {
+      if (syncingUrl || !window.history || !window.history.replaceState) return;
+      var next = new URLSearchParams();
+      if (currentCategory && currentCategory !== "all") next.set("category", currentCategory);
+      if (currentPage > 1) next.set("page", String(currentPage));
+      var query = next.toString();
+      var url = window.location.pathname + (query ? "?" + query : "") + window.location.hash;
+      syncingUrl = true;
+      window.history.replaceState(null, "", url);
+      syncingUrl = false;
     }
 
     function updateCount(total) {
@@ -1415,16 +1429,21 @@
 
       updateCount(matched.length);
       renderPagination(matched.length ? totalPages : 0);
+      syncUrl();
     }
 
     filters.forEach(function (button) {
+      var isActive = (button.getAttribute("data-video-filter") || "all") === currentCategory;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+
       button.addEventListener("click", function () {
         currentCategory = button.getAttribute("data-video-filter") || "all";
         currentPage = 1;
         filters.forEach(function (item) {
-          var isActive = item === button;
-          item.classList.toggle("is-active", isActive);
-          item.setAttribute("aria-pressed", isActive ? "true" : "false");
+          var active = item === button;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-pressed", active ? "true" : "false");
         });
         render();
       });
@@ -1477,8 +1496,10 @@
     var pagesEl = archive.querySelector("[data-articles-pages]");
     var prevBtn = archive.querySelector("[data-articles-prev]");
     var nextBtn = archive.querySelector("[data-articles-next]");
-    var currentCategory = "all";
-    var currentPage = 1;
+    var params = new URLSearchParams(window.location.search);
+    var currentCategory = params.get("category") || "all";
+    var currentPage = Math.max(1, Number(params.get("page")) || 1);
+    var syncingUrl = false;
 
     function getMatchedCards() {
       return cards.filter(function (card) {
@@ -1494,6 +1515,18 @@
     function getPageRange(page) {
       var start = (Math.max(1, page) - 1) * PAGE_SIZE;
       return { start: start, end: start + PAGE_SIZE };
+    }
+
+    function syncUrl() {
+      if (syncingUrl || !window.history || !window.history.replaceState) return;
+      var next = new URLSearchParams();
+      if (currentCategory && currentCategory !== "all") next.set("category", currentCategory);
+      if (currentPage > 1) next.set("page", String(currentPage));
+      var query = next.toString();
+      var url = window.location.pathname + (query ? "?" + query : "") + window.location.hash;
+      syncingUrl = true;
+      window.history.replaceState(null, "", url);
+      syncingUrl = false;
     }
 
     function updateCount(total) {
@@ -1554,16 +1587,21 @@
 
       updateCount(matched.length);
       renderPagination(matched.length ? totalPages : 0);
+      syncUrl();
     }
 
     filters.forEach(function (button) {
+      var isActive = (button.getAttribute("data-article-filter") || "all") === currentCategory;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+
       button.addEventListener("click", function () {
         currentCategory = button.getAttribute("data-article-filter") || "all";
         currentPage = 1;
         filters.forEach(function (item) {
-          var isActive = item === button;
-          item.classList.toggle("is-active", isActive);
-          item.setAttribute("aria-pressed", isActive ? "true" : "false");
+          var active = item === button;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-pressed", active ? "true" : "false");
         });
         render();
       });
@@ -1606,6 +1644,8 @@
   (function initBlogArchive() {
     var archive = document.querySelector("[data-blog-archive]");
     if (!archive) return;
+    // Server-rendered ?page= links; do not hide cards client-side.
+    if (archive.hasAttribute("data-blog-server-paging")) return;
 
     var FIRST_PAGE_SIZE = 7;
     var OTHER_PAGE_SIZE = 12;

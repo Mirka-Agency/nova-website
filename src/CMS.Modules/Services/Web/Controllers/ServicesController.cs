@@ -32,8 +32,8 @@ public class ServicesController : Controller
     }
 
     [HttpGet("")]
-    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["page"])]
-    public async Task<IActionResult> Index(int page = 1, CancellationToken cancellationToken = default)
+    [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Any)]
+    public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
     {
         if (!await _features.IsEnabledAsync(FeatureNames.Services))
             return NotFound();
@@ -41,8 +41,8 @@ public class ServicesController : Controller
         ViewData["Title"] = _localizer["Services"].Value;
         ViewData["NavActive"] = "services";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("ServiceItems", "مدیریت خدمات", "ViewServices");
-        // Archive page matches the Nova template (no compact pager UI).
-        var result = await _items.ListPublishedPagedAsync(page, 48, cancellationToken);
+        // Specialty overview needs the full published set for group matching (no card pager UI).
+        var result = await _items.ListPublishedPagedAsync(1, 48, cancellationToken);
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;

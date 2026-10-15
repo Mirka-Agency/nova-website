@@ -41,8 +41,13 @@ public class BlogController : Controller
         ViewData["Title"] = "وبلاگ";
         ViewData["NavActive"] = "blog";
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Manage("Posts", "مدیریت نوشته‌ها", "ViewBlog");
-        // Archive matches Nova blog template (client-side paging in main.js).
-        var result = await _posts.ListPublishedPagedAsync(page, IPublicPostQuery.MaxArchivePageSize, cancellationToken);
+        var result = await _posts.ListPublishedPagedAsync(
+            page,
+            IPublicPostQuery.DefaultArchivePageSize,
+            cancellationToken);
+        if (result.TotalPages > 0 && page > result.TotalPages)
+            return RedirectToAction(nameof(Index), new { page = result.TotalPages });
+
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;
         ViewBag.TotalCount = result.TotalCount;

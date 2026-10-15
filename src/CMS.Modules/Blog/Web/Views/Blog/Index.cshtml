@@ -12,6 +12,21 @@
     var items = Model ?? Array.Empty<PublicPostSummaryDto>();
     var hasCmsPosts = items.Count > 0;
     var fa = CultureInfo.GetCultureInfo("fa-IR");
+    var currentPage = ViewBag.Page is int cp && cp > 0 ? cp : 1;
+    var pageSize = ViewBag.PageSize is int ps && ps > 0 ? ps : 12;
+    var totalCount = ViewBag.TotalCount is int tc ? tc : items.Count;
+    var totalPages = ViewBag.TotalPages is int tp ? tp : 1;
+    if (totalPages < 1) totalPages = 1;
+    var rangeStart = totalCount == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+    var rangeEnd = totalCount == 0 ? 0 : Math.Min(currentPage * pageSize, totalCount);
+
+    string ToPersianDigits(string value) =>
+        value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
+            .Replace('5', '۵').Replace('6', '۶').Replace('7', '۷').Replace('8', '۸').Replace('9', '۹');
+
+    string PersianNumber(int value) =>
+        ToPersianDigits(value.ToString(CultureInfo.InvariantCulture));
+
     var lcpCover = hasCmsPosts
         ? (string.IsNullOrWhiteSpace(items[0].CoverImageUrl)
             ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
@@ -34,9 +49,20 @@
   </div>
 </section>
 
-<section class="blog-archive" aria-label="آرشیو وبلاگ" data-blog-archive>
+<section class="blog-archive" aria-label="آرشیو وبلاگ" data-blog-archive @(hasCmsPosts ? "data-blog-server-paging" : null)>
   <div class="container">
+@if (hasCmsPosts)
+{
+    <p class="blog-count reveal" aria-live="polite">
+      @(totalCount == 0
+          ? "۰ مطلب"
+          : $"نمایش {PersianNumber(rangeStart)} تا {PersianNumber(rangeEnd)} از {PersianNumber(totalCount)} مطلب")
+    </p>
+}
+else
+{
     <p class="blog-count reveal" data-blog-count aria-live="polite"></p>
+}
 
     <div class="blog-grid">
 @if (hasCmsPosts)
@@ -50,8 +76,8 @@
         var cover = string.IsNullOrWhiteSpace(item.CoverImageUrl)
             ? Url.Content("~/template/assets/images/blog/thyroid-risks.webp")
             : item.CoverImageUrl;
-        var featuredClass = index == 0 ? " blog-card--featured" : null;
-        <article class="blog-card@(featuredClass) reveal" data-blog-card>
+        var featuredClass = currentPage == 1 && index == 0 ? " blog-card--featured" : null;
+        <article class="blog-card@(featuredClass) reveal">
           <a class="blog-card__link" asp-area="" asp-route="blog-post" asp-route-slug="@item.Slug">
             <span class="blog-card__media">
               <img
@@ -635,6 +661,8 @@ else
 }
     </div>
 
+@if (!hasCmsPosts)
+{
     <p class="blog-empty" data-blog-empty hidden>مطلبی در این دسته یافت نشد.</p>
 
     <nav class="blog-pagination" data-blog-pagination hidden aria-label="صفحه‌بندی وبلاگ">
@@ -650,6 +678,66 @@ else
         </svg>
       </button>
     </nav>
+}
+else if (totalCount > 0 && totalPages > 1)
+{
+    <nav class="blog-pagination" aria-label="صفحه‌بندی وبلاگ">
+      @if (currentPage > 1)
+      {
+        <a class="blog-pagination__btn"
+           asp-controller="Blog"
+           asp-action="Index"
+           asp-route-page="@(currentPage == 2 ? null : currentPage - 1)"
+           aria-label="صفحه قبل">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </a>
+      }
+      else
+      {
+        <span class="blog-pagination__btn is-disabled" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </span>
+      }
+
+      <div class="blog-pagination__pages">
+        @for (var p = 1; p <= totalPages; p++)
+        {
+          var isActive = p == currentPage;
+          <a class="blog-pagination__page@(isActive ? " is-active" : null)"
+             asp-controller="Blog"
+             asp-action="Index"
+             asp-route-page="@(p == 1 ? null : p)"
+             aria-label="صفحه @PersianNumber(p)"
+             aria-current="@(isActive ? "page" : null)">@PersianNumber(p)</a>
+        }
+      </div>
+
+      @if (currentPage < totalPages)
+      {
+        <a class="blog-pagination__btn"
+           asp-controller="Blog"
+           asp-action="Index"
+           asp-route-page="@(currentPage + 1)"
+           aria-label="صفحه بعد">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </a>
+      }
+      else
+      {
+        <span class="blog-pagination__btn is-disabled" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </span>
+      }
+    </nav>
+}
   </div>
 </section>
 
