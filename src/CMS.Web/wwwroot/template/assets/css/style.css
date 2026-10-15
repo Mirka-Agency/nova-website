@@ -99,7 +99,7 @@ a:hover {
   font-weight: 700;
   line-height: var(--lh-tight);
   color: var(--secondary);
-  letter-spacing: -0.02em;
+  letter-spacing: normal;
 }
 
 .section-lead {
@@ -848,8 +848,9 @@ body.nav-open {
   margin: 0 0 0.75rem;
   font-size: clamp(2.6rem, 5.5vw, 4rem);
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  line-height: 1.25;
+  /* Negative tracking breaks Persian glyph joining in Safari/iOS */
+  letter-spacing: normal;
   color: var(--primary);
 }
 
@@ -1041,8 +1042,8 @@ body.nav-open {
 
 .hero-reveal {
   opacity: 0;
-  transform: translateY(12px);
-  animation: heroFadeUp 600ms ease forwards;
+  /* Opacity-only: translateY makes Safari/iOS split Persian connected letters */
+  animation: heroFadeIn 600ms ease forwards;
 }
 
 .hero-reveal--delay {
@@ -1053,10 +1054,9 @@ body.nav-open {
   animation-delay: 200ms;
 }
 
-@keyframes heroFadeUp {
+@keyframes heroFadeIn {
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -2937,15 +2937,12 @@ body.booking-open .float-call {
 
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 500ms ease,
-    transform 500ms ease;
+  /* Opacity-only reveal — transform breaks Persian shaping on Safari/iOS */
+  transition: opacity 500ms ease;
 }
 
 .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2956,7 +2953,6 @@ body.booking-open .float-call {
   .hero-reveal,
   .reveal {
     opacity: 1;
-    transform: none;
     animation: none;
     transition: none;
   }
@@ -5066,9 +5062,12 @@ a.blog-single-verified:focus-visible {
 
 .service-article-hero__media img,
 .blog-single-hero__media img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
   object-position: center;
   transition: transform 700ms ease;

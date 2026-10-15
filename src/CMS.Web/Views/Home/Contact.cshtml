@@ -12,10 +12,14 @@
     var addressShort = clinicAddress;
     var addressExact = clinicAddress;
     var hasAddress = true;
+    // Neshan place: کلینیک جراحی غدد درون ریز نووا (شریعتی / ذکایی)
+    const string neshanPlaceId = "9e5deb3f605a06a72cf6f3fceae8f1d4";
     const double mapLat = 35.748276;
     const double mapLng = 51.449691;
-    var mapEmbedSrc = $"https://neshan.org/maps/@{mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)},17.0z,0.0p";
-    var directionsHref = $"https://nshn.ir/?lat={mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture)}&lng={mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+    var mapLatText = mapLat.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var mapLngText = mapLng.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    var mapEmbedSrc = $"https://neshan.org/maps/iframe/places/{neshanPlaceId}/{mapLatText}/{mapLngText}";
+    var directionsHref = $"https://neshan.org/maps/places/{neshanPlaceId}#c{mapLatText}-{mapLngText}-18z-0p";
     var hasContactForm = ViewBag.HasContactForm as bool? == true;
     var asideIntro = $"{brand} در آدرس زیر آماده پذیرش حضوری است.";
     var businessHours = contact.BusinessHours;
@@ -284,7 +288,7 @@
         </div>
         <div class="contact-map__frame reveal">
           <iframe
-            title="نقشه موقعیت @brand روی نشان"
+            title="نقشه موقعیت کلینیک جراحی غدد درون ریز نووا روی نشان"
             src="@mapEmbedSrc"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
