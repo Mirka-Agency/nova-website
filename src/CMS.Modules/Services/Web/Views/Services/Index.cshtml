@@ -159,28 +159,14 @@
               <li><a href="@Url.Content("~/endoscopic-thyroid-surgery/")">جراحی اندوسکوپیک تیروئید</a></li>
             </ul>
             <div class="service-detail__actions">
-              @if (thyroidService is not null)
-              {
-                <a class="btn-secondary-custom" asp-controller="Services" asp-action="Details" asp-route-slug="@thyroidService.Slug">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
-              else
-              {
-                <a class="btn-secondary-custom" href="#thyroid">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
+              <a class="btn-secondary-custom" href="@Url.Content("~/thyroid-surgery/")">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 5l-7 7 7 7"/>
+                  </svg>
+                </span>
+                صفحه کامل خدمت
+              </a>
               <button class="btn-primary-custom" type="button" data-booking-open>
                 <span class="ui-icon btn-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -224,17 +210,14 @@
               <li><a href="@Url.Content("~/services/hypoparathyroidism/")">کم کاری پاراتیروئید</a></li>
             </ul>
             <div class="service-detail__actions">
-              @if (parathyroidService is not null)
-              {
-                <a class="btn-secondary-custom" asp-controller="Services" asp-action="Details" asp-route-slug="@parathyroidService.Slug">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
+              <a class="btn-secondary-custom" href="@Url.Content("~/parathyroid-surgery-from-0-to-100/")">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 5l-7 7 7 7"/>
+                  </svg>
+                </span>
+                صفحه کامل خدمت
+              </a>
               <button class="btn-primary-custom" type="button" data-booking-open>
                 <span class="ui-icon btn-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -278,17 +261,14 @@
               <li><a href="@Url.Content("~/services/adrenal-cancers/")">سرطان آدرنال</a></li>
             </ul>
             <div class="service-detail__actions">
-              @if (adrenalService is not null)
-              {
-                <a class="btn-secondary-custom" asp-controller="Services" asp-action="Details" asp-route-slug="@adrenalService.Slug">
-                  <span class="ui-icon btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M19 12H5M12 5l-7 7 7 7"/>
-                    </svg>
-                  </span>
-                  صفحه کامل خدمت
-                </a>
-              }
+              <a class="btn-secondary-custom" href="@Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/")">
+                <span class="ui-icon btn-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 5l-7 7 7 7"/>
+                  </svg>
+                </span>
+                صفحه کامل خدمت
+              </a>
               <button class="btn-primary-custom" type="button" data-booking-open>
                 <span class="ui-icon btn-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">

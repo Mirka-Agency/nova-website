@@ -2015,7 +2015,7 @@
     var subjectInput = form.querySelector("#contact-subject");
     var messageInput = form.querySelector("#contact-message");
     createUiSelect(form.querySelector("[data-ui-select]"), {
-      placeholder: "انتخاب موضوع",
+      placeholder: "انتخاب موضوع مراجعه",
     });
 
     function isValidPhone(value) {

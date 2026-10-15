@@ -2,6 +2,7 @@ using CMS.Modules.Forms.Application.Forms;
 using CMS.Modules.Forms.Application.Schema;
 using CMS.Modules.Forms.Domain.Entities;
 using CMS.Modules.Forms.Domain.Enums;
+using CMS.Modules.Forms.Domain.Fields;
 using CMS.Modules.Forms.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ namespace CMS.Modules.Forms.Infrastructure.Services;
 
 /// <summary>
 /// Idempotent seeder for <see cref="SystemFormCatalog"/> definitions.
-/// Creates missing forms/fields; does not overwrite admin copy on existing forms.
+/// Creates missing forms/fields and keeps system select options in sync with the catalog.
 /// </summary>
 public static class FormSystemSeeder
 {
@@ -103,6 +104,32 @@ public static class FormSystemSeeder
                     changed = true;
                 }
 
+                var desiredOptions = FormFieldOptionParser.Normalize(fieldDef.OptionsCsv);
+                var currentOptions = FormFieldOptionParser.Normalize(match.OptionsCsv);
+                var labelChanged = !string.Equals(
+                    match.Label.Trim(),
+                    fieldDef.Label.Trim(),
+                    StringComparison.Ordinal);
+                var optionsChanged = !string.Equals(desiredOptions, currentOptions, StringComparison.Ordinal);
+                if (labelChanged || optionsChanged)
+                {
+                    match.Update(
+                        match.Key,
+                        fieldDef.Label,
+                        match.FieldType,
+                        match.IsRequired,
+                        fieldDef.OptionsCsv,
+                        match.SortOrder,
+                        match.Placeholder,
+                        match.HelpText,
+                        match.SettingsJson);
+                    changed = true;
+                    logger.LogInformation(
+                        "Synced system field {FieldKey} on form {FormKey}",
+                        fieldKey,
+                        existing.Key);
+                }
+
                 continue;
             }
 
@@ -128,6 +155,8 @@ public static class FormSystemSeeder
             return;
 
         await FormVersionSync.SyncAsync(db, existing, cancellationToken);
+        if (existing.IsPublished)
+            await FormVersionSync.PublishWorkingAsync(db, existing, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 

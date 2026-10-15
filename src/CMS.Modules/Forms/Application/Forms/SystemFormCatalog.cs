@@ -49,11 +49,11 @@ public static class SystemFormCatalog
                 HelpText: "اختیاری"),
             new SystemFormField(
                 "subject",
-                "موضوع",
+                "موضوع مراجعه",
                 FormFieldType.Select,
                 Required: true,
                 Order: 4,
-                OptionsCsv: "appointment:رزرو نوبت / مشاوره|thyroid:سوال درباره تیروئید|parathyroid:سوال درباره پاراتیروئید|adrenal:سوال درباره فوق کلیه|admin:پیگیری اداری|other:سایر موارد"),
+                OptionsCsv: "thyroid:مشاوره تخصصی تیروئید|parathyroid:مشاوره پاراتیروئید|adrenal:مشاوره فوق کلیه (آدرنال)|pancreas:مشاوره پانکراس|toetva:جراحی تیروئید بدون جای زخم (TOETVA)|other:سایر خدمات غدد"),
             new SystemFormField(
                 "message",
                 "پیام شما",
