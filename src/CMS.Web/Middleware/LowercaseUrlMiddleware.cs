@@ -42,16 +42,19 @@ public sealed class LowercaseUrlMiddleware
         if (ShouldSkip(path))
             return false;
 
-        var needsLower = HasUpperAscii(path);
-        var needsSlash = path.Length > 1 && !path.EndsWith('/');
+        var working = HasUpperAscii(path) ? path.ToLowerInvariant() : path;
 
-        if (!needsLower && !needsSlash)
+        // Collapse any number of trailing slashes to exactly one (root stays "/").
+        // e.g. /about/// → /about/ so routing always hits the same page.
+        var withoutTrailing = working.TrimEnd('/');
+        var normalized = withoutTrailing.Length == 0
+            ? "/"
+            : withoutTrailing + "/";
+
+        if (string.Equals(path, normalized, StringComparison.Ordinal))
             return false;
 
-        canonical = needsLower ? path.ToLowerInvariant() : path;
-        if (needsSlash)
-            canonical += "/";
-
+        canonical = normalized;
         return true;
     }
 
@@ -68,8 +71,13 @@ public sealed class LowercaseUrlMiddleware
         }
 
         // Static / file-like paths: robots.txt, sitemap.xml, assets with extensions.
-        var lastSlash = path.LastIndexOf('/');
-        var lastSegment = lastSlash >= 0 ? path[(lastSlash + 1)..] : path;
+        // Use the last non-empty segment so /file.txt/// is still treated as a file.
+        var trimmed = path.TrimEnd('/');
+        if (trimmed.Length == 0)
+            return false;
+
+        var lastSlash = trimmed.LastIndexOf('/');
+        var lastSegment = lastSlash >= 0 ? trimmed[(lastSlash + 1)..] : trimmed;
         if (lastSegment.Contains('.', StringComparison.Ordinal))
             return true;
 
