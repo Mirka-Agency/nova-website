@@ -186,11 +186,12 @@
           btnPrimary(d.buttonUrl, d.buttonText) +
             '<a href="tel:' +
             esc(telDigits(d.phoneNumber)) +
-            '" dir="ltr" class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.45rem;min-width:0;min-height:44px;padding:.45rem .65rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;">' +
-            '<span style="display:inline-grid;place-items:center;flex:0 0 auto;width:2rem;height:2rem;border-radius:999px;background:#09707d;color:#fff;font-size:.85rem;">☎</span>' +
-            '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;"><span style="display:block;font-size:.68rem;color:#6b7c7e;font-weight:700;">' +
+            '" dir="ltr" class="nova-cta__btn nova-cta__phone" style="display:inline-flex;flex:1.15 1 0;align-items:center;justify-content:center;gap:.35rem;min-width:0;min-height:44px;padding:.45rem .55rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;">' +
+            '<span style="display:inline-grid;place-items:center;flex:0 0 auto;width:1.7rem;height:1.7rem;border-radius:999px;background:#09707d;color:#fff;font-size:.75rem;" aria-hidden="true">☎</span>' +
+            '<span style="min-width:0;text-align:start;">' +
+            '<span style="display:block;font-size:.62rem;color:#6b7c7e;font-weight:700;line-height:1.15;">' +
             esc(d.phoneLabel) +
-            '</span><span style="font-size:.9rem;">' +
+            '</span><span class="phone-ltr" style="display:block;font-size:.84rem;line-height:1.2;white-space:nowrap;letter-spacing:0;">' +
             esc(d.phoneNumber) +
             "</span></span></a>"
         ) +

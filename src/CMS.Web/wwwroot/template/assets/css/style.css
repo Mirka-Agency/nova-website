@@ -2456,16 +2456,59 @@ body.nav-open {
   white-space: normal;
 }
 
+.nova-cta__phone .phone-ltr,
+.nova-cta--consultation a[href^="tel"] > span:last-child {
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.nova-cta--consultation a[href^="tel"] .phone-ltr,
+.nova-cta--consultation a[href^="tel"] > span:last-child > span:last-child {
+  white-space: nowrap;
+}
+
 @media (max-width: 575.98px) {
   .nova-cta__actions {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     gap: 0.4rem;
   }
 
   .nova-cta__actions > .nova-cta__btn,
   .nova-cta__actions > a {
+    flex: 1 1 0;
+    width: auto;
+    max-width: none;
     min-height: 42px;
-    padding-inline: 0.7rem;
-    font-size: 0.82rem;
+    padding-inline: 0.55rem;
+    font-size: 0.78rem;
+    box-sizing: border-box;
+  }
+
+  .nova-cta--consultation {
+    padding: 1.15rem 0.9rem !important;
+  }
+
+  .nova-cta--consultation .nova-cta__phone,
+  .nova-cta--consultation a[href^="tel"] {
+    gap: 0.3rem !important;
+    padding-inline: 0.45rem !important;
+  }
+
+  .nova-cta--consultation a[href^="tel"] > span:first-child {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .nova-cta--consultation .nova-cta__phone .phone-ltr,
+  .nova-cta--consultation a[href^="tel"] > span:last-child > span:last-child {
+    font-size: 0.74rem !important;
+    letter-spacing: 0;
+  }
+
+  .nova-cta--consultation a[href^="tel"] > span:last-child > span:first-child {
+    font-size: 0.58rem !important;
   }
 
   .nova-cta--inline {
@@ -2645,9 +2688,17 @@ body.nav-open {
 
 .footer-nav {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.55fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.55fr);
   gap: 1.15rem 1.5rem;
   margin-top: 1.75rem;
+  align-items: start;
+}
+
+.footer-nav__links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem 1.5rem;
+  min-width: 0;
 }
 
 .footer-col--contact {

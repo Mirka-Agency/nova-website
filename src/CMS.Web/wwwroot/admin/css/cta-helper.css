@@ -326,15 +326,42 @@
   min-width: 0;
 }
 
+.cta-mod__preview .nova-cta__phone .phone-ltr {
+  overflow: visible;
+  white-space: nowrap;
+}
+
 @media (max-width: 575.98px) {
   .cta-mod__preview .nova-cta__actions {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     gap: 0.4rem;
   }
 
   .cta-mod__preview .nova-cta__actions > a {
+    flex: 1 1 0;
+    width: auto;
     min-height: 42px;
-    padding-inline: 0.7rem;
-    font-size: 0.82rem;
+    padding-inline: 0.55rem;
+    font-size: 0.78rem;
+    box-sizing: border-box;
+  }
+
+  .cta-mod__preview .nova-cta--consultation a[href^="tel"] {
+    gap: 0.3rem !important;
+    padding-inline: 0.45rem !important;
+  }
+
+  .cta-mod__preview .nova-cta--consultation a[href^="tel"] > span:first-child {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .cta-mod__preview .nova-cta--consultation .nova-cta__phone .phone-ltr,
+  .cta-mod__preview .nova-cta--consultation a[href^="tel"] > span:last-child > span:last-child {
+    font-size: 0.74rem !important;
+    letter-spacing: 0;
   }
 }
 
