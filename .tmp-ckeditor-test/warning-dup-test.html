@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.css" />
+  <style>
+    body { font-family: Tahoma, sans-serif; padding: 16px; }
+    pre { background: #f5f5f5; padding: 12px; white-space: pre-wrap; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Video warning duplex test</h1>
+  <textarea id="editor" class="admin-ckeditor-source"><p>جمع‌بندی</p><div class="nova-video-warning" data-nova-video-warning="1" dir="rtl" role="note"><div class="nova-video-warning__text">توجه: ویدئو شامل تصاویر واقعی جراحی است.</div></div></textarea>
+  <h2>Results</h2>
+  <pre id="out">waiting…</pre>
+  <script src="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.umd.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/js/ckeditor-post-editor.js"></script>
+  <script>
+    (async function () {
+      const out = document.getElementById("out");
+      function countOuter(html) {
+        const re = /class="[^"]*nova-video-warning(?!__)/g;
+        const m = html.match(re);
+        return m ? m.length : 0;
+      }
+      function waitEditor(timeoutMs) {
+        return new Promise(function (resolve, reject) {
+          const ta = document.getElementById("editor");
+          if (ta.ckEditorInstance) return resolve(ta.ckEditorInstance);
+          const t = setTimeout(function () {
+            reject(new Error("timeout waiting for editor"));
+          }, timeoutMs || 15000);
+          ta.addEventListener("ckeditor:ready", function () {
+            clearTimeout(t);
+            resolve(ta.ckEditorInstance);
+          }, { once: true });
+        });
+      }
+
+      try {
+        const editor = await waitEditor();
+        const results = [];
+        let html = editor.getData();
+        results.push({ step: "after-init", outer: countOuter(html), html });
+
+        for (let i = 1; i <= 5; i++) {
+          editor.setData(html);
+          html = editor.getData();
+          results.push({ step: "roundtrip-" + i, outer: countOuter(html), html });
+        }
+
+        // Simulate toolbar button once
+        editor.model.change(function (writer) {
+          const box = writer.createElement("novaVideoWarning");
+          const body = writer.createElement("novaVideoWarningText");
+          writer.insertText("توجه: ویدئو شامل تصاویر واقعی جراحی است.", body);
+          writer.append(body, box);
+          writer.insert(box, writer.createPositionAt(editor.model.document.getRoot(), "end"));
+        });
+        html = editor.getData();
+        results.push({ step: "after-manual-model-insert", outer: countOuter(html), html });
+
+        // Empty content then insert via UI button factory
+        editor.setData("<p>empty</p>");
+        const viewBtn = editor.ui.componentFactory.create("videoWarning");
+        viewBtn.fire("execute");
+        html = editor.getData();
+        results.push({ step: "after-button-execute-once", outer: countOuter(html), html });
+
+        viewBtn.fire("execute");
+        html = editor.getData();
+        results.push({ step: "after-button-execute-twice", outer: countOuter(html), html });
+
+        out.textContent = JSON.stringify(results, null, 2);
+        window.__TEST_RESULT__ = results;
+      } catch (err) {
+        out.textContent = String(err && err.stack || err);
+        window.__TEST_RESULT__ = { error: String(err) };
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+﻿import { chromium } from 'playwright';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const file = path.join(__dirname, 'warning-dup-test.html');
+const browser = await chromium.launch({ headless: true, channel: 'msedge' });
+const page = await browser.newPage();
+page.on('console', (msg) => console.log('BROWSER:', msg.type(), msg.text()));
+page.on('pageerror', (err) => console.log('PAGEERROR:', err.message));
+await page.goto('file:///' + file.replace(/\\/g, '/'), { waitUntil: 'networkidle' });
+await page.waitForFunction(() => window.__TEST_RESULT__, null, { timeout: 30000 });
+const result = await page.evaluate(() => window.__TEST_RESULT__);
+console.log(JSON.stringify(result, null, 2));
+await browser.close();
