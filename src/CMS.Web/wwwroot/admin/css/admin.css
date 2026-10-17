@@ -2123,66 +2123,79 @@ fieldset.admin-field legend {
   gap: calc(var(--admin-space) * 3);
 }
 
-.admin-related-search {
-  position: relative;
+.admin-related-picker {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-related-picker__search {
   display: grid;
   gap: 0.4rem;
 }
 
-.admin-related-search__input {
+.admin-related-picker__search input {
   width: 100%;
 }
 
-.admin-related-search__results {
-  position: absolute;
-  inset-inline: 0;
-  top: calc(100% + 0.25rem);
-  z-index: 20;
-  margin: 0;
-  padding: 0.35rem;
-  list-style: none;
-  max-height: 16rem;
-  overflow: auto;
-  border: 1px solid var(--admin-border);
-  border-radius: 6px;
-  background: var(--admin-surface, #fff);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-.admin-related-search__item {
-  display: block;
-  width: 100%;
-  padding: 0.55rem 0.7rem;
-  border: 0;
-  border-radius: 4px;
-  background: transparent;
-  color: inherit;
-  text-align: start;
-  cursor: pointer;
-  font: inherit;
-}
-
-.admin-related-search__item:hover,
-.admin-related-search__item:focus-visible {
-  background: rgba(9, 112, 125, 0.08);
-  outline: none;
-}
-
-.admin-related-search__empty {
-  padding: 0.65rem 0.7rem;
-  color: var(--admin-text-secondary);
+.admin-related-picker__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--admin-text-secondary, #666);
   font-size: 0.9rem;
 }
 
-.admin-related-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.admin-related-picker__list {
+  display: grid;
+  gap: 0;
+  max-height: 18rem;
+  overflow: auto;
+  border: 1px solid var(--admin-border, #e5e5e5);
+  border-radius: 6px;
+  background: #fff;
 }
 
-.admin-related-row__title {
-  font-weight: 600;
-  color: var(--admin-text, #1a1a1a);
+.admin-related-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-block-end: 1px solid var(--admin-border, #e5e5e5);
+  cursor: pointer;
+}
+
+.admin-related-option:last-child {
+  border-block-end: 0;
+}
+
+.admin-related-option:hover {
+  background: #fafafa;
+}
+
+.admin-related-option input[type="checkbox"] {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: #000;
+  cursor: pointer;
+}
+
+.admin-related-option__text {
+  min-width: 0;
+  color: var(--admin-text, #000);
+  font-weight: 500;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.admin-related-picker__status {
+  margin: 0;
+  color: var(--admin-text-secondary, #666);
+  font-size: 0.9rem;
 }
 
 .admin-faq-actions {

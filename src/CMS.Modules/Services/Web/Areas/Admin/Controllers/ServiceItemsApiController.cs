@@ -180,7 +180,7 @@ public class ServiceItemsApiController : ControllerBase
         if (!await _features.IsEnabledAsync(FeatureNames.Services))
             return NotFound();
 
-        var pageSize = Math.Clamp(take, 1, 50);
+        var pageSize = Math.Clamp(take, 1, 200);
         var page = await _posts.ListPagedAsync(
             new ServiceItemListRequest
             {

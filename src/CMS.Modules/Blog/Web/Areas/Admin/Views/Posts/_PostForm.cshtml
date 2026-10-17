@@ -296,49 +296,27 @@
                   data-related-search-url="/api/v1/admin/blog/posts/search"
                   data-related-exclude-id="@(Model.Id?.ToString("D") ?? "")"
                   data-related-max="@CMS.Modules.Blog.Application.Posts.PostRelatedPostsJson.MaxItems"
-                  data-related-name-prefix="RelatedItems">
+                  data-related-name-prefix="RelatedItems"
+                  data-related-selected="@System.Text.Json.JsonSerializer.Serialize(Model.RelatedItems.Select(x => new { id = x.Id, title = x.Title }))">
             <legend>مطالب مرتبط</legend>
-            <p class="admin-hint">جستجو کنید و مطالبی را که در بخش «مطالب مرتبط» صفحه نمایش داده می‌شوند انتخاب کنید. اگر خالی بماند، آخرین نوشته‌ها به‌صورت خودکار نشان داده می‌شوند.</p>
+            <p class="admin-hint">از لیست مقالات، موارد مرتبط را با چک‌باکس انتخاب کنید. با جستجو می‌توانید لیست را فیلتر کنید. اگر خالی بماند، آخرین نوشته‌ها به‌صورت خودکار نشان داده می‌شوند.</p>
 
-            <div class="admin-related-search">
-                <label class="admin-field-label" for="related-posts-search">جستجوی نوشته</label>
-                <input id="related-posts-search"
-                       type="search"
-                       class="admin-related-search__input"
-                       placeholder="عنوان نوشته را بنویسید…"
-                       autocomplete="off"
-                       data-related-search-input />
-                <ul class="admin-related-search__results" data-related-search-results hidden></ul>
-            </div>
-
-            <div class="admin-faq-list" style="margin-top: 0.85rem;">
-                <div class="admin-faq-rows" data-related-list>
-                    @for (var i = 0; i < Model.RelatedItems.Count; i++)
-                    {
-                        <div class="admin-faq-row admin-related-row" data-related-row data-related-id="@Model.RelatedItems[i].Id">
-                            <input type="hidden" name="RelatedItems[@i].Id" value="@Model.RelatedItems[i].Id" data-related-id-input />
-                            <input type="hidden" name="RelatedItems[@i].Title" value="@Model.RelatedItems[i].Title" data-related-title-input />
-                            <div class="admin-field admin-faq-field" style="flex: 1;">
-                                <span class="admin-related-row__title">@Model.RelatedItems[i].Title</span>
-                            </div>
-                            <div class="admin-faq-actions">
-                                <button type="button" class="btn btn-ghost" data-related-move-up title="بالا">
-                                    <i class="fas fa-arrow-up" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn btn-ghost" data-related-move-down title="پایین">
-                                    <i class="fas fa-arrow-down" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn btn-text-danger" data-related-remove>
-                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                                    <span>حذف</span>
-                                </button>
-                            </div>
-                        </div>
-                    }
+            <div class="admin-related-picker">
+                <div class="admin-related-picker__search">
+                    <label class="admin-field-label" for="related-posts-search">جستجوی مقاله</label>
+                    <input id="related-posts-search"
+                           type="search"
+                           placeholder="عنوان مقاله را بنویسید…"
+                           autocomplete="off"
+                           data-related-search-input />
                 </div>
-                <p class="admin-hint" data-related-empty @(Model.RelatedItems.Count > 0 ? "hidden" : null)>
-                    هنوز مطلب مرتبطی انتخاب نشده است.
-                </p>
+                <div class="admin-related-picker__meta">
+                    <span data-related-count>۰ از @CMS.Modules.Blog.Application.Posts.PostRelatedPostsJson.MaxItems انتخاب شده</span>
+                    <span class="admin-related-picker__status" data-related-loading hidden>در حال بارگذاری…</span>
+                </div>
+                <div class="admin-related-picker__list" data-related-list></div>
+                <p class="admin-related-picker__status" data-related-empty hidden>مقاله‌ای پیدا نشد.</p>
+                <div data-related-inputs hidden></div>
             </div>
         </fieldset>
 

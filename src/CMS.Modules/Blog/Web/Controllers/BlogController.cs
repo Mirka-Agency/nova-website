@@ -111,10 +111,10 @@ public class BlogController : Controller
 
         if (relatedItems.Count == 0)
         {
-            var related = await _posts.ListPublishedPagedAsync(1, 8, cancellationToken);
+            var related = await _posts.ListPublishedPagedAsync(1, PostRelatedPostsJson.MaxItems + 1, cancellationToken);
             relatedItems = related.Items
                 .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
-                .Take(3)
+                .Take(PostRelatedPostsJson.MaxItems)
                 .ToList();
         }
 

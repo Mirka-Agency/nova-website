@@ -86,10 +86,10 @@ public class ServicesController : Controller
 
         if (relatedItems.Count == 0)
         {
-            var related = await _items.ListPublishedPagedAsync(1, 8, cancellationToken);
+            var related = await _items.ListPublishedPagedAsync(1, ServiceItemRelatedItemsJson.MaxItems + 1, cancellationToken);
             relatedItems = related.Items
                 .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
-                .Take(4)
+                .Take(ServiceItemRelatedItemsJson.MaxItems)
                 .ToList();
         }
 
