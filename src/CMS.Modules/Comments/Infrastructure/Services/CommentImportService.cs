@@ -176,6 +176,10 @@ public sealed class CommentImportService : ICommentImportService
         }
 
         var idMap = new Dictionary<string, Guid>(StringComparer.Ordinal);
+        // Seed with already-imported WordPress ids so new replies link to existing parents
+        // and so the final repair pass can fix ParentId on duplicates.
+        await SeedIdMapFromDbAsync(preview.Rows, idMap, cancellationToken);
+
         var ordered = OrderParentsFirst(workItems);
         var batchSize = Math.Clamp(_options.BatchSize, 20, 500);
 
@@ -204,23 +208,10 @@ public sealed class CommentImportService : ICommentImportService
                         continue;
                     }
 
-                    Guid? parentId = null;
-                    if (!string.IsNullOrWhiteSpace(item.Row.ExternalParentId))
-                    {
-                        if (idMap.TryGetValue(item.Row.ExternalParentId, out var mappedParent))
-                        {
-                            parentId = mappedParent;
-                        }
-                        else
-                        {
-                            parentId = await _db.Comments.AsNoTracking()
-                                .Where(c =>
-                                    c.SourceSystem == Comment.WordPressSourceSystem
-                                    && c.SourceExternalId == item.Row.ExternalParentId)
-                                .Select(c => (Guid?)c.Id)
-                                .FirstOrDefaultAsync(cancellationToken);
-                        }
-                    }
+                    var parentId = await ResolveParentIdAsync(
+                        item.Row.ExternalParentId,
+                        idMap,
+                        cancellationToken);
 
                     var comment = Comment.Import(
                         item.TargetType,
@@ -237,6 +228,9 @@ public sealed class CommentImportService : ICommentImportService
                         parentId);
 
                     _db.Comments.Add(comment);
+                    // Register immediately so siblings/children in the same batch resolve parents
+                    // before SaveChanges (Ids are client-generated Guids).
+                    idMap[item.Row.ExternalId] = comment.Id;
                     pending.Add((item, comment));
                 }
                 catch (Exception ex)
@@ -275,17 +269,19 @@ public sealed class CommentImportService : ICommentImportService
                 _logger.LogError(batchEx, "Comment import batch SaveChanges failed; retrying one-by-one");
                 _db.ChangeTracker.Clear();
 
+                // Roll back optimistic idMap entries for this failed batch; re-add on success.
+                foreach (var (item, _) in pending)
+                    idMap.Remove(item.Row.ExternalId);
+
                 foreach (var (item, _) in pending)
                 {
                     try
                     {
                         var body = SanitizeBody(item.Row.Body);
-                        Guid? parentId = null;
-                        if (!string.IsNullOrWhiteSpace(item.Row.ExternalParentId)
-                            && idMap.TryGetValue(item.Row.ExternalParentId, out var mappedParent))
-                        {
-                            parentId = mappedParent;
-                        }
+                        var parentId = await ResolveParentIdAsync(
+                            item.Row.ExternalParentId,
+                            idMap,
+                            cancellationToken);
 
                         var comment = Comment.Import(
                             item.TargetType,
@@ -315,6 +311,7 @@ public sealed class CommentImportService : ICommentImportService
                     catch (Exception ex)
                     {
                         _db.ChangeTracker.Clear();
+                        idMap.Remove(item.Row.ExternalId);
                         _logger.LogWarning(ex, "Failed importing WordPress comment {ExternalId}", item.Row.ExternalId);
                         results.Add(new CommentImportRowResult(
                             item.Row.ExternalId,
@@ -328,8 +325,9 @@ public sealed class CommentImportService : ICommentImportService
             }
         }
 
-        // Second pass: attach parents that were imported later in another batch.
-        await AttachMissingParentsAsync(ordered, idMap, cancellationToken);
+        // Second pass: attach/repair parents for newly imported rows AND duplicates
+        // whose ParentId was missing from an earlier import.
+        await RepairParentLinksAsync(preview.Rows, idMap, cancellationToken);
 
         var result = new CommentImportResult(
             PreviewId: preview.PreviewId,
@@ -603,19 +601,87 @@ public sealed class CommentImportService : ICommentImportService
         return ordered;
     }
 
-    private async Task AttachMissingParentsAsync(
-        List<ImportWorkItem> ordered,
+    private async Task SeedIdMapFromDbAsync(
+        IReadOnlyList<CommentImportPreviewRow> rows,
         Dictionary<string, Guid> idMap,
         CancellationToken cancellationToken)
     {
-        var needsUpdate = false;
-        foreach (var item in ordered)
+        var externalIds = rows
+            .SelectMany(r => new[] { r.ExternalId, r.ExternalParentId })
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => id!.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        if (externalIds.Count == 0)
+            return;
+
+        const int chunk = 500;
+        for (var i = 0; i < externalIds.Count; i += chunk)
         {
-            if (string.IsNullOrWhiteSpace(item.Row.ExternalParentId))
+            var slice = externalIds.Skip(i).Take(chunk).ToList();
+            var found = await _db.Comments.AsNoTracking()
+                .Where(c =>
+                    c.SourceSystem == Comment.WordPressSourceSystem
+                    && c.SourceExternalId != null
+                    && slice.Contains(c.SourceExternalId))
+                .Select(c => new { c.SourceExternalId, c.Id })
+                .ToListAsync(cancellationToken);
+
+            foreach (var row in found)
+            {
+                if (!string.IsNullOrWhiteSpace(row.SourceExternalId))
+                    idMap[row.SourceExternalId] = row.Id;
+            }
+        }
+    }
+
+    private async Task<Guid?> ResolveParentIdAsync(
+        string? externalParentId,
+        Dictionary<string, Guid> idMap,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(externalParentId))
+            return null;
+
+        var key = externalParentId.Trim();
+        if (idMap.TryGetValue(key, out var mapped))
+            return mapped;
+
+        var fromDb = await _db.Comments.AsNoTracking()
+            .Where(c =>
+                c.SourceSystem == Comment.WordPressSourceSystem
+                && c.SourceExternalId == key)
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (fromDb.HasValue)
+            idMap[key] = fromDb.Value;
+
+        return fromDb;
+    }
+
+    /// <summary>
+    /// Ensures ParentId matches WordPress comment_parent for every row in the preview
+    /// that exists in the DB (new imports and duplicates from earlier runs).
+    /// </summary>
+    private async Task RepairParentLinksAsync(
+        IReadOnlyList<CommentImportPreviewRow> rows,
+        Dictionary<string, Guid> idMap,
+        CancellationToken cancellationToken)
+    {
+        await SeedIdMapFromDbAsync(rows, idMap, cancellationToken);
+
+        var needsUpdate = false;
+        foreach (var row in rows)
+        {
+            if (string.IsNullOrWhiteSpace(row.ExternalParentId))
                 continue;
-            if (!idMap.TryGetValue(item.Row.ExternalId, out var childId))
+            if (!idMap.TryGetValue(row.ExternalId, out var childId))
                 continue;
-            if (!idMap.TryGetValue(item.Row.ExternalParentId, out var parentId))
+            if (!idMap.TryGetValue(row.ExternalParentId.Trim(), out var parentId))
+                continue;
+            if (childId == parentId)
                 continue;
 
             var entity = await _db.Comments.FirstOrDefaultAsync(c => c.Id == childId, cancellationToken);

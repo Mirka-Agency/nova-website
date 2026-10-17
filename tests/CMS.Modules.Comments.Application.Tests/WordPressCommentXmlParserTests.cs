@@ -68,6 +68,42 @@ public class WordPressCommentXmlParserTests
     }
 
     [Fact]
+    public void Parse_maps_wp_namespace_comment_parent()
+    {
+        const string xml =
+            """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <comments>
+              <comment>
+                <wp:comment_id xmlns:wp="http://wordpress.org/export/1.2/">1</wp:comment_id>
+                <wp:comment_author xmlns:wp="http://wordpress.org/export/1.2/">Parent</wp:comment_author>
+                <wp:comment_content xmlns:wp="http://wordpress.org/export/1.2/">Root</wp:comment_content>
+                <wp:comment_date_gmt xmlns:wp="http://wordpress.org/export/1.2/">2023-01-01 00:00:00</wp:comment_date_gmt>
+                <wp:comment_approved xmlns:wp="http://wordpress.org/export/1.2/">1</wp:comment_approved>
+                <wp:comment_parent xmlns:wp="http://wordpress.org/export/1.2/">0</wp:comment_parent>
+                <page_url>https://old.example.com/a/</page_url>
+              </comment>
+              <comment>
+                <wp:comment_id xmlns:wp="http://wordpress.org/export/1.2/">2</wp:comment_id>
+                <wp:comment_author xmlns:wp="http://wordpress.org/export/1.2/">Child</wp:comment_author>
+                <wp:comment_content xmlns:wp="http://wordpress.org/export/1.2/">Reply</wp:comment_content>
+                <wp:comment_date_gmt xmlns:wp="http://wordpress.org/export/1.2/">2023-01-02 00:00:00</wp:comment_date_gmt>
+                <wp:comment_approved xmlns:wp="http://wordpress.org/export/1.2/">1</wp:comment_approved>
+                <wp:comment_parent xmlns:wp="http://wordpress.org/export/1.2/">1</wp:comment_parent>
+                <page_url>https://old.example.com/a/</page_url>
+              </comment>
+            </comments>
+            """;
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+        var items = _parser.Parse(stream);
+
+        items.Should().HaveCount(2);
+        items[0].ExternalParentId.Should().BeNull();
+        items[1].ExternalParentId.Should().Be("1");
+    }
+
+    [Fact]
     public void Parse_rejects_xxe_external_dtd()
     {
         const string xml =

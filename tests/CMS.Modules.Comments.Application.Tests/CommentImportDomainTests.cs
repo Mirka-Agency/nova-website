@@ -103,4 +103,41 @@ public class CommentImportDomainTests
         child.SetParent(parent.Id);
         child.ParentId.Should().Be(parent.Id);
     }
+
+    [Fact]
+    public void SetParent_repairs_missing_parent_after_flat_import()
+    {
+        var targetId = Guid.NewGuid();
+        var parent = Comment.Import(
+            CommentTargetType.BlogPost,
+            targetId,
+            "T",
+            "P",
+            null,
+            "parent",
+            CommentStatus.Approved,
+            DateTime.UtcNow.AddDays(-2),
+            Comment.WordPressSourceSystem,
+            "10",
+            "https://x.test/a/");
+
+        // Simulate same-batch import that failed to resolve parent (ParentId left null).
+        var child = Comment.Import(
+            CommentTargetType.BlogPost,
+            targetId,
+            "T",
+            "C",
+            null,
+            "reply",
+            CommentStatus.Approved,
+            DateTime.UtcNow.AddDays(-1),
+            Comment.WordPressSourceSystem,
+            "11",
+            "https://x.test/a/",
+            parentId: null);
+
+        child.ParentId.Should().BeNull();
+        child.SetParent(parent.Id);
+        child.ParentId.Should().Be(parent.Id);
+    }
 }

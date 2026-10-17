@@ -169,7 +169,12 @@ public sealed class CommentService : ICommentService
 
         var total = await baseQuery.CountAsync(cancellationToken);
 
-        var rootQuery = baseQuery.Where(c => c.ParentId == null);
+        // Treat as root when ParentId is null OR the parent is missing / not approved
+        // for this target — otherwise approved replies under pending/rejected parents
+        // disappear from the public feed while still inflating TotalCount.
+        var rootQuery = baseQuery.Where(c =>
+            c.ParentId == null
+            || !baseQuery.Any(p => p.Id == c.ParentId!.Value));
         var rootTotal = await rootQuery.CountAsync(cancellationToken);
         var totalPages = normalizedPageSize <= 0
             ? 0
