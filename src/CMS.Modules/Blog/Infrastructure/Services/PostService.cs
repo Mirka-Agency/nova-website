@@ -244,6 +244,14 @@ public sealed class PostService : IPostService
 
         _db.Posts.Add(post);
         await _db.SaveChangesAsync(cancellationToken);
+
+        // Mutual related: selected posts also list this post as related.
+        await SyncBidirectionalRelatedAsync(
+            post.Id,
+            PostRelatedPostsJson.Parse(relatedPostsJson),
+            previousRelatedIds: [],
+            cancellationToken);
+
         return post.Id;
     }
 
@@ -256,6 +264,7 @@ public sealed class PostService : IPostService
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
             ?? throw new NotFoundException(nameof(Post), id);
 
+        var previousRelatedIds = PostRelatedPostsJson.Parse(post.RelatedPostsJson);
         var slug = await EnsureUniqueSlugAsync(ResolveSlug(command), id, cancellationToken);
         await EnsureCategoryExistsAsync(command.CategoryId, cancellationToken);
 
@@ -292,6 +301,13 @@ public sealed class PostService : IPostService
         ApplyPublishState(post, command);
 
         await _db.SaveChangesAsync(cancellationToken);
+
+        await SyncBidirectionalRelatedAsync(
+            post.Id,
+            PostRelatedPostsJson.Parse(relatedPostsJson),
+            previousRelatedIds,
+            cancellationToken);
+
         return slug;
     }
 
@@ -300,8 +316,67 @@ public sealed class PostService : IPostService
         var post = await _db.Posts.FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
             ?? throw new NotFoundException(nameof(Post), id);
 
+        var needle = id.ToString("D");
+        var peersWithLink = await _db.Posts
+            .Where(p =>
+                p.Id != id
+                && p.RelatedPostsJson != null
+                && p.RelatedPostsJson.Contains(needle))
+            .ToListAsync(cancellationToken);
+
+        foreach (var peer in peersWithLink)
+            peer.SetRelatedPostsJson(PostRelatedPostsJson.WithoutId(peer.RelatedPostsJson, id));
+
         _db.Posts.Remove(post);
         await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Keeps related links mutual: when A lists B, B also lists A (and the reverse on remove).
+    /// </summary>
+    private async Task SyncBidirectionalRelatedAsync(
+        Guid postId,
+        IReadOnlyList<Guid> newRelatedIds,
+        IReadOnlyList<Guid> previousRelatedIds,
+        CancellationToken cancellationToken)
+    {
+        var newSet = newRelatedIds
+            .Where(x => x != Guid.Empty && x != postId)
+            .Distinct()
+            .ToHashSet();
+        var previousSet = previousRelatedIds
+            .Where(x => x != Guid.Empty && x != postId)
+            .Distinct()
+            .ToHashSet();
+
+        var toLink = newSet.Except(previousSet).ToList();
+        var toUnlink = previousSet.Except(newSet).ToList();
+        if (toLink.Count == 0 && toUnlink.Count == 0)
+            return;
+
+        var peerIds = toLink.Concat(toUnlink).Distinct().ToList();
+        var peers = await _db.Posts
+            .Where(p => peerIds.Contains(p.Id))
+            .ToListAsync(cancellationToken);
+
+        foreach (var peer in peers)
+        {
+            if (toLink.Contains(peer.Id))
+            {
+                var updated = PostRelatedPostsJson.WithId(peer.RelatedPostsJson, postId);
+                if (!string.Equals(updated, peer.RelatedPostsJson, StringComparison.Ordinal))
+                    peer.SetRelatedPostsJson(updated);
+            }
+            else if (toUnlink.Contains(peer.Id))
+            {
+                var updated = PostRelatedPostsJson.WithoutId(peer.RelatedPostsJson, postId);
+                if (!string.Equals(updated, peer.RelatedPostsJson, StringComparison.Ordinal))
+                    peer.SetRelatedPostsJson(updated);
+            }
+        }
+
+        if (peers.Count > 0)
+            await _db.SaveChangesAsync(cancellationToken);
     }
 
     private static PostDetailDto MapDetail(Post post) =>

@@ -33,4 +33,13 @@ public interface IPublicPostQuery
         Guid excludeId,
         int take,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Published posts that list <paramref name="postId"/> in their RelatedPostsJson
+    /// (reverse related links), newest first.
+    /// </summary>
+    Task<IReadOnlyList<Guid>> ListPublishedIdsReferencingAsync(
+        Guid postId,
+        int take,
+        CancellationToken cancellationToken = default);
 }

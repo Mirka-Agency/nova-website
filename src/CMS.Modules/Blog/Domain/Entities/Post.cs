@@ -145,6 +145,15 @@ public class Post : BaseEntity
         Touch();
     }
 
+    public void SetRelatedPostsJson(string? relatedPostsJson)
+    {
+        if (relatedPostsJson is { Length: > 4_000 })
+            throw new DomainException("لیست مطالب مرتبط خیلی طولانی است.");
+
+        RelatedPostsJson = NullIfWhiteSpace(relatedPostsJson);
+        Touch();
+    }
+
     private void ApplyContent(
         string title,
         string slug,

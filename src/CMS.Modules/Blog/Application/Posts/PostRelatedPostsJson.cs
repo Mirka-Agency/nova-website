@@ -70,6 +70,33 @@ public static class PostRelatedPostsJson
         return Serialize(Parse(relatedPostsJson));
     }
 
+    /// <summary>Adds <paramref name="id"/> if missing (prepended), respecting <see cref="MaxItems"/>.</summary>
+    public static string? WithId(string? relatedPostsJson, Guid id)
+    {
+        if (id == Guid.Empty)
+            return NormalizeJson(relatedPostsJson);
+
+        var ids = Parse(relatedPostsJson).ToList();
+        if (ids.Contains(id))
+            return Serialize(ids);
+
+        if (ids.Count >= MaxItems)
+            return Serialize(ids);
+
+        ids.Insert(0, id);
+        return Serialize(ids);
+    }
+
+    /// <summary>Removes <paramref name="id"/> from the list when present.</summary>
+    public static string? WithoutId(string? relatedPostsJson, Guid id)
+    {
+        if (id == Guid.Empty || string.IsNullOrWhiteSpace(relatedPostsJson))
+            return NormalizeJson(relatedPostsJson);
+
+        var ids = Parse(relatedPostsJson).Where(x => x != id).ToList();
+        return Serialize(ids);
+    }
+
     public static bool TryValidate(string? relatedPostsJson, out string? error)
     {
         error = null;

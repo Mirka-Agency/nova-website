@@ -98,7 +98,18 @@ public class BlogController : Controller
         ViewData["OgImage"] = FirstNonEmpty(post.OgImageUrl, post.CoverImageUrl);
         ViewData[AdminEditContext.ViewDataKey] = AdminEditContext.Edit("Posts", post.Id, "ویرایش نوشته", "ManageBlog");
 
-        var relatedIds = PostRelatedPostsJson.Parse(post.RelatedPostsJson);
+        // Manual related (forward) + reverse links (posts that selected this one) — mutual display.
+        var relatedIds = PostRelatedPostsJson.Parse(post.RelatedPostsJson).ToList();
+        var reverseIds = await _posts.ListPublishedIdsReferencingAsync(
+            post.Id,
+            PostRelatedPostsJson.MaxItems,
+            cancellationToken);
+        foreach (var reverseId in reverseIds)
+        {
+            if (!relatedIds.Contains(reverseId))
+                relatedIds.Add(reverseId);
+        }
+
         IReadOnlyList<PublicPostSummaryDto> relatedItems = [];
         if (relatedIds.Count > 0)
         {
@@ -109,7 +120,7 @@ public class BlogController : Controller
                 .ToList();
         }
 
-        // Default: same-category posts (manual selection above wins when present).
+        // Default: same-category posts (manual / mutual selection above wins when present).
         if (relatedItems.Count == 0 && post.CategoryId is Guid categoryId && categoryId != Guid.Empty)
         {
             relatedItems = await _posts.ListPublishedRelatedByCategoryAsync(

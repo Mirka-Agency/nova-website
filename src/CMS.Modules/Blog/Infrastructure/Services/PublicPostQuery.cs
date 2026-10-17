@@ -281,6 +281,31 @@ public sealed class PublicPostQuery : IPublicPostQuery
             .ToList();
     }
 
+    public async Task<IReadOnlyList<Guid>> ListPublishedIdsReferencingAsync(
+        Guid postId,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        if (postId == Guid.Empty || take < 1)
+            return [];
+
+        var needle = postId.ToString("D");
+        var limit = Math.Min(take, IPublicPostQuery.MaxArchivePageSize);
+
+        // RelatedPostsJson stores GUID strings; Contains is enough for exact D-format ids.
+        return await _db.Posts
+            .AsNoTracking()
+            .Where(p =>
+                p.Status == PostStatus.Published
+                && p.Id != postId
+                && p.RelatedPostsJson != null
+                && p.RelatedPostsJson.Contains(needle))
+            .OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc)
+            .Take(limit)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+    }
+
     private static string ResolveExcerpt(string? excerpt, string body) =>
         MakeExcerpt(!string.IsNullOrWhiteSpace(excerpt) ? excerpt : body);
 
