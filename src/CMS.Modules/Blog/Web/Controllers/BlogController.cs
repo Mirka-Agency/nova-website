@@ -109,13 +109,14 @@ public class BlogController : Controller
                 .ToList();
         }
 
-        if (relatedItems.Count == 0)
+        // Default: same-category posts (manual selection above wins when present).
+        if (relatedItems.Count == 0 && post.CategoryId is Guid categoryId && categoryId != Guid.Empty)
         {
-            var related = await _posts.ListPublishedPagedAsync(1, PostRelatedPostsJson.MaxItems + 1, cancellationToken);
-            relatedItems = related.Items
-                .Where(x => !string.Equals(x.Slug, post.Slug, StringComparison.OrdinalIgnoreCase))
-                .Take(PostRelatedPostsJson.MaxItems)
-                .ToList();
+            relatedItems = await _posts.ListPublishedRelatedByCategoryAsync(
+                categoryId,
+                post.Id,
+                PostRelatedPostsJson.MaxItems,
+                cancellationToken);
         }
 
         ViewBag.Related = relatedItems;

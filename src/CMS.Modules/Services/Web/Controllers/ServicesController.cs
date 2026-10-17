@@ -84,13 +84,14 @@ public class ServicesController : Controller
                 .ToList();
         }
 
-        if (relatedItems.Count == 0)
+        // Default: same-category services (manual selection above wins when present).
+        if (relatedItems.Count == 0 && item.CategoryId is Guid categoryId && categoryId != Guid.Empty)
         {
-            var related = await _items.ListPublishedPagedAsync(1, ServiceItemRelatedItemsJson.MaxItems + 1, cancellationToken);
-            relatedItems = related.Items
-                .Where(x => !string.Equals(x.Slug, item.Slug, StringComparison.OrdinalIgnoreCase))
-                .Take(ServiceItemRelatedItemsJson.MaxItems)
-                .ToList();
+            relatedItems = await _items.ListPublishedRelatedByCategoryAsync(
+                categoryId,
+                item.Id,
+                ServiceItemRelatedItemsJson.MaxItems,
+                cancellationToken);
         }
 
         ViewBag.Related = relatedItems;

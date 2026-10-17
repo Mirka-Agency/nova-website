@@ -29,12 +29,15 @@
     var excludeId = (root.getAttribute("data-related-exclude-id") || "").trim().toLowerCase();
     var maxItems = Number(root.getAttribute("data-related-max") || "6") || 6;
     var namePrefix = root.getAttribute("data-related-name-prefix") || "RelatedItems";
+    var categorySelector = root.getAttribute("data-related-category-input") || 'select[name="CategoryId"]';
     var list = root.querySelector("[data-related-list]");
     var empty = root.querySelector("[data-related-empty]");
     var loading = root.querySelector("[data-related-loading]");
     var countEl = root.querySelector("[data-related-count]");
     var input = root.querySelector("[data-related-search-input]");
     var inputsHost = root.querySelector("[data-related-inputs]");
+    var form = root.closest("form");
+    var categoryInput = form ? form.querySelector(categorySelector) : document.querySelector(categorySelector);
     var debounceTimer = null;
     var abortController = null;
 
@@ -49,6 +52,11 @@
         title: item.title || item.id
       });
     });
+
+    function currentCategoryId() {
+      if (!categoryInput) return "";
+      return String(categoryInput.value || "").trim();
+    }
 
     function syncHiddenInputs() {
       inputsHost.innerHTML = "";
@@ -85,12 +93,21 @@
       if (loading) loading.hidden = !isLoading;
     }
 
+    function showEmpty(message) {
+      list.innerHTML = "";
+      if (empty) {
+        empty.textContent = message || "موردی پیدا نشد.";
+        empty.hidden = false;
+      }
+    }
+
     function renderList(items) {
       list.innerHTML = "";
       var seen = new Set();
       var rows = [];
+      var categoryId = currentCategoryId();
 
-      // Keep currently selected items visible at the top even if search omits them.
+      // Keep selected items visible at top; when filtering by category, still show them.
       selected.forEach(function (item) {
         var key = item.id.toLowerCase();
         if (excludeId && key === excludeId) return;
@@ -111,7 +128,11 @@
       });
 
       if (!rows.length) {
-        if (empty) empty.hidden = false;
+        showEmpty(
+          categoryId
+            ? "در این دسته‌بندی موردی پیدا نشد."
+            : "ابتدا دسته‌بندی را انتخاب کنید."
+        );
         return;
       }
 
@@ -160,6 +181,13 @@
     }
 
     function search(query) {
+      var categoryId = currentCategoryId();
+      if (!categoryId) {
+        setLoading(false);
+        showEmpty("ابتدا دسته‌بندی را انتخاب کنید تا فهرست همان دسته نمایش داده شود.");
+        return;
+      }
+
       if (abortController) abortController.abort();
       abortController = new AbortController();
       setLoading(true);
@@ -167,6 +195,7 @@
       var url = new URL(searchUrl, window.location.origin);
       if (query) url.searchParams.set("q", query);
       if (excludeId) url.searchParams.set("excludeId", excludeId);
+      url.searchParams.set("categoryId", categoryId);
       url.searchParams.set("take", "200");
 
       fetch(url.toString(), {
@@ -198,6 +227,12 @@
         search(q);
       }, 250);
     });
+
+    if (categoryInput) {
+      categoryInput.addEventListener("change", function () {
+        search((input.value || "").trim());
+      });
+    }
 
     syncHiddenInputs();
     search("");

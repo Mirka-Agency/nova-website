@@ -17,6 +17,7 @@ public sealed record PublicServiceItemDetailDto(
     string Slug,
     string Body,
     string? CategoryName,
+    Guid? CategoryId,
     string? CoverImageUrl,
     string? CoverImageAlt,
     DateTime PublishedAtUtc,

@@ -174,6 +174,7 @@ public class ServiceItemsApiController : ControllerBase
     public async Task<IActionResult> Search(
         [FromQuery] string? q,
         [FromQuery] Guid? excludeId,
+        [FromQuery] Guid? categoryId,
         [FromQuery] int take = 20,
         CancellationToken cancellationToken = default)
     {
@@ -186,7 +187,8 @@ public class ServiceItemsApiController : ControllerBase
             {
                 Page = 1,
                 PageSize = pageSize,
-                Search = string.IsNullOrWhiteSpace(q) ? null : q.Trim()
+                Search = string.IsNullOrWhiteSpace(q) ? null : q.Trim(),
+                CategoryId = categoryId
             },
             cancellationToken);
 

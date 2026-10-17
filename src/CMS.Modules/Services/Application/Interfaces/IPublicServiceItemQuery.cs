@@ -14,4 +14,11 @@ public interface IPublicServiceItemQuery
     Task<IReadOnlyList<PublicServiceItemSummaryDto>> ListPublishedByIdsPreserveOrderAsync(
         IReadOnlyList<Guid> ids,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Latest published services in the same category, excluding <paramref name="excludeId"/>.</summary>
+    Task<IReadOnlyList<PublicServiceItemSummaryDto>> ListPublishedRelatedByCategoryAsync(
+        Guid categoryId,
+        Guid excludeId,
+        int take,
+        CancellationToken cancellationToken = default);
 }

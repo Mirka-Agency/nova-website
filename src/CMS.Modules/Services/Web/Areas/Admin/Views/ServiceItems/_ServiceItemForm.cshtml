@@ -164,9 +164,10 @@
                   data-related-exclude-id="@(Model.Id?.ToString("D") ?? "")"
                   data-related-max="@CMS.Modules.Services.Application.ServiceItems.ServiceItemRelatedItemsJson.MaxItems"
                   data-related-name-prefix="RelatedItems"
+                  data-related-category-input='select[name="CategoryId"]'
                   data-related-selected="@System.Text.Json.JsonSerializer.Serialize(Model.RelatedItems.Select(x => new { id = x.Id, title = x.Title }))">
             <legend>خدمات مرتبط</legend>
-            <p class="admin-hint">از لیست خدمات، موارد مرتبط را با چک‌باکس انتخاب کنید. با جستجو می‌توانید لیست را فیلتر کنید. اگر خالی بماند، آخرین خدمات به‌صورت خودکار نشان داده می‌شوند.</p>
+            <p class="admin-hint">فقط خدمات همان دسته‌بندی با چک‌باکس نمایش داده می‌شوند. اگر چیزی انتخاب نکنید، در سایت به‌صورت خودکار خدمات همان دسته نشان داده می‌شوند.</p>
 
             <div class="admin-related-picker">
                 <div class="admin-related-picker__search">

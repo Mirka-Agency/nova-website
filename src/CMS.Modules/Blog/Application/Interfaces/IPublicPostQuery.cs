@@ -20,4 +20,11 @@ public interface IPublicPostQuery
     Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedByIdsPreserveOrderAsync(
         IReadOnlyList<Guid> ids,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Latest published posts in the same category, excluding <paramref name="excludeId"/>.</summary>
+    Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedRelatedByCategoryAsync(
+        Guid categoryId,
+        Guid excludeId,
+        int take,
+        CancellationToken cancellationToken = default);
 }

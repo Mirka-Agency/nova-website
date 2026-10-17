@@ -297,9 +297,10 @@
                   data-related-exclude-id="@(Model.Id?.ToString("D") ?? "")"
                   data-related-max="@CMS.Modules.Blog.Application.Posts.PostRelatedPostsJson.MaxItems"
                   data-related-name-prefix="RelatedItems"
+                  data-related-category-input='select[name="CategoryId"]'
                   data-related-selected="@System.Text.Json.JsonSerializer.Serialize(Model.RelatedItems.Select(x => new { id = x.Id, title = x.Title }))">
             <legend>مطالب مرتبط</legend>
-            <p class="admin-hint">از لیست مقالات، موارد مرتبط را با چک‌باکس انتخاب کنید. با جستجو می‌توانید لیست را فیلتر کنید. اگر خالی بماند، آخرین نوشته‌ها به‌صورت خودکار نشان داده می‌شوند.</p>
+            <p class="admin-hint">فقط مقالات همان دسته‌بندی با چک‌باکس نمایش داده می‌شوند. اگر چیزی انتخاب نکنید، در سایت به‌صورت خودکار مطالب همان دسته نشان داده می‌شوند.</p>
 
             <div class="admin-related-picker">
                 <div class="admin-related-picker__search">

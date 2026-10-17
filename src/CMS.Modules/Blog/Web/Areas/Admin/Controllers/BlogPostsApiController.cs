@@ -175,6 +175,7 @@ public class BlogPostsApiController : ControllerBase
     public async Task<IActionResult> Search(
         [FromQuery] string? q,
         [FromQuery] Guid? excludeId,
+        [FromQuery] Guid? categoryId,
         [FromQuery] int take = 20,
         CancellationToken cancellationToken = default)
     {
@@ -188,6 +189,7 @@ public class BlogPostsApiController : ControllerBase
                 Page = 1,
                 PageSize = pageSize,
                 Search = string.IsNullOrWhiteSpace(q) ? null : q.Trim(),
+                CategoryId = categoryId,
                 Sort = "updated_desc"
             },
             cancellationToken);

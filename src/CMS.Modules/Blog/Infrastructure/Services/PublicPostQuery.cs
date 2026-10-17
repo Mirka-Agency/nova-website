@@ -130,6 +130,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
             post.Slug,
             post.Body,
             post.Category?.Name,
+            post.CategoryId,
             post.CoverImageUrl,
             post.CoverImageAlt,
             post.CoverVideoUrl,
@@ -200,6 +201,53 @@ public sealed class PublicPostQuery : IPublicPostQuery
         }
 
         return result;
+    }
+
+    public async Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedRelatedByCategoryAsync(
+        Guid categoryId,
+        Guid excludeId,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        if (categoryId == Guid.Empty || take < 1)
+            return [];
+
+        var limit = Math.Min(take, IPublicPostQuery.MaxArchivePageSize);
+        var rows = await _db.Posts
+            .AsNoTracking()
+            .Where(p =>
+                p.Status == PostStatus.Published
+                && p.CategoryId == categoryId
+                && p.Id != excludeId)
+            .OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc)
+            .Take(limit)
+            .Select(p => new
+            {
+                p.Title,
+                p.Slug,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                p.CoverImageUrl,
+                p.CoverImageAlt,
+                PublishedAtUtc = p.PublishedAtUtc ?? p.CreatedAtUtc,
+                UpdatedAtUtc = p.UpdatedAtUtc ?? p.PublishedAtUtc ?? p.CreatedAtUtc,
+                p.Excerpt,
+                p.Body,
+                p.AuthorDisplayName
+            })
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .Select(p => new PublicPostSummaryDto(
+                p.Title,
+                p.Slug,
+                p.CategoryName,
+                p.CoverImageUrl,
+                p.CoverImageAlt,
+                p.PublishedAtUtc,
+                p.UpdatedAtUtc,
+                ResolveExcerpt(p.Excerpt, p.Body),
+                p.AuthorDisplayName))
+            .ToList();
     }
 
     private static string ResolveExcerpt(string? excerpt, string body) =>

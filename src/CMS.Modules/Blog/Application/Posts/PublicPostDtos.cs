@@ -17,6 +17,7 @@ public sealed record PublicPostDetailDto(
     string Slug,
     string Body,
     string? CategoryName,
+    Guid? CategoryId,
     string? CoverImageUrl,
     string? CoverImageAlt,
     string? CoverVideoUrl,
