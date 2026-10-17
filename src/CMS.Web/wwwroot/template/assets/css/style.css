@@ -2420,14 +2420,14 @@ body.nav-open {
 }
 
 .scientific-sources__list a {
-  color: var(--secondary);
+  color: var(--primary);
   text-decoration: none;
   transition: color var(--transition);
 }
 
 .scientific-sources__list a:hover,
 .scientific-sources__list a:focus-visible {
-  color: var(--primary);
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
