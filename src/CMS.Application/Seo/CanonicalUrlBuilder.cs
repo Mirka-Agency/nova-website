@@ -81,6 +81,16 @@ public static class CanonicalUrlBuilder
         NormalizePath(path ?? "/", applyLegacyRewrites: true);
 
     /// <summary>
+    /// Relative archive URL with trailing slash and optional <c>?page=</c> when <paramref name="page"/> &gt; 1.
+    /// Prefer this over <c>asp-route-page</c> (reserved route value; often drops the trailing slash).
+    /// </summary>
+    public static string PagedPath(string path, int page)
+    {
+        var normalized = NormalizePublicPath(path);
+        return page > 1 ? $"{normalized}?page={page}" : normalized;
+    }
+
+    /// <summary>
     /// Relative public path for sitemaps: prefers configured canonical path, else fallback.
     /// Absolute canonicals contribute only their path (same-site listing).
     /// </summary>

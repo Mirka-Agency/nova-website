@@ -11,7 +11,7 @@ namespace CMS.Modules.Blog.Infrastructure.Services;
 
 public sealed class PublicPostQuery : IPublicPostQuery
 {
-    public const int DefaultPageSize = 12;
+    public const int DefaultPageSize = IPublicPostQuery.DefaultArchivePageSize;
     private const int ExcerptLength = 180;
     private readonly BlogDbContext _db;
     private readonly IMemoryCache _cache;
@@ -25,7 +25,7 @@ public sealed class PublicPostQuery : IPublicPostQuery
     public async Task<IReadOnlyList<PublicPostSummaryDto>> ListPublishedAsync(
         CancellationToken cancellationToken = default)
     {
-        var page = await ListPublishedPagedAsync(1, DefaultPageSize, cancellationToken);
+        var page = await ListPublishedPagedAsync(1, IPublicPostQuery.FirstArchivePageSize, cancellationToken);
         return page.Items;
     }
 
@@ -35,21 +35,18 @@ public sealed class PublicPostQuery : IPublicPostQuery
         CancellationToken cancellationToken = default)
     {
         var normalizedPage = page < 1 ? 1 : page;
-        var normalizedPageSize = pageSize < 1
-            ? DefaultPageSize
-            : Math.Min(pageSize, IPublicPostQuery.MaxArchivePageSize);
-        var key = $"cms:public:blog:list:{normalizedPage}:{normalizedPageSize}";
+        // Archive uses asymmetric first-page size; ignore arbitrary pageSize from callers.
+        var key = $"cms:public:blog:list:{normalizedPage}:archive";
 
         return PublicContentCache.GetOrCreateAsync(
             _cache,
             key,
-            ct => ListPublishedPagedCoreAsync(normalizedPage, normalizedPageSize, ct),
+            ct => ListPublishedPagedCoreAsync(normalizedPage, ct),
             cancellationToken);
     }
 
     private async Task<PagedResult<PublicPostSummaryDto>> ListPublishedPagedCoreAsync(
         int normalizedPage,
-        int normalizedPageSize,
         CancellationToken cancellationToken)
     {
         var query = _db.Posts
@@ -57,11 +54,12 @@ public sealed class PublicPostQuery : IPublicPostQuery
             .Where(p => p.Status == PostStatus.Published);
 
         var totalCount = await query.CountAsync(cancellationToken);
+        var (skip, take, totalPages, resultPageSize) = ResolveArchiveSlice(normalizedPage, totalCount);
 
         var rows = await query
             .OrderByDescending(p => p.PublishedAtUtc ?? p.CreatedAtUtc)
-            .Skip((normalizedPage - 1) * normalizedPageSize)
-            .Take(normalizedPageSize)
+            .Skip(skip)
+            .Take(take)
             .Select(p => new
             {
                 p.Title,
@@ -90,7 +88,40 @@ public sealed class PublicPostQuery : IPublicPostQuery
                 p.AuthorDisplayName))
             .ToList();
 
-        return new PagedResult<PublicPostSummaryDto>(posts, totalCount, normalizedPage, normalizedPageSize);
+        // PageSize is this slice's take; TotalPagesOverride accounts for larger first page.
+        return new PagedResult<PublicPostSummaryDto>(
+            posts,
+            totalCount,
+            normalizedPage,
+            resultPageSize,
+            totalPages);
+    }
+
+    /// <summary>
+    /// Page 1: 13 posts (featured + 12). Later pages: 12 each.
+    /// </summary>
+    internal static (int Skip, int Take, int TotalPages, int PageSize) ResolveArchiveSlice(
+        int page,
+        int totalCount)
+    {
+        const int first = IPublicPostQuery.FirstArchivePageSize;
+        const int rest = IPublicPostQuery.DefaultArchivePageSize;
+
+        if (totalCount <= 0)
+            return (0, first, 0, first);
+
+        var totalPages = totalCount <= first
+            ? 1
+            : 1 + (int)Math.Ceiling((totalCount - first) / (double)rest);
+
+        if (page <= 1)
+            return (0, first, totalPages, first);
+
+        if (page > totalPages)
+            page = totalPages;
+
+        var skip = first + (page - 2) * rest;
+        return (skip, rest, totalPages, rest);
     }
 
     public Task<PublicPostDetailDto?> GetPublishedBySlugAsync(

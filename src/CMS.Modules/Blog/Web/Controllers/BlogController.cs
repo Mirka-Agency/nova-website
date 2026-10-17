@@ -47,7 +47,7 @@ public class BlogController : Controller
             IPublicPostQuery.DefaultArchivePageSize,
             cancellationToken);
         if (result.TotalPages > 0 && page > result.TotalPages)
-            return RedirectToAction(nameof(Index), new { page = result.TotalPages });
+            return LocalRedirect(CanonicalUrlBuilder.PagedPath("/blog", result.TotalPages));
 
         ViewBag.Page = result.Page;
         ViewBag.PageSize = result.PageSize;

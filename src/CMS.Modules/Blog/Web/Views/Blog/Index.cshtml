@@ -1,5 +1,7 @@
 @model IReadOnlyList<PublicPostSummaryDto>
+@using CMS.Application.Seo
 @using CMS.Application.Settings
+@using CMS.Modules.Blog.Application.Interfaces
 @using System.Globalization
 @inject ISiteSettingsService SiteSettings
 @{
@@ -13,12 +15,16 @@
     var hasCmsPosts = items.Count > 0;
     var fa = CultureInfo.GetCultureInfo("fa-IR");
     var currentPage = ViewBag.Page is int cp && cp > 0 ? cp : 1;
-    var pageSize = ViewBag.PageSize is int ps && ps > 0 ? ps : 12;
     var totalCount = ViewBag.TotalCount is int tc ? tc : items.Count;
     var totalPages = ViewBag.TotalPages is int tp ? tp : 1;
     if (totalPages < 1) totalPages = 1;
-    var rangeStart = totalCount == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
-    var rangeEnd = totalCount == 0 ? 0 : Math.Min(currentPage * pageSize, totalCount);
+    // Asymmetric archive: page 1 has 13 items, later pages 12 — derive range from slice size.
+    var rangeStart = totalCount == 0
+        ? 0
+        : currentPage <= 1
+            ? 1
+            : IPublicPostQuery.FirstArchivePageSize + (currentPage - 2) * IPublicPostQuery.DefaultArchivePageSize + 1;
+    var rangeEnd = totalCount == 0 ? 0 : Math.Min(rangeStart + items.Count - 1, totalCount);
 
     string ToPersianDigits(string value) =>
         value.Replace('0', '۰').Replace('1', '۱').Replace('2', '۲').Replace('3', '۳').Replace('4', '۴')
@@ -685,9 +691,7 @@ else if (totalCount > 0 && totalPages > 1)
       @if (currentPage > 1)
       {
         <a class="blog-pagination__btn"
-           asp-controller="Blog"
-           asp-action="Index"
-           asp-route-page="@(currentPage == 2 ? null : currentPage - 1)"
+           href="@CanonicalUrlBuilder.PagedPath("/blog", currentPage - 1)"
            aria-label="صفحه قبل">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="m9 18 6-6-6-6"/>
@@ -708,9 +712,7 @@ else if (totalCount > 0 && totalPages > 1)
         {
           var isActive = p == currentPage;
           <a class="blog-pagination__page@(isActive ? " is-active" : null)"
-             asp-controller="Blog"
-             asp-action="Index"
-             asp-route-page="@(p == 1 ? null : p)"
+             href="@CanonicalUrlBuilder.PagedPath("/blog", p)"
              aria-label="صفحه @PersianNumber(p)"
              aria-current="@(isActive ? "page" : null)">@PersianNumber(p)</a>
         }
@@ -719,9 +721,7 @@ else if (totalCount > 0 && totalPages > 1)
       @if (currentPage < totalPages)
       {
         <a class="blog-pagination__btn"
-           asp-controller="Blog"
-           asp-action="Index"
-           asp-route-page="@(currentPage + 1)"
+           href="@CanonicalUrlBuilder.PagedPath("/blog", currentPage + 1)"
            aria-label="صفحه بعد">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="m15 18-6-6 6-6"/>

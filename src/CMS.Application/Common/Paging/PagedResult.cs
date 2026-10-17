@@ -21,9 +21,13 @@ public sealed record PagedResult<T>(
     IReadOnlyList<T> Items,
     int TotalCount,
     int Page,
-    int PageSize)
+    int PageSize,
+    int? TotalPagesOverride = null)
 {
-    public int TotalPages => PageSize <= 0 ? 0 : (int)Math.Ceiling(TotalCount / (double)PageSize);
+    public int TotalPages =>
+        TotalPagesOverride
+        ?? (PageSize <= 0 ? 0 : (int)Math.Ceiling(TotalCount / (double)PageSize));
+
     public bool HasPrevious => Page > 1;
     public bool HasNext => Page < TotalPages;
 }

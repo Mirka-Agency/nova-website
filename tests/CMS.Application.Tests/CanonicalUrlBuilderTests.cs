@@ -34,6 +34,15 @@ public class CanonicalUrlBuilderTests
     }
 
     [Fact]
+    public void PagedPath_AddsTrailingSlash_AndPageQueryWhenGreaterThanOne()
+    {
+        CanonicalUrlBuilder.PagedPath("/blog", 1).Should().Be("/blog/");
+        CanonicalUrlBuilder.PagedPath("/blog", 2).Should().Be("/blog/?page=2");
+        CanonicalUrlBuilder.PagedPath("/shop/category/Herbs", 3)
+            .Should().Be("/shop/category/herbs/?page=3");
+    }
+
+    [Fact]
     public void Build_DropsPageOne_AndOtherQueryNoise()
     {
         var url = CanonicalUrlBuilder.Build(
