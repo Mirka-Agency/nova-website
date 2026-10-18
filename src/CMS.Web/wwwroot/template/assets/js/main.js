@@ -569,9 +569,38 @@
         return window.matchMedia("(max-width: 767.98px)").matches;
       }
 
+      function reducedMotion() {
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      }
+
       function isFullyVisible(slide, viewportRect) {
         var rect = slide.getBoundingClientRect();
         return rect.left >= viewportRect.left - 2 && rect.right <= viewportRect.right + 2;
+      }
+
+      function syncSlideWidth() {
+        if (!isMobileCarousel()) {
+          slides.forEach(function (slide) {
+            slide.style.removeProperty("flex-basis");
+            slide.style.removeProperty("width");
+            slide.style.removeProperty("min-width");
+            slide.style.removeProperty("max-width");
+          });
+          return;
+        }
+
+        var styles = window.getComputedStyle(viewport);
+        var padStart = parseFloat(styles.paddingInlineStart) || 0;
+        var padEnd = parseFloat(styles.paddingInlineEnd) || 0;
+        var slideWidth = Math.max(0, viewport.clientWidth - padStart - padEnd);
+
+        slides.forEach(function (slide) {
+          var widthPx = slideWidth + "px";
+          slide.style.flexBasis = widthPx;
+          slide.style.width = widthPx;
+          slide.style.minWidth = widthPx;
+          slide.style.maxWidth = widthPx;
+        });
       }
 
       function updateSliderState() {
@@ -599,18 +628,36 @@
         nextButton.disabled = isFullyVisible(slides[slides.length - 1], viewportRect);
       }
 
-      function goToSlide(index) {
+      function scrollToActive(behavior) {
+        var slide = slides[activeIndex];
+        var styles = window.getComputedStyle(viewport);
+        var padStart = parseFloat(styles.paddingInlineStart) || 0;
+        var delta =
+          slide.getBoundingClientRect().left -
+          viewport.getBoundingClientRect().left -
+          padStart;
+        var motion = behavior || (reducedMotion() ? "auto" : "smooth");
+
+        if (motion === "auto" || Math.abs(delta) < 1) {
+          viewport.scrollLeft += delta;
+          updateSliderState();
+          return;
+        }
+
+        viewport.scrollBy({ left: delta, behavior: "smooth" });
+      }
+
+      function goToSlide(index, behavior) {
         if (!isMobileCarousel()) return;
         activeIndex = Math.max(0, Math.min(index, slides.length - 1));
-        var slide = slides[activeIndex];
-        var delta =
-          slide.getBoundingClientRect().left - viewport.getBoundingClientRect().left;
-        viewport.scrollBy({
-          left: delta,
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-            ? "auto"
-            : "smooth"
-        });
+        scrollToActive(behavior);
+      }
+
+      function resetToStart() {
+        if (!isMobileCarousel()) return;
+        syncSlideWidth();
+        activeIndex = 0;
+        scrollToActive("auto");
       }
 
       prevButton.addEventListener("click", function () {
@@ -645,7 +692,13 @@
         }
       });
 
-      window.addEventListener("resize", updateSliderState);
+      window.addEventListener("resize", function () {
+        syncSlideWidth();
+        updateSliderState();
+      });
+
+      syncSlideWidth();
+      resetToStart();
       updateSliderState();
     });
   })();

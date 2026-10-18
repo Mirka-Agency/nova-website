@@ -250,11 +250,14 @@
   }
 
   .services-cards__viewport {
+    --services-cards-pad: 1rem;
+    --services-cards-gap: 0.75rem;
+    container-type: inline-size;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-inline: 1rem;
+    padding-inline: var(--services-cards-pad);
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: 1rem;
+    scroll-padding-inline: var(--services-cards-pad);
     scroll-behavior: smooth;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -277,26 +280,37 @@
     align-items: stretch;
     width: max-content;
     max-width: none;
-    margin-inline: 0;
+    margin: 0;
     --bs-gutter-x: 0;
     --bs-gutter-y: 0;
-    gap: 0.75rem;
+    gap: var(--services-cards-gap);
   }
 
+  /* One full card per view; 100cqw avoids 100vw RTL clipping on the physical left. */
   .services-cards .services-cards__track.row > [class*="col-"] {
     box-sizing: border-box;
-    flex: 0 0 calc(100vw - 2rem);
-    max-width: calc(100vw - 2rem);
-    width: calc(100vw - 2rem);
-    min-width: calc(100vw - 2rem);
-    padding-inline: 0;
+    flex: 0 0 100cqw;
+    max-width: 100cqw;
+    width: 100cqw;
+    min-width: 100cqw;
+    padding: 0;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+  }
+
+  @supports not (width: 100cqw) {
+    .services-cards .services-cards__track.row > [class*="col-"] {
+      flex: 0 0 calc(100% - 0.01px);
+      max-width: calc(100vw - (var(--services-cards-pad) * 2));
+      width: calc(100vw - (var(--services-cards-pad) * 2));
+      min-width: calc(100vw - (var(--services-cards-pad) * 2));
+    }
   }
 
   .services-cards__track .service-card {
     height: 100%;
     min-height: 0;
+    width: 100%;
   }
 
   .services-cards__controls {
