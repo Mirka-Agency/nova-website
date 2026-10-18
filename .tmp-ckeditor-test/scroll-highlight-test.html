@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.css" />
+  <style>
+    body { font-family: Tahoma, sans-serif; padding: 16px; }
+    pre { background: #f5f5f5; padding: 12px; white-space: pre-wrap; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Scroll highlight test</h1>
+  <textarea id="editor" class="admin-ckeditor-source"><p>قبل <span class="nova-scroll-highlight" data-nova-scroll-highlight="1" data-nova-sh-from="#6b7280" data-nova-sh-to="#111827" style="color:#6b7280">اینلاین</span> بعد</p><div class="nova-scroll-highlight" data-nova-scroll-highlight="1" data-nova-sh-from="#aaaaaa" data-nova-sh-to="#000000" style="color:#aaaaaa"><p>بلاک قدیمی یک</p><p>بلاک قدیمی دو</p></div><p>پایان</p></textarea>
+  <pre id="out">waiting…</pre>
+  <script src="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.umd.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/js/ckeditor-scroll-highlight.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/js/ckeditor-post-editor.js"></script>
+  <script>
+    (async function () {
+      const out = document.getElementById("out");
+      const results = [];
+      function log(name, ok, detail) {
+        results.push({ name: name, ok: !!ok, detail: detail });
+      }
+
+      function waitEditor(timeoutMs) {
+        return new Promise(function (resolve, reject) {
+          const ta = document.getElementById("editor");
+          if (ta.ckEditorInstance) return resolve(ta.ckEditorInstance);
+          const t = setTimeout(function () {
+            reject(new Error("timeout waiting for editor"));
+          }, timeoutMs || 20000);
+          ta.addEventListener(
+            "ckeditor:ready",
+            function () {
+              clearTimeout(t);
+              resolve(ta.ckEditorInstance);
+            },
+            { once: true }
+          );
+        });
+      }
+
+      try {
+        log("plugin-loaded", !!(window.NovaScrollHighlight && window.NovaScrollHighlight.plugin), null);
+        const editor = await waitEditor();
+        const data1 = editor.getData();
+
+        log(
+          "upcast-inline-kept",
+          data1.includes("nova-scroll-highlight") && data1.includes("اینلاین"),
+          data1
+        );
+        log(
+          "no-nested-highlight-spans",
+          !/<span[^>]*nova-scroll-highlight[^>]*>\s*<span/i.test(data1),
+          data1
+        );
+        log(
+          "legacy-div-unwrapped",
+          !/<div[^>]*nova-scroll-highlight/i.test(data1) &&
+            data1.includes("بلاک قدیمی یک") &&
+            /بلاک قدیمی یک[\s\S]*data-nova-sh-from|data-nova-sh-from[\s\S]*بلاک قدیمی یک/i.test(data1),
+          data1
+        );
+        log(
+          "legacy-colors-preserved",
+          data1.includes("#aaaaaa") && data1.includes("#000000"),
+          data1
+        );
+
+        editor.model.change(function (writer) {
+          const root = editor.model.document.getRoot();
+          const last = root.getChild(root.childCount - 1);
+          writer.setSelection(writer.createRangeIn(last));
+        });
+        editor.execute("scrollHighlight", {
+          action: "apply",
+          from: "#112233",
+          to: "#445566",
+        });
+        const data2 = editor.getData();
+        log(
+          "apply-inline",
+          data2.includes("#112233") && data2.includes('data-nova-sh-to="#445566"'),
+          data2
+        );
+
+        // Place caret inside the newly highlighted last paragraph and remove
+        editor.model.change(function (writer) {
+          const root = editor.model.document.getRoot();
+          const last = root.getChild(root.childCount - 1);
+          writer.setSelection(writer.createPositionAt(last, 1));
+        });
+        editor.execute("scrollHighlight", { action: "remove" });
+        const data3 = editor.getData();
+        const paras = data3.match(/<p>[\s\S]*?<\/p>/g) || [];
+        const lastP = paras[paras.length - 1] || "";
+        log(
+          "remove-from-caret",
+          !lastP.includes("nova-scroll-highlight") && lastP.includes("پایان"),
+          lastP
+        );
+
+        // Round-trip stability
+        editor.setData(data1);
+        const data4 = editor.getData();
+        editor.setData(data4);
+        const data5 = editor.getData();
+        log("roundtrip-stable", data4 === data5, { data4: data4, data5: data5 });
+
+        out.textContent = JSON.stringify(results, null, 2);
+        document.title = results.every(function (r) { return r.ok; }) ? "PASS" : "FAIL";
+        window.__SH_TEST__ = results;
+      } catch (err) {
+        out.textContent = String(err && err.stack ? err.stack : err);
+        window.__SH_TEST__ = [{ name: "fatal", ok: false, detail: String(err) }];
+      }
+    })();
+  </script>
+</body>
+</html>

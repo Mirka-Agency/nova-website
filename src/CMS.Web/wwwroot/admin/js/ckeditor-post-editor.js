@@ -66,10 +66,11 @@
     toWidgetEditable,
   } = CKEDITOR;
 
-  const ScrollHighlightPlugin =
-    window.NovaScrollHighlight && window.NovaScrollHighlight.plugin
+  function getScrollHighlightPlugin() {
+    return window.NovaScrollHighlight && window.NovaScrollHighlight.plugin
       ? window.NovaScrollHighlight.plugin
       : null;
+  }
 
   const mediaLibraryImageIcon =
     '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
@@ -1620,6 +1621,12 @@
   }
 
   const editorConfig = function () {
+    const ScrollHighlightPlugin = getScrollHighlightPlugin();
+    if (!ScrollHighlightPlugin) {
+      console.warn(
+        "[CKEditor] NovaScrollHighlight plugin was not loaded; scroll highlight toolbar item is disabled."
+      );
+    }
     return {
       licenseKey: "GPL",
       language: {
@@ -1682,6 +1689,7 @@
         PasteFromOffice,
       ],
       toolbar: {
+        shouldNotGroupWhenFull: true,
         items: [
           "undo",
           "redo",
@@ -1866,9 +1874,6 @@
               "data-oembed-url": true,
               "data-nova-cta": true,
               "data-nova-cta-config": true,
-              "data-nova-scroll-highlight": true,
-              "data-nova-sh-from": true,
-              "data-nova-sh-to": true,
               "data-nova-video-poster": true,
               "data-nova-video-warning": true,
               "data-popup-open": true,
@@ -1879,11 +1884,23 @@
             styles: true,
           },
         ],
-        // Let VideoWarningInsert own these nodes on reload (avoid GHS clash).
+        // Feature plugins own these nodes on reload (avoid GHS clash).
         disallow: [
           {
             name: "div",
             classes: ["nova-video-warning", "nova-video-warning__text"],
+          },
+          {
+            name: "div",
+            classes: ["nova-scroll-highlight"],
+          },
+          {
+            name: "span",
+            classes: ["nova-scroll-highlight"],
+          },
+          {
+            name: "span",
+            classes: ["nova-sh-char"],
           },
         ],
       },

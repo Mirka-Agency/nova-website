@@ -1,11 +1,20 @@
 /**
- * Nova Scroll-Scrubbed Text Highlight — reusable CKEditor 5 plugin.
+ * Nova Scroll-Scrubbed Text Highlight — CKEditor 5 plugin.
+ *
+ * Model: text attribute `scrollHighlight` = "#from|#to"
+ * View:  <span class="nova-scroll-highlight" data-nova-scroll-highlight="1"
+ *             data-nova-sh-from data-nova-sh-to style="color:from">…</span>
+ *
+ * Legacy <div class="nova-scroll-highlight"> is unwrapped on upcast.
+ *
+ * UI: SplitButton — click toggles default/last colors; arrow opens color form.
  * Depends on global CKEDITOR (UMD). Exposes window.NovaScrollHighlight.
  */
 (function (global) {
   "use strict";
 
   if (typeof CKEDITOR === "undefined") {
+    console.error("[NovaScrollHighlight] CKEDITOR global is missing.");
     return;
   }
 
@@ -16,23 +25,37 @@
     View,
     createDropdown,
     findAttributeRange,
+    SplitButtonView,
+    submitHandler,
   } = CKEDITOR;
 
-  const INLINE_ATTR = "scrollHighlight";
-  const BLOCK_NAME = "scrollHighlightBlock";
+  if (!Plugin || !Command || !createDropdown || !SplitButtonView) {
+    console.error("[NovaScrollHighlight] Required CKEDITOR exports are missing.");
+    return;
+  }
+
+  const ATTR = "scrollHighlight";
   const CLASS_NAME = "nova-scroll-highlight";
+  const CHAR_CLASS = "nova-sh-char";
   const DATA_MARKER = "data-nova-scroll-highlight";
   const DATA_FROM = "data-nova-sh-from";
   const DATA_TO = "data-nova-sh-to";
   const DEFAULT_FROM = "#6b7280";
   const DEFAULT_TO = "#0f172a";
   const COMPONENT = "scrollHighlight";
+  const COMMAND = "scrollHighlight";
 
   const TOOLBAR_ICON =
     '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
     '<path d="M3.2 14.8c2.4-1.2 4.4-3.8 5.6-6.6.4-.9 1.2-2.4 2.2-2.4.7 0 1.1.6 1.4 1.3.6 1.5 1.3 3 2.4 4.2.4.4 1 .6 1.6.6v1.5c-1.1 0-2.1-.4-2.9-1.2-.8-.9-1.4-2-1.9-3.2-.2.5-.5 1.1-.8 1.6C9.4 12.8 7 15.6 4.2 16.8l-1-2z"/>' +
     '<path d="M2.5 5.2h6.2v1.4H2.5V5.2zm0 3.2h4.6v1.4H2.5V8.4z" opacity=".55"/>' +
     "</svg>";
+
+  const PRESETS = [
+    { from: "#6b7280", to: "#0f172a", label: "خاکستری → مشکی" },
+    { from: "#9ca3af", to: "#09707d", label: "خاکستری → برند" },
+    { from: "#94a3b8", to: "#1e3a3f", label: "آبی‌خاکستری → تیره" },
+  ];
 
   function normalizeHex(value, fallback) {
     const raw = String(value || "")
@@ -58,103 +81,48 @@
     };
   }
 
-  function findBlockAncestor(element) {
-    let current = element;
-    while (current) {
-      if (current.is && current.is("element", BLOCK_NAME)) return current;
-      current = current.parent;
-    }
-    return null;
+  function readColorsFromViewElement(viewElement) {
+    const from =
+      viewElement.getAttribute(DATA_FROM) ||
+      viewElement.getStyle("color") ||
+      DEFAULT_FROM;
+    const to = viewElement.getAttribute(DATA_TO) || DEFAULT_TO;
+    return encodeColors(from, to);
   }
 
-  function selectionCoversWholeBlock(selection, block) {
-    if (!selection || !block) return false;
-    if (selection.getSelectedElement() === block) return true;
-    const range = selection.getFirstRange();
-    if (!range || typeof range.containsItem !== "function") return false;
-    try {
-      if (!range.containsItem(block)) return false;
-      return Array.from(block.getChildren()).every(function (child) {
-        return range.containsItem(child);
-      });
-    } catch (_) {
-      return false;
-    }
+  function isHighlightView(viewElement) {
+    return (
+      viewElement.is("element") &&
+      viewElement.hasClass(CLASS_NAME) &&
+      !viewElement.hasClass(CHAR_CLASS)
+    );
   }
 
-  function getActiveState(editor) {
-    const selection = editor.model.document.selection;
-    const selected = selection.getSelectedElement();
-
-    if (selected && selected.is("element", BLOCK_NAME)) {
-      return {
-        mode: "block",
-        element: selected,
-        from: normalizeHex(selected.getAttribute("scrollHighlightFrom"), DEFAULT_FROM),
-        to: normalizeHex(selected.getAttribute("scrollHighlightTo"), DEFAULT_TO),
-      };
-    }
+  function getAttributeAtSelection(selection) {
+    const direct = selection.getAttribute(ATTR);
+    if (direct) return direct;
 
     const pos = selection.getFirstPosition();
-    if (pos) {
-      const block = findBlockAncestor(pos.parent);
-      if (block) {
-        return {
-          mode: "block",
-          element: block,
-          from: normalizeHex(block.getAttribute("scrollHighlightFrom"), DEFAULT_FROM),
-          to: normalizeHex(block.getAttribute("scrollHighlightTo"), DEFAULT_TO),
-        };
-      }
+    if (pos && pos.textNode && pos.textNode.hasAttribute(ATTR)) {
+      return pos.textNode.getAttribute(ATTR);
     }
-
-    const inlineValue = selection.getAttribute(INLINE_ATTR);
-    if (inlineValue) {
-      const colors = decodeColors(inlineValue);
-      return { mode: "inline", element: null, from: colors.from, to: colors.to };
-    }
-
-    if (pos && pos.textNode && typeof pos.textNode.hasAttribute === "function") {
-      if (pos.textNode.hasAttribute(INLINE_ATTR)) {
-        const colors = decodeColors(pos.textNode.getAttribute(INLINE_ATTR));
-        return { mode: "inline", element: null, from: colors.from, to: colors.to };
-      }
-    }
-
     return null;
   }
 
-  function getInlineAttributeRange(editor, position) {
-    if (!position) return null;
+  function findFullAttributeRange(editor, position, attrValue) {
+    if (!position || !attrValue) return null;
     const model = editor.model;
-
-    let attrValue = null;
-    if (position.textNode && position.textNode.hasAttribute(INLINE_ATTR)) {
-      attrValue = position.textNode.getAttribute(INLINE_ATTR);
-    } else {
-      attrValue = editor.model.document.selection.getAttribute(INLINE_ATTR);
-    }
-    if (!attrValue) return null;
 
     if (typeof findAttributeRange === "function") {
       try {
-        return findAttributeRange(position, INLINE_ATTR, attrValue, model);
+        return findAttributeRange(position, ATTR, attrValue, model);
       } catch (_) {
-        /* fall through to manual expand */
+        /* fall through */
       }
     }
 
-    // Expand left/right across adjacent text with the same attribute.
-    const root = position.root;
-    const range = model.createRange(
-      model.createPositionAt(root, 0),
-      model.createPositionAt(root, "end")
-    );
-    // Safer: walk siblings from text node.
     const textNode = position.textNode;
-    if (!textNode || !textNode.parent) {
-      return model.document.selection.getFirstRange();
-    }
+    if (!textNode || !textNode.parent) return null;
 
     let startOffset = textNode.startOffset;
     let endOffset = textNode.endOffset;
@@ -162,23 +130,13 @@
 
     for (let i = textNode.index - 1; i >= 0; i--) {
       const prev = parent.getChild(i);
-      if (
-        prev &&
-        prev.is &&
-        prev.is("$text") &&
-        prev.getAttribute(INLINE_ATTR) === attrValue
-      ) {
+      if (prev && prev.is("$text") && prev.getAttribute(ATTR) === attrValue) {
         startOffset = prev.startOffset;
       } else break;
     }
     for (let i = textNode.index + 1; i < parent.childCount; i++) {
       const next = parent.getChild(i);
-      if (
-        next &&
-        next.is &&
-        next.is("$text") &&
-        next.getAttribute(INLINE_ATTR) === attrValue
-      ) {
+      if (next && next.is("$text") && next.getAttribute(ATTR) === attrValue) {
         endOffset = next.endOffset;
       } else break;
     }
@@ -189,70 +147,84 @@
     );
   }
 
-  function blockViewAttributes(modelElement, forEditing) {
-    const from = normalizeHex(
-      modelElement.getAttribute("scrollHighlightFrom"),
-      DEFAULT_FROM
-    );
-    const to = normalizeHex(
-      modelElement.getAttribute("scrollHighlightTo"),
-      DEFAULT_TO
-    );
-    const attrs = {
-      class: CLASS_NAME,
-      [DATA_MARKER]: "1",
-      [DATA_FROM]: from,
-      [DATA_TO]: to,
-      style: forEditing
-        ? `--nova-sh-from:${from};--nova-sh-to:${to};color:${from}`
-        : `color:${from}`,
-    };
-    return attrs;
-  }
-
-  function applyInlineToSelection(writer, model, selection, encoded) {
-    for (const range of model.schema.getValidRanges(
-      selection.getRanges(),
-      INLINE_ATTR
-    )) {
-      writer.setAttribute(INLINE_ATTR, encoded, range);
+  function applyAttributeToRanges(writer, model, ranges, encoded) {
+    for (const range of model.schema.getValidRanges(ranges, ATTR)) {
+      writer.setAttribute(ATTR, encoded, range);
     }
   }
 
-  function removeInlineFromSelection(writer, model, selection) {
-    for (const range of model.schema.getValidRanges(
-      selection.getRanges(),
-      INLINE_ATTR
-    )) {
-      writer.removeAttribute(INLINE_ATTR, range);
+  function removeAttributeFromRanges(writer, model, ranges) {
+    for (const range of model.schema.getValidRanges(ranges, ATTR)) {
+      writer.removeAttribute(ATTR, range);
+    }
+  }
+
+  function createHighlightSpan(writer, encoded, forEditing) {
+    const colors = decodeColors(encoded);
+    return writer.createAttributeElement(
+      "span",
+      {
+        class: CLASS_NAME,
+        [DATA_MARKER]: "1",
+        [DATA_FROM]: colors.from,
+        [DATA_TO]: colors.to,
+        style: forEditing
+          ? `--nova-sh-from:${colors.from};--nova-sh-to:${colors.to};color:${colors.from}`
+          : `color:${colors.from}`,
+      },
+      { priority: 5 }
+    );
+  }
+
+  function applyHighlightToRange(writer, editor, modelRange, encoded) {
+    for (const item of modelRange.getItems()) {
+      if (
+        !(item.is("$text") || item.is("$textProxy")) ||
+        !editor.model.schema.checkAttribute(item, ATTR)
+      ) {
+        continue;
+      }
+      writer.setAttribute(ATTR, encoded, item);
+      if (item.hasAttribute("fontColor")) {
+        writer.removeAttribute("fontColor", item);
+      }
+      if (typeof item.getAttributes === "function") {
+        for (const pair of Array.from(item.getAttributes())) {
+          const key = pair[0];
+          if (String(key).startsWith("html")) {
+            writer.removeAttribute(key, item);
+          }
+        }
+      }
     }
   }
 
   class ScrollHighlightCommand extends Command {
     refresh() {
-      const selection = this.editor.model.document.selection;
-      const active = getActiveState(this.editor);
-      this.value = active
-        ? { from: active.from, to: active.to, mode: active.mode }
-        : null;
+      const model = this.editor.model;
+      const selection = model.document.selection;
+      const encoded = getAttributeAtSelection(selection);
 
-      const selected = selection.getSelectedElement();
-      const blocked =
-        selected &&
-        (selected.is("element", "imageBlock") ||
-          selected.is("element", "imageInline") ||
-          selected.is("element", "rawHtml") ||
-          selected.is("element", "media") ||
-          selected.is("element", "table") ||
-          selected.is("element", "novaVideoWarning"));
-
-      this.isEnabled = !!active || (!selection.isCollapsed && !blocked);
+      this.value = encoded ? decodeColors(encoded) : null;
+      // Keep toolbar usable whenever formatting is allowed in selection.
+      this.isEnabled = model.schema.checkAttributeInSelection(selection, ATTR);
     }
 
     execute(options) {
       const opts = options || {};
       if (opts.action === "remove") {
         this._remove();
+        return;
+      }
+      if (opts.action === "toggle") {
+        if (this.value) {
+          this._remove();
+        } else {
+          this._apply(
+            normalizeHex(opts.from, DEFAULT_FROM),
+            normalizeHex(opts.to, DEFAULT_TO)
+          );
+        }
         return;
       }
       this._apply(
@@ -266,37 +238,21 @@
       const model = editor.model;
       const selection = model.document.selection;
       const encoded = encodeColors(from, to);
-      const active = getActiveState(editor);
+      const current = getAttributeAtSelection(selection);
 
       model.change((writer) => {
-        // Updating an existing block only when the whole block is targeted.
-        if (
-          active &&
-          active.mode === "block" &&
-          active.element &&
-          (selection.isCollapsed ||
-            selection.getSelectedElement() === active.element ||
-            selectionCoversWholeBlock(selection, active.element))
-        ) {
-          writer.setAttribute("scrollHighlightFrom", from, active.element);
-          writer.setAttribute("scrollHighlightTo", to, active.element);
-          return;
-        }
-
         if (selection.isCollapsed) {
-          if (active && active.mode === "inline") {
-            const range = getInlineAttributeRange(
-              editor,
-              selection.getFirstPosition()
-            );
-            if (range) writer.setAttribute(INLINE_ATTR, encoded, range);
-          }
+          if (!current) return;
+          const range = findFullAttributeRange(
+            editor,
+            selection.getFirstPosition(),
+            current
+          );
+          if (range) writer.setAttribute(ATTR, encoded, range);
           return;
         }
 
-        // Always apply as inline formatting across valid ranges.
-        // Avoid wrapping multi-block selections in a div (breaks lists/tables).
-        applyInlineToSelection(writer, model, selection, encoded);
+        applyAttributeToRanges(writer, model, selection.getRanges(), encoded);
       });
     }
 
@@ -304,56 +260,39 @@
       const editor = this.editor;
       const model = editor.model;
       const selection = model.document.selection;
-      const active = getActiveState(editor);
+      const current = getAttributeAtSelection(selection);
 
       model.change((writer) => {
-        if (active && active.mode === "block" && active.element) {
-          const whole =
-            selection.isCollapsed ||
-            selection.getSelectedElement() === active.element ||
-            selectionCoversWholeBlock(selection, active.element);
-
-          if (whole) {
-            if (typeof writer.unwrap === "function") {
-              writer.unwrap(active.element);
-            } else {
-              const parent = active.element.parent;
-              const index = parent.getChildIndex(active.element);
-              const children = Array.from(active.element.getChildren());
-              writer.remove(active.element);
-              let at = index;
-              for (const child of children) {
-                writer.insert(child, parent, at);
-                at += 1;
-              }
-            }
-            return;
-          }
-
-          // Partial selection inside a legacy block: strip inline attrs only.
-          removeInlineFromSelection(writer, model, selection);
-          return;
-        }
-
         if (!selection.isCollapsed) {
-          removeInlineFromSelection(writer, model, selection);
+          removeAttributeFromRanges(writer, model, selection.getRanges());
           return;
         }
 
-        if (active && active.mode === "inline") {
-          const range = getInlineAttributeRange(
-            editor,
-            selection.getFirstPosition()
-          );
-          if (range) writer.removeAttribute(INLINE_ATTR, range);
-        }
+        if (!current) return;
+        const range = findFullAttributeRange(
+          editor,
+          selection.getFirstPosition(),
+          current
+        );
+        if (range) writer.removeAttribute(ATTR, range);
       });
     }
   }
 
+  /**
+   * Color form shown inside the split-button dropdown panel.
+   * Implements focus()/focusLast() required by DropdownPanelView.
+   */
   class ScrollHighlightFormView extends View {
     constructor(locale) {
       super(locale);
+
+      this.fromInput = this._textInput("from-hex", "کد رنگ اولیه", DEFAULT_FROM);
+      this.toInput = this._textInput("to-hex", "کد رنگ نهایی", DEFAULT_TO);
+
+      this.applyButton = this._button("اعمال", "ck-button-action");
+      this.removeButton = this._button("حذف افکت", "ck-button-flat");
+      this.cancelButton = this._button("بستن", "ck-button-flat");
 
       this.set({
         fromColor: DEFAULT_FROM,
@@ -361,11 +300,19 @@
         canRemove: false,
       });
 
-      this.applyButton = this._button("اعمال", "ck-button-action");
-      this.removeButton = this._button("حذف افکت", "ck-button-flat");
-      this.cancelButton = this._button("بستن", "ck-button-flat");
-
       this.removeButton.bind("isVisible").to(this, "canRemove");
+
+      const presetChildren = PRESETS.map((preset, index) => ({
+        tag: "button",
+        attributes: {
+          type: "button",
+          class: ["ck-scroll-highlight-form__preset"],
+          "data-preset": String(index),
+          title: preset.label,
+          style: `background:linear-gradient(90deg,${preset.from},${preset.to})`,
+          tabindex: "-1",
+        },
+      }));
 
       this.setTemplate({
         tag: "form",
@@ -380,8 +327,17 @@
             tag: "p",
             attributes: { class: ["ck-scroll-highlight-form__hint"] },
             children: [
-              "متن را انتخاب کنید، رنگ اولیه و نهایی را تنظیم کنید، سپس «اعمال» را بزنید.",
+              "متن را انتخاب کنید. کلیک روی دکمهٔ ابزار، هایلایت را اعمال/حذف می‌کند. از اینجا رنگ را تغییر دهید.",
             ],
+          },
+          {
+            tag: "div",
+            attributes: {
+              class: ["ck-scroll-highlight-form__presets"],
+              role: "group",
+              "aria-label": "پیش‌فرض رنگ",
+            },
+            children: presetChildren,
           },
           {
             tag: "label",
@@ -389,13 +345,19 @@
             children: [
               "رنگ اولیه",
               {
-                tag: "input",
-                attributes: {
-                  type: "color",
-                  class: ["ck-scroll-highlight-form__color"],
-                  value: DEFAULT_FROM,
-                  "data-role": "from",
-                },
+                tag: "span",
+                attributes: { class: ["ck-scroll-highlight-form__swatch-wrap"] },
+                children: [
+                  {
+                    tag: "span",
+                    attributes: {
+                      class: ["ck-scroll-highlight-form__swatch"],
+                      "data-role": "from-swatch",
+                      style: `background:${DEFAULT_FROM}`,
+                    },
+                  },
+                  this.fromInput,
+                ],
               },
             ],
           },
@@ -405,43 +367,19 @@
             children: [
               "رنگ نهایی",
               {
-                tag: "input",
-                attributes: {
-                  type: "color",
-                  class: ["ck-scroll-highlight-form__color"],
-                  value: DEFAULT_TO,
-                  "data-role": "to",
-                },
-              },
-            ],
-          },
-          {
-            tag: "div",
-            attributes: { class: ["ck-scroll-highlight-form__hex-row"] },
-            children: [
-              {
-                tag: "input",
-                attributes: {
-                  type: "text",
-                  class: ["ck-scroll-highlight-form__hex"],
-                  maxlength: "7",
-                  spellcheck: "false",
-                  "data-role": "from-hex",
-                  "aria-label": "کد رنگ اولیه",
-                  value: DEFAULT_FROM,
-                },
-              },
-              {
-                tag: "input",
-                attributes: {
-                  type: "text",
-                  class: ["ck-scroll-highlight-form__hex"],
-                  maxlength: "7",
-                  spellcheck: "false",
-                  "data-role": "to-hex",
-                  "aria-label": "کد رنگ نهایی",
-                  value: DEFAULT_TO,
-                },
+                tag: "span",
+                attributes: { class: ["ck-scroll-highlight-form__swatch-wrap"] },
+                children: [
+                  {
+                    tag: "span",
+                    attributes: {
+                      class: ["ck-scroll-highlight-form__swatch"],
+                      "data-role": "to-swatch",
+                      style: `background:${DEFAULT_TO}`,
+                    },
+                  },
+                  this.toInput,
+                ],
               },
             ],
           },
@@ -457,11 +395,10 @@
     render() {
       super.render();
 
-      this.element.addEventListener("submit", (event) => {
-        event.preventDefault();
-      });
+      if (typeof submitHandler === "function") {
+        submitHandler({ view: this });
+      }
 
-      // Keep CKEditor dropdown open while interacting with native color UI.
       this.element.addEventListener(
         "mousedown",
         (event) => {
@@ -469,27 +406,67 @@
         },
         true
       );
-      this.element.addEventListener(
-        "pointerdown",
-        (event) => {
-          event.stopPropagation();
-        },
-        true
-      );
 
-      this.element.addEventListener("input", (event) => {
-        const target = event.target;
-        if (!target) return;
-        const role = target.getAttribute("data-role");
-        if (role === "from" || role === "from-hex") {
-          this.fromColor = normalizeHex(target.value, this.fromColor);
-          this._syncInputs();
-        }
-        if (role === "to" || role === "to-hex") {
-          this.toColor = normalizeHex(target.value, this.toColor);
-          this._syncInputs();
-        }
+      this.element.addEventListener("click", (event) => {
+        const presetBtn = event.target.closest("[data-preset]");
+        if (!presetBtn || !this.element.contains(presetBtn)) return;
+        const preset = PRESETS[Number(presetBtn.getAttribute("data-preset"))];
+        if (preset) this.setColors(preset.from, preset.to);
       });
+
+      const onHexInput = (input, key) => {
+        input.element.addEventListener("input", () => {
+          this[key] = normalizeHex(input.element.value, this[key]);
+          this._syncSwatches();
+        });
+        input.element.addEventListener("change", () => {
+          this[key] = normalizeHex(
+            input.element.value,
+            key === "fromColor" ? DEFAULT_FROM : DEFAULT_TO
+          );
+          this._syncInputs();
+        });
+      };
+      onHexInput(this.fromInput, "fromColor");
+      onHexInput(this.toInput, "toColor");
+    }
+
+    // Required by DropdownPanelView — without this, opening the panel breaks.
+    focus() {
+      if (this.fromInput && this.fromInput.element) {
+        this.fromInput.element.focus();
+        return;
+      }
+      if (this.element) this.element.focus();
+    }
+
+    focusLast() {
+      if (this.cancelButton && typeof this.cancelButton.focus === "function") {
+        this.cancelButton.focus();
+        return;
+      }
+      this.focus();
+    }
+
+    _textInput(role, ariaLabel, value) {
+      const input = new View(this.locale);
+      input.setTemplate({
+        tag: "input",
+        attributes: {
+          type: "text",
+          class: ["ck-scroll-highlight-form__hex", "ck-input", "ck-input-text"],
+          maxlength: "7",
+          spellcheck: "false",
+          "data-role": role,
+          "aria-label": ariaLabel,
+          value: value,
+          dir: "ltr",
+        },
+      });
+      input.focus = function focusInput() {
+        if (input.element) input.element.focus();
+      };
+      return input;
     }
 
     _button(label, extraClass) {
@@ -509,7 +486,12 @@
     }
 
     getColors() {
-      this._readInputs();
+      if (this.fromInput.element && this.fromInput.element.value) {
+        this.fromColor = this.fromInput.element.value;
+      }
+      if (this.toInput.element && this.toInput.element.value) {
+        this.toColor = this.toInput.element.value;
+      }
       return {
         from: normalizeHex(this.fromColor, DEFAULT_FROM),
         to: normalizeHex(this.toColor, DEFAULT_TO),
@@ -521,27 +503,17 @@
     }
 
     _syncInputs() {
-      if (!this.element) return;
-      const from = this.element.querySelector('input[data-role="from"]');
-      const to = this.element.querySelector('input[data-role="to"]');
-      const fromHex = this.element.querySelector('input[data-role="from-hex"]');
-      const toHex = this.element.querySelector('input[data-role="to-hex"]');
-      if (from) from.value = this.fromColor;
-      if (to) to.value = this.toColor;
-      if (fromHex) fromHex.value = this.fromColor;
-      if (toHex) toHex.value = this.toColor;
+      if (this.fromInput.element) this.fromInput.element.value = this.fromColor;
+      if (this.toInput.element) this.toInput.element.value = this.toColor;
+      this._syncSwatches();
     }
 
-    _readInputs() {
+    _syncSwatches() {
       if (!this.element) return;
-      const fromHex = this.element.querySelector('input[data-role="from-hex"]');
-      const toHex = this.element.querySelector('input[data-role="to-hex"]');
-      const from = this.element.querySelector('input[data-role="from"]');
-      const to = this.element.querySelector('input[data-role="to"]');
-      if (fromHex && fromHex.value) this.fromColor = fromHex.value;
-      else if (from) this.fromColor = from.value;
-      if (toHex && toHex.value) this.toColor = toHex.value;
-      else if (to) this.toColor = to.value;
+      const fromSwatch = this.element.querySelector('[data-role="from-swatch"]');
+      const toSwatch = this.element.querySelector('[data-role="to-swatch"]');
+      if (fromSwatch) fromSwatch.style.background = this.fromColor;
+      if (toSwatch) toSwatch.style.background = this.toColor;
     }
   }
 
@@ -551,169 +523,169 @@
     }
 
     init() {
+      this._lastFrom = DEFAULT_FROM;
+      this._lastTo = DEFAULT_TO;
+
       this._defineSchema();
       this._defineConverters();
-      this.editor.commands.add(
-        "scrollHighlight",
-        new ScrollHighlightCommand(this.editor)
-      );
+      this._registerCaretBehavior();
+      this.editor.commands.add(COMMAND, new ScrollHighlightCommand(this.editor));
       this._createUi();
-      this._hookRemoveFormat();
     }
 
     _defineSchema() {
       const schema = this.editor.model.schema;
-
-      schema.extend("$text", { allowAttributes: INLINE_ATTR });
-      schema.setAttributeProperties(INLINE_ATTR, {
+      schema.extend("$text", { allowAttributes: ATTR });
+      schema.setAttributeProperties(ATTR, {
         isFormatting: true,
         copyOnEnter: false,
       });
+    }
 
-      if (!schema.isRegistered(BLOCK_NAME)) {
-        // Legacy block wrappers from older content — keep for upcast/remove.
-        if (schema.isRegistered("$container")) {
-          schema.register(BLOCK_NAME, {
-            inheritAllFrom: "$container",
-            allowAttributes: ["scrollHighlightFrom", "scrollHighlightTo"],
-          });
-        } else {
-          schema.register(BLOCK_NAME, {
-            allowWhere: "$block",
-            allowContentOf: "$root",
-            allowAttributes: ["scrollHighlightFrom", "scrollHighlightTo"],
-          });
-        }
+    _registerCaretBehavior() {
+      const twoStep = this.editor.plugins.get("TwoStepCaretMovement");
+      if (twoStep && typeof twoStep.registerAttribute === "function") {
+        twoStep.registerAttribute(ATTR);
       }
     }
 
     _defineConverters() {
       const conversion = this.editor.conversion;
-
-      function inlineViewFactory(value, writer, forEditing) {
-        if (!value) return;
-        const colors = decodeColors(value);
-        return writer.createAttributeElement(
-          "span",
-          {
-            class: CLASS_NAME,
-            [DATA_MARKER]: "1",
-            [DATA_FROM]: colors.from,
-            [DATA_TO]: colors.to,
-            style: forEditing
-              ? `--nova-sh-from:${colors.from};--nova-sh-to:${colors.to};color:${colors.from}`
-              : `color:${colors.from}`,
-          },
-          { priority: 5 }
-        );
-      }
+      const editor = this.editor;
 
       conversion.for("editingDowncast").attributeToElement({
-        model: INLINE_ATTR,
-        view: (value, { writer }) => inlineViewFactory(value, writer, true),
+        model: ATTR,
+        view: (value, { writer }) =>
+          value ? createHighlightSpan(writer, value, true) : null,
       });
 
       conversion.for("dataDowncast").attributeToElement({
-        model: INLINE_ATTR,
-        view: (value, { writer }) => inlineViewFactory(value, writer, false),
+        model: ATTR,
+        view: (value, { writer }) =>
+          value ? createHighlightSpan(writer, value, false) : null,
       });
 
-      conversion.for("upcast").elementToAttribute({
-        view: {
-          name: "span",
-          classes: CLASS_NAME,
-        },
-        model: {
-          key: INLINE_ATTR,
-          value: (viewElement) => {
-            if (viewElement.hasClass("nova-sh-char")) return null;
-            const from =
-              viewElement.getAttribute(DATA_FROM) ||
-              viewElement.getStyle("color") ||
-              DEFAULT_FROM;
-            const to = viewElement.getAttribute(DATA_TO) || DEFAULT_TO;
-            return encodeColors(from, to);
-          },
-        },
-        converterPriority: "high",
-      });
+      conversion.for("upcast").add((dispatcher) => {
+        dispatcher.on(
+          "element:span",
+          (evt, data, conversionApi) => {
+            const viewItem = data.viewItem;
 
-      conversion.for("editingDowncast").elementToElement({
-        model: BLOCK_NAME,
-        view: (modelElement, { writer }) => {
-          const el = writer.createContainerElement(
-            "div",
-            blockViewAttributes(modelElement, true)
-          );
-          writer.setCustomProperty("scrollHighlight", true, el);
-          return el;
-        },
-      });
-
-      conversion.for("dataDowncast").elementToElement({
-        model: BLOCK_NAME,
-        view: (modelElement, { writer }) =>
-          writer.createContainerElement(
-            "div",
-            blockViewAttributes(modelElement, false)
-          ),
-      });
-
-      conversion.for("upcast").elementToElement({
-        view: {
-          name: "div",
-          classes: CLASS_NAME,
-        },
-        model: (viewElement, { writer }) =>
-          writer.createElement(BLOCK_NAME, {
-            scrollHighlightFrom: normalizeHex(
-              viewElement.getAttribute(DATA_FROM) ||
-                viewElement.getStyle("color"),
-              DEFAULT_FROM
-            ),
-            scrollHighlightTo: normalizeHex(
-              viewElement.getAttribute(DATA_TO),
-              DEFAULT_TO
-            ),
-          }),
-        converterPriority: "high",
-      });
-    }
-
-    _hookRemoveFormat() {
-      const editor = this.editor;
-      const removeFormat = editor.commands.get("removeFormat");
-      if (!removeFormat) return;
-
-      // After removeFormat runs, also clear our formatting attribute.
-      this.listenTo(removeFormat, "execute", () => {
-        const model = editor.model;
-        const selection = model.document.selection;
-        model.change((writer) => {
-          if (!selection.isCollapsed) {
-            removeInlineFromSelection(writer, model, selection);
-          } else {
-            const active = getActiveState(editor);
-            if (active && active.mode === "inline") {
-              const range = getInlineAttributeRange(
-                editor,
-                selection.getFirstPosition()
+            if (viewItem.hasClass(CHAR_CLASS)) {
+              if (
+                !conversionApi.consumable.consume(viewItem, {
+                  name: true,
+                  classes: CHAR_CLASS,
+                })
+              ) {
+                return;
+              }
+              const { modelRange } = conversionApi.convertChildren(
+                viewItem,
+                data.modelCursor
               );
-              if (range) writer.removeAttribute(INLINE_ATTR, range);
+              data.modelRange = modelRange;
+              data.modelCursor = modelRange.end;
+              evt.stop();
+              return;
             }
-          }
-        });
+
+            const isMarked =
+              isHighlightView(viewItem) ||
+              viewItem.getAttribute(DATA_MARKER) === "1" ||
+              viewItem.hasAttribute(DATA_FROM) ||
+              viewItem.hasAttribute(DATA_TO);
+
+            if (!isMarked) return;
+            if (!conversionApi.consumable.test(viewItem, { name: true })) return;
+
+            conversionApi.consumable.consume(viewItem, { name: true });
+            if (viewItem.hasClass(CLASS_NAME)) {
+              conversionApi.consumable.consume(viewItem, {
+                classes: CLASS_NAME,
+              });
+            }
+            conversionApi.consumable.consume(viewItem, {
+              attributes: [DATA_MARKER, DATA_FROM, DATA_TO],
+            });
+            conversionApi.consumable.consume(viewItem, { styles: "color" });
+
+            const encoded = readColorsFromViewElement(viewItem);
+            const { modelRange } = conversionApi.convertChildren(
+              viewItem,
+              data.modelCursor
+            );
+
+            if (modelRange) {
+              applyHighlightToRange(
+                conversionApi.writer,
+                editor,
+                modelRange,
+                encoded
+              );
+            }
+
+            data.modelRange = modelRange;
+            data.modelCursor = modelRange ? modelRange.end : data.modelCursor;
+            evt.stop();
+          },
+          { priority: "high" }
+        );
+      });
+
+      conversion.for("upcast").add((dispatcher) => {
+        dispatcher.on(
+          "element:div",
+          (evt, data, conversionApi) => {
+            const viewItem = data.viewItem;
+            if (!isHighlightView(viewItem)) return;
+
+            if (
+              !conversionApi.consumable.consume(viewItem, {
+                name: true,
+                classes: CLASS_NAME,
+              })
+            ) {
+              return;
+            }
+
+            conversionApi.consumable.consume(viewItem, {
+              attributes: [DATA_MARKER, DATA_FROM, DATA_TO],
+            });
+            conversionApi.consumable.consume(viewItem, { styles: "color" });
+
+            const encoded = readColorsFromViewElement(viewItem);
+            const { modelRange } = conversionApi.convertChildren(
+              viewItem,
+              data.modelCursor
+            );
+
+            if (modelRange) {
+              applyHighlightToRange(
+                conversionApi.writer,
+                editor,
+                modelRange,
+                encoded
+              );
+            }
+
+            data.modelRange = modelRange;
+            data.modelCursor = modelRange ? modelRange.end : data.modelCursor;
+            evt.stop();
+          },
+          { priority: "high" }
+        );
       });
     }
 
     _createUi() {
       const editor = this.editor;
-      const command = editor.commands.get("scrollHighlight");
+      const command = editor.commands.get(COMMAND);
+      const plugin = this;
 
       editor.ui.componentFactory.add(COMPONENT, (locale) => {
-        const dropdown = createDropdown(locale);
+        const dropdown = createDropdown(locale, SplitButtonView);
         const form = new ScrollHighlightFormView(locale);
-        let forceKeepOpen = false;
 
         dropdown.buttonView.set({
           label: "هایلایت اسکرولی متن",
@@ -722,79 +694,51 @@
         });
 
         dropdown.bind("isEnabled").to(command, "isEnabled");
+        dropdown.buttonView.bind("isOn").to(command, "value", (value) => !!value);
+
         dropdown.panelView.children.add(form);
 
-        dropdown.panelView.once("render", () => {
-          const panelEl = dropdown.panelView.element;
-          if (!panelEl) return;
-          panelEl.addEventListener(
-            "mousedown",
-            (event) => {
-              event.stopPropagation();
-            },
-            true
-          );
-          panelEl.addEventListener(
-            "pointerdown",
-            (event) => {
-              event.stopPropagation();
-            },
-            true
-          );
-        });
+        // Main split action: toggle highlight with last/default colors.
+        dropdown.buttonView.on("execute", () => {
+          const selection = editor.model.document.selection;
+          const hasValue = !!command.value;
+          const canApply = !selection.isCollapsed || hasValue;
 
-        dropdown.on("change:isOpen", (_evt, _name, isOpen) => {
-          if (!isOpen) {
-            const activeEl = document.activeElement;
-            const stillInForm =
-              forceKeepOpen ||
-              (activeEl &&
-                form.element &&
-                (form.element.contains(activeEl) ||
-                  activeEl.getAttribute("type") === "color"));
-            if (stillInForm) {
-              dropdown.isOpen = true;
-              return;
-            }
-            forceKeepOpen = false;
+          if (!canApply) {
+            dropdown.isOpen = true;
             return;
           }
 
-          forceKeepOpen = false;
-          const active = getActiveState(editor);
-          if (active) {
-            form.setColors(active.from, active.to);
+          editor.execute(COMMAND, {
+            action: "toggle",
+            from: plugin._lastFrom,
+            to: plugin._lastTo,
+          });
+          editor.editing.view.focus();
+        });
+
+        dropdown.on("change:isOpen", (_evt, _name, isOpen) => {
+          if (!isOpen) return;
+
+          const value = command.value;
+          if (value) {
+            form.setColors(value.from, value.to);
             form.setRemoveVisible(true);
           } else {
-            form.setColors(DEFAULT_FROM, DEFAULT_TO);
+            form.setColors(plugin._lastFrom, plugin._lastTo);
             form.setRemoveVisible(false);
           }
 
-          // Defer sync so DOM inputs exist; wire color-picker keep-open hooks once.
           setTimeout(function () {
             form._syncInputs();
-            if (form.element && !form.element.getAttribute("data-sh-hooks")) {
-              form.element.setAttribute("data-sh-hooks", "1");
-              form.element
-                .querySelectorAll('input[type="color"]')
-                .forEach(function (input) {
-                  input.addEventListener("focus", function () {
-                    forceKeepOpen = true;
-                  });
-                  input.addEventListener("blur", function () {
-                    window.setTimeout(function () {
-                      forceKeepOpen = false;
-                    }, 250);
-                  });
-                });
-            }
           }, 0);
         });
 
-        form.applyButton.on("execute", () => {
+        form.on("submit", () => {
           const colors = form.getColors();
-          forceKeepOpen = false;
-          editor.execute("scrollHighlight", {
+          plugin._lastFrom = colors.from;
+          plugin._lastTo = colors.to;
+          editor.execute(COMMAND, {
             action: "apply",
             from: colors.from,
             to: colors.to,
@@ -803,15 +747,17 @@
           editor.editing.view.focus();
         });
 
+        form.applyButton.on("execute", () => {
+          form.fire("submit");
+        });
+
         form.removeButton.on("execute", () => {
-          forceKeepOpen = false;
-          editor.execute("scrollHighlight", { action: "remove" });
+          editor.execute(COMMAND, { action: "remove" });
           dropdown.isOpen = false;
           editor.editing.view.focus();
         });
 
         form.cancelButton.on("execute", () => {
-          forceKeepOpen = false;
           dropdown.isOpen = false;
           editor.editing.view.focus();
         });
@@ -825,6 +771,7 @@
     plugin: ScrollHighlight,
     pluginName: "ScrollHighlight",
     componentName: COMPONENT,
+    commandName: COMMAND,
     defaults: { from: DEFAULT_FROM, to: DEFAULT_TO },
     className: CLASS_NAME,
   };

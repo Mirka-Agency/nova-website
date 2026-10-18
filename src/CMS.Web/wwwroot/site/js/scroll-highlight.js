@@ -1,12 +1,14 @@
 /**
  * Scroll-scrubbed text highlight (GSAP + ScrollTrigger).
+ *
+ * Uses background-clip gradient wipe — no per-character spans —
+ * so Persian/Arabic shaping stays intact.
  * Progress only increases on scroll-down; never reverses on scroll-up.
  */
 (function () {
   "use strict";
 
   var SELECTOR = ".nova-scroll-highlight";
-  var CHAR_CLASS = "nova-sh-char";
   var DEFAULT_FROM = "#6b7280";
   var DEFAULT_TO = "#0f172a";
   var instances = [];
@@ -30,25 +32,6 @@
     return fallback;
   }
 
-  function parseRgb(hex) {
-    var h = normalizeHex(hex, "#000000").slice(1);
-    return {
-      r: parseInt(h.slice(0, 2), 16),
-      g: parseInt(h.slice(2, 4), 16),
-      b: parseInt(h.slice(4, 6), 16),
-    };
-  }
-
-  function lerpColor(from, to, t) {
-    var a = parseRgb(from);
-    var b = parseRgb(to);
-    var k = t < 0 ? 0 : t > 1 ? 1 : t;
-    var r = Math.round(a.r + (b.r - a.r) * k);
-    var g = Math.round(a.g + (b.g - a.g) * k);
-    var bl = Math.round(a.b + (b.b - a.b) * k);
-    return "rgb(" + r + "," + g + "," + bl + ")";
-  }
-
   function readColors(el) {
     return {
       from: normalizeHex(el.getAttribute("data-nova-sh-from"), DEFAULT_FROM),
@@ -56,130 +39,119 @@
     };
   }
 
-  function splitTextNodes(root) {
-    var chars = [];
-    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-      acceptNode: function (node) {
-        if (!node.nodeValue || !node.nodeValue.length) return NodeFilter.FILTER_REJECT;
-        if (!node.parentElement) return NodeFilter.FILTER_REJECT;
-        if (node.parentElement.closest("script,style,noscript")) {
-          return NodeFilter.FILTER_REJECT;
-        }
-        return NodeFilter.FILTER_ACCEPT;
-      },
-    });
-
-    var textNodes = [];
-    while (walker.nextNode()) textNodes.push(walker.currentNode);
-
-    textNodes.forEach(function (textNode) {
-      var text = textNode.nodeValue;
-      if (!text) return;
-      var frag = document.createDocumentFragment();
-      for (var i = 0; i < text.length; i++) {
-        var ch = text.charAt(i);
-        if (ch === "\n" || ch === "\r") {
-          frag.appendChild(document.createTextNode(ch));
-          continue;
-        }
-        var span = document.createElement("span");
-        span.className = CHAR_CLASS;
-        span.textContent = ch;
-        if (ch === " ") span.style.whiteSpace = "pre";
-        frag.appendChild(span);
-        chars.push(span);
-      }
-      textNode.parentNode.replaceChild(frag, textNode);
-    });
-
-    return chars;
-  }
-
-  function applyProgress(chars, progress, from, to) {
-    var n = chars.length;
-    if (!n) return;
-
-    // Soft edge must fit inside [0,1] so the last characters can reach `to`.
-    var soft = Math.min(Math.max(2 / n, 0.02), 0.35);
-    var p = progress <= 0 ? 0 : progress >= 1 ? 1 : progress;
-
-    for (var i = 0; i < n; i++) {
-      var edge = (i + 0.5) / n;
-      var start = Math.max(0, edge - soft / 2);
-      var end = Math.min(1, edge + soft / 2);
-      var t;
-      if (p >= 1 || p >= end) t = 1;
-      else if (p <= start) t = 0;
-      else t = (p - start) / Math.max(end - start, 0.0001);
-      chars[i].style.color = lerpColor(from, to, t);
+  function isRtl(el) {
+    var dir = (el.getAttribute("dir") || "").toLowerCase();
+    if (dir === "rtl") return true;
+    if (dir === "ltr") return false;
+    var root = el.closest("[dir]");
+    if (root) {
+      var d = (root.getAttribute("dir") || "").toLowerCase();
+      if (d === "rtl") return true;
+      if (d === "ltr") return false;
     }
+    return (
+      (document.documentElement.getAttribute("dir") || "").toLowerCase() ===
+      "rtl"
+    );
   }
 
-  function setSolidColor(el, color) {
+  function applyProgress(el, progress) {
+    var p = progress <= 0 ? 0 : progress >= 1 ? 1 : progress;
+    el.style.setProperty("--nova-sh-p", p * 100 + "%");
+    el.setAttribute("data-nova-sh-progress", String(Math.round(p * 100)));
+  }
+
+  function paintSolid(el, color) {
+    el.style.backgroundImage = "none";
+    el.style.webkitBackgroundClip = "border-box";
+    el.style.backgroundClip = "border-box";
     el.style.color = color;
-    el.querySelectorAll("." + CHAR_CLASS).forEach(function (ch) {
-      ch.style.color = color;
+    el.style.setProperty("--nova-sh-p", "100%");
+  }
+
+  function paintGradientSetup(el, from, to, rtl) {
+    el.style.setProperty("--nova-sh-from", from);
+    el.style.setProperty("--nova-sh-to", to);
+    el.style.color = "transparent";
+    el.style.webkitBackgroundClip = "text";
+    el.style.backgroundClip = "text";
+    // Wipe along reading direction: RTL → to left, LTR → to right.
+    var angle = rtl ? "to left" : "to right";
+    el.style.backgroundImage =
+      "linear-gradient(" +
+      angle +
+      "," +
+      "var(--nova-sh-to) 0%," +
+      "var(--nova-sh-to) calc(var(--nova-sh-p, 0%) - 6%)," +
+      "var(--nova-sh-from) calc(var(--nova-sh-p, 0%) + 6%)," +
+      "var(--nova-sh-from) 100%)";
+    applyProgress(el, 0);
+  }
+
+  function unwrapLegacyChars(el) {
+    // Older runtime wrapped each glyph in .nova-sh-char — restore text nodes.
+    var chars = el.querySelectorAll(".nova-sh-char");
+    if (!chars.length) return;
+    chars.forEach(function (span) {
+      var text = document.createTextNode(span.textContent || "");
+      span.parentNode.replaceChild(text, span);
     });
+    el.normalize();
   }
 
   function initOne(el) {
     if (!el || el.getAttribute("data-nova-sh-ready") === "1") return;
     el.setAttribute("data-nova-sh-ready", "1");
 
+    unwrapLegacyChars(el);
+
     var colors = readColors(el);
-    el.style.setProperty("--nova-sh-from", colors.from);
-    el.style.setProperty("--nova-sh-to", colors.to);
+    var rtl = isRtl(el);
 
     if (prefersReducedMotion()) {
-      setSolidColor(el, colors.to);
+      paintSolid(el, colors.to);
       return;
     }
 
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      setSolidColor(el, colors.to);
+      paintSolid(el, colors.to);
       return;
     }
 
-    var chars = splitTextNodes(el);
-    if (!chars.length) {
-      setSolidColor(el, colors.to);
-      return;
-    }
-
-    applyProgress(chars, 0, colors.from, colors.to);
+    paintGradientSetup(el, colors.from, colors.to, rtl);
 
     var maxProgress = 0;
     var trigger = ScrollTrigger.create({
       trigger: el,
-      start: "top 80%",
-      end: "bottom+=140% top",
-      scrub: 0.75,
+      start: "top 85%",
+      end: "bottom+=80% top",
+      scrub: 0.6,
       invalidateOnRefresh: true,
       onUpdate: function (self) {
         if (self.progress > maxProgress) {
           maxProgress = self.progress;
-          applyProgress(chars, maxProgress, colors.from, colors.to);
+          applyProgress(el, maxProgress);
         }
       },
       onRefresh: function (self) {
         if (maxProgress > 0) {
-          applyProgress(chars, maxProgress, colors.from, colors.to);
+          applyProgress(el, maxProgress);
         } else if (self.progress > 0) {
           maxProgress = self.progress;
-          applyProgress(chars, maxProgress, colors.from, colors.to);
+          applyProgress(el, maxProgress);
         }
       },
     });
 
     if (trigger.progress >= 1) {
       maxProgress = 1;
-      applyProgress(chars, 1, colors.from, colors.to);
+      applyProgress(el, 1);
     } else if (trigger.progress > 0) {
       maxProgress = trigger.progress;
-      applyProgress(chars, maxProgress, colors.from, colors.to);
+      applyProgress(el, maxProgress);
     }
 
-    instances.push({ el: el, trigger: trigger, chars: chars });
+    instances.push({ el: el, trigger: trigger });
   }
 
   function initAll(root) {
@@ -189,10 +161,9 @@
 
     if (prefersReducedMotion()) {
       nodes.forEach(function (el) {
+        unwrapLegacyChars(el);
         var colors = readColors(el);
-        el.style.setProperty("--nova-sh-from", colors.from);
-        el.style.setProperty("--nova-sh-to", colors.to);
-        setSolidColor(el, colors.to);
+        paintSolid(el, colors.to);
         el.setAttribute("data-nova-sh-ready", "1");
       });
       return;
@@ -200,8 +171,9 @@
 
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
       nodes.forEach(function (el) {
+        unwrapLegacyChars(el);
         var colors = readColors(el);
-        setSolidColor(el, colors.to);
+        paintSolid(el, colors.to);
         el.setAttribute("data-nova-sh-ready", "1");
       });
       return;

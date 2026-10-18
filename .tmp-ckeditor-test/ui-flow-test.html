@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.css" />
+  <link rel="stylesheet" href="../src/CMS.Web/wwwroot/admin/css/admin.css" />
+</head>
+<body class="admin">
+  <textarea id="editor" class="admin-ckeditor-source"><p>این یک متن آزمایشی برای هایلایت اسکرولی است.</p></textarea>
+  <pre id="out">waiting…</pre>
+  <script src="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.umd.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/js/ckeditor-scroll-highlight.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/js/ckeditor-post-editor.js"></script>
+  <script>
+    (async function () {
+      const results = [];
+      const warnings = [];
+      function log(name, ok, detail) {
+        results.push({ name, ok: !!ok, detail });
+      }
+
+      const origWarn = console.warn;
+      console.warn = function () {
+        warnings.push(Array.from(arguments).join(" "));
+        return origWarn.apply(console, arguments);
+      };
+
+      function waitEditor() {
+        return new Promise((resolve, reject) => {
+          const ta = document.getElementById("editor");
+          if (ta.ckEditorInstance) return resolve(ta.ckEditorInstance);
+          const t = setTimeout(() => reject(new Error("timeout")), 20000);
+          ta.addEventListener("ckeditor:ready", () => {
+            clearTimeout(t);
+            resolve(ta.ckEditorInstance);
+          }, { once: true });
+        });
+      }
+
+      try {
+        const editor = await waitEditor();
+        const cmd = editor.commands.get("scrollHighlight");
+        log("command-exists", !!cmd, null);
+
+        editor.model.change((writer) => {
+          const root = editor.model.document.getRoot();
+          writer.setSelection(writer.createPositionAt(root.getChild(0), 0));
+        });
+        cmd.refresh();
+        log("collapsed-enabled", cmd.isEnabled, { enabled: cmd.isEnabled });
+
+        editor.model.change((writer) => {
+          const root = editor.model.document.getRoot();
+          writer.setSelection(writer.createRangeIn(root.getChild(0)));
+        });
+        cmd.refresh();
+        log("selection-enabled", cmd.isEnabled, null);
+
+        const dropdown = editor.ui.componentFactory.create("scrollHighlight");
+        dropdown.render();
+        document.body.appendChild(dropdown.element);
+
+        // Open dropdown — must NOT emit focus-child-missing warning
+        dropdown.isOpen = true;
+        await new Promise((r) => setTimeout(r, 80));
+        const focusWarn = warnings.some((w) =>
+          String(w).includes("ui-dropdown-panel-focus-child-missing-focus")
+        );
+        log("dropdown-focus-ok", !focusWarn, { warnings, form: !!document.querySelector(".ck-scroll-highlight-form") });
+        dropdown.isOpen = false;
+
+        // Split-button toggle apply
+        editor.model.change((writer) => {
+          const root = editor.model.document.getRoot();
+          writer.setSelection(writer.createRangeIn(root.getChild(0)));
+        });
+        dropdown.buttonView.fire("execute");
+        const data1 = editor.getData();
+        log(
+          "split-toggle-apply",
+          data1.includes("nova-scroll-highlight") && data1.includes("data-nova-sh-from"),
+          data1
+        );
+
+        // Form apply with custom colors
+        editor.model.change((writer) => {
+          const root = editor.model.document.getRoot();
+          writer.setSelection(writer.createRangeIn(root.getChild(0)));
+        });
+        dropdown.isOpen = true;
+        await new Promise((r) => setTimeout(r, 40));
+        const formView = dropdown.panelView.children.first;
+        formView.setColors("#112233", "#445566");
+        formView.fire("submit");
+        const data2 = editor.getData();
+        log(
+          "form-apply-colors",
+          data2.includes("#112233") && data2.includes("#445566"),
+          data2
+        );
+
+        // Split-button toggle remove
+        editor.model.change((writer) => {
+          const root = editor.model.document.getRoot();
+          writer.setSelection(writer.createPositionAt(root.getChild(0), 2));
+        });
+        dropdown.buttonView.fire("execute");
+        const data3 = editor.getData();
+        log("split-toggle-remove", !data3.includes("nova-scroll-highlight"), data3);
+
+        document.getElementById("out").textContent = JSON.stringify(results, null, 2);
+        window.__UI_TEST__ = results;
+      } catch (e) {
+        document.getElementById("out").textContent = String(e && e.stack || e);
+        window.__UI_TEST__ = [{ name: "fatal", ok: false, detail: String(e) }];
+      } finally {
+        console.warn = origWarn;
+      }
+    })();
+  </script>
+</body>
+</html>

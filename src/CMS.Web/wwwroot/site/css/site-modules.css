@@ -234,26 +234,32 @@ main > .error-page {
 .blog-prose .marker-blue,
 .service-prose .marker-blue { background-color: #72cdfd; }
 
-/* Scroll-scrubbed text highlight (public runtime) */
+/* Scroll-scrubbed text highlight (public runtime) — gradient wipe, no char splits */
 .nova-scroll-highlight {
   --nova-sh-from: #6b7280;
   --nova-sh-to: #0f172a;
+  --nova-sh-p: 0%;
+  color: var(--nova-sh-from);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Pre-JS fallback color; runtime sets inline transparent + background-clip */
+:is(.blog-prose, .service-prose) .nova-scroll-highlight:not([data-nova-sh-ready]) {
   color: var(--nova-sh-from);
 }
 
-:is(.blog-prose, .service-prose) .nova-scroll-highlight {
-  color: var(--nova-sh-from);
-}
-
+/* Legacy per-glyph spans from older runtime — keep readable until JS unwraps */
 .nova-scroll-highlight .nova-sh-char {
-  /* Color is driven by JS for soft scrub; inherit as fallback. */
   color: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nova-scroll-highlight,
-  .nova-scroll-highlight .nova-sh-char {
+  .nova-scroll-highlight {
     color: var(--nova-sh-to) !important;
+    background-image: none !important;
+    -webkit-background-clip: border-box !important;
+    background-clip: border-box !important;
   }
 }
 
