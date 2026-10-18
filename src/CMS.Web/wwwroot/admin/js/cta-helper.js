@@ -87,13 +87,19 @@
     return ' href="' + esc(href) + '"';
   }
 
-  function actionsRow(innerHtml, extraStyle) {
+  function actionsRow(innerHtml, count, extraStyle) {
     if (!innerHtml) return "";
+    var n = Math.max(0, count || 0);
+    var wrap = n >= 3 ? "wrap" : "nowrap";
     var style =
-      "display:flex;flex-wrap:nowrap;align-items:stretch;gap:.55rem;" +
+      "display:flex;flex-wrap:" +
+      wrap +
+      ";align-items:stretch;gap:.55rem;width:100%;" +
       (extraStyle || "");
     return (
-      '<div class="nova-cta__actions" style="' +
+      '<div class="nova-cta__actions" data-count="' +
+      esc(String(n)) +
+      '" style="' +
       style +
       '">' +
       innerHtml +
@@ -105,7 +111,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(9,112,125,.22);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(9,112,125,.22);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
@@ -115,7 +121,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;text-align:center;">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;text-align:center;box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
@@ -125,7 +131,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(0,0,0,.12);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(0,0,0,.12);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
@@ -135,7 +141,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;gap:.4rem;min-width:0;min-height:44px;padding:.65rem 1rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;text-align:center;backdrop-filter:blur(4px);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;text-align:center;backdrop-filter:blur(4px);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
@@ -145,7 +151,7 @@
     return (
       "<a" +
       btnOpenAttrs(href) +
-      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 0;align-items:center;justify-content:center;min-width:0;min-height:42px;padding:.5rem .9rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;text-align:center;box-shadow:0 6px 14px rgba(9,112,125,.2);">' +
+      ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8rem;align-items:center;justify-content:center;min-width:min(100%,8rem);min-height:42px;padding:.5rem .9rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;text-align:center;box-shadow:0 6px 14px rgba(9,112,125,.2);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
@@ -158,7 +164,7 @@
     return (
       '<a href="tel:' +
       esc(digits) +
-      '" dir="ltr" class="nova-cta__btn nova-cta__phone" style="display:inline-flex;flex:1.15 1 0;align-items:center;justify-content:center;gap:.35rem;min-width:0;min-height:44px;padding:.45rem .55rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;">' +
+      '" dir="ltr" class="nova-cta__btn nova-cta__phone" style="display:inline-flex;flex:1.15 1 9.5rem;align-items:center;justify-content:center;gap:.35rem;min-width:min(100%,9.5rem);min-height:44px;padding:.45rem .7rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;text-decoration:none;direction:ltr;unicode-bidi:isolate;box-sizing:border-box;">' +
       '<span style="display:inline-grid;place-items:center;flex:0 0 auto;width:1.7rem;height:1.7rem;border-radius:999px;background:#09707d;color:#fff;font-size:.75rem;" aria-hidden="true">☎</span>' +
       '<span style="min-width:0;text-align:start;">' +
       '<span style="display:block;font-size:.62rem;color:#6b7c7e;font-weight:700;line-height:1.15;">' +
@@ -171,6 +177,12 @@
 
   function hasText(value) {
     return !!(value && String(value).trim());
+  }
+
+  function toFaDigits(value) {
+    return String(value).replace(/\d/g, function (d) {
+      return "۰۱۲۳۴۵۶۷۸۹"[Number(d)];
+    });
   }
 
   function normalizeButtons(type, data) {
@@ -289,12 +301,13 @@
   }
 
   function renderActions(buttons, extraStyle) {
-    var html = (buttons || [])
+    var list = buttons || [];
+    var html = list
       .map(function (btn, index) {
         return renderButton(btn, index);
       })
       .join("");
-    return actionsRow(html, extraStyle);
+    return actionsRow(html, list.length, extraStyle);
   }
 
   var builders = {
@@ -416,16 +429,25 @@
 
     inline: function (d) {
       var buttons = normalizeButtons("inline", d);
+      var wrap = buttons.length > 1 ? "wrap" : "nowrap";
       var actionsHtml;
       if (buttons.length <= 1) {
         var only = buttons[0] || { text: "", url: "#", style: "compact" };
-        actionsHtml = renderButton(only, 0).replace("flex:1 1 0;", "flex:0 0 auto;");
+        actionsHtml = renderButton(only, 0)
+          .replace("flex:1 1 8.5rem;", "flex:0 0 auto;")
+          .replace("flex:1 1 8rem;", "flex:0 0 auto;")
+          .replace("min-width:min(100%,8.5rem);", "min-width:0;")
+          .replace("min-width:min(100%,8rem);", "min-width:0;");
       } else {
-        actionsHtml = renderActions(buttons, "flex:0 1 auto;");
+        actionsHtml = renderActions(buttons, "flex:1 1 12rem;");
       }
       return (
-        '<div class="nova-cta nova-cta--inline" style="margin:1.35rem 0;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:.75rem;padding:1rem 1.1rem;border-radius:16px;background:linear-gradient(120deg,#e6f3f5 0%,#f3fafb 100%);border:1px solid rgba(9,112,125,.16);box-shadow:0 6px 16px rgba(9,112,125,.06);font-family:Peyda,Tahoma,sans-serif;">' +
-        '<div style="min-width:0;flex:1 1 auto;">' +
+        '<div class="nova-cta nova-cta--inline" data-btn-count="' +
+        esc(String(buttons.length)) +
+        '" style="margin:1.35rem 0;display:flex;flex-wrap:' +
+        wrap +
+        ";align-items:center;justify-content:space-between;gap:.75rem;padding:1rem 1.1rem;border-radius:16px;background:linear-gradient(120deg,#e6f3f5 0%,#f3fafb 100%);border:1px solid rgba(9,112,125,.16);box-shadow:0 6px 16px rgba(9,112,125,.06);font-family:Peyda,Tahoma,sans-serif;\">" +
+        '<div style="min-width:0;flex:1 1 12rem;">' +
         '<strong style="display:block;color:#065a64;font-size:.98rem;margin-bottom:.2rem;">' +
         esc(d.title) +
         "</strong>" +
@@ -523,7 +545,7 @@
     row.innerHTML =
       '<div class="cta-mod__btn-row-head">' +
       '<span class="cta-mod__btn-row-title">دکمه ' +
-      esc(String(index + 1)) +
+      esc(toFaDigits(index + 1)) +
       "</span>" +
       '<button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>' +
       "</div>" +
@@ -555,20 +577,65 @@
   }
 
   function syncButtonUi(section) {
+    ensureButtonMeta(section);
     var list = getButtonsList(section);
     if (!list) return;
 
     var rows = list.querySelectorAll("[data-cta-btn-row]");
+    var count = rows.length;
+    list.setAttribute("data-count", String(count));
+    list.classList.toggle("is-empty", count === 0);
+    list.hidden = count === 0;
+
     rows.forEach(function (row, index) {
       var title = row.querySelector(".cta-mod__btn-row-title");
-      if (title) title.textContent = "دکمه " + (index + 1);
+      if (title) title.textContent = "دکمه " + toFaDigits(index + 1);
       var removeBtn = row.querySelector("[data-cta-remove-btn]");
-      if (removeBtn) removeBtn.disabled = rows.length <= 0;
+      if (removeBtn) removeBtn.disabled = false;
+      row.style.setProperty("--btn-index", String(index));
     });
 
     var addBtn = section.querySelector("[data-cta-add-btn]");
     if (addBtn) {
-      addBtn.disabled = rows.length >= MAX_BUTTONS;
+      addBtn.disabled = count >= MAX_BUTTONS;
+      addBtn.setAttribute(
+        "aria-label",
+        count >= MAX_BUTTONS
+          ? "حداکثر تعداد دکمه رسیده است"
+          : "افزودن دکمه"
+      );
+    }
+
+    var meta = section.querySelector("[data-cta-btn-meta]");
+    if (meta) {
+      meta.textContent = toFaDigits(count + " از " + MAX_BUTTONS + " دکمه");
+    }
+
+    var empty = section.querySelector("[data-cta-btn-empty]");
+    if (empty) {
+      empty.hidden = count > 0;
+    }
+  }
+
+  function ensureButtonMeta(section) {
+    var headText = section.querySelector(".cta-mod__buttons-head > div");
+    if (!headText) return;
+    if (!headText.querySelector("[data-cta-btn-meta]")) {
+      var meta = document.createElement("p");
+      meta.className = "cta-mod__btn-meta";
+      meta.setAttribute("data-cta-btn-meta", "");
+      headText.appendChild(meta);
+    }
+    var panel = section.querySelector(".cta-mod__buttons-panel");
+    if (panel && !panel.querySelector("[data-cta-btn-empty]")) {
+      var empty = document.createElement("div");
+      empty.className = "cta-mod__btn-empty";
+      empty.setAttribute("data-cta-btn-empty", "");
+      empty.hidden = true;
+      empty.innerHTML =
+        "<strong>هنوز دکمه‌ای نیست</strong><span>با «افزودن دکمه» اولین دکمه را بسازید.</span>";
+      var list = getButtonsList(section);
+      if (list) panel.insertBefore(empty, list);
     }
   }
 
@@ -578,9 +645,6 @@
 
     list.innerHTML = "";
     var items = Array.isArray(buttons) ? buttons.slice(0, MAX_BUTTONS) : [];
-    if (!items.length) {
-      items = [{ text: "", url: "", style: "primary" }];
-    }
     items.forEach(function (btn, index) {
       list.appendChild(createButtonRow(btn, index));
     });

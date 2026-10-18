@@ -2440,20 +2440,61 @@ body.nav-open {
 
 /* ---------- CTA ---------- */
 
-/* Nova CTA Helper embeds — keep action buttons side-by-side on phones */
+/* Nova CTA Helper embeds — adaptive action rows for 1–4 buttons */
 .nova-cta__actions {
   display: flex !important;
-  flex-wrap: nowrap !important;
+  flex-wrap: wrap !important;
   align-items: stretch;
   gap: 0.55rem;
   width: 100%;
 }
 
+.nova-cta__actions[data-count="1"],
+.nova-cta__actions[data-count="2"] {
+  flex-wrap: nowrap !important;
+}
+
 .nova-cta__actions > .nova-cta__btn,
 .nova-cta__actions > a {
+  flex: 1 1 8.5rem;
+  min-width: min(100%, 8.5rem);
+  max-width: 100%;
+  white-space: normal;
+  box-sizing: border-box;
+}
+
+.nova-cta__actions[data-count="1"] > .nova-cta__btn,
+.nova-cta__actions[data-count="1"] > a {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 18rem;
+}
+
+.nova-cta__actions[data-count="2"] > .nova-cta__btn,
+.nova-cta__actions[data-count="2"] > a {
   flex: 1 1 0;
   min-width: 0;
-  white-space: normal;
+}
+
+.nova-cta__actions[data-count="3"] > .nova-cta__btn,
+.nova-cta__actions[data-count="3"] > a,
+.nova-cta__actions[data-count="4"] > .nova-cta__btn,
+.nova-cta__actions[data-count="4"] > a {
+  flex: 1 1 calc(50% - 0.3rem);
+  min-width: min(100%, 9rem);
+}
+
+.nova-cta--inline[data-btn-count="1"] {
+  flex-wrap: nowrap !important;
+}
+
+.nova-cta--inline[data-btn-count="1"] > .nova-cta__btn {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+}
+
+.nova-cta--inline .nova-cta__actions {
+  flex: 1 1 12rem;
 }
 
 .nova-cta__phone .phone-ltr,
@@ -2469,20 +2510,24 @@ body.nav-open {
 
 @media (max-width: 575.98px) {
   .nova-cta__actions {
-    flex-direction: row !important;
+    gap: 0.45rem;
+  }
+
+  .nova-cta__actions[data-count="1"],
+  .nova-cta__actions[data-count="2"] {
     flex-wrap: nowrap !important;
-    gap: 0.4rem;
+  }
+
+  .nova-cta__actions[data-count="3"],
+  .nova-cta__actions[data-count="4"] {
+    flex-wrap: wrap !important;
   }
 
   .nova-cta__actions > .nova-cta__btn,
   .nova-cta__actions > a {
-    flex: 1 1 0;
-    width: auto;
-    max-width: none;
     min-height: 42px;
-    padding-inline: 0.55rem;
-    font-size: 0.78rem;
-    box-sizing: border-box;
+    padding-inline: 0.65rem;
+    font-size: 0.8rem;
   }
 
   .nova-cta--consultation {
@@ -2490,19 +2535,22 @@ body.nav-open {
   }
 
   .nova-cta--consultation .nova-cta__phone,
-  .nova-cta--consultation a[href^="tel"] {
+  .nova-cta--consultation a[href^="tel"],
+  .nova-cta__phone {
     gap: 0.3rem !important;
-    padding-inline: 0.45rem !important;
+    padding-inline: 0.55rem !important;
   }
 
-  .nova-cta--consultation a[href^="tel"] > span:first-child {
+  .nova-cta--consultation a[href^="tel"] > span:first-child,
+  .nova-cta__phone > span:first-child {
     width: 1.5rem !important;
     height: 1.5rem !important;
     font-size: 0.7rem !important;
   }
 
   .nova-cta--consultation .nova-cta__phone .phone-ltr,
-  .nova-cta--consultation a[href^="tel"] > span:last-child > span:last-child {
+  .nova-cta--consultation a[href^="tel"] > span:last-child > span:last-child,
+  .nova-cta__phone .phone-ltr {
     font-size: 0.74rem !important;
     letter-spacing: 0;
   }
@@ -2511,11 +2559,11 @@ body.nav-open {
     font-size: 0.58rem !important;
   }
 
-  .nova-cta--inline {
+  .nova-cta--inline[data-btn-count="1"] {
     flex-wrap: nowrap !important;
   }
 
-  .nova-cta--inline > .nova-cta__btn {
+  .nova-cta--inline[data-btn-count="1"] > .nova-cta__btn {
     flex: 0 0 auto;
   }
 }
