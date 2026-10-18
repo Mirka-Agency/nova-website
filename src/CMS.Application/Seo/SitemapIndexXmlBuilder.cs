@@ -20,11 +20,7 @@ public static class SitemapIndexXmlBuilder
             if (string.IsNullOrWhiteSpace(relativePath))
                 continue;
 
-            var path = relativePath.Trim();
-            if (!path.StartsWith('/'))
-                path = "/" + path;
-            if (path.Length > 1 && !path.EndsWith('/'))
-                path += "/";
+            var path = CanonicalUrlBuilder.NormalizeStructuralPath(relativePath.Trim());
 
             sb.AppendLine("  <sitemap>");
             sb.Append("    <loc>").Append(XmlEscape(root + path)).AppendLine("</loc>");

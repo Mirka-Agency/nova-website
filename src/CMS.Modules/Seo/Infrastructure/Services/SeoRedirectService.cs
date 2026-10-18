@@ -139,10 +139,16 @@ public sealed class SeoRedirectService : ISeoRedirectService
             .Select(r => new { r.FromPath, r.ToUrl, r.StatusCode })
             .ToListAsync(cancellationToken);
 
-        IReadOnlyDictionary<string, SeoRedirectMatchDto> map = rows.ToDictionary(
-            r => r.FromPath,
-            r => new SeoRedirectMatchDto(r.ToUrl, r.StatusCode),
-            StringComparer.Ordinal);
+        IReadOnlyDictionary<string, SeoRedirectMatchDto> map = rows
+            .GroupBy(r => SeoRedirect.NormalizePath(r.FromPath), StringComparer.Ordinal)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var row = g.First();
+                    return new SeoRedirectMatchDto(row.ToUrl, row.StatusCode);
+                },
+                StringComparer.Ordinal);
 
         _cache.Set(ActiveMapCacheKey, map, ActiveMapCacheDuration);
         return map;

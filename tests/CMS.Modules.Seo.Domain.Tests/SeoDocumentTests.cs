@@ -66,8 +66,17 @@ public class SeoRedirectTests
     {
         var redirect = SeoRedirect.Create("old-page", "/new-page", 302, true, "note");
         redirect.FromPath.Should().Be("/old-page");
+        redirect.ToUrl.Should().Be("/new-page/");
         redirect.StatusCode.Should().Be(302);
         redirect.Note.Should().Be("note");
+    }
+
+    [Fact]
+    public void Create_CollapsesDuplicateSlashes_InFromAndRelativeTo()
+    {
+        var redirect = SeoRedirect.Create("/old//page///", "/new//dest", 301, true, null);
+        redirect.FromPath.Should().Be("/old/page");
+        redirect.ToUrl.Should().Be("/new/dest/");
     }
 
     [Fact]
@@ -82,7 +91,7 @@ public class SeoRedirectTests
     {
         var redirect = SeoRedirect.Create("/pretty/", "/real-page/?x=1", 200, true, null);
         redirect.FromPath.Should().Be("/pretty");
-        redirect.ToUrl.Should().Be("/real-page?x=1");
+        redirect.ToUrl.Should().Be("/real-page/?x=1");
         redirect.StatusCode.Should().Be(200);
     }
 
@@ -105,5 +114,12 @@ public class SeoRedirectTests
     {
         var act = () => SeoRedirect.Create("  ", "/b", 301, true, null);
         act.Should().Throw<DomainException>();
+    }
+
+    [Fact]
+    public void NormalizePath_CollapsesDuplicateSlashes()
+    {
+        SeoRedirect.NormalizePath("/a//b///c/").Should().Be("/a/b/c");
+        SeoRedirect.ToPublicPath("/a//b///c/").Should().Be("/a/b/c/");
     }
 }

@@ -121,4 +121,40 @@ public class CanonicalUrlBuilderTests
         CanonicalUrlBuilder.NormalizePublicPath("/Teams/Dr-X")
             .Should().Be("/doctors/dr-x/");
     }
+
+    [Fact]
+    public void NormalizeStructuralPath_CollapsesDuplicateSlashes_AndAddsTrailingSlash()
+    {
+        CanonicalUrlBuilder.NormalizeStructuralPath("/Blog//Hello///")
+            .Should().Be("/blog/hello/");
+
+        CanonicalUrlBuilder.NormalizeStructuralPath("//about")
+            .Should().Be("/about/");
+
+        CanonicalUrlBuilder.NormalizeStructuralPath("/")
+            .Should().Be("/");
+    }
+
+    [Fact]
+    public void NormalizePublicPath_CollapsesDuplicateSlashes_BeforeLegacyRewrites()
+    {
+        CanonicalUrlBuilder.NormalizePublicPath("/News//Foo")
+            .Should().Be("/education-articles/foo/");
+    }
+
+    [Fact]
+    public void Build_CollapsesDuplicateSlashes_InConfiguredAndRequestPaths()
+    {
+        CanonicalUrlBuilder.Build("/blog//post", "https", "example.com")
+            .Should().Be("https://example.com/blog/post/");
+
+        CanonicalUrlBuilder.Build(
+                configured: null,
+                scheme: "https",
+                host: "example.com",
+                pathBase: "",
+                path: "/Services//Item",
+                pageQueryValue: null)
+            .Should().Be("https://example.com/services/item/");
+    }
 }

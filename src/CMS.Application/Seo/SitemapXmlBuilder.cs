@@ -22,8 +22,17 @@ public static class SitemapXmlBuilder
             if (string.IsNullOrWhiteSpace(entry.RelativePath))
                 continue;
 
-            var path = CanonicalUrlBuilder.NormalizePublicPath(entry.RelativePath.Trim());
-            var loc = root + path;
+            var raw = entry.RelativePath.Trim();
+            string? query = null;
+            var q = raw.IndexOf('?', StringComparison.Ordinal);
+            if (q >= 0)
+            {
+                query = raw[(q + 1)..];
+                raw = raw[..q];
+            }
+
+            var path = CanonicalUrlBuilder.NormalizePublicPath(raw);
+            var loc = string.IsNullOrEmpty(query) ? root + path : $"{root}{path}?{query}";
             if (!seen.Add(loc))
                 continue;
 

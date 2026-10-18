@@ -40,7 +40,8 @@ public sealed class SeoRedirectMiddleware
                         else
                         {
                             context.Response.StatusCode = match.StatusCode;
-                            context.Response.Headers.Location = match.ToUrl;
+                            // Normalize relative targets so LowercaseUrlMiddleware does not add a second hop.
+                            context.Response.Headers.Location = FormatLocation(match.ToUrl);
                             return;
                         }
                     }
@@ -57,23 +58,47 @@ public sealed class SeoRedirectMiddleware
             return false;
 
         var trimmed = toUrl.Trim();
+        if (trimmed.StartsWith("//", StringComparison.Ordinal))
+            return false;
+
         if (Uri.TryCreate(trimmed, UriKind.Absolute, out _))
             return false;
 
         var parts = trimmed.Split('?', 2);
-        var targetPath = SeoRedirect.NormalizePath(parts[0]);
-        if (!targetPath.StartsWith('/'))
+        var targetKey = SeoRedirect.NormalizePath(parts[0]);
+        if (!targetKey.StartsWith('/'))
             return false;
 
         var currentPath = SeoRedirect.NormalizePath(
             context.Request.Path.HasValue ? context.Request.Path.Value : "/");
-        if (string.Equals(currentPath, targetPath, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(currentPath, targetKey, StringComparison.OrdinalIgnoreCase))
             return false;
 
-        context.Request.Path = targetPath;
+        // Public trailing-slash form so the lowercase/slash middleware does not 301 after rewrite.
+        context.Request.Path = SeoRedirect.ToPublicPath(targetKey);
         if (parts.Length > 1)
             context.Request.QueryString = QueryString.FromUriComponent("?" + parts[1]);
         return true;
+    }
+
+    private static string FormatLocation(string toUrl)
+    {
+        if (string.IsNullOrWhiteSpace(toUrl))
+            return toUrl;
+
+        var trimmed = toUrl.Trim();
+        if (trimmed.StartsWith("//", StringComparison.Ordinal))
+            return trimmed;
+
+        if (Uri.TryCreate(trimmed, UriKind.Absolute, out var absolute)
+            && (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps))
+        {
+            return trimmed;
+        }
+
+        var parts = trimmed.Split('?', 2);
+        var publicPath = SeoRedirect.ToPublicPath(parts[0]);
+        return parts.Length > 1 ? $"{publicPath}?{parts[1]}" : publicPath;
     }
 }
 

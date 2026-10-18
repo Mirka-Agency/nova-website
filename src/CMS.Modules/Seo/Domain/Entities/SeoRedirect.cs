@@ -41,7 +41,7 @@ public class SeoRedirect : BaseEntity
         Validate(fromPath, toUrl, statusCode, note);
 
         FromPath = NormalizePath(fromPath);
-        ToUrl = NormalizeTarget(toUrl, statusCode);
+        ToUrl = NormalizeTarget(toUrl);
         StatusCode = statusCode;
         IsActive = isActive;
         Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
@@ -87,17 +87,30 @@ public class SeoRedirect : BaseEntity
             throw new DomainException("یادداشت خیلی طولانی است.");
     }
 
-    private static string NormalizeTarget(string toUrl, int statusCode)
+    private static string NormalizeTarget(string toUrl)
     {
         var trimmed = toUrl.Trim();
-        if (statusCode != 200)
+
+        // Protocol-relative or absolute http(s) destinations stay as entered.
+        if (trimmed.StartsWith("//", StringComparison.Ordinal))
             return trimmed;
 
+        if (Uri.TryCreate(trimmed, UriKind.Absolute, out var absolute)
+            && (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps))
+        {
+            return trimmed;
+        }
+
+        // Relative internal targets use the public form (trailing slash) so the next
+        // middleware hop is not needed for 301/302 or for 200 rewrites.
         var parts = trimmed.Split('?', 2);
-        var path = NormalizePath(parts[0]);
-        return parts.Length > 1 ? $"{path}?{parts[1]}" : path;
+        var publicPath = ToPublicPath(parts[0]);
+        return parts.Length > 1 ? $"{publicPath}?{parts[1]}" : publicPath;
     }
 
+    /// <summary>
+    /// Lookup key form: leading slash, collapsed duplicate slashes, no trailing slash (except root).
+    /// </summary>
     public static string NormalizePath(string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -107,9 +120,50 @@ public class SeoRedirect : BaseEntity
         if (!trimmed.StartsWith('/'))
             trimmed = "/" + trimmed;
 
+        trimmed = CollapseDuplicateSlashes(trimmed);
+
         if (trimmed.Length > 1)
             trimmed = trimmed.TrimEnd('/');
 
         return trimmed;
+    }
+
+    /// <summary>
+    /// Public relative path form used for redirect Location / rewrite Path.
+    /// </summary>
+    public static string ToPublicPath(string? path)
+    {
+        var key = NormalizePath(path);
+        if (key.Length <= 1)
+            return "/";
+
+        return key.ToLowerInvariant() + "/";
+    }
+
+    private static string CollapseDuplicateSlashes(string path)
+    {
+        if (!path.Contains("//", StringComparison.Ordinal))
+            return path;
+
+        var buffer = new char[path.Length];
+        var length = 0;
+        var previousSlash = false;
+        foreach (var c in path)
+        {
+            if (c == '/')
+            {
+                if (previousSlash)
+                    continue;
+                previousSlash = true;
+            }
+            else
+            {
+                previousSlash = false;
+            }
+
+            buffer[length++] = c;
+        }
+
+        return length == path.Length ? path : new string(buffer, 0, length);
     }
 }

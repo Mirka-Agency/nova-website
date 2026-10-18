@@ -1,10 +1,12 @@
+using CMS.Application.Seo;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace CMS.Web.Middleware;
 
 /// <summary>
 /// 301-redirects GET/HEAD requests to a single canonical public path form:
-/// lowercase segments and a trailing slash (except root, APIs, admin, and file-like paths).
+/// lowercase segments, collapsed duplicate slashes, and a trailing slash
+/// (except root, APIs, admin, and file-like paths) — in one hop.
 /// </summary>
 public sealed class LowercaseUrlMiddleware
 {
@@ -42,15 +44,8 @@ public sealed class LowercaseUrlMiddleware
         if (ShouldSkip(path))
             return false;
 
-        var working = HasUpperAscii(path) ? path.ToLowerInvariant() : path;
-
-        // Collapse any number of trailing slashes to exactly one (root stays "/").
-        // e.g. /about/// → /about/ so routing always hits the same page.
-        var withoutTrailing = working.TrimEnd('/');
-        var normalized = withoutTrailing.Length == 0
-            ? "/"
-            : withoutTrailing + "/";
-
+        // One 301 covers case, middle/trailing "//", and missing trailing slash together.
+        var normalized = CanonicalUrlBuilder.NormalizeStructuralPath(path);
         if (string.Equals(path, normalized, StringComparison.Ordinal))
             return false;
 
@@ -71,8 +66,11 @@ public sealed class LowercaseUrlMiddleware
         }
 
         // Static / file-like paths: robots.txt, sitemap.xml, assets with extensions.
-        // Use the last non-empty segment so /file.txt/// is still treated as a file.
+        // Use the last non-empty segment so /file.txt/// and //file.txt are still files.
         var trimmed = path.TrimEnd('/');
+        while (trimmed.Contains("//", StringComparison.Ordinal))
+            trimmed = trimmed.Replace("//", "/", StringComparison.Ordinal);
+
         if (trimmed.Length == 0)
             return false;
 
@@ -80,18 +78,6 @@ public sealed class LowercaseUrlMiddleware
         var lastSegment = lastSlash >= 0 ? trimmed[(lastSlash + 1)..] : trimmed;
         if (lastSegment.Contains('.', StringComparison.Ordinal))
             return true;
-
-        return false;
-    }
-
-    private static bool HasUpperAscii(string path)
-    {
-        for (var i = 0; i < path.Length; i++)
-        {
-            var c = path[i];
-            if (c is >= 'A' and <= 'Z')
-                return true;
-        }
 
         return false;
     }

@@ -1,8 +1,8 @@
 namespace CMS.Application.Seo;
 
 /// <summary>
-/// Builds a single absolute canonical URL: lowercase path, trailing slash (except root /),
-/// legacy public-path rewrites, and only <c>page</c> query when &gt; 1.
+/// Builds a single absolute canonical URL: lowercase path, collapsed duplicate slashes,
+/// trailing slash (except root /), legacy public-path rewrites, and only <c>page</c> query when &gt; 1.
 /// </summary>
 public static class CanonicalUrlBuilder
 {
@@ -75,10 +75,17 @@ public static class CanonicalUrlBuilder
     }
 
     /// <summary>
-    /// Public site path: lowercase, trailing slash (except root), legacy path rewrites.
+    /// Public site path: lowercase, collapsed slashes, trailing slash (except root), legacy path rewrites.
     /// </summary>
     public static string NormalizePublicPath(string? path) =>
         NormalizePath(path ?? "/", applyLegacyRewrites: true);
+
+    /// <summary>
+    /// Structural public path only: lowercase, collapsed <c>//</c>, trailing slash (except root).
+    /// No legacy rewrites — use for HTTP canonical redirects.
+    /// </summary>
+    public static string NormalizeStructuralPath(string? path) =>
+        NormalizePath(path ?? "/", applyLegacyRewrites: false);
 
     /// <summary>
     /// Relative archive URL with trailing slash and optional <c>?page=</c> when <paramref name="page"/> &gt; 1.
@@ -120,6 +127,10 @@ public static class CanonicalUrlBuilder
             return "/";
 
         path = path.ToLowerInvariant();
+        if (!path.StartsWith('/'))
+            path = "/" + path;
+
+        path = CollapseDuplicateSlashes(path);
 
         if (applyLegacyRewrites)
         {
@@ -141,6 +152,33 @@ public static class CanonicalUrlBuilder
             path += "/";
 
         return path;
+    }
+
+    private static string CollapseDuplicateSlashes(string path)
+    {
+        if (!path.Contains("//", StringComparison.Ordinal))
+            return path;
+
+        var buffer = new char[path.Length];
+        var length = 0;
+        var previousSlash = false;
+        foreach (var c in path)
+        {
+            if (c == '/')
+            {
+                if (previousSlash)
+                    continue;
+                previousSlash = true;
+            }
+            else
+            {
+                previousSlash = false;
+            }
+
+            buffer[length++] = c;
+        }
+
+        return length == path.Length ? path : new string(buffer, 0, length);
     }
 
     private static int? ParsePage(string query)
