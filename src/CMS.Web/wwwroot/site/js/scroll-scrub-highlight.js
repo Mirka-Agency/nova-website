@@ -266,10 +266,14 @@
   function computeScrollProgress(el) {
     var rect = el.getBoundingClientRect();
     var vh = window.innerHeight || document.documentElement.clientHeight || 1;
-    // Begin near bottom; longer travel = slower fill.
-    var start = vh * 0.98;
-    var travel = Math.max(vh * 1.15, rect.height + vh * 0.55);
-    var end = start - travel;
+    // Fill while the block enters the viewport; finish once it's clearly on-screen.
+    var start = vh * 0.92;
+    var end = vh * 0.62;
+    // Tall blocks still get a little extra travel, but never past mid-viewport.
+    if (rect.height > vh * 0.25) {
+      end = Math.min(end, start - (rect.height + vh * 0.08));
+      end = Math.max(end, vh * 0.45);
+    }
     if (start === end) return rect.top < start ? 1 : 0;
     var raw = (start - rect.top) / (start - end);
     if (raw <= 0) return 0;
