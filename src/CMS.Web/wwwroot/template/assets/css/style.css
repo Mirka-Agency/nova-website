@@ -5115,15 +5115,6 @@ a.doctor-focus__item {
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.45;
-  text-decoration: none;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-a.blog-single-verified:hover,
-a.blog-single-verified:focus-visible {
-  background: rgba(9, 112, 125, 0.12);
-  border-color: rgba(9, 112, 125, 0.28);
-  color: var(--primary-dark);
 }
 
 .blog-single-verified__icon {
@@ -5145,6 +5136,19 @@ a.blog-single-verified:focus-visible {
 
 .blog-single-verified__text {
   min-width: 0;
+}
+
+.blog-single-verified__link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s ease;
+}
+
+.blog-single-verified__link:hover,
+.blog-single-verified__link:focus-visible {
+  color: var(--primary);
 }
 
 .service-article-hero__actions {
