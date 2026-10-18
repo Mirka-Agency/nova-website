@@ -530,6 +530,13 @@ body.site > main {
 .service-prose table,
 .blog-prose .table,
 .service-prose .table {
+  --bs-table-bg: transparent;
+  --bs-table-accent-bg: transparent;
+  --bs-table-striped-bg: transparent;
+  --bs-table-active-bg: transparent;
+  --bs-table-hover-bg: transparent;
+  --bs-table-hover-color: inherit;
+  --bs-table-bg-state: transparent;
   width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
@@ -569,6 +576,9 @@ body.site > main {
 .blog-prose .table td,
 .service-prose .table th,
 .service-prose .table td {
+  --bs-table-bg-state: transparent;
+  --bs-table-accent-bg: transparent;
+  --bs-table-hover-bg: transparent;
   width: auto;
   max-width: 100%;
   padding: 0.85rem 0.95rem;
@@ -578,7 +588,7 @@ body.site > main {
   font-weight: 500;
   line-height: 1.55;
   color: var(--text, #2c3e40);
-  background-color: var(--white, #fff) !important;
+  background: var(--white, #fff) !important;
   background-image: none !important;
   border: 1px solid rgba(9, 112, 125, 0.18) !important;
   box-shadow: none !important;
@@ -590,86 +600,78 @@ body.site > main {
   hyphens: auto;
 }
 
-/* Header row: thead, or first tbody row when table has no thead */
-.blog-prose thead th,
-.service-prose thead th,
-.blog-prose thead td,
-.service-prose thead td,
-.blog-prose table:not(:has(thead)) > tbody > tr:first-child > th,
-.service-prose table:not(:has(thead)) > tbody > tr:first-child > th,
-.blog-prose table:not(:has(thead)) > tbody > tr:first-child > td,
-.service-prose table:not(:has(thead)) > tbody > tr:first-child > td,
-.blog-prose .table:not(:has(thead)) > tbody > tr:first-child > th,
-.service-prose .table:not(:has(thead)) > tbody > tr:first-child > th,
-.blog-prose .table:not(:has(thead)) > tbody > tr:first-child > td,
-.service-prose .table:not(:has(thead)) > tbody > tr:first-child > td,
-.blog-prose figure.table table:not(:has(thead)) > tbody > tr:first-child > th,
-.service-prose figure.table table:not(:has(thead)) > tbody > tr:first-child > th,
-.blog-prose figure.table table:not(:has(thead)) > tbody > tr:first-child > td,
-.service-prose figure.table table:not(:has(thead)) > tbody > tr:first-child > td {
+.blog-prose tbody th,
+.service-prose tbody th {
+  font-weight: 600;
+}
+
+/*
+  Header row locked for all states (incl. Bootstrap .table-hover).
+  Covers thead, or first tbody row when table has no thead.
+*/
+:is(.blog-prose, .service-prose) thead > tr > :is(th, td),
+:is(.blog-prose, .service-prose) thead > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) thead > tr:focus-within > :is(th, td),
+:is(.blog-prose, .service-prose) .table-hover > thead > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) .table-hover > thead > tr:hover > *,
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:focus-within > :is(th, td),
+:is(.blog-prose, .service-prose) .table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) .table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) .table-hover:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) .table-hover:not(:has(thead)) > tbody > tr:first-child:hover > *,
+:is(.blog-prose, .service-prose) figure.table table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > * {
+  --bs-table-bg-state: transparent;
+  --bs-table-accent-bg: transparent;
+  --bs-table-hover-bg: transparent;
+  background: var(--primary, #09707d) !important;
   background-color: var(--primary, #09707d) !important;
   background-image: none !important;
   color: #fff !important;
   font-size: 0.88rem;
   font-weight: 700;
   box-shadow: none !important;
+  filter: none !important;
 }
 
-.blog-prose tbody th,
-.service-prose tbody th {
-  font-weight: 600;
-}
-
-/* Kill Bootstrap / theme hover + stripe overlays that flash header color */
-.blog-prose .table-striped > tbody > tr:nth-of-type(odd) > *,
-.service-prose .table-striped > tbody > tr:nth-of-type(odd) > *,
-.blog-prose .table-hover > tbody > tr:hover > *,
-.service-prose .table-hover > tbody > tr:hover > *,
-.blog-prose tr:hover > th,
-.blog-prose tr:hover > td,
-.service-prose tr:hover > th,
-.service-prose tr:hover > td,
-.blog-prose tbody tr:hover > th,
-.blog-prose tbody tr:hover > td,
-.service-prose tbody tr:hover > th,
-.service-prose tbody tr:hover > td {
-  --bs-table-accent-bg: transparent;
+/* No hover / stripe flash on body rows — keep static white */
+:is(.blog-prose, .service-prose) .table-striped > tbody > tr:nth-of-type(odd) > *,
+:is(.blog-prose, .service-prose) .table-hover > tbody > tr:hover > *,
+:is(.blog-prose, .service-prose) tbody > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) tbody > tr:focus-within > :is(th, td) {
   --bs-table-bg-state: transparent;
+  --bs-table-accent-bg: transparent;
   --bs-table-hover-bg: transparent;
-  --bs-table-hover-color: inherit;
   background-image: none !important;
   box-shadow: none !important;
   filter: none !important;
   transition: none !important;
 }
 
-.blog-prose thead tr:hover > th,
-.blog-prose thead tr:hover > td,
-.service-prose thead tr:hover > th,
-.service-prose thead tr:hover > td,
-.blog-prose table:not(:has(thead)) > tbody > tr:first-child:hover > th,
-.service-prose table:not(:has(thead)) > tbody > tr:first-child:hover > th,
-.blog-prose table:not(:has(thead)) > tbody > tr:first-child:hover > td,
-.service-prose table:not(:has(thead)) > tbody > tr:first-child:hover > td,
-.blog-prose figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > th,
-.service-prose figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > th,
-.blog-prose figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > td,
-.service-prose figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > td {
-  background-color: var(--primary, #09707d) !important;
-  color: #fff !important;
-  box-shadow: none !important;
-}
-
-.blog-prose table:has(thead) tbody tr:hover > th,
-.service-prose table:has(thead) tbody tr:hover > th,
-.blog-prose table:has(thead) tbody tr:hover > td,
-.service-prose table:has(thead) tbody tr:hover > td,
-.blog-prose table:not(:has(thead)) > tbody > tr:not(:first-child):hover > th,
-.service-prose table:not(:has(thead)) > tbody > tr:not(:first-child):hover > th,
-.blog-prose table:not(:has(thead)) > tbody > tr:not(:first-child):hover > td,
-.service-prose table:not(:has(thead)) > tbody > tr:not(:first-child):hover > td {
+:is(.blog-prose, .service-prose) table:has(thead) > tbody > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) table:has(thead) > tbody > tr:hover > *,
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:not(:first-child):hover > :is(th, td),
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:not(:first-child):hover > * {
+  background: var(--white, #fff) !important;
   background-color: var(--white, #fff) !important;
   color: var(--text, #2c3e40) !important;
+}
+
+/* Re-assert header after body-hover rules so it never flashes white */
+:is(.blog-prose, .service-prose) thead > tr > :is(th, td),
+:is(.blog-prose, .service-prose) thead > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) thead > tr:hover > *,
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:hover > * {
+  background: var(--primary, #09707d) !important;
+  background-color: var(--primary, #09707d) !important;
+  background-image: none !important;
+  color: #fff !important;
+  box-shadow: none !important;
 }
 
 @media (max-width: 767.98px) {
