@@ -606,24 +606,25 @@ body.site > main {
 }
 
 /*
-  Header row locked for all states (incl. Bootstrap .table-hover).
+  Header row: always primary green (no hover flash).
+  Selectors include .table so they beat Bootstrap .table th/td white rules.
   Covers thead, or first tbody row when table has no thead.
 */
-:is(.blog-prose, .service-prose) thead > tr > :is(th, td),
-:is(.blog-prose, .service-prose) thead > tr:hover > :is(th, td),
-:is(.blog-prose, .service-prose) thead > tr:focus-within > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr:hover > *,
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr:focus-within > :is(th, td),
 :is(.blog-prose, .service-prose) .table-hover > thead > tr:hover > :is(th, td),
 :is(.blog-prose, .service-prose) .table-hover > thead > tr:hover > *,
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:focus-within > :is(th, td),
-:is(.blog-prose, .service-prose) .table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
-:is(.blog-prose, .service-prose) .table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child:hover > *,
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child:focus-within > :is(th, td),
 :is(.blog-prose, .service-prose) .table-hover:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
 :is(.blog-prose, .service-prose) .table-hover:not(:has(thead)) > tbody > tr:first-child:hover > *,
-:is(.blog-prose, .service-prose) figure.table table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
-:is(.blog-prose, .service-prose) figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
-:is(.blog-prose, .service-prose) figure.table table:not(:has(thead)) > tbody > tr:first-child:hover > * {
+:is(.blog-prose, .service-prose) figure.table :is(table, .table):not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) figure.table :is(table, .table):not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) figure.table :is(table, .table):not(:has(thead)) > tbody > tr:first-child:hover > * {
   --bs-table-bg-state: transparent;
   --bs-table-accent-bg: transparent;
   --bs-table-hover-bg: transparent;
@@ -637,11 +638,12 @@ body.site > main {
   filter: none !important;
 }
 
-/* No hover / stripe flash on body rows — keep static white */
+/* Body rows stay static white — kill Bootstrap stripe/hover tint */
 :is(.blog-prose, .service-prose) .table-striped > tbody > tr:nth-of-type(odd) > *,
 :is(.blog-prose, .service-prose) .table-hover > tbody > tr:hover > *,
-:is(.blog-prose, .service-prose) tbody > tr:hover > :is(th, td),
-:is(.blog-prose, .service-prose) tbody > tr:focus-within > :is(th, td) {
+:is(.blog-prose, .service-prose) :is(table, .table) > tbody > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table) > tbody > tr:hover > *,
+:is(.blog-prose, .service-prose) :is(table, .table) > tbody > tr:focus-within > :is(th, td) {
   --bs-table-bg-state: transparent;
   --bs-table-accent-bg: transparent;
   --bs-table-hover-bg: transparent;
@@ -651,22 +653,26 @@ body.site > main {
   transition: none !important;
 }
 
-:is(.blog-prose, .service-prose) table:has(thead) > tbody > tr:hover > :is(th, td),
-:is(.blog-prose, .service-prose) table:has(thead) > tbody > tr:hover > *,
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:not(:first-child):hover > :is(th, td),
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:not(:first-child):hover > * {
+:is(.blog-prose, .service-prose) :is(table, .table):has(thead) > tbody > tr > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):has(thead) > tbody > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):has(thead) > tbody > tr:hover > *,
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:not(:first-child) > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:not(:first-child):hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:not(:first-child):hover > * {
   background: var(--white, #fff) !important;
   background-color: var(--white, #fff) !important;
   color: var(--text, #2c3e40) !important;
 }
 
-/* Re-assert header after body-hover rules so it never flashes white */
-:is(.blog-prose, .service-prose) thead > tr > :is(th, td),
-:is(.blog-prose, .service-prose) thead > tr:hover > :is(th, td),
-:is(.blog-prose, .service-prose) thead > tr:hover > *,
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child > :is(th, td),
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
-:is(.blog-prose, .service-prose) table:not(:has(thead)) > tbody > tr:first-child:hover > * {
+/* Re-assert header green after body rules (default + hover identical) */
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table) > thead > tr:hover > *,
+:is(.blog-prose, .service-prose) .table-hover > thead > tr:hover > :is(th, td),
+:is(.blog-prose, .service-prose) .table-hover > thead > tr:hover > *,
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child:hover > :is(th, td),
+:is(.blog-prose, .service-prose) :is(table, .table):not(:has(thead)) > tbody > tr:first-child:hover > * {
   background: var(--primary, #09707d) !important;
   background-color: var(--primary, #09707d) !important;
   background-image: none !important;
