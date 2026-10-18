@@ -61,25 +61,22 @@
     <section class="services-overview" aria-label="گروه‌های تخصصی خدمات">
       <div class="container">
 @{
-    string GroupHref(PublicServiceItemSummaryDto? match, string fragment) =>
-        match is null ? $"#{fragment}" : Url.Action("Details", "Services", new { slug = match.Slug })!;
-
-    var overviewCards = new (PublicServiceItemSummaryDto? Match, string Title, string Excerpt, string Fragment, int Icon)[]
+    var overviewCards = new (PublicServiceItemSummaryDto? Match, string Title, string Excerpt, string Href, int Icon)[]
     {
-        (thyroidService, "جراحی تیروئید", "ارزیابی و درمان جراحی ندول، گواتر، پرکاری و سرطان‌های تیروئید با روش‌های باز یا کم‌تهاجمی.", "thyroid", 0),
-        (parathyroidService, "جراحی پاراتیروئید", "درمان اختلالات پاراتیروئید از جمله هیپرپاراتیروئیدیسم با تمرکز بر دقت تشخیص و کاهش عوارض.", "parathyroid", 1),
-        (adrenalService, "جراحی فوق کلیه", "جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.", "adrenal", 2),
-        (pancreasService, "جراحی پانکراس", "ارزیابی و درمان تومورهای پانکراس و نورواندوکرین با رویکرد تخصصی و چندرشته‌ای.", "pancreas", 3)
+        (thyroidService, "جراحی تیروئید", "ارزیابی و درمان جراحی ندول، گواتر، پرکاری و سرطان‌های تیروئید با روش‌های باز یا کم‌تهاجمی.", Url.Content("~/thyroid-surgery/")!, 0),
+        (parathyroidService, "جراحی پاراتیروئید", "درمان اختلالات پاراتیروئید از جمله هیپرپاراتیروئیدیسم با تمرکز بر دقت تشخیص و کاهش عوارض.", Url.Content("~/parathyroid-surgery-from-0-to-100/")!, 1),
+        (adrenalService, "جراحی آدرنال", "جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.", Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/")!, 2),
+        (pancreasService, "جراحی پانکراس", "ارزیابی و درمان تومورهای پانکراس و نورواندوکرین با رویکرد تخصصی و چندرشته‌ای.", Url.Content("~/services/pancreatic/")!, 3)
     };
 }
         <div class="services-cards" data-services-cards-slider>
-          <div class="services-cards__viewport" tabindex="0" aria-label="گروه‌های تخصصی خدمات؛ با دکمه‌ها یا کشیدن افقی جابه‌جا شوید">
+          <div class="services-cards__viewport" tabindex="0" aria-label="خدمات تخصصی؛ با دکمه‌ها یا کشیدن افقی جابه‌جا شوید">
             <div class="row g-3 g-lg-4 services-cards__track">
 @foreach (var card in overviewCards)
 {
-    var title = string.IsNullOrWhiteSpace(card.Match?.Title) ? card.Title : card.Match!.Title;
+    var title = card.Title;
     var excerpt = string.IsNullOrWhiteSpace(card.Match?.Excerpt) ? card.Excerpt : card.Match!.Excerpt;
-    var href = GroupHref(card.Match, card.Fragment);
+    var href = card.Href;
               <div class="col-12 col-md-6 col-xl-3 reveal">
                 <article class="service-card">
                   <span class="service-card__icon" aria-hidden="true">
@@ -204,7 +201,6 @@
               غدد پاراتیروئید مسئول تنظیم سطح کلسیم بدن هستند. اختلالات آن‌ها می‌توانند مشکلات متابولیکی جدی ایجاد کنند و اغلب با جراحی کم‌تهاجمی و اندوسکوپیک درمان می‌شوند.
             </p>
             <ul class="service-detail__list">
-              <li><a href="@Url.Content("~/parathyroid-surgery-from-0-to-100/")">جراحی پاراتیروئید</a></li>
               <li><a href="@Url.Content("~/services/parathyroid-tumor-surgery/")">سرطان پاراتیروئید</a></li>
               <li><a href="@Url.Content("~/hyperparathyroidism/")">پرکاری پاراتیروئید</a></li>
               <li><a href="@Url.Content("~/services/hypoparathyroidism/")">کم کاری پاراتیروئید</a></li>
@@ -255,7 +251,6 @@
               غدد فوق کلیوی نقش مهمی در تنظیم هورمون‌ها دارند. بسیاری از جراحی‌های این حوزه با روش لاپاراسکوپیک انجام می‌شوند؛ مگر در توده‌های بسیار بزرگ یا سرطانی.
             </p>
             <ul class="service-detail__list">
-              <li><a href="@Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/")">جراحی آدرنال</a></li>
               <li><a href="@Url.Content("~/what-is-adrenal-mass/")">توده آدرنال</a></li>
               <li><a href="@Url.Content("~/dangerous-adrenal-cyst/")">کیست آدرنال</a></li>
               <li><a href="@Url.Content("~/services/adrenal-cancers/")">سرطان آدرنال</a></li>

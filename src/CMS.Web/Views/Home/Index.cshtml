@@ -239,17 +239,12 @@
     var adrenalService = FindHomeService("adrenal", "آدرنال", "فوق کلیه");
     var pancreasService = FindHomeService("pancreas", "پانکراس");
 
-    string ServiceHref(PublicServiceItemSummaryDto? match, string fragment) =>
-        match is null
-            ? $"{Url.Action("Index", "Services")}#{fragment}"
-            : Url.Action("Details", "Services", new { slug = match.Slug })!;
-
-    var homeServices = new (PublicServiceItemSummaryDto? Match, string Title, string Excerpt, string Fragment, int Icon)[]
+    var homeServices = new (PublicServiceItemSummaryDto? Match, string Title, string Excerpt, string Href, int Icon)[]
     {
-        (thyroidService, "جراحی تیروئید", "ارزیابی و درمان جراحی ندول، گواتر، پرکاری و سرطان‌های تیروئید با روش‌های باز یا کم‌تهاجمی.", "thyroid", 0),
-        (parathyroidService, "جراحی پاراتیروئید", "درمان اختلالات پاراتیروئید از جمله هیپرپاراتیروئیدیسم با تمرکز بر دقت تشخیص و کاهش عوارض.", "parathyroid", 1),
-        (adrenalService, "جراحی فوق کلیه", "جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.", "adrenal", 2),
-        (pancreasService, "جراحی پانکراس", "ارزیابی و درمان تومورهای پانکراس و نورواندوکرین با رویکرد تخصصی و چندرشته‌ای.", "pancreas", 3)
+        (thyroidService, "جراحی تیروئید", "ارزیابی و درمان جراحی ندول، گواتر، پرکاری و سرطان‌های تیروئید با روش‌های باز یا کم‌تهاجمی.", Url.Content("~/thyroid-surgery/")!, 0),
+        (parathyroidService, "جراحی پاراتیروئید", "درمان اختلالات پاراتیروئید از جمله هیپرپاراتیروئیدیسم با تمرکز بر دقت تشخیص و کاهش عوارض.", Url.Content("~/parathyroid-surgery-from-0-to-100/")!, 1),
+        (adrenalService, "جراحی آدرنال", "جراحی بیماری‌های آدرنال از جمله توده‌ها و اختلالات هورمونی، اغلب با روش لاپاراسکوپیک.", Url.Content("~/adrenal-surgery-surgical-procedures-and-recovery-period/")!, 2),
+        (pancreasService, "جراحی پانکراس", "ارزیابی و درمان تومورهای پانکراس و نورواندوکرین با رویکرد تخصصی و چندرشته‌ای.", Url.Content("~/services/pancreatic/")!, 3)
     };
 }
         <div class="services-cards" data-services-cards-slider>
@@ -257,9 +252,9 @@
             <div class="row g-3 g-lg-4 services-cards__track">
 @foreach (var card in homeServices)
 {
-    var title = string.IsNullOrWhiteSpace(card.Match?.Title) ? card.Title : card.Match!.Title;
+    var title = card.Title;
     var excerpt = string.IsNullOrWhiteSpace(card.Match?.Excerpt) ? card.Excerpt : card.Match!.Excerpt;
-    var href = ServiceHref(card.Match, card.Fragment);
+    var href = card.Href;
               <div class="col-12 col-md-6 col-xl-3 reveal">
                 <article class="service-card">
                   <span class="service-card__icon" aria-hidden="true">
