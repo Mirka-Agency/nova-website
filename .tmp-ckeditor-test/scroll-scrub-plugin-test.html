@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.css" />
+</head>
+<body>
+  <textarea id="editor"><p>متن تست برای هایلایت اسکرولی</p></textarea>
+  <script src="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/ckeditor5.umd.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/vendor/ckeditor5/translations/fa.umd.js"></script>
+  <script src="../src/CMS.Web/wwwroot/admin/js/ckeditor-scroll-highlight.js"></script>
+  <script>
+    (async function () {
+      const { ClassicEditor, Essentials, Paragraph, Bold, Highlight } = CKEDITOR;
+      const plugin = window.ScrollScrubHighlight.plugin;
+      const editor = await ClassicEditor.create(document.querySelector("#editor"), {
+        licenseKey: "GPL",
+        language: "fa",
+        plugins: [Essentials, Paragraph, Bold, Highlight, plugin],
+        toolbar: {
+          shouldNotGroupWhenFull: true,
+          items: ["bold", "highlight", "scrollScrubHighlight"],
+        },
+        highlight: {
+          options: [
+            { model: "yellowMarker", class: "marker-yellow", title: "Y", type: "marker" },
+          ],
+        },
+      });
+
+      editor.model.change((writer) => {
+        const root = editor.model.document.getRoot();
+        const range = editor.model.createRangeIn(root.getChild(0));
+        writer.setSelection(range);
+      });
+      editor.execute("scrollScrubHighlight", { color: "#e7f2b0" });
+      const data1 = editor.getData();
+
+      editor.execute("scrollScrubHighlight", { action: "remove" });
+      const data2 = editor.getData();
+
+      // Upcast roundtrip
+      editor.setData(
+        '<p>قبل <span class="scroll-scrub-highlight" data-scroll-scrub-color="#bae6fd">وسط</span> بعد</p>'
+      );
+      const data3 = editor.getData();
+
+      // Legacy upcast
+      editor.setData(
+        '<p><span class="nova-scroll-highlight" data-nova-sh-from="#6b7280" data-nova-sh-to="#111">قدیمی</span></p>'
+      );
+      const data4 = editor.getData();
+
+      window.__PLUGIN_TEST__ = {
+        hasCommand: !!editor.commands.get("scrollScrubHighlight"),
+        hasComponent: editor.ui.componentFactory.has("scrollScrubHighlight"),
+        applyOk:
+          data1.includes("scroll-scrub-highlight") &&
+          data1.includes('data-scroll-scrub-color="#e7f2b0"') &&
+          !/background-color/i.test(data1),
+        removeOk: !data2.includes("scroll-scrub-highlight"),
+        upcastOk:
+          data3.includes("scroll-scrub-highlight") &&
+          data3.includes("#bae6fd"),
+        legacyOk:
+          data4.includes("scroll-scrub-highlight") &&
+          data4.includes("data-scroll-scrub-color"),
+        data1,
+        data3,
+        data4,
+      };
+      await editor.destroy();
+    })().catch((err) => {
+      window.__PLUGIN_TEST__ = { error: String(err && err.stack || err) };
+    });
+  </script>
+</body>
+</html>

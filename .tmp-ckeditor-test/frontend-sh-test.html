@@ -16,33 +16,27 @@
     <p>
       متن عادی قبل.
       <span
-        class="nova-scroll-highlight"
-        data-nova-scroll-highlight="1"
-        data-nova-sh-from="#9ca3af"
-        data-nova-sh-to="#09707d"
-        style="color:#9ca3af"
-        >جراحی تیروئید یکی از مهم‌ترین روش‌های درمان بیماری‌های غدد است و این جمله باید با اسکرول رنگ عوض کند.</span
+        class="scroll-scrub-highlight"
+        data-scroll-scrub-color="#e7f2b0"
+        >جراحی تیروئید یکی از مهم‌ترین روش‌های درمان بیماری‌های غدد است و این جمله باید خط‌به‌خط هایلایت شود.</span
       >
       متن عادی بعد.
+      همچنین <mark class="marker-yellow">هایلایت استاتیک زرد</mark> جدا بماند.
     </p>
   </div>
   <div class="pad">پایین صفحه</div>
 
-  <script src="../src/CMS.Web/wwwroot/site/vendor/gsap/gsap.min.js"></script>
-  <script src="../src/CMS.Web/wwwroot/site/vendor/gsap/ScrollTrigger.min.js"></script>
-  <script src="../src/CMS.Web/wwwroot/site/js/scroll-highlight.js"></script>
+  <script src="../src/CMS.Web/wwwroot/site/js/scroll-scrub-highlight.js"></script>
   <script>
     window.__FE_SH__ = { ready: false };
     window.addEventListener("load", function () {
       setTimeout(function () {
-        var el = document.querySelector(".nova-scroll-highlight");
+        var el = document.querySelector(".scroll-scrub-highlight");
         window.__FE_SH__ = {
-          ready: el && el.getAttribute("data-nova-sh-ready") === "1",
-          hasCharSpans: el ? el.querySelectorAll(".nova-sh-char").length : -1,
-          progress: el ? el.getAttribute("data-nova-sh-progress") : null,
-          bg: el ? getComputedStyle(el).backgroundImage : null,
-          color: el ? getComputedStyle(el).color : null,
-          clip: el ? getComputedStyle(el).webkitBackgroundClip || getComputedStyle(el).backgroundClip : null,
+          ready: el && el.getAttribute("data-scroll-scrub-ready") === "1",
+          words: el ? el.querySelectorAll(".scroll-scrub-word").length : -1,
+          lines: el ? el.querySelectorAll(".scroll-scrub-line").length : -1,
+          color: el ? el.getAttribute("data-scroll-scrub-color") : null,
           text: el ? el.textContent : null,
         };
       }, 200);

@@ -2562,20 +2562,62 @@ fieldset.admin-field legend {
   background-color: #72cdfd;
 }
 
-/* Scroll-scrubbed text highlight (editor chrome) — make applied state obvious */
+/* Scroll-scrub highlight (editor preview — static marker, no wipe) */
+.ck-content .scroll-scrub-highlight,
 .ck-content .nova-scroll-highlight {
-  color: var(--nova-sh-from, #6b7280) !important;
-  background-image: linear-gradient(
-    90deg,
-    rgba(9, 112, 125, 0.16),
-    rgba(15, 23, 42, 0.08)
-  );
+  background-color: var(--scroll-scrub-color, #e7f2b0);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
-  outline: 2px solid #09707d;
-  outline-offset: 2px;
-  border-radius: 2px;
-  padding-inline: 0.12em;
+  border-radius: 0.12em;
+  padding-inline: 0.06em;
+}
+
+.ck-scroll-scrub-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 200px;
+  padding: 12px;
+  direction: rtl;
+}
+
+.ck-scroll-scrub-swatch::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-inline-end: 8px;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  background: var(--scroll-scrub-swatch, #e7f2b0);
+  vertical-align: -2px;
+}
+
+.ck-scroll-scrub-swatch-btn {
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ck-scroll-scrub-swatch-btn:hover,
+.ck-scroll-scrub-swatch-btn:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 1px;
+}
+
+.ck-scroll-scrub-remove-btn {
+  flex: 1 1 100%;
+  min-height: 36px;
+  margin-block-start: 4px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
 }
 
 /* Video content warning box (editor) — compact; avoid flex on widget root (CK chrome) */
@@ -2633,92 +2675,6 @@ fieldset.admin-field legend {
 
 .ck-content .nova-video-warning__text p {
   margin: 0;
-}
-
-.ck-scroll-highlight-form {
-  display: grid;
-  gap: 12px;
-  min-width: 260px;
-  padding: 12px;
-  direction: rtl;
-}
-
-.ck-scroll-highlight-form__hint {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
-  color: #666;
-}
-
-.ck-scroll-highlight-form__presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.ck-scroll-highlight-form__preset {
-  width: 40px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.ck-scroll-highlight-form__preset:hover,
-.ck-scroll-highlight-form__preset:focus-visible {
-  outline: 2px solid #000;
-  outline-offset: 1px;
-}
-
-.ck-scroll-highlight-form__label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-  color: #000;
-}
-
-.ck-scroll-highlight-form__swatch-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.ck-scroll-highlight-form__swatch {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  flex: 0 0 auto;
-}
-
-.ck-scroll-highlight-form__hex {
-  min-width: 0;
-  width: 5.75rem;
-  padding: 6px 8px;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  font: inherit;
-  font-size: 12px;
-  direction: ltr;
-  text-align: left;
-}
-
-.ck-scroll-highlight-form__hex:focus {
-  outline: 2px solid #000;
-  outline-offset: 0;
-  border-color: #000;
-}
-
-.ck-scroll-highlight-form__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-block-start: 4px;
 }
 
 /* Stack earlier: admin nav (~240px) leaves little room on tablets */

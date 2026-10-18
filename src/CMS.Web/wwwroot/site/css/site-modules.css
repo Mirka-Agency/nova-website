@@ -234,32 +234,56 @@ main > .error-page {
 .blog-prose .marker-blue,
 .service-prose .marker-blue { background-color: #72cdfd; }
 
-/* Scroll-scrubbed text highlight (public runtime) — gradient wipe, no char splits */
+/* Scroll-scrub highlight — background wipe driven by --scroll-scrub-p (0%→100%) */
+.scroll-scrub-highlight,
 .nova-scroll-highlight {
-  --nova-sh-from: #6b7280;
-  --nova-sh-to: #0f172a;
-  --nova-sh-p: 0%;
-  color: var(--nova-sh-from);
+  --scroll-scrub-color: #e7f2b0;
+}
+
+.scroll-scrub-line {
+  --scroll-scrub-p: 0%;
+}
+
+.scroll-scrub-word {
+  background-image: linear-gradient(
+    var(--scroll-scrub-color),
+    var(--scroll-scrub-color)
+  );
+  background-repeat: no-repeat;
+  background-size: var(--scroll-scrub-p, 0%) 100%;
+  /* LTR: grow from the left */
+  background-position: left center;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  border-radius: 0.1em;
+  padding-block: 0.05em;
+  /* No CSS transition — progress is scrubbed by scroll JS (monotonic). */
+  transition: none;
+}
+
+.scroll-scrub-highlight.is-scroll-scrub-rtl .scroll-scrub-word {
+  /* RTL: wipe along reading direction (right → left) */
+  background-position: right center;
+}
+
+.scroll-scrub-line.is-scroll-scrub-on .scroll-scrub-word,
+.scroll-scrub-highlight.is-scroll-scrub-done .scroll-scrub-word {
+  background-size: 100% 100%;
+}
+
+/* Pre-JS / no-JS fallback: show final highlight */
+:is(.blog-prose, .service-prose, .blog-content)
+  .scroll-scrub-highlight:not([data-scroll-scrub-ready]),
+:is(.blog-prose, .service-prose, .blog-content)
+  .nova-scroll-highlight:not([data-scroll-scrub-ready]) {
+  background-color: var(--scroll-scrub-color, #e7f2b0);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
 
-/* Pre-JS fallback color; runtime sets inline transparent + background-clip */
-:is(.blog-prose, .service-prose) .nova-scroll-highlight:not([data-nova-sh-ready]) {
-  color: var(--nova-sh-from);
-}
-
-/* Legacy per-glyph spans from older runtime — keep readable until JS unwraps */
-.nova-scroll-highlight .nova-sh-char {
-  color: inherit;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .nova-scroll-highlight {
-    color: var(--nova-sh-to) !important;
-    background-image: none !important;
-    -webkit-background-clip: border-box !important;
-    background-clip: border-box !important;
+  .scroll-scrub-word {
+    background-size: 100% 100%;
   }
 }
 

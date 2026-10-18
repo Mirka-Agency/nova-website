@@ -66,10 +66,9 @@
     toWidgetEditable,
   } = CKEDITOR;
 
-  function getScrollHighlightPlugin() {
-    return window.NovaScrollHighlight && window.NovaScrollHighlight.plugin
-      ? window.NovaScrollHighlight.plugin
-      : null;
+  function getScrollScrubHighlightPlugin() {
+    const api = window.ScrollScrubHighlight || window.NovaScrollHighlight;
+    return api && api.plugin ? api.plugin : null;
   }
 
   const mediaLibraryImageIcon =
@@ -1621,10 +1620,10 @@
   }
 
   const editorConfig = function () {
-    const ScrollHighlightPlugin = getScrollHighlightPlugin();
-    if (!ScrollHighlightPlugin) {
+    const ScrollScrubHighlightPlugin = getScrollScrubHighlightPlugin();
+    if (!ScrollScrubHighlightPlugin) {
       console.warn(
-        "[CKEditor] NovaScrollHighlight plugin was not loaded; scroll highlight toolbar item is disabled."
+        "[CKEditor] ScrollScrubHighlight plugin was not loaded; scroll-scrub toolbar item is disabled."
       );
     }
     return {
@@ -1664,7 +1663,7 @@
         VideoPoster,
         CtaHelperInsert,
         VideoWarningInsert,
-        ...(ScrollHighlightPlugin ? [ScrollHighlightPlugin] : []),
+        ...(ScrollScrubHighlightPlugin ? [ScrollScrubHighlightPlugin] : []),
         Highlight,
         Font,
         Alignment,
@@ -1707,7 +1706,7 @@
           "fontColor",
           "fontBackgroundColor",
           "highlight",
-          ...(ScrollHighlightPlugin ? ["scrollHighlight"] : []),
+          ...(ScrollScrubHighlightPlugin ? ["scrollScrubHighlight"] : []),
           "|",
           "link",
           "mediaLibraryImage",
@@ -1734,7 +1733,6 @@
           "findAndReplace",
           "sourceEditing",
         ],
-        shouldNotGroupWhenFull: false,
       },
       list: {
         properties: {
@@ -1878,6 +1876,7 @@
               "data-nova-video-warning": true,
               "data-popup-open": true,
               "data-booking-open": true,
+              "data-scroll-scrub-color": true,
               role: true,
             },
             classes: true,
@@ -1897,6 +1896,18 @@
           {
             name: "span",
             classes: ["nova-scroll-highlight"],
+          },
+          {
+            name: "span",
+            classes: ["scroll-scrub-highlight"],
+          },
+          {
+            name: "span",
+            classes: ["scroll-scrub-word"],
+          },
+          {
+            name: "span",
+            classes: ["scroll-scrub-line"],
           },
           {
             name: "span",

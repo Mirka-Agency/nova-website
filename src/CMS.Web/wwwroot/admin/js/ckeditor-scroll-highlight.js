@@ -1,20 +1,18 @@
 /**
- * Nova Scroll-Scrubbed Text Highlight — CKEditor 5 plugin.
+ * ScrollScrubHighlight — CKEditor 5 plugin (Classic).
  *
- * Model: text attribute `scrollHighlight` = "#from|#to"
- * View:  <span class="nova-scroll-highlight" data-nova-scroll-highlight="1"
- *             data-nova-sh-from data-nova-sh-to style="color:from">…</span>
+ * Model: text attribute `scrollScrubHighlight` = "#RRGGBB"
+ * Data:  <span class="scroll-scrub-highlight" data-scroll-scrub-color="#e7f2b0">…</span>
+ * Editing view also sets inline background-color for visibility (not persisted).
  *
- * Legacy <div class="nova-scroll-highlight"> is unwrapped on upcast.
- *
- * UI: SplitButton — click toggles default/last colors; arrow opens color form.
- * Depends on global CKEDITOR (UMD). Exposes window.NovaScrollHighlight.
+ * Legacy upcast: .nova-scroll-highlight → same attribute (default color).
+ * Depends on global CKEDITOR (UMD). Exposes window.ScrollScrubHighlight (+ NovaScrollHighlight alias).
  */
 (function (global) {
   "use strict";
 
   if (typeof CKEDITOR === "undefined") {
-    console.error("[NovaScrollHighlight] CKEDITOR global is missing.");
+    console.error("[ScrollScrubHighlight] CKEDITOR global is missing.");
     return;
   }
 
@@ -22,40 +20,38 @@
     Plugin,
     Command,
     ButtonView,
-    View,
     createDropdown,
     findAttributeRange,
-    SplitButtonView,
-    submitHandler,
   } = CKEDITOR;
 
-  if (!Plugin || !Command || !createDropdown || !SplitButtonView) {
-    console.error("[NovaScrollHighlight] Required CKEDITOR exports are missing.");
+  if (!Plugin || !Command) {
+    console.error("[ScrollScrubHighlight] Required CKEDITOR exports are missing.");
     return;
   }
 
-  const ATTR = "scrollHighlight";
-  const CLASS_NAME = "nova-scroll-highlight";
-  const CHAR_CLASS = "nova-sh-char";
-  const DATA_MARKER = "data-nova-scroll-highlight";
-  const DATA_FROM = "data-nova-sh-from";
-  const DATA_TO = "data-nova-sh-to";
-  const DEFAULT_FROM = "#6b7280";
-  const DEFAULT_TO = "#0f172a";
-  const COMPONENT = "scrollHighlight";
-  const COMMAND = "scrollHighlight";
+  const ATTR = "scrollScrubHighlight";
+  const CLASS_NAME = "scroll-scrub-highlight";
+  const DATA_COLOR = "data-scroll-scrub-color";
+  const DEFAULT_COLOR = "#e7f2b0";
+  const COMPONENT = "scrollScrubHighlight";
+  const COMMAND = "scrollScrubHighlight";
+
+  const LEGACY_CLASS = "nova-scroll-highlight";
+  const LEGACY_CHAR = "nova-sh-char";
+
+  const PRESETS = [
+    { color: "#e7f2b0", label: "سبز روشن" },
+    { color: "#fde68a", label: "زرد" },
+    { color: "#fbcfe8", label: "صورتی" },
+    { color: "#bae6fd", label: "آبی" },
+    { color: "#ddd6fe", label: "بنفش روشن" },
+  ];
 
   const TOOLBAR_ICON =
     '<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
     '<path d="M3.2 14.8c2.4-1.2 4.4-3.8 5.6-6.6.4-.9 1.2-2.4 2.2-2.4.7 0 1.1.6 1.4 1.3.6 1.5 1.3 3 2.4 4.2.4.4 1 .6 1.6.6v1.5c-1.1 0-2.1-.4-2.9-1.2-.8-.9-1.4-2-1.9-3.2-.2.5-.5 1.1-.8 1.6C9.4 12.8 7 15.6 4.2 16.8l-1-2z"/>' +
-    '<path d="M2.5 5.2h6.2v1.4H2.5V5.2zm0 3.2h4.6v1.4H2.5V8.4z" opacity=".55"/>' +
+    '<rect x="2.5" y="16.2" width="15" height="1.6" rx=".4" opacity=".45"/>' +
     "</svg>";
-
-  const PRESETS = [
-    { from: "#6b7280", to: "#0f172a", label: "خاکستری → مشکی" },
-    { from: "#9ca3af", to: "#09707d", label: "خاکستری → برند" },
-    { from: "#94a3b8", to: "#1e3a3f", label: "آبی‌خاکستری → تیره" },
-  ];
 
   function normalizeHex(value, fallback) {
     const raw = String(value || "")
@@ -66,36 +62,10 @@
       return "#" + raw[1] + raw[1] + raw[2] + raw[2] + raw[3] + raw[3];
     }
     if (/^[0-9a-f]{6}$/.test(raw)) return "#" + raw;
-    return fallback || DEFAULT_FROM;
-  }
-
-  function encodeColors(from, to) {
-    return normalizeHex(from, DEFAULT_FROM) + "|" + normalizeHex(to, DEFAULT_TO);
-  }
-
-  function decodeColors(value) {
-    const parts = String(value || "").split("|");
-    return {
-      from: normalizeHex(parts[0], DEFAULT_FROM),
-      to: normalizeHex(parts[1], DEFAULT_TO),
-    };
-  }
-
-  function readColorsFromViewElement(viewElement) {
-    const from =
-      viewElement.getAttribute(DATA_FROM) ||
-      viewElement.getStyle("color") ||
-      DEFAULT_FROM;
-    const to = viewElement.getAttribute(DATA_TO) || DEFAULT_TO;
-    return encodeColors(from, to);
-  }
-
-  function isHighlightView(viewElement) {
-    return (
-      viewElement.is("element") &&
-      viewElement.hasClass(CLASS_NAME) &&
-      !viewElement.hasClass(CHAR_CLASS)
-    );
+    if (/^[0-9a-f]{3}$/.test(raw)) {
+      return "#" + raw[0] + raw[0] + raw[1] + raw[1] + raw[2] + raw[2];
+    }
+    return fallback || DEFAULT_COLOR;
   }
 
   function getAttributeAtSelection(selection) {
@@ -147,9 +117,9 @@
     );
   }
 
-  function applyAttributeToRanges(writer, model, ranges, encoded) {
+  function applyAttributeToRanges(writer, model, ranges, color) {
     for (const range of model.schema.getValidRanges(ranges, ATTR)) {
-      writer.setAttribute(ATTR, encoded, range);
+      writer.setAttribute(ATTR, color, range);
     }
   }
 
@@ -159,24 +129,19 @@
     }
   }
 
-  function createHighlightSpan(writer, encoded, forEditing) {
-    const colors = decodeColors(encoded);
-    return writer.createAttributeElement(
-      "span",
-      {
-        class: CLASS_NAME,
-        [DATA_MARKER]: "1",
-        [DATA_FROM]: colors.from,
-        [DATA_TO]: colors.to,
-        style: forEditing
-          ? `--nova-sh-from:${colors.from};--nova-sh-to:${colors.to};color:${colors.from}`
-          : `color:${colors.from}`,
-      },
-      { priority: 5 }
-    );
+  function createHighlightSpan(writer, color, forEditing) {
+    const hex = normalizeHex(color, DEFAULT_COLOR);
+    const attrs = {
+      class: CLASS_NAME,
+      [DATA_COLOR]: hex,
+    };
+    if (forEditing) {
+      attrs.style = "background-color:" + hex;
+    }
+    return writer.createAttributeElement("span", attrs, { priority: 5 });
   }
 
-  function applyHighlightToRange(writer, editor, modelRange, encoded) {
+  function applyHighlightToRange(writer, editor, modelRange, color) {
     for (const item of modelRange.getItems()) {
       if (
         !(item.is("$text") || item.is("$textProxy")) ||
@@ -184,35 +149,48 @@
       ) {
         continue;
       }
-      writer.setAttribute(ATTR, encoded, item);
-      if (item.hasAttribute("fontColor")) {
-        writer.removeAttribute("fontColor", item);
-      }
-      if (typeof item.getAttributes === "function") {
-        for (const pair of Array.from(item.getAttributes())) {
-          const key = pair[0];
-          if (String(key).startsWith("html")) {
-            writer.removeAttribute(key, item);
-          }
-        }
-      }
+      writer.setAttribute(ATTR, color, item);
     }
   }
 
-  class ScrollHighlightCommand extends Command {
+  function readColorFromViewElement(viewElement) {
+    const fromData = viewElement.getAttribute(DATA_COLOR);
+    if (fromData) return normalizeHex(fromData, DEFAULT_COLOR);
+
+    const bg =
+      viewElement.getStyle("background-color") ||
+      viewElement.getStyle("background");
+    if (bg && /^#/.test(bg.trim())) {
+      return normalizeHex(bg.trim(), DEFAULT_COLOR);
+    }
+
+    // Legacy nova-scroll-highlight: use default marker color (not text-from/to).
+    return DEFAULT_COLOR;
+  }
+
+  function isScrubView(viewElement) {
+    return (
+      viewElement.is("element") &&
+      (viewElement.hasClass(CLASS_NAME) || viewElement.hasClass(LEGACY_CLASS)) &&
+      !viewElement.hasClass(LEGACY_CHAR) &&
+      !viewElement.hasClass("scroll-scrub-word") &&
+      !viewElement.hasClass("scroll-scrub-line")
+    );
+  }
+
+  class ScrollScrubHighlightCommand extends Command {
     refresh() {
       const model = this.editor.model;
       const selection = model.document.selection;
-      const encoded = getAttributeAtSelection(selection);
+      const value = getAttributeAtSelection(selection);
 
-      this.value = encoded ? decodeColors(encoded) : null;
-      // Keep toolbar usable whenever formatting is allowed in selection.
+      this.value = value ? normalizeHex(value, DEFAULT_COLOR) : null;
       this.isEnabled = model.schema.checkAttributeInSelection(selection, ATTR);
     }
 
     execute(options) {
       const opts = options || {};
-      if (opts.action === "remove") {
+      if (opts.action === "remove" || opts.forceValue === false) {
         this._remove();
         return;
       }
@@ -220,24 +198,18 @@
         if (this.value) {
           this._remove();
         } else {
-          this._apply(
-            normalizeHex(opts.from, DEFAULT_FROM),
-            normalizeHex(opts.to, DEFAULT_TO)
-          );
+          this._apply(normalizeHex(opts.color, DEFAULT_COLOR));
         }
         return;
       }
-      this._apply(
-        normalizeHex(opts.from, DEFAULT_FROM),
-        normalizeHex(opts.to, DEFAULT_TO)
-      );
+      this._apply(normalizeHex(opts.color != null ? opts.color : opts.value, DEFAULT_COLOR));
     }
 
-    _apply(from, to) {
+    _apply(color) {
       const editor = this.editor;
       const model = editor.model;
       const selection = model.document.selection;
-      const encoded = encodeColors(from, to);
+      const hex = normalizeHex(color, DEFAULT_COLOR);
       const current = getAttributeAtSelection(selection);
 
       model.change((writer) => {
@@ -248,11 +220,11 @@
             selection.getFirstPosition(),
             current
           );
-          if (range) writer.setAttribute(ATTR, encoded, range);
+          if (range) writer.setAttribute(ATTR, hex, range);
           return;
         }
 
-        applyAttributeToRanges(writer, model, selection.getRanges(), encoded);
+        applyAttributeToRanges(writer, model, selection.getRanges(), hex);
       });
     }
 
@@ -279,257 +251,17 @@
     }
   }
 
-  /**
-   * Color form shown inside the split-button dropdown panel.
-   * Implements focus()/focusLast() required by DropdownPanelView.
-   */
-  class ScrollHighlightFormView extends View {
-    constructor(locale) {
-      super(locale);
-
-      this.fromInput = this._textInput("from-hex", "کد رنگ اولیه", DEFAULT_FROM);
-      this.toInput = this._textInput("to-hex", "کد رنگ نهایی", DEFAULT_TO);
-
-      this.applyButton = this._button("اعمال", "ck-button-action");
-      this.removeButton = this._button("حذف افکت", "ck-button-flat");
-      this.cancelButton = this._button("بستن", "ck-button-flat");
-
-      this.set({
-        fromColor: DEFAULT_FROM,
-        toColor: DEFAULT_TO,
-        canRemove: false,
-      });
-
-      this.removeButton.bind("isVisible").to(this, "canRemove");
-
-      const presetChildren = PRESETS.map((preset, index) => ({
-        tag: "button",
-        attributes: {
-          type: "button",
-          class: ["ck-scroll-highlight-form__preset"],
-          "data-preset": String(index),
-          title: preset.label,
-          style: `background:linear-gradient(90deg,${preset.from},${preset.to})`,
-          tabindex: "-1",
-        },
-      }));
-
-      this.setTemplate({
-        tag: "form",
-        attributes: {
-          class: ["ck", "ck-scroll-highlight-form"],
-          tabindex: "-1",
-          dir: "rtl",
-          lang: "fa",
-        },
-        children: [
-          {
-            tag: "p",
-            attributes: { class: ["ck-scroll-highlight-form__hint"] },
-            children: [
-              "متن را انتخاب کنید. کلیک روی دکمهٔ ابزار، هایلایت را اعمال/حذف می‌کند. از اینجا رنگ را تغییر دهید.",
-            ],
-          },
-          {
-            tag: "div",
-            attributes: {
-              class: ["ck-scroll-highlight-form__presets"],
-              role: "group",
-              "aria-label": "پیش‌فرض رنگ",
-            },
-            children: presetChildren,
-          },
-          {
-            tag: "label",
-            attributes: { class: ["ck-scroll-highlight-form__label"] },
-            children: [
-              "رنگ اولیه",
-              {
-                tag: "span",
-                attributes: { class: ["ck-scroll-highlight-form__swatch-wrap"] },
-                children: [
-                  {
-                    tag: "span",
-                    attributes: {
-                      class: ["ck-scroll-highlight-form__swatch"],
-                      "data-role": "from-swatch",
-                      style: `background:${DEFAULT_FROM}`,
-                    },
-                  },
-                  this.fromInput,
-                ],
-              },
-            ],
-          },
-          {
-            tag: "label",
-            attributes: { class: ["ck-scroll-highlight-form__label"] },
-            children: [
-              "رنگ نهایی",
-              {
-                tag: "span",
-                attributes: { class: ["ck-scroll-highlight-form__swatch-wrap"] },
-                children: [
-                  {
-                    tag: "span",
-                    attributes: {
-                      class: ["ck-scroll-highlight-form__swatch"],
-                      "data-role": "to-swatch",
-                      style: `background:${DEFAULT_TO}`,
-                    },
-                  },
-                  this.toInput,
-                ],
-              },
-            ],
-          },
-          {
-            tag: "div",
-            attributes: { class: ["ck-scroll-highlight-form__actions"] },
-            children: [this.applyButton, this.removeButton, this.cancelButton],
-          },
-        ],
-      });
-    }
-
-    render() {
-      super.render();
-
-      if (typeof submitHandler === "function") {
-        submitHandler({ view: this });
-      }
-
-      this.element.addEventListener(
-        "mousedown",
-        (event) => {
-          event.stopPropagation();
-        },
-        true
-      );
-
-      this.element.addEventListener("click", (event) => {
-        const presetBtn = event.target.closest("[data-preset]");
-        if (!presetBtn || !this.element.contains(presetBtn)) return;
-        const preset = PRESETS[Number(presetBtn.getAttribute("data-preset"))];
-        if (preset) this.setColors(preset.from, preset.to);
-      });
-
-      const onHexInput = (input, key) => {
-        input.element.addEventListener("input", () => {
-          this[key] = normalizeHex(input.element.value, this[key]);
-          this._syncSwatches();
-        });
-        input.element.addEventListener("change", () => {
-          this[key] = normalizeHex(
-            input.element.value,
-            key === "fromColor" ? DEFAULT_FROM : DEFAULT_TO
-          );
-          this._syncInputs();
-        });
-      };
-      onHexInput(this.fromInput, "fromColor");
-      onHexInput(this.toInput, "toColor");
-    }
-
-    // Required by DropdownPanelView — without this, opening the panel breaks.
-    focus() {
-      if (this.fromInput && this.fromInput.element) {
-        this.fromInput.element.focus();
-        return;
-      }
-      if (this.element) this.element.focus();
-    }
-
-    focusLast() {
-      if (this.cancelButton && typeof this.cancelButton.focus === "function") {
-        this.cancelButton.focus();
-        return;
-      }
-      this.focus();
-    }
-
-    _textInput(role, ariaLabel, value) {
-      const input = new View(this.locale);
-      input.setTemplate({
-        tag: "input",
-        attributes: {
-          type: "text",
-          class: ["ck-scroll-highlight-form__hex", "ck-input", "ck-input-text"],
-          maxlength: "7",
-          spellcheck: "false",
-          "data-role": role,
-          "aria-label": ariaLabel,
-          value: value,
-          dir: "ltr",
-        },
-      });
-      input.focus = function focusInput() {
-        if (input.element) input.element.focus();
-      };
-      return input;
-    }
-
-    _button(label, extraClass) {
-      const button = new ButtonView(this.locale);
-      button.set({
-        label: label,
-        withText: true,
-        class: extraClass,
-      });
-      return button;
-    }
-
-    setColors(from, to) {
-      this.fromColor = normalizeHex(from, DEFAULT_FROM);
-      this.toColor = normalizeHex(to, DEFAULT_TO);
-      this._syncInputs();
-    }
-
-    getColors() {
-      if (this.fromInput.element && this.fromInput.element.value) {
-        this.fromColor = this.fromInput.element.value;
-      }
-      if (this.toInput.element && this.toInput.element.value) {
-        this.toColor = this.toInput.element.value;
-      }
-      return {
-        from: normalizeHex(this.fromColor, DEFAULT_FROM),
-        to: normalizeHex(this.toColor, DEFAULT_TO),
-      };
-    }
-
-    setRemoveVisible(visible) {
-      this.canRemove = !!visible;
-    }
-
-    _syncInputs() {
-      if (this.fromInput.element) this.fromInput.element.value = this.fromColor;
-      if (this.toInput.element) this.toInput.element.value = this.toColor;
-      this._syncSwatches();
-    }
-
-    _syncSwatches() {
-      if (!this.element) return;
-      const fromSwatch = this.element.querySelector('[data-role="from-swatch"]');
-      const toSwatch = this.element.querySelector('[data-role="to-swatch"]');
-      if (fromSwatch) fromSwatch.style.background = this.fromColor;
-      if (toSwatch) toSwatch.style.background = this.toColor;
-    }
-  }
-
-  class ScrollHighlight extends Plugin {
+  class ScrollScrubHighlight extends Plugin {
     static get pluginName() {
-      return "ScrollHighlight";
+      return "ScrollScrubHighlight";
     }
 
     init() {
-      this._lastFrom = DEFAULT_FROM;
-      this._lastTo = DEFAULT_TO;
-
+      this._lastColor = DEFAULT_COLOR;
       this._defineSchema();
       this._defineConverters();
       this._registerCaretBehavior();
-      this.editor.commands.add(COMMAND, new ScrollHighlightCommand(this.editor));
+      this.editor.commands.add(COMMAND, new ScrollScrubHighlightCommand(this.editor));
       this._createUi();
     }
 
@@ -543,7 +275,11 @@
     }
 
     _registerCaretBehavior() {
-      const twoStep = this.editor.plugins.get("TwoStepCaretMovement");
+      const plugins = this.editor.plugins;
+      if (!plugins || typeof plugins.has !== "function" || !plugins.has("TwoStepCaretMovement")) {
+        return;
+      }
+      const twoStep = plugins.get("TwoStepCaretMovement");
       if (twoStep && typeof twoStep.registerAttribute === "function") {
         twoStep.registerAttribute(ATTR);
       }
@@ -571,11 +307,15 @@
           (evt, data, conversionApi) => {
             const viewItem = data.viewItem;
 
-            if (viewItem.hasClass(CHAR_CLASS)) {
+            // Unwrap runtime-only wrappers if pasted back into the editor.
+            if (
+              viewItem.hasClass("scroll-scrub-word") ||
+              viewItem.hasClass("scroll-scrub-line") ||
+              viewItem.hasClass(LEGACY_CHAR)
+            ) {
               if (
                 !conversionApi.consumable.consume(viewItem, {
                   name: true,
-                  classes: CHAR_CLASS,
                 })
               ) {
                 return;
@@ -590,13 +330,7 @@
               return;
             }
 
-            const isMarked =
-              isHighlightView(viewItem) ||
-              viewItem.getAttribute(DATA_MARKER) === "1" ||
-              viewItem.hasAttribute(DATA_FROM) ||
-              viewItem.hasAttribute(DATA_TO);
-
-            if (!isMarked) return;
+            if (!isScrubView(viewItem)) return;
             if (!conversionApi.consumable.test(viewItem, { name: true })) return;
 
             conversionApi.consumable.consume(viewItem, { name: true });
@@ -605,12 +339,25 @@
                 classes: CLASS_NAME,
               });
             }
+            if (viewItem.hasClass(LEGACY_CLASS)) {
+              conversionApi.consumable.consume(viewItem, {
+                classes: LEGACY_CLASS,
+              });
+            }
             conversionApi.consumable.consume(viewItem, {
-              attributes: [DATA_MARKER, DATA_FROM, DATA_TO],
+              attributes: [
+                DATA_COLOR,
+                "data-nova-scroll-highlight",
+                "data-nova-sh-from",
+                "data-nova-sh-to",
+              ],
+            });
+            conversionApi.consumable.consume(viewItem, {
+              styles: "background-color",
             });
             conversionApi.consumable.consume(viewItem, { styles: "color" });
 
-            const encoded = readColorsFromViewElement(viewItem);
+            const color = readColorFromViewElement(viewItem);
             const { modelRange } = conversionApi.convertChildren(
               viewItem,
               data.modelCursor
@@ -621,7 +368,7 @@
                 conversionApi.writer,
                 editor,
                 modelRange,
-                encoded
+                color
               );
             }
 
@@ -633,28 +380,24 @@
         );
       });
 
+      // Legacy block wrapper → unwrap children with attribute.
       conversion.for("upcast").add((dispatcher) => {
         dispatcher.on(
           "element:div",
           (evt, data, conversionApi) => {
             const viewItem = data.viewItem;
-            if (!isHighlightView(viewItem)) return;
+            if (!viewItem.hasClass(LEGACY_CLASS)) return;
 
             if (
               !conversionApi.consumable.consume(viewItem, {
                 name: true,
-                classes: CLASS_NAME,
+                classes: LEGACY_CLASS,
               })
             ) {
               return;
             }
 
-            conversionApi.consumable.consume(viewItem, {
-              attributes: [DATA_MARKER, DATA_FROM, DATA_TO],
-            });
-            conversionApi.consumable.consume(viewItem, { styles: "color" });
-
-            const encoded = readColorsFromViewElement(viewItem);
+            const color = readColorFromViewElement(viewItem);
             const { modelRange } = conversionApi.convertChildren(
               viewItem,
               data.modelCursor
@@ -665,7 +408,7 @@
                 conversionApi.writer,
                 editor,
                 modelRange,
-                encoded
+                color
               );
             }
 
@@ -684,95 +427,125 @@
       const plugin = this;
 
       editor.ui.componentFactory.add(COMPONENT, (locale) => {
-        const dropdown = createDropdown(locale, SplitButtonView);
-        const form = new ScrollHighlightFormView(locale);
+        if (typeof createDropdown === "function") {
+          return plugin._createDropdownUi(locale, command);
+        }
+        return plugin._createToggleButton(locale, command);
+      });
+    }
 
-        dropdown.buttonView.set({
-          label: "هایلایت اسکرولی متن",
-          icon: TOOLBAR_ICON,
-          tooltip: true,
+    _createToggleButton(locale, command) {
+      const plugin = this;
+      const button = new ButtonView(locale);
+      button.set({
+        label: "هایلایت اسکرولی",
+        icon: TOOLBAR_ICON,
+        tooltip: true,
+      });
+      button.bind("isEnabled").to(command, "isEnabled");
+      button.bind("isOn").to(command, "value", (value) => !!value);
+      button.on("execute", () => {
+        const selection = plugin.editor.model.document.selection;
+        if (selection.isCollapsed && !command.value) return;
+        plugin.editor.execute(COMMAND, {
+          action: "toggle",
+          color: plugin._lastColor,
         });
+        plugin.editor.editing.view.focus();
+      });
+      return button;
+    }
 
-        dropdown.bind("isEnabled").to(command, "isEnabled");
-        dropdown.buttonView.bind("isOn").to(command, "value", (value) => !!value);
+    _createDropdownUi(locale, command) {
+      const editor = this.editor;
+      const plugin = this;
+      const dropdown = createDropdown(locale);
 
-        dropdown.panelView.children.add(form);
+      dropdown.buttonView.set({
+        label: "هایلایت اسکرولی",
+        icon: TOOLBAR_ICON,
+        tooltip: true,
+        isOn: !!command.value,
+      });
 
-        // Main split action: toggle highlight with last/default colors.
-        dropdown.buttonView.on("execute", () => {
+      // Avoid observable-bind-rebind: sync pressed state manually.
+      command.on("change:value", (_evt, _name, value) => {
+        dropdown.buttonView.isOn = !!value;
+      });
+      command.on("change:isEnabled", (_evt, _name, value) => {
+        dropdown.isEnabled = !!value;
+        dropdown.buttonView.isEnabled = !!value;
+      });
+      dropdown.isEnabled = command.isEnabled;
+      dropdown.buttonView.isEnabled = command.isEnabled;
+
+      const panel = dropdown.panelView;
+      const wrap = document.createElement("div");
+      wrap.className = "ck ck-scroll-scrub-panel";
+      wrap.setAttribute("dir", "rtl");
+      wrap.setAttribute("lang", "fa");
+
+      PRESETS.forEach((preset) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ck-scroll-scrub-swatch-btn";
+        btn.title = preset.label;
+        btn.setAttribute("aria-label", preset.label);
+        btn.style.background = preset.color;
+        btn.addEventListener("mousedown", (event) => {
+          // Keep focus inside dropdown panel until execute finishes.
+          event.preventDefault();
+        });
+        btn.addEventListener("click", () => {
           const selection = editor.model.document.selection;
-          const hasValue = !!command.value;
-          const canApply = !selection.isCollapsed || hasValue;
-
-          if (!canApply) {
-            dropdown.isOpen = true;
+          plugin._lastColor = preset.color;
+          if (selection.isCollapsed && !command.value) {
+            dropdown.isOpen = false;
+            editor.editing.view.focus();
             return;
           }
-
-          editor.execute(COMMAND, {
-            action: "toggle",
-            from: plugin._lastFrom,
-            to: plugin._lastTo,
-          });
-          editor.editing.view.focus();
-        });
-
-        dropdown.on("change:isOpen", (_evt, _name, isOpen) => {
-          if (!isOpen) return;
-
-          const value = command.value;
-          if (value) {
-            form.setColors(value.from, value.to);
-            form.setRemoveVisible(true);
-          } else {
-            form.setColors(plugin._lastFrom, plugin._lastTo);
-            form.setRemoveVisible(false);
-          }
-
-          setTimeout(function () {
-            form._syncInputs();
-          }, 0);
-        });
-
-        form.on("submit", () => {
-          const colors = form.getColors();
-          plugin._lastFrom = colors.from;
-          plugin._lastTo = colors.to;
-          editor.execute(COMMAND, {
-            action: "apply",
-            from: colors.from,
-            to: colors.to,
-          });
+          editor.execute(COMMAND, { color: preset.color });
           dropdown.isOpen = false;
           editor.editing.view.focus();
         });
-
-        form.applyButton.on("execute", () => {
-          form.fire("submit");
-        });
-
-        form.removeButton.on("execute", () => {
-          editor.execute(COMMAND, { action: "remove" });
-          dropdown.isOpen = false;
-          editor.editing.view.focus();
-        });
-
-        form.cancelButton.on("execute", () => {
-          dropdown.isOpen = false;
-          editor.editing.view.focus();
-        });
-
-        return dropdown;
+        wrap.appendChild(btn);
       });
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "ck-scroll-scrub-remove-btn";
+      removeBtn.textContent = "حذف هایلایت اسکرولی";
+      removeBtn.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+      });
+      removeBtn.addEventListener("click", () => {
+        editor.execute(COMMAND, { action: "remove" });
+        dropdown.isOpen = false;
+        editor.editing.view.focus();
+      });
+      wrap.appendChild(removeBtn);
+
+      dropdown.on("change:isOpen", (_evt, _name, isOpen) => {
+        if (!isOpen || !panel.element) return;
+        if (!panel.element.contains(wrap)) {
+          panel.element.appendChild(wrap);
+        }
+      });
+
+      return dropdown;
     }
   }
 
-  global.NovaScrollHighlight = {
-    plugin: ScrollHighlight,
-    pluginName: "ScrollHighlight",
+  const api = {
+    plugin: ScrollScrubHighlight,
+    pluginName: "ScrollScrubHighlight",
     componentName: COMPONENT,
     commandName: COMMAND,
-    defaults: { from: DEFAULT_FROM, to: DEFAULT_TO },
+    defaults: { color: DEFAULT_COLOR },
     className: CLASS_NAME,
   };
+
+  global.ScrollScrubHighlight = api;
+  // Backward-compatible alias for older script wiring.
+  global.NovaScrollHighlight = api;
 })(typeof window !== "undefined" ? window : globalThis);

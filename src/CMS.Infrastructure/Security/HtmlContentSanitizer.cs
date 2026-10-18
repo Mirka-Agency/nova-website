@@ -35,6 +35,7 @@ public sealed class HtmlContentSanitizer : IHtmlContentSanitizer
             "data-oembed-url",
             "data-nova-cta", "data-nova-cta-config",
             "data-nova-scroll-highlight", "data-nova-sh-from", "data-nova-sh-to",
+            "data-scroll-scrub-color",
             "data-nova-video-poster",
             "data-nova-video-warning",
             // CTA Helper → popup openers (must survive sanitize or links become href="#" only)
