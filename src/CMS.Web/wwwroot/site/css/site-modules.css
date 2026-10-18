@@ -234,7 +234,7 @@ main > .error-page {
 .blog-prose .marker-blue,
 .service-prose .marker-blue { background-color: #72cdfd; }
 
-/* Scroll-scrub highlight — background wipe driven by --scroll-scrub-p (0%→100%) */
+/* Scroll-scrub highlight — paint on the whole line (not per-word) so fill is continuous */
 .scroll-scrub-highlight,
 .nova-scroll-highlight {
   --scroll-scrub-color: #e7f2b0;
@@ -242,9 +242,6 @@ main > .error-page {
 
 .scroll-scrub-line {
   --scroll-scrub-p: 0%;
-}
-
-.scroll-scrub-word {
   background-image: linear-gradient(
     var(--scroll-scrub-color),
     var(--scroll-scrub-color)
@@ -257,18 +254,25 @@ main > .error-page {
   -webkit-box-decoration-break: clone;
   border-radius: 0.1em;
   padding-block: 0.05em;
-  /* No CSS transition — progress is scrubbed by scroll JS (monotonic). */
+  /* Scrubbed by JS; no CSS transition that could reverse. */
   transition: none;
 }
 
-.scroll-scrub-highlight.is-scroll-scrub-rtl .scroll-scrub-word {
+.scroll-scrub-highlight.is-scroll-scrub-rtl .scroll-scrub-line {
   /* RTL: wipe along reading direction (right → left) */
   background-position: right center;
 }
 
-.scroll-scrub-line.is-scroll-scrub-on .scroll-scrub-word,
-.scroll-scrub-highlight.is-scroll-scrub-done .scroll-scrub-word {
+.scroll-scrub-line.is-scroll-scrub-on,
+.scroll-scrub-highlight.is-scroll-scrub-done .scroll-scrub-line {
   background-size: 100% 100%;
+}
+
+/* Words are only markers for line-splitting — no separate paint boxes */
+.scroll-scrub-word {
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
 
 /* Pre-JS / no-JS fallback: show final highlight */
@@ -282,7 +286,7 @@ main > .error-page {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scroll-scrub-word {
+  .scroll-scrub-line {
     background-size: 100% 100%;
   }
 }

@@ -30,13 +30,16 @@ await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 await page.waitForTimeout(200);
 const end = await page.evaluate(() => {
   const el = document.querySelector(".scroll-scrub-highlight");
-  const word = el.querySelector(".scroll-scrub-word");
+  const line = el.querySelector(".scroll-scrub-line");
   return {
     progress: Number(el.getAttribute("data-scroll-scrub-progress") || "0"),
     done: el.classList.contains("is-scroll-scrub-done"),
     onLines: el.querySelectorAll(".scroll-scrub-line.is-scroll-scrub-on").length,
     totalLines: el.querySelectorAll(".scroll-scrub-line").length,
-    bgSize: word ? getComputedStyle(word).backgroundSize : null,
+    bgSize: line ? getComputedStyle(line).backgroundSize : null,
+    wordBg: el.querySelector(".scroll-scrub-word")
+      ? getComputedStyle(el.querySelector(".scroll-scrub-word")).backgroundImage
+      : null,
   };
 });
 
@@ -45,12 +48,12 @@ await page.evaluate(() => window.scrollTo(0, 0));
 await page.waitForTimeout(200);
 const afterUp = await page.evaluate(() => {
   const el = document.querySelector(".scroll-scrub-highlight");
-  const word = el.querySelector(".scroll-scrub-word");
+  const line = el.querySelector(".scroll-scrub-line");
   return {
     progress: Number(el.getAttribute("data-scroll-scrub-progress") || "0"),
     done: el.classList.contains("is-scroll-scrub-done"),
     onLines: el.querySelectorAll(".scroll-scrub-line.is-scroll-scrub-on").length,
-    bgSize: word ? getComputedStyle(word).backgroundSize : null,
+    bgSize: line ? getComputedStyle(line).backgroundSize : null,
   };
 });
 
@@ -68,5 +71,6 @@ const ok =
   afterUp.done &&
   afterUp.progress === 100 &&
   afterUp.onLines === end.totalLines &&
-  String(afterUp.bgSize || "").includes("100%");
+  String(afterUp.bgSize || "").includes("100%") &&
+  (!end.wordBg || end.wordBg === "none");
 process.exit(ok ? 0 : 1);

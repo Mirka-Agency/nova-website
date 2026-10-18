@@ -266,9 +266,9 @@
   function computeScrollProgress(el) {
     var rect = el.getBoundingClientRect();
     var vh = window.innerHeight || document.documentElement.clientHeight || 1;
-    // Begin near bottom; finish once the block sits in the upper-middle.
-    var start = vh * 0.95;
-    var travel = Math.max(vh * 0.55, rect.height + vh * 0.2);
+    // Begin near bottom; longer travel = slower fill.
+    var start = vh * 0.98;
+    var travel = Math.max(vh * 1.15, rect.height + vh * 0.55);
     var end = start - travel;
     if (start === end) return rect.top < start ? 1 : 0;
     var raw = (start - rect.top) / (start - end);
