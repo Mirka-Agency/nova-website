@@ -657,8 +657,12 @@
 
 @media (min-width: 768px) {
   .cta-mod__btn-fields {
-    grid-template-columns: 1.1fr 1.35fr 0.95fr;
+    grid-template-columns: 1.1fr 0.9fr 1.25fr 0.95fr;
   }
+}
+
+.cta-mod__btn-fields [data-btn-value-hint] {
+  font-weight: 500;
 }
 
 .cta-mod__media-field .admin-hint {

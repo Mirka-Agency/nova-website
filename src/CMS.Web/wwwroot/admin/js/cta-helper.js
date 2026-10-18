@@ -71,9 +71,66 @@
     return null;
   }
 
-  function btnOpenAttrs(href) {
-    var popupSlug = parsePopupHref(href);
-    if (popupSlug) {
+  function looksLikePhone(value) {
+    var raw = String(value == null ? "" : value).trim();
+    if (!raw) return false;
+    if (/^tel:/i.test(raw)) return true;
+    var digits = telDigits(raw).replace(/\D/g, "");
+    return digits.length >= 7 && digits.length <= 15 && !/[a-z]/i.test(raw.replace(/^tel:/i, ""));
+  }
+
+  function inferAction(url, style) {
+    if (style === "phone") return "phone";
+    if (parsePopupHref(url)) return "popup";
+    if (looksLikePhone(url)) return "phone";
+    return "link";
+  }
+
+  function displayValueForAction(action, url) {
+    var raw = String(url == null ? "" : url).trim();
+    if (action === "popup") {
+      return parsePopupHref(raw) || raw.replace(/^popup:/i, "") || "booking";
+    }
+    if (action === "phone") {
+      return raw.replace(/^tel:/i, "");
+    }
+    return raw;
+  }
+
+  function storeValueForAction(action, raw) {
+    var value = String(raw == null ? "" : raw).trim();
+    if (action === "popup") {
+      var slug = parsePopupHref(value) || value.replace(/^popup:/i, "").trim() || "booking";
+      return "popup:" + slug;
+    }
+    if (action === "phone") {
+      var number = value.replace(/^tel:/i, "").trim();
+      if (!number) return "";
+      return "tel:" + telDigits(number);
+    }
+    return value;
+  }
+
+  function normalizeButton(btn) {
+    var text = btn && btn.text != null ? String(btn.text) : "";
+    var url = btn && btn.url != null ? String(btn.url) : "";
+    var style = btn && btn.style ? String(btn.style) : "primary";
+    var action =
+      btn && btn.action && ["link", "popup", "phone"].indexOf(String(btn.action)) >= 0
+        ? String(btn.action)
+        : inferAction(url, style);
+    return {
+      text: text,
+      url: storeValueForAction(action, displayValueForAction(action, url) || url),
+      style: style,
+      action: action
+    };
+  }
+
+  function btnOpenAttrs(href, action) {
+    var resolvedAction = action || inferAction(href, "");
+    if (resolvedAction === "popup") {
+      var popupSlug = parsePopupHref(href) || "booking";
       var attrs =
         ' href="#"' +
         ' data-popup-open="' +
@@ -84,7 +141,11 @@
       }
       return attrs;
     }
-    return ' href="' + esc(href) + '"';
+    if (resolvedAction === "phone") {
+      var number = String(href == null ? "" : href).replace(/^tel:/i, "");
+      return ' href="tel:' + esc(telDigits(number)) + '" dir="ltr"';
+    }
+    return ' href="' + esc(href || "#") + '"';
   }
 
   function actionsRow(innerHtml, count, extraStyle) {
@@ -107,50 +168,50 @@
     );
   }
 
-  function btnPrimary(href, text) {
+  function btnPrimary(href, text, action) {
     return (
       "<a" +
-      btnOpenAttrs(href) +
+      btnOpenAttrs(href, action) +
       ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:linear-gradient(135deg,#0a8491 0%,#09707d 55%,#065a64 100%);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid transparent;line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(9,112,125,.22);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
   }
 
-  function btnSecondary(href, text) {
+  function btnSecondary(href, text, action) {
     return (
       "<a" +
-      btnOpenAttrs(href) +
+      btnOpenAttrs(href, action) +
       ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#e6f3f5;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(9,112,125,.16);line-height:1.15;text-align:center;box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
   }
 
-  function btnLight(href, text) {
+  function btnLight(href, text, action) {
     return (
       "<a" +
-      btnOpenAttrs(href) +
+      btnOpenAttrs(href, action) +
       ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:#fff;color:#065a64;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.95);line-height:1.15;text-align:center;box-shadow:0 8px 18px rgba(0,0,0,.12);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
   }
 
-  function btnOutlineOnDark(href, text) {
+  function btnOutlineOnDark(href, text, action) {
     return (
       "<a" +
-      btnOpenAttrs(href) +
+      btnOpenAttrs(href, action) +
       ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8.5rem;align-items:center;justify-content:center;gap:.4rem;min-width:min(100%,8.5rem);min-height:44px;padding:.65rem 1rem;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.88rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.5);line-height:1.15;text-align:center;backdrop-filter:blur(4px);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
     );
   }
 
-  function btnCompact(href, text) {
+  function btnCompact(href, text, action) {
     return (
       "<a" +
-      btnOpenAttrs(href) +
+      btnOpenAttrs(href, action) +
       ' class="nova-cta__btn" style="display:inline-flex;flex:1 1 8rem;align-items:center;justify-content:center;min-width:min(100%,8rem);min-height:42px;padding:.5rem .9rem;border-radius:999px;background:linear-gradient(135deg,#0a8491,#09707d);color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;text-align:center;box-shadow:0 6px 14px rgba(9,112,125,.2);box-sizing:border-box;">' +
       esc(text) +
       "</a>"
@@ -189,11 +250,7 @@
     if (Array.isArray(data.buttons) && data.buttons.length) {
       return data.buttons
         .map(function (btn) {
-          return {
-            text: btn && btn.text != null ? String(btn.text) : "",
-            url: btn && btn.url != null ? String(btn.url) : "",
-            style: btn && btn.style ? String(btn.style) : "primary"
-          };
+          return normalizeButton(btn);
         })
         .filter(function (btn) {
           return hasText(btn.text) || hasText(btn.url);
@@ -201,7 +258,7 @@
         .slice(0, MAX_BUTTONS);
     }
 
-    return legacyButtons(type, data);
+    return legacyButtons(type, data).map(normalizeButton);
   }
 
   function legacyButtons(type, data) {
@@ -286,18 +343,21 @@
   }
 
   function renderButton(btn, index) {
-    var style = btn.style || (index === 0 ? "primary" : "secondary");
-    var text = btn.text || "";
-    var url = btn.url || "#";
+    var normalized = normalizeButton(btn || {});
+    var style = normalized.style || (index === 0 ? "primary" : "secondary");
+    var text = normalized.text || "";
+    var url = normalized.url || "#";
+    var action = normalized.action || "link";
 
+    // سبک «تلفن» ظاهر مخصوص شماره است؛ برای بقیه سبک‌ها action نوع href را مشخص می‌کند.
     if (style === "phone") {
       return btnPhone(url, text);
     }
-    if (style === "light") return btnLight(url, text);
-    if (style === "outline") return btnOutlineOnDark(url, text);
-    if (style === "compact") return btnCompact(url, text);
-    if (style === "secondary") return btnSecondary(url, text);
-    return btnPrimary(url, text);
+    if (style === "light") return btnLight(url, text, action);
+    if (style === "outline") return btnOutlineOnDark(url, text, action);
+    if (style === "compact") return btnCompact(url, text, action);
+    if (style === "secondary") return btnSecondary(url, text, action);
+    return btnPrimary(url, text, action);
   }
 
   function renderActions(buttons, extraStyle) {
@@ -537,8 +597,56 @@
       .join("");
   }
 
+  function actionOptionsHtml(selected) {
+    var options = [
+      { value: "link", label: "لینک صفحه" },
+      { value: "popup", label: "پاپ‌آپ" },
+      { value: "phone", label: "شماره تلفن" }
+    ];
+    return options
+      .map(function (opt) {
+        return (
+          '<option value="' +
+          esc(opt.value) +
+          '"' +
+          (opt.value === selected ? " selected" : "") +
+          ">" +
+          esc(opt.label) +
+          "</option>"
+        );
+      })
+      .join("");
+  }
+
+  function syncActionField(row) {
+    var actionEl = row.querySelector("[data-btn-action]");
+    var urlEl = row.querySelector("[data-btn-url]");
+    var labelEl = row.querySelector("[data-btn-value-label]");
+    var hintEl = row.querySelector("[data-btn-value-hint]");
+    if (!actionEl || !urlEl || !labelEl) return;
+
+    var action = actionEl.value || "link";
+    if (action === "popup") {
+      labelEl.textContent = "اسلاگ پاپ‌آپ";
+      urlEl.placeholder = "booking";
+      urlEl.setAttribute("inputmode", "text");
+      if (hintEl) hintEl.textContent = "مثال: booking";
+    } else if (action === "phone") {
+      labelEl.textContent = "شماره تلفن";
+      urlEl.placeholder = "02191093492";
+      urlEl.setAttribute("inputmode", "tel");
+      if (hintEl) hintEl.textContent = "با یا بدون tel:";
+    } else {
+      labelEl.textContent = "آدرس لینک";
+      urlEl.placeholder = "/services/ یا https://…";
+      urlEl.setAttribute("inputmode", "url");
+      if (hintEl) hintEl.textContent = "مسیر داخلی یا لینک کامل";
+    }
+  }
+
   function createButtonRow(btn, index) {
-    var item = btn || { text: "", url: "", style: "primary" };
+    var item = normalizeButton(btn || { text: "", url: "", style: "primary", action: "link" });
+    var displayUrl = displayValueForAction(item.action, item.url);
     var row = document.createElement("div");
     row.className = "cta-mod__btn-row";
     row.setAttribute("data-cta-btn-row", "");
@@ -557,18 +665,26 @@
       '" />' +
       "</div>" +
       "<div>" +
-      '<label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>' +
+      "<label>نوع اقدام</label>" +
+      '<select data-btn-action>' +
+      actionOptionsHtml(item.action || "link") +
+      "</select>" +
+      "</div>" +
+      "<div>" +
+      '<label><span data-btn-value-label>آدرس لینک</span> <span class="admin-hint" data-btn-value-hint></span></label>' +
       '<input type="text" data-btn-url dir="ltr" value="' +
-      esc(item.url || "") +
+      esc(displayUrl) +
       '" />' +
       "</div>" +
       "<div>" +
-      "<label>سبک</label>" +
+      "<label>سبک ظاهری</label>" +
       '<select data-btn-style>' +
       styleOptionsHtml(item.style || "primary") +
       "</select>" +
       "</div>" +
       "</div>";
+    row.setAttribute("data-last-action", item.action || "link");
+    syncActionField(row);
     return row;
   }
 
@@ -660,11 +776,20 @@
       var textEl = row.querySelector("[data-btn-text]");
       var urlEl = row.querySelector("[data-btn-url]");
       var styleEl = row.querySelector("[data-btn-style]");
-      buttons.push({
-        text: textEl ? textEl.value : "",
-        url: urlEl ? urlEl.value : "",
-        style: styleEl ? styleEl.value : "primary"
-      });
+      var actionEl = row.querySelector("[data-btn-action]");
+      var style = styleEl ? styleEl.value : "primary";
+      var action = actionEl
+        ? actionEl.value
+        : inferAction(urlEl ? urlEl.value : "", style);
+      var rawUrl = urlEl ? urlEl.value : "";
+      buttons.push(
+        normalizeButton({
+          text: textEl ? textEl.value : "",
+          url: storeValueForAction(action, rawUrl),
+          style: style,
+          action: action
+        })
+      );
     });
     return buttons;
   }
@@ -686,7 +811,28 @@
     list.addEventListener("input", function () {
       render(section);
     });
-    list.addEventListener("change", function () {
+    list.addEventListener("change", function (event) {
+      var actionEl = event.target.closest("[data-btn-action]");
+      if (actionEl && list.contains(actionEl)) {
+        var row = actionEl.closest("[data-cta-btn-row]");
+        if (row) {
+          var urlEl = row.querySelector("[data-btn-url]");
+          var prevAction = row.getAttribute("data-last-action") || inferAction(urlEl ? urlEl.value : "", "");
+          var nextAction = actionEl.value;
+          if (urlEl && prevAction !== nextAction) {
+            var currentDisplay = displayValueForAction(prevAction, storeValueForAction(prevAction, urlEl.value));
+            if (nextAction === "popup" && (!currentDisplay || looksLikePhone(currentDisplay) || currentDisplay.indexOf("/") === 0 || /^https?:/i.test(currentDisplay))) {
+              urlEl.value = "booking";
+            } else if (nextAction === "phone" && parsePopupHref(currentDisplay)) {
+              urlEl.value = "";
+            } else {
+              urlEl.value = displayValueForAction(nextAction, storeValueForAction(prevAction, urlEl.value));
+            }
+          }
+          row.setAttribute("data-last-action", nextAction);
+          syncActionField(row);
+        }
+      }
       render(section);
     });
     list.addEventListener("click", function (event) {
@@ -712,12 +858,14 @@
       var count = list.querySelectorAll("[data-cta-btn-row]").length;
       if (count >= MAX_BUTTONS) return;
       var defaultStyle = list.getAttribute("data-default-style") || "secondary";
+      var defaultAction = defaultStyle === "phone" ? "phone" : "link";
       list.appendChild(
         createButtonRow(
           {
             text: "",
-            url: "",
-            style: defaultStyle
+            url: defaultAction === "phone" ? "tel:" : "",
+            style: defaultStyle,
+            action: defaultAction
           },
           count
         )
@@ -908,9 +1056,9 @@
   });
 
   root.querySelectorAll("[data-module]").forEach(function (section) {
+    var existingButtons = readButtonsFromDom(section);
+    setButtons(section, existingButtons);
     bindAddButton(section);
-    bindButtonListEvents(section);
-    syncButtonUi(section);
     render(section);
 
     section.querySelectorAll("[data-key]").forEach(function (input) {

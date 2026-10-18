@@ -10,9 +10,8 @@
   var testimonialSliders = document.querySelectorAll("[data-testimonials-slider]");
   var voiceCards = document.querySelectorAll("[data-voice-card]");
 
-  // CTA Helper links used to lose data-popup-open / data-booking-open in HTML sanitize,
-  // leaving href="#" which only scrolls to the top. Restore openers from config.
-  (function rehydrateNovaCtaPopupLinks() {
+  // CTA Helper buttons: restore link / popup / tel from config after HTML sanitize.
+  (function rehydrateNovaCtaButtons() {
     function parsePopupHref(href) {
       var raw = String(href == null ? "" : href).trim();
       if (!raw) return null;
@@ -23,6 +22,32 @@
       }
       if (lower === "#booking" || lower === "booking") return "booking";
       return null;
+    }
+
+    function telDigits(phone) {
+      var persianMap = {
+        "۰": "0",
+        "۱": "1",
+        "۲": "2",
+        "۳": "3",
+        "۴": "4",
+        "۵": "5",
+        "۶": "6",
+        "۷": "7",
+        "۸": "8",
+        "۹": "9"
+      };
+      var normalized = String(phone == null ? "" : phone).replace(/[۰-۹]/g, function (ch) {
+        return persianMap[ch] || ch;
+      });
+      return normalized.replace(/[^\d+]/g, "") || normalized;
+    }
+
+    function inferAction(url, style) {
+      if (style === "phone") return "phone";
+      if (parsePopupHref(url)) return "popup";
+      if (/^tel:/i.test(String(url || "").trim())) return "phone";
+      return "link";
     }
 
     function decodeCtaConfig(value) {
@@ -38,32 +63,75 @@
       }
     }
 
+    function collectButtonConfigs(data) {
+      if (Array.isArray(data.buttons) && data.buttons.length) {
+        return data.buttons.map(function (btn) {
+          return {
+            url: btn && btn.url != null ? String(btn.url) : "",
+            style: btn && btn.style ? String(btn.style) : "primary",
+            action: btn && btn.action ? String(btn.action) : ""
+          };
+        });
+      }
+
+      var legacy = [];
+      Object.keys(data).forEach(function (key) {
+        if (key === "buttons") return;
+        var value = data[key];
+        if (typeof value !== "string") return;
+        if (parsePopupHref(value) || /^tel:/i.test(value) || key.toLowerCase().indexOf("url") >= 0) {
+          legacy.push({ url: value, style: "primary", action: "" });
+        }
+      });
+      return legacy;
+    }
+
+    function applyButtonAction(anchor, btn) {
+      var action = btn.action && ["link", "popup", "phone"].indexOf(btn.action) >= 0
+        ? btn.action
+        : inferAction(btn.url, btn.style);
+
+      anchor.removeAttribute("data-popup-open");
+      anchor.removeAttribute("data-booking-open");
+
+      if (action === "popup") {
+        var slug = parsePopupHref(btn.url) || "booking";
+        anchor.setAttribute("href", "#");
+        anchor.setAttribute("data-popup-open", slug);
+        anchor.setAttribute("role", "button");
+        if (slug.toLowerCase() === "booking") {
+          anchor.setAttribute("data-booking-open", "");
+        }
+        return;
+      }
+
+      if (action === "phone") {
+        var number = String(btn.url || "").replace(/^tel:/i, "");
+        anchor.setAttribute("href", "tel:" + telDigits(number));
+        anchor.setAttribute("dir", "ltr");
+        return;
+      }
+
+      var href = String(btn.url || "").trim() || "#";
+      anchor.setAttribute("href", href);
+    }
+
     document.querySelectorAll("[data-nova-cta][data-nova-cta-config]").forEach(function (root) {
       var data = decodeCtaConfig(root.getAttribute("data-nova-cta-config"));
       if (!data) return;
 
-      var popupSlug = null;
-      Object.keys(data).forEach(function (key) {
-        var slug = parsePopupHref(data[key]);
-        if (slug) popupSlug = slug;
-      });
-      if (!popupSlug) return;
+      var buttons = collectButtonConfigs(data);
+      if (!buttons.length) return;
 
-      root.querySelectorAll("a").forEach(function (anchor) {
-        if (anchor.hasAttribute("data-popup-open") || anchor.hasAttribute("data-booking-open")) {
-          return;
-        }
-        var href = String(anchor.getAttribute("href") || "").trim();
-        var lower = href.toLowerCase();
-        if (href && lower !== "#" && lower !== "#booking" && lower !== "booking") {
-          return;
-        }
-        anchor.setAttribute("href", "#");
-        anchor.setAttribute("data-popup-open", popupSlug);
-        anchor.setAttribute("role", "button");
-        if (popupSlug.toLowerCase() === "booking") {
-          anchor.setAttribute("data-booking-open", "");
-        }
+      var anchors = root.querySelectorAll("a.nova-cta__btn, a.nova-cta__phone, .nova-cta__actions a");
+      if (!anchors.length) {
+        anchors = root.querySelectorAll("a");
+      }
+
+      buttons.forEach(function (btn, index) {
+        var anchor = anchors[index];
+        if (!anchor) return;
+        applyButtonAction(anchor, btn);
       });
     });
   })();
