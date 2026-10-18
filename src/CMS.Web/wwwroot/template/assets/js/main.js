@@ -646,28 +646,12 @@
         return rect.left >= viewportRect.left - 2 && rect.right <= viewportRect.right + 2;
       }
 
-      function syncSlideWidth() {
-        if (!isMobileCarousel()) {
-          slides.forEach(function (slide) {
-            slide.style.removeProperty("flex-basis");
-            slide.style.removeProperty("width");
-            slide.style.removeProperty("min-width");
-            slide.style.removeProperty("max-width");
-          });
-          return;
-        }
-
-        var styles = window.getComputedStyle(viewport);
-        var padStart = parseFloat(styles.paddingInlineStart) || 0;
-        var padEnd = parseFloat(styles.paddingInlineEnd) || 0;
-        var slideWidth = Math.max(0, viewport.clientWidth - padStart - padEnd);
-
+      function clearSlideWidthOverrides() {
         slides.forEach(function (slide) {
-          var widthPx = slideWidth + "px";
-          slide.style.flexBasis = widthPx;
-          slide.style.width = widthPx;
-          slide.style.minWidth = widthPx;
-          slide.style.maxWidth = widthPx;
+          slide.style.removeProperty("flex-basis");
+          slide.style.removeProperty("width");
+          slide.style.removeProperty("min-width");
+          slide.style.removeProperty("max-width");
         });
       }
 
@@ -698,12 +682,16 @@
 
       function scrollToActive(behavior) {
         var slide = slides[activeIndex];
+        if (!slide) return;
+
         var styles = window.getComputedStyle(viewport);
-        var padStart = parseFloat(styles.paddingInlineStart) || 0;
-        var delta =
-          slide.getBoundingClientRect().left -
-          viewport.getBoundingClientRect().left -
-          padStart;
+        var padInlineStart = parseFloat(styles.paddingInlineStart) || 0;
+        var padInlineEnd = parseFloat(styles.paddingInlineEnd) || 0;
+        var viewportRect = viewport.getBoundingClientRect();
+        var slideRect = slide.getBoundingClientRect();
+        // Full-width slides: align physical left to content-box left (LTR/RTL).
+        var contentLeft = viewportRect.left + (isRtl ? padInlineEnd : padInlineStart);
+        var delta = slideRect.left - contentLeft;
         var motion = behavior || (reducedMotion() ? "auto" : "smooth");
 
         if (motion === "auto" || Math.abs(delta) < 1) {
@@ -723,7 +711,7 @@
 
       function resetToStart() {
         if (!isMobileCarousel()) return;
-        syncSlideWidth();
+        clearSlideWidthOverrides();
         activeIndex = 0;
         scrollToActive("auto");
       }
@@ -761,11 +749,16 @@
       });
 
       window.addEventListener("resize", function () {
-        syncSlideWidth();
+        if (!isMobileCarousel()) {
+          clearSlideWidthOverrides();
+        }
+        if (isMobileCarousel()) {
+          goToSlide(activeIndex, "auto");
+        }
         updateSliderState();
       });
 
-      syncSlideWidth();
+      clearSlideWidthOverrides();
       resetToStart();
       updateSliderState();
     });

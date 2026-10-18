@@ -251,7 +251,6 @@
 
   .services-cards__viewport {
     --services-cards-pad: 1rem;
-    --services-cards-gap: 0.75rem;
     container-type: inline-size;
     overflow-x: auto;
     overflow-y: hidden;
@@ -274,36 +273,39 @@
     outline-offset: 4px;
   }
 
+  /*
+    One full card per view — no peek of the next card.
+    Each column = viewport content box (100cqw); gap must stay 0
+    or the next slide peeks into the same screen.
+  */
   .services-cards .services-cards__track.row {
-    display: flex;
-    flex-flow: row nowrap;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100cqw;
     align-items: stretch;
     width: max-content;
     max-width: none;
     margin: 0;
     --bs-gutter-x: 0;
     --bs-gutter-y: 0;
-    gap: var(--services-cards-gap);
+    gap: 0;
+    column-gap: 0;
+    row-gap: 0;
   }
 
-  /* One full card per view; 100cqw avoids 100vw RTL clipping on the physical left. */
   .services-cards .services-cards__track.row > [class*="col-"] {
     box-sizing: border-box;
-    flex: 0 0 100cqw;
-    max-width: 100cqw;
-    width: 100cqw;
-    min-width: 100cqw;
+    width: auto;
+    max-width: none;
+    min-width: 0;
     padding: 0;
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
 
   @supports not (width: 100cqw) {
-    .services-cards .services-cards__track.row > [class*="col-"] {
-      flex: 0 0 calc(100% - 0.01px);
-      max-width: calc(100vw - (var(--services-cards-pad) * 2));
-      width: calc(100vw - (var(--services-cards-pad) * 2));
-      min-width: calc(100vw - (var(--services-cards-pad) * 2));
+    .services-cards .services-cards__track.row {
+      grid-auto-columns: calc(100vw - (var(--services-cards-pad) * 2));
     }
   }
 
