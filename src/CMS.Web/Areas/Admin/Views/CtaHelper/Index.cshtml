@@ -119,21 +119,70 @@
                 <label for="cta1-description">Description</label>
                 <textarea id="cta1-description" data-key="description" rows="2">در @brand مسیر تشخیص و درمان بیماری‌های غدد، با همراهی تیم تخصصی هماهنگ می‌شود.</textarea>
             </div>
-            <div>
-                <label for="cta1-primaryText">Primary Button Text</label>
-                <input id="cta1-primaryText" data-key="primaryText" value="رزرو نوبت" />
-            </div>
-            <div>
-                <label for="cta1-primaryUrl">Primary Button URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta1-primaryUrl" data-key="primaryUrl" value="@bookingPopupUrl" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta1-secondaryText">Secondary Button Text</label>
-                <input id="cta1-secondaryText" data-key="secondaryText" value="تماس با کلینیک" />
-            </div>
-            <div>
-                <label for="cta1-secondaryUrl">Secondary Button URL</label>
-                <input id="cta1-secondaryUrl" data-key="secondaryUrl" value="tel:@phoneDigits" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="outline">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو نوبت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light" selected>روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="تماس با کلینیک" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="tel:@phoneDigits" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline" selected>حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -158,29 +207,78 @@
         <div class="cta-mod__preview" data-preview></div>
         <p class="cta-mod__label">تنظیمات</p>
         <div class="cta-mod__settings">
-            <div>
+            <div class="span-2">
                 <label for="cta2-title">Title</label>
                 <input id="cta2-title" data-key="title" value="نیاز به مشاوره تخصصی دارید؟" />
-            </div>
-            <div>
-                <label for="cta2-buttonText">Button Text</label>
-                <input id="cta2-buttonText" data-key="buttonText" value="درخواست مشاوره" />
             </div>
             <div class="span-2">
                 <label for="cta2-description">Description</label>
                 <textarea id="cta2-description" data-key="description" rows="2">سوالات مربوط به تیروئید، پاراتیروئید و غدد فوق کلیوی را با تیم @brand مطرح کنید.</textarea>
             </div>
-            <div>
-                <label for="cta2-buttonUrl">Button URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta2-buttonUrl" data-key="buttonUrl" value="@bookingPopupUrl" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta2-phoneLabel">Phone Label</label>
-                <input id="cta2-phoneLabel" data-key="phoneLabel" value="مشاوره تلفنی" />
-            </div>
-            <div class="span-2">
-                <label for="cta2-phoneNumber">Phone Number</label>
-                <input id="cta2-phoneNumber" data-key="phoneNumber" value="@phone" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="phone">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="درخواست مشاوره" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary" selected>اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="مشاوره تلفنی" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="tel:@phoneDigits" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone" selected>تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -234,21 +332,70 @@
                 <label for="cta3-description">Description</label>
                 <textarea id="cta3-description" data-key="description" rows="2">مدیر @brand؛ تمرکز بر جراحی تیروئید، پاراتیروئید و غدد فوق کلیوی با رویکرد تخصصی و دقیق.</textarea>
             </div>
-            <div>
-                <label for="cta3-profileText">Profile Button</label>
-                <input id="cta3-profileText" data-key="profileText" value="مشاهده پروفایل" />
-            </div>
-            <div>
-                <label for="cta3-profileUrl">Profile URL</label>
-                <input id="cta3-profileUrl" data-key="profileUrl" value="@doctorsUrl" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta3-appointmentText">Appointment Button</label>
-                <input id="cta3-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
-            </div>
-            <div>
-                <label for="cta3-appointmentUrl">Appointment URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta3-appointmentUrl" data-key="appointmentUrl" value="@bookingPopupUrl" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="secondary">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="مشاهده پروفایل" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@doctorsUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary" selected>اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو نوبت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary" selected>ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -289,21 +436,70 @@
                 <label for="cta4-description">Description</label>
                 <textarea id="cta4-description" data-key="description" rows="2">مسیر درمان جراحی غدد در @brand با بررسی دقیق یافته‌ها، توضیح گزینه‌ها و برنامه‌ریزی مراقبت پس از عمل همراه است.</textarea>
             </div>
-            <div>
-                <label for="cta4-buttonText">Button Text</label>
-                <input id="cta4-buttonText" data-key="buttonText" value="مشاهده خدمت" />
-            </div>
-            <div>
-                <label for="cta4-buttonUrl">Button URL</label>
-                <input id="cta4-buttonUrl" data-key="buttonUrl" value="@servicesUrl" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta4-secondaryText">Secondary Button</label>
-                <input id="cta4-secondaryText" data-key="secondaryText" value="رزرو مشاوره" />
-            </div>
-            <div>
-                <label for="cta4-secondaryUrl">Secondary URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta4-secondaryUrl" data-key="secondaryUrl" value="@bookingPopupUrl" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="secondary">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="مشاهده خدمت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@servicesUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary" selected>اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو مشاوره" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary" selected>ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -336,21 +532,70 @@
                 <label for="cta5-description">Description</label>
                 <textarea id="cta5-description" data-key="description" rows="2">اگر علائم یا نتیجه آزمایش نگران‌کننده‌ای دارید، می‌توانید برای نوبت حضوری یا مشاوره تخصصی با @brand هماهنگ شوید.</textarea>
             </div>
-            <div>
-                <label for="cta5-appointmentText">Appointment Button</label>
-                <input id="cta5-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
-            </div>
-            <div>
-                <label for="cta5-appointmentUrl">Appointment URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta5-appointmentUrl" data-key="appointmentUrl" value="@bookingPopupUrl" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta5-consultationText">Consultation Button</label>
-                <input id="cta5-consultationText" data-key="consultationText" value="درخواست مشاوره" />
-            </div>
-            <div>
-                <label for="cta5-consultationUrl">Consultation URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta5-consultationUrl" data-key="consultationUrl" value="@bookingPopupUrl" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="secondary">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو نوبت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary" selected>اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="درخواست مشاوره" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary" selected>ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -375,33 +620,105 @@
         <div class="cta-mod__preview" data-preview></div>
         <p class="cta-mod__label">تنظیمات</p>
         <div class="cta-mod__settings">
-            <div>
+            <div class="span-2">
                 <label for="cta6-title">Title</label>
                 <input id="cta6-title" data-key="title" value="تماس سریع با کلینیک" />
-            </div>
-            <div>
-                <label for="cta6-phone">Phone</label>
-                <input id="cta6-phone" data-key="phone" value="@phone" dir="ltr" />
             </div>
             <div class="span-2">
                 <label for="cta6-description">Description</label>
                 <textarea id="cta6-description" data-key="description" rows="2">برای هماهنگی نوبت یا سوال کوتاه، همین حالا با تیم پذیرش در ارتباط باشید.</textarea>
             </div>
-            <div>
-                <label for="cta6-whatsappText">WhatsApp / Contact Label</label>
-                <input id="cta6-whatsappText" data-key="whatsappText" value="واتساپ / تماس" />
-            </div>
-            <div>
-                <label for="cta6-whatsappUrl">WhatsApp / Contact Link</label>
-                <input id="cta6-whatsappUrl" data-key="whatsappUrl" value="@whatsapp" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta6-appointmentText">Appointment Label</label>
-                <input id="cta6-appointmentText" data-key="appointmentText" value="رزرو نوبت" />
-            </div>
-            <div>
-                <label for="cta6-appointmentUrl">Appointment Link <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta6-appointmentUrl" data-key="appointmentUrl" value="@bookingPopupUrl" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="compact">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="تماس" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="tel:@phoneDigits" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone" selected>تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="واتساپ / تماس" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@whatsapp" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary" selected>ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۳</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو نوبت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact" selected>فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -426,21 +743,51 @@
         <div class="cta-mod__preview" data-preview></div>
         <p class="cta-mod__label">تنظیمات</p>
         <div class="cta-mod__settings">
-            <div>
+            <div class="span-2">
                 <label for="cta7-title">Small Title</label>
                 <input id="cta7-title" data-key="title" value="نیاز به ارزیابی تخصصی دارید؟" />
-            </div>
-            <div>
-                <label for="cta7-buttonText">Button Text</label>
-                <input id="cta7-buttonText" data-key="buttonText" value="رزرو نوبت" />
             </div>
             <div class="span-2">
                 <label for="cta7-description">Description</label>
                 <textarea id="cta7-description" data-key="description" rows="2">برای بررسی یافته‌های تصویربرداری یا آزمایش، نوبت مشاوره هماهنگ کنید.</textarea>
             </div>
-            <div class="span-2">
-                <label for="cta7-buttonUrl">Button URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta7-buttonUrl" data-key="buttonUrl" value="@bookingPopupUrl" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="compact">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو نوبت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact" selected>فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">
@@ -477,21 +824,70 @@
                 <label for="cta8-description">Description</label>
                 <textarea id="cta8-description" data-key="description" rows="2">اگر علائم جدید، تورم گردن یا تغییر در نتایج آزمایش دارید، بهتر است هرچه زودتر با متخصص جراحی غدد مشورت کنید.</textarea>
             </div>
-            <div>
-                <label for="cta8-primaryText">Primary CTA</label>
-                <input id="cta8-primaryText" data-key="primaryText" value="رزرو نوبت" />
-            </div>
-            <div>
-                <label for="cta8-primaryUrl">Primary URL <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
-                <input id="cta8-primaryUrl" data-key="primaryUrl" value="@bookingPopupUrl" dir="ltr" />
-            </div>
-            <div>
-                <label for="cta8-secondaryText">Secondary CTA</label>
-                <input id="cta8-secondaryText" data-key="secondaryText" value="تماس تلفنی" />
-            </div>
-            <div>
-                <label for="cta8-secondaryUrl">Secondary URL</label>
-                <input id="cta8-secondaryUrl" data-key="secondaryUrl" value="tel:@phoneDigits" dir="ltr" />
+            <div class="span-2 cta-mod__buttons-panel">
+                <div class="cta-mod__buttons-head">
+                    <div>
+                        <strong>دکمه‌ها</strong>
+                        <p class="admin-hint">تا ۴ دکمه اضافه یا حذف کنید.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-cta-add-btn>افزودن دکمه</button>
+                </div>
+                <div class="cta-mod__buttons" data-cta-buttons data-default-style="secondary">
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۱</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="رزرو نوبت" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="@bookingPopupUrl" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary" selected>اصلی</option>
+                                    <option value="secondary">ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cta-mod__btn-row" data-cta-btn-row>
+                        <div class="cta-mod__btn-row-head">
+                            <span class="cta-mod__btn-row-title">دکمه ۲</span>
+                            <button type="button" class="btn btn-ghost cta-mod__btn-remove" data-cta-remove-btn>حذف</button>
+                        </div>
+                        <div class="cta-mod__btn-fields">
+                            <div>
+                                <label>متن دکمه</label>
+                                <input type="text" data-btn-text value="تماس تلفنی" />
+                            </div>
+                            <div>
+                                <label>لینک <span class="admin-hint">(popup:booking = پاپ‌آپ رزرو)</span></label>
+                                <input type="text" data-btn-url dir="ltr" value="tel:@phoneDigits" />
+                            </div>
+                            <div>
+                                <label>سبک</label>
+                                <select data-btn-style>
+                                    <option value="primary">اصلی</option>
+                                    <option value="secondary" selected>ثانویه</option>
+                                    <option value="light">روشن (پس‌زمینه تیره)</option>
+                                    <option value="outline">حاشیه‌دار (پس‌زمینه تیره)</option>
+                                    <option value="compact">فشرده</option>
+                                    <option value="phone">تلفن</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="cta-mod__actions">

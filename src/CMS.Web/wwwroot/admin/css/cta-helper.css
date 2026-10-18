@@ -449,6 +449,85 @@
   box-shadow: 0 0 0 3px rgba(9, 112, 125, 0.14);
 }
 
+.cta-mod__buttons-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cta-mod__buttons-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cta-mod__buttons-head strong {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #223;
+}
+
+.cta-mod__buttons-head .admin-hint {
+  margin: 0.2rem 0 0;
+}
+
+.cta-mod__buttons-head .btn {
+  min-height: 38px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.cta-mod__buttons {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cta-mod__btn-row {
+  padding: 0.85rem;
+  border: 1px solid rgba(9, 112, 125, 0.14);
+  border-radius: var(--cta-helper-radius-sm);
+  background: #fff;
+}
+
+.cta-mod__btn-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.cta-mod__btn-row-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #334;
+}
+
+.cta-mod__btn-remove {
+  min-height: 34px;
+  padding-inline: 0.75rem;
+  color: #dc2626;
+}
+
+.cta-mod__btn-remove:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cta-mod__btn-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+@media (min-width: 768px) {
+  .cta-mod__btn-fields {
+    grid-template-columns: 1.1fr 1.3fr 0.9fr;
+  }
+}
+
 .cta-mod__media-field .admin-hint {
   margin: 0 0 0.65rem;
 }
