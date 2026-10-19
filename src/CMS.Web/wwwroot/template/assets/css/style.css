@@ -2326,10 +2326,10 @@ body.nav-open {
   width: 100%;
   max-width: none;
   margin-inline: 0;
-  border: 1.5px solid rgba(9, 112, 125, 0.35);
+  border: 1.5px solid rgba(9, 112, 125, 0.32);
   border-radius: var(--radius-md);
   background: var(--primary-soft);
-  box-shadow: 0 4px 16px rgba(9, 112, 125, 0.1);
+  box-shadow: 0 2px 10px rgba(9, 112, 125, 0.08);
   overflow: hidden;
 }
 
@@ -2339,8 +2339,8 @@ body.nav-open {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.15rem 1.25rem;
-  background: rgba(9, 112, 125, 0.1);
+  padding: 1.1rem 1.25rem;
+  background: rgba(9, 112, 125, 0.12);
   border: 0;
   border-bottom: 1px solid transparent;
   font-family: inherit;
@@ -2370,12 +2370,10 @@ body.nav-open {
   color: var(--white);
   display: grid;
   place-items: center;
-  box-shadow: 0 2px 8px rgba(9, 112, 125, 0.28);
   transition:
     transform var(--transition),
     background-color var(--transition),
-    color var(--transition),
-    box-shadow var(--transition);
+    color var(--transition);
 }
 
 .scientific-sources__icon svg {
@@ -2387,7 +2385,6 @@ body.nav-open {
   background: var(--primary-dark);
   color: var(--white);
   transform: rotate(180deg);
-  box-shadow: 0 2px 10px rgba(6, 90, 100, 0.35);
 }
 
 .scientific-sources__panel {
@@ -2403,44 +2400,54 @@ body.nav-open {
 .scientific-sources__panel-inner {
   overflow: hidden;
   min-height: 0;
-  background: rgba(230, 243, 245, 0.55);
+  background: var(--primary-soft);
 }
 
 .scientific-sources__list {
   margin: 0;
-  padding: 1rem 1.25rem 1.25rem;
+  padding: 1rem 1.25rem 1.2rem;
   list-style: none;
   display: grid;
-  gap: 0.7rem;
+  gap: 0.55rem;
   counter-reset: scientific-source;
 }
 
 .scientific-sources__list li {
   position: relative;
-  padding-block: 0.65rem;
-  padding-inline: 1.85rem 0.85rem;
+  padding-block: 0.35rem;
+  padding-inline: 1.75rem 0;
   color: var(--text);
   font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.7;
   counter-increment: scientific-source;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(9, 112, 125, 0.16);
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.scientific-sources__list li + li {
+  border-top: 1px solid rgba(9, 112, 125, 0.16);
+  padding-top: 0.65rem;
+  margin-top: 0.1rem;
 }
 
 .scientific-sources__list li::before {
   content: counter(scientific-source) ".";
   position: absolute;
-  inset-inline-start: 0.7rem;
-  top: 0.65rem;
+  inset-inline-start: 0;
+  top: 0.35rem;
   color: var(--primary);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
+.scientific-sources__list li + li::before {
+  top: 0.65rem;
+}
+
 .scientific-sources__list a {
-  color: var(--primary-dark);
+  color: var(--primary);
   font-weight: 600;
   text-decoration: none;
   transition: color var(--transition);
@@ -2448,7 +2455,7 @@ body.nav-open {
 
 .scientific-sources__list a:hover,
 .scientific-sources__list a:focus-visible {
-  color: var(--primary);
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
