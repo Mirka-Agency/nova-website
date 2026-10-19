@@ -648,10 +648,30 @@
 
       function clearSlideWidthOverrides() {
         slides.forEach(function (slide) {
+          slide.style.removeProperty("flex");
           slide.style.removeProperty("flex-basis");
           slide.style.removeProperty("width");
           slide.style.removeProperty("min-width");
           slide.style.removeProperty("max-width");
+        });
+      }
+
+      function syncSlideWidth() {
+        if (!isMobileCarousel()) {
+          clearSlideWidthOverrides();
+          return;
+        }
+
+        // Exact viewport width so only one card fits; side inset is CSS padding on the slide.
+        var slideWidth = Math.round(viewport.clientWidth);
+        if (slideWidth <= 0) return;
+
+        slides.forEach(function (slide) {
+          var widthPx = slideWidth + "px";
+          slide.style.flex = "0 0 " + widthPx;
+          slide.style.width = widthPx;
+          slide.style.minWidth = widthPx;
+          slide.style.maxWidth = widthPx;
         });
       }
 
@@ -684,14 +704,9 @@
         var slide = slides[activeIndex];
         if (!slide) return;
 
-        var styles = window.getComputedStyle(viewport);
-        var padInlineStart = parseFloat(styles.paddingInlineStart) || 0;
-        var padInlineEnd = parseFloat(styles.paddingInlineEnd) || 0;
         var viewportRect = viewport.getBoundingClientRect();
         var slideRect = slide.getBoundingClientRect();
-        // Full-width slides: align physical left to content-box left (LTR/RTL).
-        var contentLeft = viewportRect.left + (isRtl ? padInlineEnd : padInlineStart);
-        var delta = slideRect.left - contentLeft;
+        var delta = slideRect.left - viewportRect.left;
         var motion = behavior || (reducedMotion() ? "auto" : "smooth");
 
         if (motion === "auto" || Math.abs(delta) < 1) {
@@ -711,7 +726,7 @@
 
       function resetToStart() {
         if (!isMobileCarousel()) return;
-        clearSlideWidthOverrides();
+        syncSlideWidth();
         activeIndex = 0;
         scrollToActive("auto");
       }
@@ -749,16 +764,14 @@
       });
 
       window.addEventListener("resize", function () {
-        if (!isMobileCarousel()) {
-          clearSlideWidthOverrides();
-        }
+        syncSlideWidth();
         if (isMobileCarousel()) {
           goToSlide(activeIndex, "auto");
         }
         updateSliderState();
       });
 
-      clearSlideWidthOverrides();
+      syncSlideWidth();
       resetToStart();
       updateSliderState();
     });

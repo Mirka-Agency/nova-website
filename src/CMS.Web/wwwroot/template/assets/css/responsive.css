@@ -249,14 +249,19 @@
     padding-inline: 1rem;
   }
 
+  /*
+    Mobile services carousel: exactly ONE full card on screen.
+    No viewport padding (that caused next-card peek). Side inset
+    lives inside each slide via padding + border-box.
+  */
   .services-cards__viewport {
     --services-cards-pad: 1rem;
     container-type: inline-size;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-inline: var(--services-cards-pad);
+    padding-inline: 0;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--services-cards-pad);
+    scroll-padding-inline: 0;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -273,15 +278,9 @@
     outline-offset: 4px;
   }
 
-  /*
-    One full card per view — no peek of the next card.
-    Each column = viewport content box (100cqw); gap must stay 0
-    or the next slide peeks into the same screen.
-  */
   .services-cards .services-cards__track.row {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 100cqw;
+    display: flex;
+    flex-flow: row nowrap;
     align-items: stretch;
     width: max-content;
     max-width: none;
@@ -289,23 +288,26 @@
     --bs-gutter-x: 0;
     --bs-gutter-y: 0;
     gap: 0;
-    column-gap: 0;
-    row-gap: 0;
   }
 
   .services-cards .services-cards__track.row > [class*="col-"] {
     box-sizing: border-box;
-    width: auto;
-    max-width: none;
-    min-width: 0;
-    padding: 0;
+    flex: 0 0 100cqw;
+    width: 100cqw;
+    min-width: 100cqw;
+    max-width: 100cqw;
+    padding-block: 0;
+    padding-inline: var(--services-cards-pad);
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
 
   @supports not (width: 100cqw) {
-    .services-cards .services-cards__track.row {
-      grid-auto-columns: calc(100vw - (var(--services-cards-pad) * 2));
+    .services-cards .services-cards__track.row > [class*="col-"] {
+      flex: 0 0 100%;
+      width: 100vw;
+      min-width: 100vw;
+      max-width: 100vw;
     }
   }
 
