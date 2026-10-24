@@ -166,13 +166,14 @@ public sealed class StaticPagesSitemapUrlProvider : ISitemapUrlProvider
 
     public Task<IReadOnlyList<SitemapUrlEntry>> GetEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var today = DateTime.UtcNow.Date;
+        // Per-page lastmod dates — bump only the edited page when its view/controller changes.
+        // Kept in sync by .cursor/rules/cms-static-pages-sitemap-lastmod.mdc
         IReadOnlyList<SitemapUrlEntry> entries =
         [
-            new("/", today, SitemapChangeFrequency.Daily, 1.0, "صفحه اصلی"),
-            new("/about-us", today, SitemapChangeFrequency.Monthly, 0.8, "درباره ما"),
-            new("/contact-us", today, SitemapChangeFrequency.Monthly, 0.8, "تماس با ما"),
-            new("/privacy", today, SitemapChangeFrequency.Yearly, 0.3, "حریم خصوصی")
+            new("/", new DateTime(2026, 10, 18, 0, 0, 0, DateTimeKind.Utc), SitemapChangeFrequency.Daily, 1.0, "صفحه اصلی"),
+            new("/about-us", new DateTime(2026, 10, 15, 0, 0, 0, DateTimeKind.Utc), SitemapChangeFrequency.Monthly, 0.8, "درباره ما"),
+            new("/contact-us", new DateTime(2026, 10, 15, 0, 0, 0, DateTimeKind.Utc), SitemapChangeFrequency.Monthly, 0.8, "تماس با ما"),
+            new("/privacy", new DateTime(2026, 10, 8, 0, 0, 0, DateTimeKind.Utc), SitemapChangeFrequency.Yearly, 0.3, "حریم خصوصی")
         ];
         return Task.FromResult(entries);
     }

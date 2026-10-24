@@ -1,0 +1,33 @@
+---
+description: Keep static pages sitemap lastmod in sync when editing public static pages
+globs: "**/Views/Home/{Index,About,Contact,Privacy}.cshtml,**/Controllers/HomeController.cs,**/ViewModels/{HomeIndex,AboutPage}ViewModel.cs,**/Seo/SitemapService.cs"
+alwaysApply: false
+---
+
+# Static Pages Sitemap `lastmod`
+
+When you change content, markup, copy, or public behavior of a static page, update that page's `LastModifiedUtc` in `StaticPagesSitemapUrlProvider` (`src/CMS.Infrastructure/Seo/SitemapService.cs`).
+
+## Mapping
+
+| Path | Files that count as an update |
+|------|-------------------------------|
+| `/` | `Views/Home/Index.cshtml`, `HomeController` Index action, `HomeIndexViewModel` |
+| `/about-us` | `Views/Home/About.cshtml`, `HomeController` About action, `AboutPageViewModel` |
+| `/contact-us` | `Views/Home/Contact.cshtml`, `HomeController` Contact action |
+| `/privacy` | `Views/Home/Privacy.cshtml`, `HomeController` Privacy action |
+
+## Rules
+
+- Set that entry to **today's UTC date** as `new DateTime(yyyy, M, d, 0, 0, 0, DateTimeKind.Utc)`.
+- Update **only** the page(s) you actually changed — never bump all four.
+- **Never** use `DateTime.UtcNow` / `DateTime.Today` for these entries.
+- Skip the bump for non-content edits (typos in comments, unused usings, formatting-only).
+- If you add a new static public page to this provider, add it to the table above in this rule.
+
+## Example
+
+```csharp
+// Edited About.cshtml on 2026-10-24 → bump only /about-us
+new("/about-us", new DateTime(2026, 10, 24, 0, 0, 0, DateTimeKind.Utc), SitemapChangeFrequency.Monthly, 0.8, "درباره ما"),
+```
