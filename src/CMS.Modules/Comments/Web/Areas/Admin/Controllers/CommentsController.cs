@@ -280,6 +280,35 @@ public class CommentsController : Controller
         return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status, q, from, to, sort));
     }
 
+    [HttpPost]
+    public async Task<IActionResult> BulkDelete(
+        Guid[]? ids,
+        CommentTargetType? targetType,
+        CommentStatus? status,
+        string? q,
+        string? from,
+        string? to,
+        string? sort,
+        CancellationToken cancellationToken)
+    {
+        if (!await _features.IsEnabledAsync(FeatureNames.Comments))
+            return NotFound();
+
+        var selected = ids ?? [];
+        if (selected.Length == 0)
+        {
+            TempData["Error"] = _localizer["BulkDeleteNoneSelected"].Value;
+            return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status, q, from, to, sort));
+        }
+
+        await _comments.BulkDeleteAsync(selected, cancellationToken);
+        TempData["Success"] = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            _localizer["CommentsBulkDeleted"].Value,
+            selected.Length);
+        return RedirectToAction(nameof(Index), BuildFilterRouteValues(targetType, status, q, from, to, sort));
+    }
+
     private static object BuildFilterRouteValues(
         CommentTargetType? targetType,
         CommentStatus? status,

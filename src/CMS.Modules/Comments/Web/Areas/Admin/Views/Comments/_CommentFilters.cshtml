@@ -2,14 +2,15 @@
     var filter = (CommentListFilterViewModel)ViewBag.Filter;
 }
 
+@* Status is chosen via the tabs above the table; keep it when applying other filters. *@
+@if (filter.Status.HasValue)
+{
+    <input type="hidden" name="status" value="@((int)filter.Status.Value)" />
+}
+
 <div class="admin-field">
     <label for="comment-filter-target">@Localizer["Target"]</label>
     <select id="comment-filter-target" name="targetType" asp-items="ViewBag.TargetOptions"></select>
-</div>
-
-<div class="admin-field">
-    <label for="comment-filter-status">@Localizer["Status"]</label>
-    <select id="comment-filter-status" name="status" asp-items="ViewBag.StatusOptions"></select>
 </div>
 
 <div class="admin-field">

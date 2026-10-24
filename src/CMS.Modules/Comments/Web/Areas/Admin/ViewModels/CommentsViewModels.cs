@@ -11,10 +11,12 @@ public sealed class CommentListFilterViewModel
     public string? ToLocal { get; set; }
     public string? Sort { get; set; }
 
+    /// <summary>
+    /// Filters other than status tabs (status is surfaced as tabs, not the filter badge).
+    /// </summary>
     public bool HasActiveFilters =>
         !string.IsNullOrWhiteSpace(Search)
         || TargetType.HasValue
-        || Status.HasValue
         || !string.IsNullOrWhiteSpace(FromLocal)
         || !string.IsNullOrWhiteSpace(ToLocal)
         || !string.IsNullOrWhiteSpace(Sort);

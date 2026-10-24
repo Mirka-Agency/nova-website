@@ -37,6 +37,28 @@ public class CommentImportDomainTests
         comment.TargetId.Should().Be(targetId);
     }
 
+    [Theory]
+    [InlineData(CommentStatus.Approved)]
+    [InlineData(CommentStatus.Pending)]
+    [InlineData(CommentStatus.Rejected)]
+    public void Import_applies_comment_approved_status_exactly(CommentStatus status)
+    {
+        var comment = Comment.Import(
+            CommentTargetType.BlogPost,
+            Guid.NewGuid(),
+            "T",
+            "A",
+            null,
+            "body",
+            status,
+            new DateTime(2023, 5, 10, 8, 30, 0, DateTimeKind.Utc),
+            Comment.WordPressSourceSystem,
+            "101",
+            "https://old.example.com/sample-post/");
+
+        comment.Status.Should().Be(status);
+    }
+
     [Fact]
     public void Import_source_keys_enable_idempotent_identity()
     {

@@ -104,6 +104,93 @@ public class WordPressCommentXmlParserTests
     }
 
     [Fact]
+    public void Parse_sample_xml_applies_comment_approved_to_status()
+    {
+        const string xml =
+            """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <comments>
+            <comment>
+            <comment_id>101</comment_id>
+            <comment_author>علی رضایی</comment_author>
+            <comment_author_email>ali@example.com</comment_author_email>
+            <comment_content>مقاله مفیدی بود، ممنون.</comment_content>
+            <comment_date_gmt>2023-05-10 08:30:00</comment_date_gmt>
+            <comment_approved>1</comment_approved>
+            <comment_parent>0</comment_parent>
+            <page_url>https://old.example.com/sample-post/</page_url>
+            </comment>
+            <comment>
+            <comment_id>102</comment_id>
+            <comment_author>سارا محمدی</comment_author>
+            <comment_author_email>sara@example.com</comment_author_email>
+            <comment_content>کاملاً موافقم.</comment_content>
+            <comment_date_gmt>2023-05-11 09:15:00</comment_date_gmt>
+            <comment_approved>1</comment_approved>
+            <comment_parent>101</comment_parent>
+            <page_url>https://old.example.com/sample-post/</page_url>
+            </comment>
+            <comment>
+            <comment_id>201</comment_id>
+            <comment_author>مهمان</comment_author>
+            <comment_author_email/>
+            <comment_content>این URL در CMS وجود ندارد و باید دستی وصل شود.</comment_content>
+            <comment_date_gmt>2023-06-01 12:00:00</comment_date_gmt>
+            <comment_approved>0</comment_approved>
+            <comment_parent>0</comment_parent>
+            <page_url>https://old.example.com/missing-page/</page_url>
+            </comment>
+            </comments>
+            """;
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+        var items = _parser.Parse(stream);
+
+        items.Should().HaveCount(3);
+        items[0].ExternalId.Should().Be("101");
+        items[0].Status.Should().Be(CommentStatus.Approved);
+        items[1].ExternalId.Should().Be("102");
+        items[1].Status.Should().Be(CommentStatus.Approved);
+        items[1].ExternalParentId.Should().Be("101");
+        items[2].ExternalId.Should().Be("201");
+        items[2].Status.Should().Be(CommentStatus.Pending);
+        items[2].AuthorEmail.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("1", CommentStatus.Approved)]
+    [InlineData("۰", CommentStatus.Pending)]
+    [InlineData("۱", CommentStatus.Approved)]
+    [InlineData("0", CommentStatus.Pending)]
+    [InlineData("hold", CommentStatus.Pending)]
+    [InlineData("spam", CommentStatus.Rejected)]
+    [InlineData("approved", CommentStatus.Approved)]
+    public void Parse_maps_comment_approved_values(string approved, CommentStatus expected)
+    {
+        var xml =
+            $"""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <comments>
+              <comment>
+                <comment_id>1</comment_id>
+                <comment_author>x</comment_author>
+                <comment_content>body</comment_content>
+                <comment_date_gmt>2023-01-01 00:00:00</comment_date_gmt>
+                <comment_approved>{approved}</comment_approved>
+                <comment_parent>0</comment_parent>
+                <page_url>https://old.example.com/a/</page_url>
+              </comment>
+            </comments>
+            """;
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+        var items = _parser.Parse(stream);
+
+        items.Should().ContainSingle();
+        items[0].Status.Should().Be(expected);
+    }
+
+    [Fact]
     public void Parse_rejects_xxe_external_dtd()
     {
         const string xml =

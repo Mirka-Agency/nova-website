@@ -37,6 +37,7 @@
             <thead>
                 <tr>
                     <th>@Localizer["ImportColStatus"]</th>
+                    <th>@Localizer["ImportColApproval"]</th>
                     <th>@Localizer["AuthorName"]</th>
                     <th>@Localizer["Body"]</th>
                     <th>@Localizer["ImportColPageUrl"]</th>
@@ -59,6 +60,9 @@
                         {
                             <div class="admin-hint">@row.ErrorMessage</div>
                         }
+                    </td>
+                    <td>
+                        <span class="@ApprovalBadgeClass(row.Status)">@ApprovalLabel(row.Status)</span>
                     </td>
                     <td>@row.AuthorName</td>
                     <td>@row.BodyPreview</td>
@@ -136,5 +140,21 @@
         CommentImportRowDisposition.Ambiguous => Localizer["ImportDispositionAmbiguous"].Value,
         CommentImportRowDisposition.Invalid => Localizer["ImportDispositionInvalid"].Value,
         _ => d.ToString()
+    };
+
+    string ApprovalLabel(CommentStatus status) => status switch
+    {
+        CommentStatus.Pending => Localizer["StatusPending"].Value,
+        CommentStatus.Approved => Localizer["StatusApproved"].Value,
+        CommentStatus.Rejected => Localizer["StatusRejected"].Value,
+        _ => status.ToString()
+    };
+
+    string ApprovalBadgeClass(CommentStatus status) => status switch
+    {
+        CommentStatus.Pending => "admin-badge admin-badge-emphasis",
+        CommentStatus.Approved => "admin-badge admin-badge-success",
+        CommentStatus.Rejected => "admin-badge admin-badge-danger",
+        _ => "admin-badge admin-badge-muted"
     };
 }

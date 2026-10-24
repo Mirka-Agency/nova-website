@@ -39,4 +39,6 @@ public interface ICommentService
     Task UpdateAsync(Guid id, UpdateCommentCommand command, CancellationToken cancellationToken = default);
 
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task BulkDeleteAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default);
 }

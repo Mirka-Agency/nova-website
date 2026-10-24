@@ -4152,3 +4152,146 @@ fieldset.admin-field legend {
   border-color: #DC2626;
   color: #DC2626;
 }
+
+/* Comments moderation list */
+.admin-comments-inbox {
+  display: grid;
+  gap: calc(var(--admin-space) * 3);
+}
+
+.admin-comments-table .admin-comment-row.is-pending {
+  background: #fafafa;
+}
+
+.admin-comments-table .admin-comment-row.is-selected {
+  background: #f5f5f5;
+}
+
+.admin-comments-check-col {
+  width: 2.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.admin-comments-select-all,
+.admin-comments-row-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.admin-comments-select-all input,
+.admin-comments-row-check input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--admin-primary);
+  cursor: pointer;
+}
+
+.admin-comment-moderation .btn + .btn {
+  border-inline-start: 1px solid var(--admin-border);
+}
+
+.admin-comment-target,
+.admin-comment-author {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.admin-comment-target-type {
+  color: var(--admin-text-secondary);
+  font-size: 0.82rem;
+}
+
+.admin-comment-target-title,
+.admin-comment-author strong {
+  font-weight: 600;
+}
+
+.admin-comment-author small {
+  display: block;
+  color: var(--admin-text-secondary);
+}
+
+.admin-comment-body {
+  margin: 0;
+  max-width: 28rem;
+  color: var(--admin-text);
+  line-height: 1.55;
+  white-space: normal;
+}
+
+.admin-comment-moderation {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.admin-comment-moderation .admin-inline-form {
+  display: inline-flex;
+}
+
+.admin-comment-moderation .admin-inline-form + .admin-inline-form {
+  border-inline-start: 1px solid var(--admin-border);
+}
+
+.admin-comment-moderation .btn {
+  min-height: 34px;
+  padding-block: 6px;
+  padding-inline: 12px;
+  border-radius: 0;
+  border: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-approve {
+  background: #16A34A;
+  color: #fff;
+}
+
+.btn-approve:hover {
+  background: #15803d;
+  color: #fff;
+}
+
+.btn-reject {
+  background: #fff;
+  color: var(--admin-error);
+}
+
+.btn-reject:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.admin-comments-table .btn-table {
+  min-height: 34px;
+  padding-block: 6px;
+  padding-inline: 10px;
+  font-size: 0.875rem;
+}
+
+.admin-comments-table td.admin-row-actions {
+  gap: calc(var(--admin-space) * 2);
+}
+
+@media (max-width: 900px) {
+  .admin-comment-moderation {
+    width: 100%;
+  }
+
+  .admin-comment-moderation .admin-inline-form,
+  .admin-comment-moderation .btn {
+    flex: 1;
+  }
+
+  .admin-comments-table td.admin-row-actions {
+    white-space: normal;
+  }
+}

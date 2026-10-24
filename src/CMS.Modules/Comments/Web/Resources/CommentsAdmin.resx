@@ -38,6 +38,8 @@
   <data name="Filter" xml:space="preserve"><value>فیلتر</value></data>
   <data name="Approve" xml:space="preserve"><value>تأیید</value></data>
   <data name="Reject" xml:space="preserve"><value>رد</value></data>
+  <data name="Actions" xml:space="preserve"><value>عملیات</value></data>
+  <data name="ModerationActions" xml:space="preserve"><value>تأیید یا رد</value></data>
   <data name="Edit" xml:space="preserve"><value>ویرایش</value></data>
   <data name="Delete" xml:space="preserve"><value>حذف</value></data>
   <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
@@ -105,6 +107,7 @@
   <data name="ImportResultUnmatched" xml:space="preserve"><value>بدون تطبیق: {0}</value></data>
   <data name="ImportResultFailed" xml:space="preserve"><value>ناموفق: {0}</value></data>
   <data name="ImportColStatus" xml:space="preserve"><value>وضعیت پیش‌نمایش</value></data>
+  <data name="ImportColApproval" xml:space="preserve"><value>تأیید (XML)</value></data>
   <data name="ImportColPageUrl" xml:space="preserve"><value>URL صفحه</value></data>
   <data name="ImportColTarget" xml:space="preserve"><value>صفحه مقصد</value></data>
   <data name="ImportColManualTarget" xml:space="preserve"><value>انتخاب دستی</value></data>
@@ -124,10 +127,19 @@
   <data name="ImportPreviewPagerMeta" xml:space="preserve"><value>صفحه {0} از {1} (هر صفحه {2} مورد)</value></data>
   <data name="ImportPrevPage" xml:space="preserve"><value>قبلی</value></data>
   <data name="ImportNextPage" xml:space="preserve"><value>بعدی</value></data>
-  <data name="ImportConfirmHint" xml:space="preserve"><value>با تأیید، همه ردیف‌های «آماده» ذخیره می‌شوند (نه فقط همین صفحه). برای ردیف‌های بدون تطبیق، مقصد را دستی انتخاب کنید.</value></data>
+  <data name="ImportConfirmHint" xml:space="preserve"><value>با تأیید، همه ردیف‌های «آماده» ذخیره می‌شوند (نه فقط همین صفحه). وضعیت تأیید هر کامنت از فیلد comment_approved در XML خوانده و عیناً اعمال می‌شود (۱=تأییدشده، ۰=در انتظار). برای ردیف‌های بدون تطبیق، مقصد را دستی انتخاب کنید.</value></data>
   <data name="ImportNothingSaved" xml:space="preserve"><value>هیچ کامنتی ذخیره نشد. احتمالاً همه بدون تطبیق URL یا تکراری بودند.</value></data>
   <data name="ImportNothingSavedFailed" xml:space="preserve"><value>هیچ کامنتی ذخیره نشد. جزئیات خطا را در جدول زیر ببینید.</value></data>
   <data name="ImportSavedCount" xml:space="preserve"><value>{0} کامنت با موفقیت در دیتابیس ذخیره شد.</value></data>
   <data name="ApproveAllComments" xml:space="preserve"><value>تأیید همه</value></data>
   <data name="AllCommentsApproved" xml:space="preserve"><value>همه کامنت‌ها تأیید شدند.</value></data>
+  <data name="BulkDelete" xml:space="preserve"><value>حذف انتخاب‌شده‌ها</value></data>
+  <data name="BulkActionsTitle" xml:space="preserve"><value>اقدامات روی انتخاب‌شده‌ها</value></data>
+  <data name="BulkActionsHint" xml:space="preserve"><value>برای حذف گروهی، کامنت‌ها را با تیک انتخاب کنید.</value></data>
+  <data name="SelectedCount" xml:space="preserve"><value>{0} مورد انتخاب شده</value></data>
+  <data name="ClearSelection" xml:space="preserve"><value>لغو انتخاب</value></data>
+  <data name="SelectAll" xml:space="preserve"><value>انتخاب همه</value></data>
+  <data name="ConfirmBulkDelete" xml:space="preserve"><value>کامنت‌های انتخاب‌شده حذف شوند؟ این عمل قابل بازگشت نیست.</value></data>
+  <data name="BulkDeleteNoneSelected" xml:space="preserve"><value>هیچ کامنتی انتخاب نشده است.</value></data>
+  <data name="CommentsBulkDeleted" xml:space="preserve"><value>{0} کامنت حذف شد.</value></data>
 </root>

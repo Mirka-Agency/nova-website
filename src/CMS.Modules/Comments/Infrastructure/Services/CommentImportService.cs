@@ -213,6 +213,7 @@ public sealed class CommentImportService : ICommentImportService
                         idMap,
                         cancellationToken);
 
+                    // Status comes from XML comment_approved (parsed into item.Row.Status).
                     var comment = Comment.Import(
                         item.TargetType,
                         item.TargetId,

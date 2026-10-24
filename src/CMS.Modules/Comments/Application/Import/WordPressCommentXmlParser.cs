@@ -59,7 +59,8 @@ public sealed class WordPressCommentXmlParser : IWordPressCommentXmlParser
                     if (!TryParseDate(dateRaw, out var publishedAtUtc))
                         continue;
 
-                    var approvedRaw = FirstValue(node, "comment_approved", "approved", "status");
+                    // Prefer comment_approved even when value is "0" (unapproved).
+                    var approvedRaw = FirstElementText(node, "comment_approved", "approved", "status");
                     var status = MapStatus(approvedRaw);
 
                     var parent = FirstValue(node, "comment_parent", "parent", "parent_id");
@@ -114,17 +115,55 @@ public sealed class WordPressCommentXmlParser : IWordPressCommentXmlParser
         return null;
     }
 
-    private static CommentStatus MapStatus(string? raw)
+    /// <summary>
+    /// Like <see cref="FirstValue"/> but returns the first matching element's text even when it is
+    /// "0" / whitespace-significant approval flags (unapproved comments).
+    /// </summary>
+    private static string? FirstElementText(XmlNode parent, params string[] localNames)
+    {
+        foreach (var name in localNames)
+        {
+            var node = parent.SelectSingleNode($"*[local-name()='{name}']");
+            if (node is null)
+                continue;
+
+            return node.InnerText?.Trim() ?? string.Empty;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Maps WordPress <c>comment_approved</c> to CMS status.
+    /// Must preserve approval on import: 1/approved → Approved, 0/hold → Pending, spam/trash → Rejected.
+    /// </summary>
+    internal static CommentStatus MapStatus(string? raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
             return CommentStatus.Pending;
 
-        return raw.Trim().ToLowerInvariant() switch
+        var normalized = NormalizeDigits(raw.Trim()).ToLowerInvariant();
+        return normalized switch
         {
             "1" or "true" or "yes" or "approve" or "approved" => CommentStatus.Approved,
+            "0" or "false" or "no" or "hold" or "unapproved" or "pending" or "moderation" => CommentStatus.Pending,
             "spam" or "trash" or "reject" or "rejected" => CommentStatus.Rejected,
             _ => CommentStatus.Pending
         };
+    }
+
+    private static string NormalizeDigits(string value)
+    {
+        var chars = value.ToCharArray();
+        for (var i = 0; i < chars.Length; i++)
+        {
+            if (chars[i] is >= '\u06F0' and <= '\u06F9')
+                chars[i] = (char)('0' + (chars[i] - '\u06F0'));
+            else if (chars[i] is >= '\u0660' and <= '\u0669')
+                chars[i] = (char)('0' + (chars[i] - '\u0660'));
+        }
+
+        return new string(chars);
     }
 
     private static bool TryParseDate(string? raw, out DateTime utc)

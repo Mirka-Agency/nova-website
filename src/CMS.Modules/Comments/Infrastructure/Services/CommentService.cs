@@ -339,4 +339,21 @@ public sealed class CommentService : ICommentService
         _db.Comments.Remove(comment);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task BulkDeleteAsync(IReadOnlyList<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        if (ids.Count == 0)
+            return;
+
+        var distinct = ids.Where(id => id != Guid.Empty).Distinct().ToArray();
+        if (distinct.Length == 0)
+            return;
+
+        var comments = await _db.Comments.Where(c => distinct.Contains(c.Id)).ToListAsync(cancellationToken);
+        if (comments.Count == 0)
+            return;
+
+        _db.Comments.RemoveRange(comments);
+        await _db.SaveChangesAsync(cancellationToken);
+    }
 }
